@@ -37,7 +37,7 @@ export function VersionBumpModal({ open, currentVersion, onClose, onConfirm }: V
       changes: [
         'Adding new optional fields',
         'Improving descriptions',
-        'Adding stakeholders',
+        'Adding governance contacts',
         'Clarifying labels',
       ],
       icon: Zap,
@@ -51,7 +51,7 @@ export function VersionBumpModal({ open, currentVersion, onClose, onConfirm }: V
         'Removing or renaming fields',
         'Changing field types',
         'Restructuring the schema',
-        'Changing the contract owner (governance)',
+        'Changing the business contract owner',
       ],
       icon: AlertTriangle,
       color: 'amber',

@@ -71,28 +71,42 @@ export const EXPORT_COVERAGE = {
   includedInYaml:
     'Published in ODCS YAML: identity, description, schema, tags, quality rules, reference links, data access roles, and service levels.',
   excludedFromYaml:
-    'Excluded from ODCS YAML: contract owner, governance contacts, members, and version history.',
+    'Excluded from ODCS YAML: contract owner, governance contacts, collaborators, and version history.',
 } as const
+
+// ─── Section concept tags (light visual differentiation) ─────────────────────
+
+/** Accountability — Fundamentals / contract owner */
+export const SECTION_CONCEPT_ACCOUNTABILITY = 'Accountability'
+/** Application access — Collaborators modal & top bar */
+export const SECTION_CONCEPT_APPLICATION_ACCESS = 'Application access'
+/** Communication — Governance contacts */
+export const SECTION_CONCEPT_COMMUNICATION = 'Communication & support'
+/** Data contract — Data access roles (ODCS consumer roles) */
+export const SECTION_CONCEPT_DATA_CONTRACT = 'Data contract'
 
 // ─── Fundamentals ────────────────────────────────────────────────────────────
 
+export const FUNDAMENTALS_INTRO =
+  'Core contract identity and business accountability. Who can edit in the app is managed in Collaborators — separate from the contract owner below.'
+
 export const CONTRACT_OWNER_HELPER =
-  'Business owner responsible for governance accountability and publication approval.'
+  'Business owner accountable for this contract and publication approval. This is not an app login role — use Collaborators to grant editing access.'
 
 // ─── Governance contacts (workflow metadata; not in ODCS YAML) ───────────────
 
 export const STAKEHOLDERS_INTRO =
-  'People accountable for this contract — owners, stewards, and operational contacts.'
+  'Operational or business contacts for this contract — stewardship, analytics, support, compliance, and similar roles. These are people to reach out to, not app permissions.'
 
-export const STAKEHOLDERS_EMPTY_TITLE = 'No contacts assigned'
+export const STAKEHOLDERS_EMPTY_TITLE = 'No governance contacts yet'
 export const STAKEHOLDERS_EMPTY_BODY =
-  'Add governance contacts so ownership is clear on this contract.'
+  'Add contacts your teams can reach for questions about this contract — distinct from the contract owner and from Collaborators.'
 export const STAKEHOLDERS_EMPTY_CTA = 'Add contact'
 
 // ─── Publication readiness ─────────────────────────────────────────────────────
 
-export const HEALTH_GOVERNANCE_OWNER_CHECK = 'Contract owner defined'
-export const HEALTH_GOVERNANCE_CONTACTS_CHECK = 'Governance contacts assigned'
+export const HEALTH_GOVERNANCE_OWNER_CHECK = 'Business contract owner defined'
+export const HEALTH_GOVERNANCE_CONTACTS_CHECK = 'Governance contacts listed'
 
 export const PUBLICATION_READY_REQUIRED_COMPLETE =
   'Publication requirements complete'
@@ -128,7 +142,8 @@ export const READINESS_FIELD_SCHEMA_ROOT = 'schema-root'
 
 export const READINESS_HELPER_CONTRACT_NAME = 'Required to publish this contract.'
 export const READINESS_HELPER_CONTRACT_ID = 'Required to identify this contract in exports.'
-export const READINESS_HELPER_CONTRACT_OWNER = 'Required for governance accountability.'
+export const READINESS_HELPER_CONTRACT_OWNER =
+  'Every published contract should have a business owner responsible for governance and approval.'
 export const READINESS_HELPER_CONTRACT_VERSION = 'Use SemVer format, for example 1.0.0.'
 export const READINESS_HELPER_SCHEMA_FIELDS = 'Add at least one table and field in Schema.'
 
@@ -137,17 +152,18 @@ export const READINESS_GUIDANCE_FUNDAMENTALS_BANNER =
 export const READINESS_GUIDANCE_SCHEMA_BANNER =
   'Define at least one table and field before you can publish.'
 export const READINESS_GUIDANCE_STAKEHOLDERS_BANNER =
-  'Adding governance contacts improves accountability — especially when PII fields are present.'
+  'List operational contacts teams can reach — especially helpful when personal data fields are present.'
 
 export const DOCUMENTED_FIELDS_TOOLTIP =
   'Percentage of schema fields with business descriptions'
 
 // ─── Data access & service levels ────────────────────────────────────────────
 
-export const DATA_ACCESS_EMPTY_TITLE = 'No data access roles defined'
+export const DATA_ACCESS_EMPTY_TITLE = 'No consumer access roles defined'
 export const DATA_ACCESS_EMPTY_BODY =
-  'Define roles and permissions for consumers of this contract.'
-export const DATA_ACCESS_EMPTY_CTA = 'Add role'
+  'Describe how data consumers may use this contract in your platform (read, write, etc.). This does not grant anyone access to the app or to live data systems.'
+export const DATA_ACCESS_EMPTY_CTA = 'Add access role'
+export const DATA_ACCESS_ADD_ROLE_CTA = 'Add access role'
 
 export const SLA_EMPTY_TITLE = 'No service levels defined'
 export const SLA_EMPTY_BODY =
@@ -161,48 +177,63 @@ export function versionHistoryIntroCount(count: number): string {
   return `${count} published ${noun} on record.`
 }
 
-// ─── Members ─────────────────────────────────────────────────────────────────
+// ─── Collaborators (application access; not in ODCS YAML) ───────────────────
 
-export const MEMBERS_DISCLAIMER =
-  `Control who can edit and publish this contract in ${APP_NAME}.`
+export const COLLABORATORS_MODAL_TITLE = 'Collaborators'
+export const COLLABORATORS_INTRO =
+  `People who can view or edit this contract in ${APP_NAME}. This controls application access only — not the business contract owner or governance contacts.`
+export const COLLABORATORS_EMPTY_TITLE = 'No collaborators yet'
+export const COLLABORATORS_EMPTY_BODY =
+  'Invite colleagues who should work on this contract in the application.'
+export const COLLABORATORS_ALREADY_INVITED = 'This person is already a collaborator.'
+export const COLLABORATORS_MORE_COUNT = (n: number) =>
+  `${n} more collaborator${n === 1 ? '' : 's'}`
 
-export const MEMBER_ROLE_OPTIONS: { value: CollaboratorRole; label: string; desc: string }[] = [
+export const COLLABORATOR_ROLE_OPTIONS: { value: CollaboratorRole; label: string; desc: string }[] = [
   {
     value: 'owner',
     label: 'Publisher',
-    desc: 'Can edit the contract, manage versions, and publish changes.',
+    desc: 'Can edit, manage versions, and publish in the app. Not the same as Contract owner in Fundamentals.',
   },
   {
     value: 'editor',
     label: 'Contributor',
-    desc: 'Can edit draft content but cannot publish.',
+    desc: 'Can edit draft content in the app but cannot publish.',
   },
   {
     value: 'viewer',
     label: 'Reader',
-    desc: 'Read-only access.',
+    desc: 'Read-only access to this contract in the app.',
   },
 ]
 
-export const MEMBER_ROLE_LABELS: Record<CollaboratorRole, string> = {
+export const COLLABORATOR_ROLE_LABELS: Record<CollaboratorRole, string> = {
   owner: 'Publisher',
   editor: 'Contributor',
   viewer: 'Reader',
 }
 
-export const PUBLISH_REQUIRES_PUBLISHER = 'Only members with the Publisher role can publish.'
+export const PUBLISH_REQUIRES_PUBLISHER =
+  'Only collaborators with the Publisher role can publish.'
 
 export const PUBLISH_REQUIRES_PUBLISHER_CONTRACT =
-  'Only members with the Publisher role can publish this contract.'
+  'Only collaborators with the Publisher role can publish this contract.'
 
 export const VIEWER_ACCESS_BANNER =
-  'You have read-only access to this contract. Contact a Publisher or Contributor to request editing permissions.'
+  'You have read-only access in the app. Ask a Publisher or Contributor to change your collaborator role.'
 
 export const CANNOT_REMOVE_OWN_PUBLISHER_ROLE =
   'You cannot remove your own Publisher role.'
 
 export const DATA_ACCESS_ROLES_INTRO =
-  'Define who may access this contract data and what permissions apply. Editing permissions are managed in Members.'
+  'Define consumer access roles described in this data contract (who may read or write contract data in your ecosystem). Application editing and publishing permissions are managed in Collaborators — they do not grant platform or app access.'
+
+/** @deprecated Use COLLABORATORS_INTRO */
+export const MEMBERS_DISCLAIMER = COLLABORATORS_INTRO
+/** @deprecated Use COLLABORATOR_ROLE_OPTIONS */
+export const MEMBER_ROLE_OPTIONS = COLLABORATOR_ROLE_OPTIONS
+/** @deprecated Use COLLABORATOR_ROLE_LABELS */
+export const MEMBER_ROLE_LABELS = COLLABORATOR_ROLE_LABELS
 
 // ─── Schema relationships ──────────────────────────────────────────────────────
 

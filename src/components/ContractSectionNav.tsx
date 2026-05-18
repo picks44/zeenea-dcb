@@ -6,6 +6,7 @@ import {
   NAV_DATA_ACCESS,
   NAV_FUNDAMENTALS,
   NAV_GOVERNANCE_CONTACTS,
+  SECTION_GOVERNANCE_CONTACTS,
   NAV_IMPORT_SQL,
   NAV_SCHEMA,
   NAV_SERVICE_LEVELS,
@@ -100,7 +101,12 @@ export function ContractSectionNav({
           const accentIncomplete = status === 'incomplete' && !isActive
 
           return (
-            <Tooltip key={id} content={label} side="right" delayDuration={400}>
+            <Tooltip
+              key={id}
+              content={id === 'stakeholders' ? SECTION_GOVERNANCE_CONTACTS : label}
+              side="right"
+              delayDuration={400}
+            >
               <button
                 onClick={() => onSectionChange(id)}
                 className={cn(

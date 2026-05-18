@@ -124,10 +124,10 @@ export function computePublicationReadiness(
   if (nextSteps.length < 2 && stakeholderCount === 0 && fieldCount > 0) {
     if (piiCount > 0) {
       nextSteps.push(
-        `${piiCount} PII field${piiCount > 1 ? 's' : ''} detected — add governance contacts including Data Privacy`,
+        `${piiCount} PII field${piiCount > 1 ? 's' : ''} detected — add governance contacts (e.g. Data Privacy)`,
       )
     } else {
-      nextSteps.push('Add governance contacts for ownership and collaboration')
+      nextSteps.push('Add governance contacts so teams know who to reach')
     }
   }
 

@@ -109,7 +109,8 @@ export function validateContract(contract: DataContract): ValidationResult {
   if (!info.owner.trim()) {
     issues.push({
       code: 'owner',
-      message: 'Contract owner is required.',
+      message:
+        'Every published contract should have a business owner responsible for governance and approval.',
       severity: 'error',
       section: 'fundamentals',
       fieldId: 'contract-owner',
@@ -271,7 +272,7 @@ export function validateContract(contract: DataContract): ValidationResult {
   if (piiCount > 0 && countAssignedStakeholders(contract.stakeholders) === 0) {
     issues.push({
       code: 'pii-stakeholders',
-      message: `${piiCount} PII field(s) detected — add governance contacts for accountability.`,
+      message: `${piiCount} PII field(s) detected — add governance contacts teams can reach for privacy questions.`,
       severity: 'warning',
       section: 'stakeholders',
     })

@@ -8,9 +8,14 @@ import { CURRENT_USER } from '@/lib/currentUser'
 import { WorkflowMetadataPill } from '@/components/shared/WorkflowMetadataPill'
 import {
   CANNOT_REMOVE_OWN_PUBLISHER_ROLE,
-  MEMBER_ROLE_LABELS,
-  MEMBER_ROLE_OPTIONS,
-  MEMBERS_DISCLAIMER,
+  COLLABORATOR_ROLE_LABELS,
+  COLLABORATOR_ROLE_OPTIONS,
+  COLLABORATORS_ALREADY_INVITED,
+  COLLABORATORS_EMPTY_BODY,
+  COLLABORATORS_EMPTY_TITLE,
+  COLLABORATORS_INTRO,
+  COLLABORATORS_MODAL_TITLE,
+  SECTION_CONCEPT_APPLICATION_ACCESS,
 } from '@/lib/uxCopy'
 
 interface MockUser { id: string; name: string; email: string }
@@ -98,7 +103,7 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
   }
 
   const handleSelectEmail = () => {
-    if (alreadyInvited(query)) { setError('This person is already a member'); return }
+    if (alreadyInvited(query)) { setError(COLLABORATORS_ALREADY_INVITED); return }
     setSelected({ id: '', name: nameFromEmail(query), email: query.trim().toLowerCase() })
     setQuery('')
     setDropdownOpen(false)
@@ -107,7 +112,7 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
 
   const handleInvite = () => {
     if (!selected) { setError('Select a person or enter an email address'); return }
-    if (alreadyInvited(selected.email)) { setError('This person is already a member'); return }
+    if (alreadyInvited(selected.email)) { setError(COLLABORATORS_ALREADY_INVITED); return }
     const newC: Collaborator = {
       id: crypto.randomUUID(),
       name: selected.name,
@@ -136,9 +141,12 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
         {/* Header */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-[#e4e4f0] rounded-t-2xl">
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-[#12131f]">Members</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#9898a7]">
+              {SECTION_CONCEPT_APPLICATION_ACCESS}
+            </p>
+            <p className="text-sm font-semibold text-[#12131f]">{COLLABORATORS_MODAL_TITLE}</p>
             <p className="text-[11px] text-[#656574] mt-0.5 leading-snug">
-              {MEMBERS_DISCLAIMER}{' '}
+              {COLLABORATORS_INTRO}{' '}
               <WorkflowMetadataPill variant="workflow-only" />
             </p>
             <p className="text-xs text-[#656574] truncate mt-0.5">{contract.info.title || 'Untitled Contract'}</p>
@@ -148,7 +156,7 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
           </Button>
         </div>
 
-        {/* Invite row — members with Publisher role only */}
+        {/* Invite row — Publishers can manage collaborators */}
         {canManageMembers && <div className="px-5 py-4 border-b border-[#f0f0f7]">
           <div className="flex gap-2">
 
@@ -222,11 +230,11 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
             <Select value={inviteRole} onValueChange={v => setInviteRole(v as CollaboratorRole)}>
               <SelectTrigger className="h-9 text-xs w-24 flex-shrink-0">
                 <SelectValue>
-                    {(v: string) => MEMBER_ROLE_OPTIONS.find(r => r.value === v)?.label ?? v}
+                    {(v: string) => COLLABORATOR_ROLE_OPTIONS.find(r => r.value === v)?.label ?? v}
                   </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {MEMBER_ROLE_OPTIONS.map(r => (
+                {COLLABORATOR_ROLE_OPTIONS.map(r => (
                   <SelectItem key={r.value} value={r.value} className="text-xs py-2">
                     <span className="font-medium">{r.label}</span>
                     <span className="text-neutral-400 ml-1.5 text-[10px]">{r.desc}</span>
@@ -241,12 +249,12 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
           </div>
         </div>}
 
-        {/* Member list */}
+        {/* Collaborator list */}
         <div className="overflow-y-auto max-h-64 rounded-b-2xl">
           {collaborators.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-2 py-10 text-center px-6">
-              <p className="text-sm text-[#656574] font-medium">No members yet</p>
-              <p className="text-xs text-[#9898a7]">Add people above to give them access to this contract.</p>
+              <p className="text-sm text-[#656574] font-medium">{COLLABORATORS_EMPTY_TITLE}</p>
+              <p className="text-xs text-[#9898a7]">{COLLABORATORS_EMPTY_BODY}</p>
             </div>
           ) : (
             <div className="divide-y divide-[#f5f5fa]">
@@ -268,17 +276,17 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
                           className="h-7 text-[11px] w-20 flex items-center px-2 bg-[#f5f5fa] rounded text-[#9898a7] flex-shrink-0 cursor-not-allowed"
                           title={CANNOT_REMOVE_OWN_PUBLISHER_ROLE}
                         >
-                          {MEMBER_ROLE_LABELS.owner}
+                          {COLLABORATOR_ROLE_LABELS.owner}
                         </span>
                       ) : (
                         <Select value={c.role} onValueChange={v => handleRoleChange(c.id, v as CollaboratorRole)}>
                           <SelectTrigger className="h-7 text-[11px] w-20 border-transparent bg-[#f5f5fa] hover:bg-[#eeeef7] flex-shrink-0 px-2">
                             <SelectValue>
-                              {(v: string) => MEMBER_ROLE_OPTIONS.find(r => r.value === v)?.label ?? v}
+                              {(v: string) => COLLABORATOR_ROLE_OPTIONS.find(r => r.value === v)?.label ?? v}
                             </SelectValue>
                           </SelectTrigger>
                           <SelectContent>
-                            {MEMBER_ROLE_OPTIONS.map(r => (
+                            {COLLABORATOR_ROLE_OPTIONS.map(r => (
                               <SelectItem key={r.value} value={r.value} className="text-xs py-2">
                                 <span className="font-medium">{r.label}</span>
                               </SelectItem>
@@ -297,7 +305,7 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
                     </>
                   ) : (
                     <span className="text-[11px] text-[#9898a7] flex-shrink-0">
-                      {MEMBER_ROLE_OPTIONS.find(r => r.value === c.role)?.label ?? c.role}
+                      {COLLABORATOR_ROLE_LABELS[c.role] ?? c.role}
                     </span>
                   )}
                 </div>

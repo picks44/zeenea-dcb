@@ -13,7 +13,9 @@ import { WorkflowMetadataPill } from '@/components/shared/WorkflowMetadataPill'
 import { FundamentalsReadOnlyView } from '@/components/shared/FundamentalsReadOnlyView'
 import {
   CONTRACT_OWNER_HELPER,
+  FUNDAMENTALS_INTRO,
   LABEL_CONTRACT_OWNER,
+  SECTION_CONCEPT_ACCOUNTABILITY,
   LABEL_REFERENCE_LINKS,
   NAV_FUNDAMENTALS,
   READINESS_FIELD_CONTRACT_ID,
@@ -124,9 +126,12 @@ export function FundamentalsSection({
       className={isLocked && isPublishedView ? 'max-w-3xl w-full' : 'max-w-[560px] w-full'}
     >
       <div className={docCompact && isLocked ? 'mb-3' : 'mb-6'}>
+        <p className="text-[10px] font-semibold uppercase tracking-wide text-[#9898a7] mb-1">
+          {SECTION_CONCEPT_ACCOUNTABILITY}
+        </p>
         <h2 className="text-base font-semibold text-[#12131f]">{NAV_FUNDAMENTALS}</h2>
         <p className="text-[#3f3f4a] text-xs mt-0.5 leading-relaxed">
-          Core contract metadata and governance documentation.
+          {FUNDAMENTALS_INTRO}
         </p>
       </div>
 
@@ -295,12 +300,10 @@ export function FundamentalsSection({
             disabled={ownerFieldLocked}
             className={ownerInputClass}
           />
-          {!info.owner.trim() ? null : (
-            <p className="text-[11px] text-[#656574] mt-1 leading-snug flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
-              <span>{CONTRACT_OWNER_HELPER}</span>
-              <WorkflowMetadataPill variant="not-in-odcs" />
-            </p>
-          )}
+          <p className="text-[11px] text-[#656574] mt-1 leading-snug flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
+            {!info.owner.trim() ? null : <span>{CONTRACT_OWNER_HELPER}</span>}
+            <WorkflowMetadataPill variant="not-in-odcs" />
+          </p>
         </GuidanceField>
 
         <div>

@@ -21,6 +21,7 @@ import {
   STAKEHOLDERS_EMPTY_BODY,
   STAKEHOLDERS_EMPTY_CTA,
   STAKEHOLDERS_EMPTY_TITLE,
+  SECTION_CONCEPT_COMMUNICATION,
   STAKEHOLDERS_INTRO,
 } from '@/lib/uxCopy'
 import { SectionGuidanceBanner } from '@/components/readiness/SectionGuidanceBanner'
@@ -78,6 +79,7 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked, docCompa
     <div ref={sectionRootRef} className="max-w-[720px] w-full">
       <GovernanceSectionHeader
         title={SECTION_GOVERNANCE_CONTACTS}
+        conceptTag={SECTION_CONCEPT_COMMUNICATION}
         description={<WorkflowMetadataNote pill="not-in-odcs">{STAKEHOLDERS_INTRO}</WorkflowMetadataNote>}
         compact={docCompact}
       />

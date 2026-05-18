@@ -3,7 +3,12 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tooltip } from '@/components/ui/tooltip'
 import { DataContract, EditorTab, Collaborator, CollaboratorRole } from '@/types/odcs'
-import { MEMBER_ROLE_LABELS, PUBLISH_REQUIRES_PUBLISHER_CONTRACT } from '@/lib/uxCopy'
+import {
+  COLLABORATOR_ROLE_LABELS,
+  COLLABORATORS_MODAL_TITLE,
+  COLLABORATORS_MORE_COUNT,
+  PUBLISH_REQUIRES_PUBLISHER_CONTRACT,
+} from '@/lib/uxCopy'
 import { cn } from '@/lib/utils'
 
 interface ContractTopBarProps {
@@ -120,7 +125,7 @@ export function ContractTopBar({
                 {collaborators.slice(0, 3).map(c => (
                   <Tooltip
                     key={c.id}
-                    content={<><div>{c.name}</div><div className="text-[10px] opacity-60 mt-0.5">{MEMBER_ROLE_LABELS[c.role]}</div></>}
+                    content={<><div>{c.name}</div><div className="text-[10px] opacity-60 mt-0.5">{COLLABORATOR_ROLE_LABELS[c.role]}</div></>}
                     side="bottom"
                     delayDuration={300}
                   >
@@ -133,7 +138,7 @@ export function ContractTopBar({
                   </Tooltip>
                 ))}
                 {collaborators.length > 3 && (
-                  <Tooltip content={`${collaborators.length - 3} more members`} side="bottom" delayDuration={300}>
+                  <Tooltip content={COLLABORATORS_MORE_COUNT(collaborators.length - 3)} side="bottom" delayDuration={300}>
                     <div className="h-6 w-6 rounded-full bg-[#f5f5fa] text-[#656574] text-[10px] font-medium flex items-center justify-center ring-1 ring-white flex-shrink-0 cursor-default">
                       +{collaborators.length - 3}
                     </div>
@@ -143,7 +148,7 @@ export function ContractTopBar({
             )}
             <Button variant="outline" size="sm" onClick={onShare} className="gap-1.5">
               <Users className="h-3.5 w-3.5" />
-              <span className="hidden lg:inline">Members</span>
+              <span className="hidden lg:inline">{COLLABORATORS_MODAL_TITLE}</span>
             </Button>
           </div>
 
