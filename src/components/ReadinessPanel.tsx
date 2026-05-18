@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import {
   DOCUMENTED_FIELDS_TOOLTIP,
   EXPORT_COVERAGE,
+  PUBLICATION_READY_TOOLTIP,
   READINESS_SCORE_TOOLTIP,
 } from '@/lib/uxCopy'
 import { Tooltip } from '@/components/ui/tooltip'
@@ -130,7 +131,11 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
           {publishStatus.ready ? (
             <>
               <CheckCircle2 className="h-3 w-3 text-[#047800] flex-shrink-0" />
-              <span className="text-[11px] text-[#047800] font-medium leading-snug">{publishStatus.message}</span>
+              <Tooltip content={PUBLICATION_READY_TOOLTIP} side="bottom" delayDuration={400}>
+                <span className="text-[11px] text-[#047800] font-medium leading-snug cursor-default">
+                  {publishStatus.message}
+                </span>
+              </Tooltip>
             </>
           ) : (
             <>
@@ -169,7 +174,7 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
                   'text-[11px] font-semibold',
                   descCoverage === 1 ? 'text-[#047800]' : descCoverage >= 0.5 ? 'text-[#d27b00]' : 'text-[#656574]',
                 )}>
-                  {fieldsWithDesc}/{fieldCount}
+                  {fieldsWithDesc} of {fieldCount} documented
                 </span>
               </div>
               <Tooltip content={DOCUMENTED_FIELDS_TOOLTIP} side="top" delayDuration={400}>

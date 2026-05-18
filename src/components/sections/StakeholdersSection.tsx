@@ -5,12 +5,13 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Stakeholder } from '@/types/odcs'
 import { generateId } from '@/lib/utils'
+import { GovernanceEmptyState } from '@/components/shared/GovernanceEmptyState'
+import { WorkflowMetadataNote } from '@/components/shared/WorkflowMetadataPill'
 import {
   STAKEHOLDERS_EMPTY_BODY,
   STAKEHOLDERS_EMPTY_CTA,
   STAKEHOLDERS_EMPTY_TITLE,
-  STAKEHOLDERS_SECTION_HELPER,
-  STAKEHOLDERS_WITH_ENTRIES_HINT,
+  STAKEHOLDERS_INTRO,
 } from '@/lib/uxCopy'
 import { cn } from '@/lib/utils'
 
@@ -66,11 +67,11 @@ function AddStakeholderForm({
   const isValid = form.name.trim() !== ''
 
   return (
-    <div className="bg-white rounded-xl border border-[#b8d0fb] shadow-sm p-5 ring-1 ring-indigo-100">
-      <h3 className="text-sm font-semibold text-[#12131f] mb-4">Add Stakeholder</h3>
+    <div className="bg-white rounded-xl border border-[#d3d3e5] p-4">
+      <h3 className="text-sm font-semibold text-[#12131f] mb-3">Add stakeholder</h3>
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-1.5">
-          <Label className="text-xs text-[#33333d]">Full Name <span className="text-rose-400">*</span></Label>
+          <Label className="text-xs text-[#33333d]">Full name <span className="text-rose-400">*</span></Label>
           <Input
             autoFocus
             value={form.name}
@@ -109,7 +110,7 @@ function AddStakeholderForm({
           />
         </div>
       </div>
-      <div className="flex items-center gap-2 mt-4 pt-4 border-t border-[#e4e4f0]">
+      <div className="flex items-center gap-2 mt-4 pt-3 border-t border-[#e4e4f0]">
         <Button
           size="sm"
           onClick={() => {
@@ -125,7 +126,7 @@ function AddStakeholderForm({
           }}
           disabled={!isValid}
         >
-          Add Stakeholder
+          Add stakeholder
         </Button>
         <Button size="sm" variant="ghost" onClick={onCancel}>Cancel</Button>
       </div>
@@ -146,66 +147,54 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked }: Stakeh
   }
 
   return (
-    <div className="max-w-3xl mx-auto">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-2 text-[#0550dc] text-sm font-medium mb-2">
-          <Users className="h-4 w-4" />
-          <span>Step 4 of 4</span>
-        </div>
+    <div className="max-w-[720px] w-full">
+      <div className="mb-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-[#12131f] mb-2">Stakeholders</h1>
-            <p className="text-[#3f3f4a] text-sm leading-relaxed">
-              Record governance contacts for this contract. Stakeholders support collaboration and accountability in the application.
-            </p>
-            <p className="text-[#656574] text-xs mt-2 leading-relaxed">
-              {STAKEHOLDERS_SECTION_HELPER}
+            <h2 className="text-base font-semibold text-[#12131f]">Stakeholders</h2>
+            <p className="text-[#3f3f4a] text-xs mt-0.5 leading-relaxed">
+              <WorkflowMetadataNote pill="not-in-odcs">{STAKEHOLDERS_INTRO}</WorkflowMetadataNote>
             </p>
           </div>
           {!isLocked && stakeholders.length > 0 && !showForm && (
             <Button size="sm" variant="outline" onClick={() => setShowForm(true)} className="gap-1.5 flex-shrink-0">
               <Plus className="h-3.5 w-3.5" />
-              Add Stakeholder
+              Add stakeholder
             </Button>
           )}
         </div>
       </div>
 
-      <div className="space-y-4">
-        {/* Add form */}
+      <div className="space-y-3">
         {showForm && !isLocked && (
           <AddStakeholderForm onAdd={addStakeholder} onCancel={() => setShowForm(false)} />
         )}
 
-        {/* Stakeholder cards */}
         {stakeholders.length > 0 ? (
-          <div className="grid gap-3">
+          <div className="grid gap-2">
             {stakeholders.map((s, i) => (
               <div
                 key={s.id}
-                className="bg-white rounded-xl border border-[#d3d3e5] shadow-sm p-4 flex items-center gap-4 group"
+                className="bg-white rounded-lg border border-[#d3d3e5] px-3 py-2.5 flex items-center gap-3 group"
               >
-                {/* Avatar */}
                 <div className={cn(
-                  'h-10 w-10 rounded-full flex items-center justify-center text-white text-sm font-semibold flex-shrink-0',
-                  ROLE_INITIALS_COLORS[i % ROLE_INITIALS_COLORS.length]
+                  'h-8 w-8 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0',
+                  ROLE_INITIALS_COLORS[i % ROLE_INITIALS_COLORS.length],
                 )}>
-                  {s.name ? getInitials(s.name) : <Users className="h-4 w-4" />}
+                  {s.name ? getInitials(s.name) : <Users className="h-3.5 w-3.5" />}
                 </div>
 
-                {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-semibold text-[#12131f] text-sm">{s.name}</span>
+                    <span className="font-medium text-[#12131f] text-sm">{s.name}</span>
                     <span className={cn(
                       'text-[11px] px-2 py-0.5 rounded-full font-medium',
-                      ROLE_COLORS[s.role] || 'bg-[#f5f5fa] text-[#33333d]'
+                      ROLE_COLORS[s.role] || 'bg-[#f5f5fa] text-[#33333d]',
                     )}>
                       {s.role}
                     </span>
                   </div>
-                  <div className="flex items-center gap-4 mt-1 flex-wrap">
+                  <div className="flex items-center gap-3 mt-0.5 flex-wrap">
                     {s.email && (
                       <span className="flex items-center gap-1 text-xs text-[#656574]">
                         <Mail className="h-3 w-3" />
@@ -221,12 +210,12 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked }: Stakeh
                   </div>
                 </div>
 
-                {/* Remove */}
                 {!isLocked && (
                   <Button
-                    variant="ghost" size="icon"
+                    variant="ghost"
+                    size="icon"
                     onClick={() => removeStakeholder(s.id)}
-                    className="text-neutral-300 hover:text-red-700 hover:bg-red-25 opacity-0 group-hover:opacity-100"
+                    className="h-8 w-8 text-[#9898a7] hover:text-[#c12c11] hover:bg-[#fff2ee] opacity-0 group-hover:opacity-100"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
@@ -235,34 +224,15 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked }: Stakeh
             ))}
           </div>
         ) : !showForm ? (
-          /* Empty state */
-          <div className="border-2 border-dashed border-[#d3d3e5] rounded-xl p-16 flex flex-col items-center gap-4 bg-[#fbfbff]/50">
-            <div className="h-12 w-12 rounded-full bg-[#f5f5fa] flex items-center justify-center">
-              <Users className="h-6 w-6 text-[#656574]" />
-            </div>
-            <div className="text-center">
-              <p className="text-[#33333d] font-medium mb-1">{STAKEHOLDERS_EMPTY_TITLE}</p>
-              <p className="text-[#656574] text-sm leading-relaxed">{STAKEHOLDERS_EMPTY_BODY}</p>
-              {!isLocked && (
-                <p className="text-[#0550dc] text-xs font-medium mt-3">
-                  {STAKEHOLDERS_EMPTY_CTA} →
-                </p>
-              )}
-            </div>
-            {!isLocked && (
-              <Button onClick={() => setShowForm(true)} className="gap-2">
-                <Plus className="h-4 w-4" />
-                {STAKEHOLDERS_EMPTY_CTA}
-              </Button>
-            )}
-          </div>
+          <GovernanceEmptyState
+            icon={Users}
+            title={STAKEHOLDERS_EMPTY_TITLE}
+            body={STAKEHOLDERS_EMPTY_BODY}
+            ctaLabel={STAKEHOLDERS_EMPTY_CTA}
+            onCta={() => setShowForm(true)}
+            isLocked={isLocked}
+          />
         ) : null}
-
-        {stakeholders.length > 0 && (
-          <p className="text-[11px] text-[#656574] leading-snug pt-1">
-            {STAKEHOLDERS_WITH_ENTRIES_HINT}
-          </p>
-        )}
       </div>
     </div>
   )

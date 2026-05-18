@@ -9,6 +9,7 @@ import { TagsEditor } from '@/components/shared/TagsEditor'
 import { AuthoritativeDefinitionsEditor } from '@/components/shared/AuthoritativeDefinitionsEditor'
 import { slugify, cn } from '@/lib/utils'
 import { filterAuthoritativeDefinitionsForSave } from '@/lib/odcsSharedMappers'
+import { WorkflowMetadataPill } from '@/components/shared/WorkflowMetadataPill'
 import { CONTRACT_OWNER_HELPER } from '@/lib/uxCopy'
 import type { AuthoritativeDefinition } from '@/types/odcsShared'
 
@@ -243,7 +244,8 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
             className={ownerInputClass}
           />
           <p className="text-[11px] text-[#656574] mt-1 leading-snug">
-            {CONTRACT_OWNER_HELPER}
+            {CONTRACT_OWNER_HELPER}{' '}
+            <WorkflowMetadataPill variant="not-in-odcs" />
           </p>
         </div>
 

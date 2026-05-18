@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DataContract, Collaborator, CollaboratorRole } from '@/types/odcs'
 import { cn } from '@/lib/utils'
 import { CURRENT_USER } from '@/lib/currentUser'
+import { WorkflowMetadataPill } from '@/components/shared/WorkflowMetadataPill'
 import {
   CANNOT_REMOVE_OWN_PUBLISHER_ROLE,
   MEMBER_ROLE_LABELS,
@@ -137,7 +138,8 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-[#12131f]">Members</p>
             <p className="text-[11px] text-[#656574] mt-0.5 leading-snug">
-              {MEMBERS_DISCLAIMER}
+              {MEMBERS_DISCLAIMER}{' '}
+              <WorkflowMetadataPill variant="workflow-only" />
             </p>
             <p className="text-xs text-[#656574] truncate mt-0.5">{contract.info.title || 'Untitled Contract'}</p>
           </div>

@@ -1,6 +1,7 @@
 import { Plus, Trash2, Clock } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { GovernanceEmptyState } from '@/components/shared/GovernanceEmptyState'
+import { SLA_EMPTY_BODY, SLA_EMPTY_CTA, SLA_EMPTY_TITLE } from '@/lib/uxCopy'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { SlaProperty } from '@/types/odcs'
 import { generateId } from '@/lib/utils'
@@ -41,15 +42,15 @@ export function SlaSection({ slaProperties, onChange, isLocked }: SlaSectionProp
         </p>
       </div>
 
-      {slaProperties.length === 0 && !isLocked ? (
-        <div className="border-2 border-dashed border-[#d3d3e5] rounded-xl p-10 flex flex-col items-center gap-3 text-center">
-          <Clock className="h-6 w-6 text-[#656574]" />
-          <p className="text-sm font-medium text-[#12131f]">No SLA properties defined</p>
-          <Button size="sm" onClick={() => onChange([makeSla()])} className="gap-1.5">
-            <Plus className="h-3.5 w-3.5" />
-            Add SLA property
-          </Button>
-        </div>
+      {slaProperties.length === 0 ? (
+        <GovernanceEmptyState
+          icon={Clock}
+          title={SLA_EMPTY_TITLE}
+          body={SLA_EMPTY_BODY}
+          ctaLabel={SLA_EMPTY_CTA}
+          onCta={() => onChange([makeSla()])}
+          isLocked={isLocked}
+        />
       ) : (
         <div className="border border-[#d3d3e5] rounded-xl overflow-x-auto bg-white">
           <table className="w-full text-xs border-collapse min-w-[720px]">

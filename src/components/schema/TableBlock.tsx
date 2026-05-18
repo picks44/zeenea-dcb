@@ -11,7 +11,8 @@ import { FlagBadge } from './FlagBadge'
 import { ColumnAdvancedDialog } from './ColumnAdvancedDialog'
 import { TableAdvancedDialog } from './TableAdvancedDialog'
 import { isBelongsToRelationshipIncomplete, isExportedRelationshipType } from '@/types/odcsShared'
-import { RELATIONSHIP_FK_HELPER, RELATIONSHIP_NOT_PUBLISHED, RELATIONSHIPS_PUBLISH_NOTE } from '@/lib/uxCopy'
+import { WorkflowMetadataPill } from '@/components/shared/WorkflowMetadataPill'
+import { RELATIONSHIP_FK_HELPER, RELATIONSHIPS_PUBLISH_NOTE } from '@/lib/uxCopy'
 
 function deriveLogicalName(physicalName: string): string {
   return physicalName
@@ -338,15 +339,8 @@ export function TableBlock({ table, tableIndex, allTables, isLocked, onTableChan
                     <span className="text-[11px] text-neutral-600">
                       {labelFn(rel.toTable)}
                     </span>
-                    {!exported && (
-                      <span className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-[#ffebce] text-[#d27b00] border border-[#ffd599]">
-                        {RELATIONSHIP_NOT_PUBLISHED}
-                      </span>
-                    )}
-                    {incompleteFk && exported && (
-                      <span className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-[#ffebce] text-[#d27b00] border border-[#ffd599]">
-                        {RELATIONSHIP_NOT_PUBLISHED}
-                      </span>
+                    {(!exported || incompleteFk) && (
+                      <WorkflowMetadataPill variant="not-published" />
                     )}
                     {rel.fromColumn && rel.toColumn && (
                       <span className="text-[10px] font-mono text-neutral-300">
