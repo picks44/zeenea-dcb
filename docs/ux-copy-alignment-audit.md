@@ -1,102 +1,103 @@
 # UX copy alignment audit — Data Contract Builder MVP
 
-**Date:** 2026-05-18  
-**Scope:** Terminology and microcopy only (no layout or feature changes).
+**Date:** 2026-05-18 (terminology pass)  
+**Scope:** Interface language only — no data model, YAML field names, or export mapping changes.
 
-## Terminology decisions
+## Vocabulary strategy
 
-| Concept | UI label | Exported to ODCS YAML? |
-|--------|----------|------------------------|
-| Contract identity (id, name, version, domain, status, tags) | Fundamentals | Partial (not lifecycle `status` semantics in all tools) |
-| Description (purpose, usage, limitations, auth links) | Fundamentals → Additional context | Yes (`description.*`) |
-| Schema (tables, fields, relationships) | Schema | Yes (`schema`, `properties`) |
-| Data access roles | Data access | Yes (`roles`) |
-| Service levels | Service levels | Yes (`slaProperties`) |
-| Contract owner | Fundamentals → **Contract owner** | **No** — workflow metadata |
-| Stakeholders | Stakeholders | **No** — collaboration metadata |
-| Members (publisher / contributor / reader) | Members (toolbar) | **No** — editing and publishing permissions |
-| Version history / publish | Versions | **No** — simulated workflow |
-| Lifecycle (draft / active / deprecated) | Status badge | Partial (`status` in YAML; revision state is app-only) |
+| Layer | Principle | Examples |
+|-------|-----------|----------|
+| **Structural / ODCS** | Keep industry-standard terms users may see in YAML | Schema, Foreign key, Relationship, Service levels, Data contract, ODCS YAML |
+| **Governance / business** | Prefer plain language in UI; ODCS term in pills/tooltips when needed | Governance contacts (not vague “Stakeholders”), Reference links (not “Authoritative links”), Contract owner (not “Governance owner”) |
+| **Workflow-only** | Say clearly what is not in YAML | Contract owner, governance contacts, members, version history |
 
-**Application name:** Use **Data Contract Builder** when referring to the product. Avoid **Studio**.
+**Source of truth for UI strings:** `src/lib/uxCopy.ts`
 
-**Shared copy module:** `src/lib/uxCopy.ts` — single source for export disclaimers and repeated helpers.
+---
 
-## Replaced wording (summary)
+## Audit — changes applied
 
-| Before | After |
-|--------|--------|
-| Studio owner… | Contract owner — governance accountability and publish eligibility in Data Contract Builder |
-| Studio-only: owner, stakeholders… | Workflow metadata (not in YAML): contract owner, stakeholders, members, version history |
-| Studio collaboration metadata | Collaboration metadata for governance contact |
-| Studio edit access only | Members control editing access in Data Contract Builder. Separate from ODCS data access roles |
-| To manage who can edit… in Studio | To manage who can edit… use Members in the toolbar |
-| Only owners can publish | Only members with the Publisher role can publish |
-| Members role: Contract owner | **Publisher** (app permission; internal role value remains `owner`) |
-| Not exported (ambiguous) | **Not in YAML** (relationship badges) |
-| not exported to YAML | **not exported to ODCS YAML** (validation and disclaimers) |
-| not AI-verified | Removed from quality copy; focus on NL + type text export |
-| Zeenea catalog reference (no picker) | External catalog reference. No integrated catalog picker in this MVP |
+| Area | Before | After | Rationale |
+|------|--------|-------|-----------|
+| Nav / section | Stakeholders | **Contacts** (nav) / **Governance contacts** (section title) | Clearer accountability; avoids vague ODCS-adjacent jargon |
+| Fundamentals field | Governance owner | **Contract owner** | Matches validation copy; distinct from Publisher role |
+| Readiness check | Governance owner defined | **Contract owner defined** | Consistency |
+| Readiness check | Stakeholders assigned | **Governance contacts assigned** | Aligns with section rename |
+| Metadata label | Authoritative links | **Reference links** | “Authoritative” is opaque; ODCS `authoritativeDefinitions` unchanged in export |
+| Quality helper | Natural language quality expectations… | **Describe what good data should look like…** | Less AI/engineering tone |
+| Reference helper | (catalog-focused) | Glossary, policies, documentation, catalog pages | Broader, business-readable |
+| SLA CTA | Add SLA property | **Add service level** | Matches section name “Service levels” |
+| Contacts empty | No stakeholders assigned | **No contacts assigned** | Coherent with section |
+| Contacts CTA | Add stakeholder | **Add contact** | Shorter, consistent |
+| Export coverage footer | authoritative links, governance owner, stakeholders | **reference links**, **contract owner**, **governance contacts** | Human labels in disclaimers |
+| Compare summary | authoritative link(s) | **reference link(s)** | Business-readable changelog |
+| Compare summary | SLA property / SLAs | **service level(s)** | Consistent with UI section |
+| Changelog lines | Added authoritative link… | **Added reference link…** | Same |
+| Changelog lines | Added/Removed SLA property | **service level** | Same |
+| Validation | publish an authoritative link | **publish a reference link** | Same |
+| Validation | add stakeholders for governance | **add governance contacts** | Same |
+| Table relationships intro | Composite foreign keys and many-to-many… | **Multi-column foreign keys and many-to-many links** | Slightly plainer |
+| Legacy belongs hint | Single-column relationships | **Single-column links** | Less jargon overload |
+| Field/table property tooltips | authoritative links | **reference links** | Parity |
 
-## Export honesty rules
+---
 
-1. Any field **not** in `buildOdcsDocument()` must say **not exported to ODCS YAML** (or **not in YAML** for compact badges).
-2. Export coverage appears in:
-   - Contract Health → Export YAML footer
-   - YAML tab header area
-3. Distinguish **ODCS data access roles** (exported) from **Members** (editing permissions, not exported).
-4. Distinguish **Contract owner** (Fundamentals — governance accountability) from **Publisher** (Members — workflow permission to publish). Internal `CollaboratorRole` value `owner` is unchanged.
+## Kept as-is (intentional)
 
-## Collaboration vs ODCS distinctions
+| Term | Why |
+|------|-----|
+| **Schema** | ODCS-standard; users expect it |
+| **Foreign key** / **Composite FK** | Industry-standard; maps to YAML |
+| **Fundamentals** | Established section; groups contract identity |
+| **Data access** | Distinguishes ODCS roles from Members permissions |
+| **Service levels** | Clearer than raw “SLA”; section already renamed |
+| **Quality rules** | Understood in governance context; helper text simplified |
+| **Publisher / Contributor / Reader** | App permissions; distinct from contract owner |
+| **Not in ODCS YAML** pills | Export honesty without hiding ODCS |
 
-- **Members:** Who can edit and publish in Data Contract Builder (**Publisher** / **Contributor** / **Reader**). Separate from ODCS data access roles.
-- **Contract owner (Fundamentals):** Business governance accountability; required field for publish readiness; not in YAML.
-- **Publisher (Members):** Workflow permission to edit, manage versions, and publish (`myRole === 'owner'`).
-- **Stakeholders:** Governance contacts (name, role, email, team); recommended for PII; not in YAML.
-- **Data access roles:** ODCS `roles[]` for consumers of the published data product.
+---
 
-## Files updated
+## ODCS alignment rule (unchanged)
 
-- `src/lib/uxCopy.ts` (new)
-- `src/components/sections/FundamentalsSection.tsx`
+- UI uses human labels (`Reference links`, `Governance contacts`).
+- YAML export still uses `authoritativeDefinitions`, `relationships`, `foreignKey`, etc.
+- WorkflowMetadataPill and export footers explain what is excluded from ODCS YAML.
+
+---
+
+## Files updated (terminology pass)
+
+- `src/lib/uxCopy.ts` — expanded labels, helpers, changelog constants
+- `docs/ux-copy-alignment-audit.md` — this document
+- `src/components/ContractSectionNav.tsx`
 - `src/components/sections/StakeholdersSection.tsx`
-- `src/components/sections/AccessRolesSection.tsx`
-- `src/components/sections/ImportSection.tsx`
-- `src/components/sections/SchemaSection.tsx`
-- `src/components/sections/SlaSection.tsx`
-- `src/components/ReadinessPanel.tsx`
-- `src/components/YamlView.tsx`
-- `src/components/ShareModal.tsx`
-- `src/components/ContractTopBar.tsx`
-- `src/components/VersionsView.tsx`
+- `src/components/sections/FundamentalsSection.tsx`
+- `src/components/shared/FundamentalsReadOnlyView.tsx`
+- `src/components/shared/MetadataModalReadOnly.tsx`
+- `src/components/shared/AuthoritativeLinkReadOnly.tsx`
+- `src/components/schema/ColumnAdvancedDialog.tsx`
+- `src/components/schema/TableAdvancedDialog.tsx`
 - `src/components/schema/TableBlock.tsx`
-- `src/components/shared/QualityRulesEditor.tsx`
-- `src/components/shared/AuthoritativeDefinitionsEditor.tsx`
+- `src/components/sections/SlaSection.tsx`
+- `src/lib/exportedContractDiff.ts`
+- `src/lib/metadataExportDiff.ts`
 - `src/lib/contractValidation.ts`
-- `src/App.tsx`
+- `src/lib/publicationReadiness.ts`
 
-## Remaining ambiguous areas
+---
 
-| Area | Note |
-|------|------|
-| **Contract owner vs Publisher** | Resolved: Fundamentals = governance; Members = Publisher / Contributor / Reader |
-| **`status` in YAML** | Exported as ODCS field; `inRevision` and UI lifecycle nuances are application state |
-| **Simulated Git** | Push/publish copy still references Git metaphor; not claiming real Git integration |
-| **Zeenea** | Removed from primary auth-def helper; may remain in seed data / branding elsewhere |
-| **English-only UI** | README is bilingual; product strings are English |
+## Remaining recommendations (future)
 
-## Future recommendations (out of scope)
+- Glossary drawer: UI label → ODCS YAML path (e.g. Reference links → `authoritativeDefinitions`)
+- French UI strings per README
+- Inline tooltip on “Reference links” mentioning ODCS field name for power users
 
-- Glossary panel linking UI labels → ODCS YAML paths
-- French UI strings aligned with README
-- Explicit “ODCS contract metadata” vs “Workflow metadata” section headers in Contract Health
-- Tooltips on Fundamentals tags clarifying they are exported at contract root
-- Rename internal `owner` field to `contractOwner` in model (breaking; not done)
+---
 
-## Success criteria check
+## Success criteria
 
-- [x] No “Studio” / “Studio-only” in user-facing copy
-- [x] Export vs workflow metadata explicit in Fundamentals, Stakeholders, Members, YAML/Health
-- [x] ODCS YAML named consistently (not generic “YAML” alone where export scope matters)
-- [x] Enterprise tone: neutral, concise, non-marketing
-- [x] No new ODCS scope or layout changes
+- [x] Terminology consistent across nav, modals, validation, compare/changelog
+- [x] ODCS concepts recognizable where structural (schema, FK, YAML)
+- [x] Business-facing sections use plainer language
+- [x] No YAML / type / export mapping changes
+- [x] `npm run build` passes

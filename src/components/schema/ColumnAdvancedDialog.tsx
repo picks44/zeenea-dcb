@@ -26,6 +26,7 @@ import {
   normalizeTags,
 } from '@/lib/odcsSharedMappers'
 import { isColumnForeignKeyPartial } from '@/lib/relationshipExport'
+import { LABEL_QUALITY_RULES, LABEL_REFERENCE_LINKS } from '@/lib/uxCopy'
 import type { AuthoritativeDefinition } from '@/types/odcsShared'
 
 interface ColumnAdvancedDialogProps {
@@ -183,12 +184,12 @@ export function ColumnAdvancedDialog({
               </div>
 
               <div>
-                <Label className="text-xs text-[#33333d] mb-1 block">Quality rules</Label>
+                <Label className="text-xs text-[#33333d] mb-1 block">{LABEL_QUALITY_RULES}</Label>
                 <QualityRulesEditor rules={quality} onChange={setQuality} compact={docCompact} />
               </div>
 
               <div>
-                <Label className="text-xs text-[#33333d] mb-1 block">Authoritative links</Label>
+                <Label className="text-xs text-[#33333d] mb-1 block">{LABEL_REFERENCE_LINKS}</Label>
                 <AuthoritativeDefinitionsEditor
                   definitions={authDefs}
                   onChange={defs => {

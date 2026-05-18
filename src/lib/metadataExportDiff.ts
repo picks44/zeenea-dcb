@@ -156,7 +156,7 @@ export function authLinkDisplayLabel(link: Record<string, unknown>): string {
   const type = String(link.type ?? '').trim()
   const url = String(link.url ?? '').trim()
   if (type && url) return type
-  return url || type || 'Authoritative link'
+  return url || type || 'Reference link'
 }
 
 export function collectExportedAuthLinks(

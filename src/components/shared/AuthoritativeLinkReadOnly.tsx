@@ -3,6 +3,7 @@ import { GovernanceDocList } from '@/components/shared/GovernanceDocList'
 import { DOC_COMPACT_ROW } from '@/components/shared/docViewTokens'
 import type { AuthoritativeDefinition } from '@/types/odcsShared'
 import { AUTH_DEF_TYPE_OPTIONS } from '@/types/odcsShared'
+import { REFERENCE_LINKS_EMPTY } from '@/lib/uxCopy'
 
 function authTypeLabel(type: string): string {
   return AUTH_DEF_TYPE_OPTIONS.find(o => o.value === type)?.label ?? type
@@ -54,10 +55,10 @@ interface AuthoritativeLinkReadOnlyProps {
   compact?: boolean
 }
 
-/** Documentation-style authoritative links for published / locked metadata views. */
+/** Documentation-style reference links for published / locked metadata views. */
 export function AuthoritativeLinkReadOnly({
   definitions,
-  emptyLabel = 'No authoritative links added.',
+  emptyLabel = REFERENCE_LINKS_EMPTY,
   compact,
 }: AuthoritativeLinkReadOnlyProps) {
   const filled = definitions.filter(linkHasContent)

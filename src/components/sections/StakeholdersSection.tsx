@@ -17,6 +17,7 @@ import {
 } from '@/components/shared/GovernanceSectionHeader'
 import { WorkflowMetadataNote } from '@/components/shared/WorkflowMetadataPill'
 import {
+  SECTION_GOVERNANCE_CONTACTS,
   STAKEHOLDERS_EMPTY_BODY,
   STAKEHOLDERS_EMPTY_CTA,
   STAKEHOLDERS_EMPTY_TITLE,
@@ -72,7 +73,7 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked, docCompa
   return (
     <div className="max-w-[720px] w-full">
       <GovernanceSectionHeader
-        title="Stakeholders"
+        title={SECTION_GOVERNANCE_CONTACTS}
         description={<WorkflowMetadataNote pill="not-in-odcs">{STAKEHOLDERS_INTRO}</WorkflowMetadataNote>}
         compact={docCompact}
       />
@@ -147,7 +148,7 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked, docCompa
                   type="button"
                   onClick={() => remove(s.id)}
                   className="h-7 w-7 flex items-center justify-center text-[#9898a7] hover:text-[#c12c11] hover:bg-[#fff2ee] rounded transition-colors"
-                  aria-label={`Remove ${s.name.trim() || 'stakeholder'}`}
+                  aria-label={`Remove ${s.name.trim() || 'contact'}`}
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
@@ -162,7 +163,7 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked, docCompa
               className={governanceTableFooterActionClass}
             >
               <Plus className="h-3.5 w-3.5" />
-              Add stakeholder
+              {STAKEHOLDERS_EMPTY_CTA}
             </button>
           </div>
         </div>

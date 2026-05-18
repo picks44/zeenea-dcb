@@ -3,6 +3,13 @@ import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import type { ColumnForeignKey, QualityRule } from '@/types/odcs'
 import { isColumnForeignKeyComplete } from '@/lib/relationshipExport'
+import {
+  LABEL_FOREIGN_KEY,
+  LABEL_QUALITY_RULES,
+  LABEL_REFERENCE_LINKS,
+  QUALITY_RULES_EMPTY,
+  REFERENCE_LINKS_EMPTY,
+} from '@/lib/uxCopy'
 import { RelationshipPreviewBlock } from '@/components/shared/RelationshipPreviewBlock'
 import { QualityRuleReadOnly } from '@/components/shared/QualityRuleReadOnly'
 import { AuthoritativeLinkReadOnly } from '@/components/shared/AuthoritativeLinkReadOnly'
@@ -160,7 +167,7 @@ export function FieldMetadataReadOnlyBody({
         <MetadataReadOnlyTags tags={tags} emptyLabel="No tags added." />
       </MetadataReadOnlySection>
 
-      <MetadataReadOnlySection label="Foreign key">
+      <MetadataReadOnlySection label={LABEL_FOREIGN_KEY}>
         {isColumnForeignKeyComplete(foreignKey) && sourceTableName && sourceColumnName ? (
           <RelationshipPreviewBlock
             sourceLine={`${sourceTableName}.${sourceColumnName}`}
@@ -176,18 +183,18 @@ export function FieldMetadataReadOnlyBody({
         )}
       </MetadataReadOnlySection>
 
-      <MetadataReadOnlySection label="Quality rules">
+      <MetadataReadOnlySection label={LABEL_QUALITY_RULES}>
         <MetadataReadOnlyQualityRules
           rules={quality}
-          emptyLabel="No quality rules defined."
+          emptyLabel={QUALITY_RULES_EMPTY}
           compact={docCompact}
         />
       </MetadataReadOnlySection>
 
-      <MetadataReadOnlySection label="Authoritative links">
+      <MetadataReadOnlySection label={LABEL_REFERENCE_LINKS}>
         <MetadataReadOnlyAuthLinks
           definitions={authDefs}
-          emptyLabel="No authoritative links added."
+          emptyLabel={REFERENCE_LINKS_EMPTY}
           compact={docCompact}
         />
       </MetadataReadOnlySection>
@@ -222,18 +229,18 @@ export function TableMetadataReadOnlyBody({ tags, quality, authDefs, docCompact 
         <MetadataReadOnlyTags tags={tags} emptyLabel="No tags added." />
       </MetadataReadOnlySection>
 
-      <MetadataReadOnlySection label="Quality rules">
+      <MetadataReadOnlySection label={LABEL_QUALITY_RULES}>
         <MetadataReadOnlyQualityRules
           rules={quality}
-          emptyLabel="No quality rules defined."
+          emptyLabel={QUALITY_RULES_EMPTY}
           compact={docCompact}
         />
       </MetadataReadOnlySection>
 
-      <MetadataReadOnlySection label="Authoritative links">
+      <MetadataReadOnlySection label={LABEL_REFERENCE_LINKS}>
         <MetadataReadOnlyAuthLinks
           definitions={authDefs}
-          emptyLabel="No authoritative links added."
+          emptyLabel={REFERENCE_LINKS_EMPTY}
           compact={docCompact}
         />
       </MetadataReadOnlySection>

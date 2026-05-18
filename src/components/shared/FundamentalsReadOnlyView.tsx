@@ -5,7 +5,7 @@ import { DataContract, LifecycleStatus } from '@/types/odcs'
 import { ReadOnlyField } from '@/components/shared/ReadOnlyField'
 import { InlineCopyButton } from '@/components/shared/InlineCopyButton'
 import { WorkflowMetadataPill } from '@/components/shared/WorkflowMetadataPill'
-import { CONTRACT_OWNER_HELPER } from '@/lib/uxCopy'
+import { CONTRACT_OWNER_HELPER, LABEL_CONTRACT_OWNER, LABEL_REFERENCE_LINKS } from '@/lib/uxCopy'
 import { AUTH_DEF_TYPE_OPTIONS } from '@/types/odcsShared'
 import { cn } from '@/lib/utils'
 import { docShellClass, DOC_COMPACT_SPACING, DOC_COMPACT_TEXT } from '@/components/shared/docViewTokens'
@@ -114,7 +114,7 @@ export function FundamentalsReadOnlyView({ contract, compact }: FundamentalsRead
             {limitations ? <ReadOnlyField label="Limitations" value={limitations} multiline compact /> : null}
             {authDefs.length > 0 ? (
               <div>
-                <span className={DOC_COMPACT_TEXT.label}>Authoritative links</span>
+                <span className={DOC_COMPACT_TEXT.label}>{LABEL_REFERENCE_LINKS}</span>
                 <ul className="space-y-1">
                   {authDefs.map(def => (
                     <li key={def.id} className="text-[11px] leading-snug">
@@ -141,7 +141,7 @@ export function FundamentalsReadOnlyView({ contract, compact }: FundamentalsRead
 
       <div>
         <span className={cn(compact ? DOC_COMPACT_TEXT.label : 'text-xs font-medium text-[#33333d] mb-0.5 block')}>
-          Governance owner<span className="text-red-500"> *</span>
+          {LABEL_CONTRACT_OWNER}<span className="text-red-500"> *</span>
         </span>
         <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
           <span className={cn(compact ? DOC_COMPACT_TEXT.value : 'text-sm text-[#33333d]')}>{ownerName}</span>

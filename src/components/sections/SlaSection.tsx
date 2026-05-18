@@ -216,7 +216,7 @@ export function SlaSection({ slaProperties, onChange, isLocked, isPublishedView,
                         type="button"
                         onClick={() => remove(row.id)}
                         className="h-7 w-7 inline-flex items-center justify-center text-[#9898a7] hover:text-[#c12c11] hover:bg-[#fff2ee] rounded transition-colors"
-                        aria-label="Remove SLA property"
+                        aria-label="Remove service level"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
@@ -234,7 +234,7 @@ export function SlaSection({ slaProperties, onChange, isLocked, isPublishedView,
                 className={governanceTableFooterActionClass}
               >
                 <Plus className="h-3.5 w-3.5" />
-                Add SLA property
+                {SLA_EMPTY_CTA}
               </button>
             </div>
           )}

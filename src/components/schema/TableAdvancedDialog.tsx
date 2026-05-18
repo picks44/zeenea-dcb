@@ -20,6 +20,7 @@ import {
   hasInvalidAuthoritativeDefinitions,
   normalizeTags,
 } from '@/lib/odcsSharedMappers'
+import { LABEL_QUALITY_RULES, LABEL_REFERENCE_LINKS } from '@/lib/uxCopy'
 import type { AuthoritativeDefinition } from '@/types/odcsShared'
 
 interface TableAdvancedDialogProps {
@@ -94,12 +95,12 @@ export function TableAdvancedDialog({
               </div>
 
               <div>
-                <p className="text-xs font-medium text-[#33333d] mb-1">Quality rules</p>
+                <p className="text-xs font-medium text-[#33333d] mb-1">{LABEL_QUALITY_RULES}</p>
                 <QualityRulesEditor rules={quality ?? []} onChange={setQuality} compact={docCompact} />
               </div>
 
               <div>
-                <p className="text-xs font-medium text-[#33333d] mb-1">Authoritative links</p>
+                <p className="text-xs font-medium text-[#33333d] mb-1">{LABEL_REFERENCE_LINKS}</p>
                 <AuthoritativeDefinitionsEditor
                   definitions={authDefs}
                   onChange={defs => {

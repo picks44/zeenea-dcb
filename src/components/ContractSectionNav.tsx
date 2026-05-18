@@ -2,6 +2,15 @@ import { FileText, Database, Upload, Trash2, CheckCircle2, GitBranch, Users, Shi
 import { DataContract, SectionId } from '@/types/odcs'
 import { cn } from '@/lib/utils'
 import { Tooltip } from '@/components/ui/tooltip'
+import {
+  NAV_DATA_ACCESS,
+  NAV_FUNDAMENTALS,
+  NAV_GOVERNANCE_CONTACTS,
+  NAV_IMPORT_SQL,
+  NAV_SCHEMA,
+  NAV_SERVICE_LEVELS,
+  NAV_VERSIONS,
+} from '@/lib/uxCopy'
 
 interface ContractSectionNavProps {
   contract: DataContract
@@ -43,13 +52,13 @@ export function ContractSectionNav({
   const completion = sectionCompletion(contract)
 
   const sections: { id: SectionId; label: string; icon: typeof FileText }[] = [
-    ...(isNew ? [{ id: 'import' as SectionId, label: 'Import SQL', icon: Upload }] : []),
-    { id: 'fundamentals', label: 'Fundamentals', icon: FileText },
-    { id: 'schema',       label: 'Schema',       icon: Database },
-    { id: 'stakeholders', label: 'Stakeholders', icon: Users },
-    { id: 'accessRoles',  label: 'Data access',  icon: Shield },
-    { id: 'sla',          label: 'Service levels', icon: Clock },
-    { id: 'versions',     label: 'Versions',     icon: GitBranch },
+    ...(isNew ? [{ id: 'import' as SectionId, label: NAV_IMPORT_SQL, icon: Upload }] : []),
+    { id: 'fundamentals', label: NAV_FUNDAMENTALS, icon: FileText },
+    { id: 'schema',       label: NAV_SCHEMA,       icon: Database },
+    { id: 'stakeholders', label: NAV_GOVERNANCE_CONTACTS, icon: Users },
+    { id: 'accessRoles',  label: NAV_DATA_ACCESS,  icon: Shield },
+    { id: 'sla',          label: NAV_SERVICE_LEVELS, icon: Clock },
+    { id: 'versions',     label: NAV_VERSIONS,     icon: GitBranch },
   ]
 
   return (

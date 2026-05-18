@@ -2,6 +2,7 @@ import type { CollaboratorRole, DataContract } from '@/types/odcs'
 import { validateContract, type ValidationIssue, type ValidationResult } from '@/lib/contractValidation'
 import { countAssignedStakeholders } from '@/lib/stakeholders'
 import {
+  HEALTH_GOVERNANCE_CONTACTS_CHECK,
   HEALTH_GOVERNANCE_OWNER_CHECK,
   PUBLISH_REQUIRES_PUBLISHER,
   PUBLICATION_READY_REQUIRED_COMPLETE,
@@ -103,7 +104,7 @@ export function computePublicationReadiness(
     { key: 'desc', label: 'Business description', ok: Boolean(info.description.trim()) },
     {
       key: 'stakeholders',
-      label: 'Stakeholders assigned',
+      label: HEALTH_GOVERNANCE_CONTACTS_CHECK,
       ok: hasStakeholders,
       badge: hasStakeholders ? String(stakeholderCount) : undefined,
     },
@@ -145,7 +146,7 @@ export function computePublicationReadiness(
   } else if (!id.trim()) {
     nextSteps.push('Set a contract ID in Fundamentals')
   } else if (!info.owner.trim()) {
-    nextSteps.push('Assign a governance owner in Fundamentals')
+    nextSteps.push('Assign a contract owner in Fundamentals')
   } else if (fieldCount === 0) {
     nextSteps.push('Add at least one field in Schema to describe your data')
   }
@@ -155,10 +156,10 @@ export function computePublicationReadiness(
   if (nextSteps.length < 2 && !hasStakeholders) {
     if (piiCount > 0 && fieldCount > 0) {
       nextSteps.push(
-        `${piiCount} PII field${piiCount > 1 ? 's' : ''} detected — add stakeholders including Data Privacy`,
+        `${piiCount} PII field${piiCount > 1 ? 's' : ''} detected — add governance contacts including Data Privacy`,
       )
     } else if (fieldCount > 0) {
-      nextSteps.push('Assign stakeholders for ownership and collaboration')
+      nextSteps.push('Add governance contacts for ownership and collaboration')
     }
   }
 

@@ -57,7 +57,7 @@ function validateAuthoritativeDefinitions(
     if (!isAuthoritativeDefinitionComplete(d)) {
       issues.push({
         code: 'auth-def-incomplete',
-        message: `${context}: URL and type are required to publish an authoritative link.`,
+        message: `${context}: URL and type are required to publish a reference link.`,
         severity: 'error',
         section,
       })
@@ -239,7 +239,7 @@ export function validateContract(contract: DataContract): ValidationResult {
   if (piiCount > 0 && countAssignedStakeholders(contract.stakeholders) === 0) {
     issues.push({
       code: 'pii-stakeholders',
-      message: `${piiCount} PII field(s) detected — add stakeholders for governance contact.`,
+      message: `${piiCount} PII field(s) detected — add governance contacts for accountability.`,
       severity: 'warning',
       section: 'stakeholders',
     })

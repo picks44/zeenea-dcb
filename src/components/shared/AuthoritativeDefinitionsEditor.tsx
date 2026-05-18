@@ -59,7 +59,7 @@ function AuthoritativeLinkEditRow({
           type="button"
           onClick={onRemove}
           className={authoritativeLinkRemoveButtonClass}
-          aria-label="Remove authoritative link"
+          aria-label="Remove reference link"
         >
           <Trash2 className="h-3.5 w-3.5" />
         </button>

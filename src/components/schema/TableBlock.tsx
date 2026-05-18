@@ -10,7 +10,13 @@ import { TypePicker } from './TypePicker'
 import { FlagBadge } from './FlagBadge'
 import { ColumnAdvancedDialog } from './ColumnAdvancedDialog'
 import { TableAdvancedDialog } from './TableAdvancedDialog'
-import { RELATIONSHIP_COMPOSITE_HELPER, TABLE_RELATIONSHIPS_EMPTY, TABLE_RELATIONSHIPS_INTRO } from '@/lib/uxCopy'
+import {
+  FIELD_PROPERTIES_TITLE,
+  RELATIONSHIP_COMPOSITE_HELPER,
+  TABLE_PROPERTIES_TITLE,
+  TABLE_RELATIONSHIPS_EMPTY,
+  TABLE_RELATIONSHIPS_INTRO,
+} from '@/lib/uxCopy'
 import { countTableRelationships, formatRelationshipHeaderSummary } from '@/lib/schemaRelationshipUx'
 import { isColumnForeignKeyComplete } from '@/lib/relationshipExport'
 import { hasFieldMetadata, hasTableMetadata, schemaMetadataButtonClass } from '@/lib/schemaMetadataPresence'
@@ -192,7 +198,7 @@ export function TableBlock({
           type="button"
           onClick={() => setTableAdvancedOpen(true)}
           className={schemaMetadataButtonClass(tableHasMetadata)}
-          title="Table properties: description, tags, quality, authoritative links, relationships"
+          title={TABLE_PROPERTIES_TITLE}
           aria-label="Table properties"
         >
           <SlidersHorizontal className="h-3.5 w-3.5" />
@@ -348,7 +354,7 @@ export function TableBlock({
                   <button
                     type="button"
                     onClick={() => setAdvancedColId(col.id)}
-                    title="Field properties: description, foreign key, quality, authoritative links"
+                    title={FIELD_PROPERTIES_TITLE}
                     aria-label="Field properties"
                     className={schemaMetadataButtonClass(hasMetadata, {
                       inFieldRow: true,

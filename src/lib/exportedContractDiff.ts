@@ -1,5 +1,16 @@
 import { buildOdcsDocument, contractFromSnapshot } from './odcsYamlGenerator'
 import {
+  CHANGELOG_REFERENCE_LINK,
+  CHANGELOG_REFERENCE_LINKS,
+  CHANGELOG_SERVICE_LEVEL,
+  CHANGELOG_SERVICE_LEVELS,
+  LABEL_QUALITY_RULES,
+  LABEL_REFERENCE_LINKS,
+  NAV_DATA_ACCESS,
+  NAV_SCHEMA,
+  NAV_SERVICE_LEVELS,
+} from './uxCopy'
+import {
   diffExportedAuthLinks,
   diffExportedQualityRules,
   diffExportedRelationships,
@@ -259,9 +270,9 @@ function buildSummaryLines(parts: {
   if (quality.removed) lines.push(`${countLabel(quality.removed, 'quality rule', 'quality rules')} removed`)
   if (quality.updated) lines.push(`${countLabel(quality.updated, 'quality rule', 'quality rules')} updated`)
 
-  if (authLinks.added) lines.push(`${countLabel(authLinks.added, 'authoritative link', 'authoritative links')} added`)
-  if (authLinks.removed) lines.push(`${countLabel(authLinks.removed, 'authoritative link', 'authoritative links')} removed`)
-  if (authLinks.updated) lines.push(`${countLabel(authLinks.updated, 'authoritative link', 'authoritative links')} updated`)
+  if (authLinks.added) lines.push(`${countLabel(authLinks.added, CHANGELOG_REFERENCE_LINK, CHANGELOG_REFERENCE_LINKS)} added`)
+  if (authLinks.removed) lines.push(`${countLabel(authLinks.removed, CHANGELOG_REFERENCE_LINK, CHANGELOG_REFERENCE_LINKS)} removed`)
+  if (authLinks.updated) lines.push(`${countLabel(authLinks.updated, CHANGELOG_REFERENCE_LINK, CHANGELOG_REFERENCE_LINKS)} updated`)
 
   if (relationships.added) lines.push(`${countLabel(relationships.added, 'relationship', 'relationships')} added`)
   if (relationships.removed) lines.push(`${countLabel(relationships.removed, 'relationship', 'relationships')} removed`)
@@ -271,9 +282,9 @@ function buildSummaryLines(parts: {
   if (roles.removed) lines.push(`${countLabel(roles.removed, 'data access role', 'data access roles')} removed`)
   if (roles.updated) lines.push(`${countLabel(roles.updated, 'data access role', 'data access roles')} updated`)
 
-  if (sla.added) lines.push(`${countLabel(sla.added, 'SLA property', 'SLA properties')} added`)
-  if (sla.removed) lines.push(`${countLabel(sla.removed, 'SLA property', 'SLA properties')} removed`)
-  if (sla.updated) lines.push(`${countLabel(sla.updated, 'SLA', 'SLAs')} updated`)
+  if (sla.added) lines.push(`${countLabel(sla.added, CHANGELOG_SERVICE_LEVEL, CHANGELOG_SERVICE_LEVELS)} added`)
+  if (sla.removed) lines.push(`${countLabel(sla.removed, CHANGELOG_SERVICE_LEVEL, CHANGELOG_SERVICE_LEVELS)} removed`)
+  if (sla.updated) lines.push(`${countLabel(sla.updated, CHANGELOG_SERVICE_LEVEL, CHANGELOG_SERVICE_LEVELS)} updated`)
 
   if (parts.descriptionChanged) lines.push('Contract description updated')
   if (parts.metadataChanged) lines.push('Contract metadata updated')
@@ -374,25 +385,25 @@ export function compareExportedSnapshots(
 
   const schemaRows = buildSchemaFormRows(leftDoc, rightDoc)
   if (schemaRows.length > 0) {
-    formSections.push({ id: 'schema', title: 'Schema', rows: schemaRows })
+    formSections.push({ id: 'schema', title: NAV_SCHEMA, rows: schemaRows })
   }
 
   const roleRows = buildRoleFormRows(leftRoles, rightRoles)
   if (roleRows.length > 0) {
-    formSections.push({ id: 'roles', title: 'Data access roles', rows: roleRows })
+    formSections.push({ id: 'roles', title: `${NAV_DATA_ACCESS} roles`, rows: roleRows })
   }
 
   const slaRows = buildSlaFormRows(leftSla, rightSla)
   if (slaRows.length > 0) {
-    formSections.push({ id: 'sla', title: 'Service levels', rows: slaRows })
+    formSections.push({ id: 'sla', title: NAV_SERVICE_LEVELS, rows: slaRows })
   }
 
   if (qualityDiff.rows.length > 0) {
-    formSections.push({ id: 'quality', title: 'Quality rules', rows: qualityDiff.rows })
+    formSections.push({ id: 'quality', title: LABEL_QUALITY_RULES, rows: qualityDiff.rows })
   }
 
   if (authLinksDiff.rows.length > 0) {
-    formSections.push({ id: 'authLinks', title: 'Authoritative links', rows: authLinksDiff.rows })
+    formSections.push({ id: 'authLinks', title: LABEL_REFERENCE_LINKS, rows: authLinksDiff.rows })
   }
 
   if (relationshipsDiff.rows.length > 0) {
@@ -459,10 +470,10 @@ function changelogLineForRow(sectionId: string, row: FormDiffRow): string {
       if (row.kind === 'removed') return `Removed ${row.label} access role`
       return `Updated ${row.label} access role`
     case 'sla':
-      if (row.kind === 'added') return `Added ${row.label} SLA property`
-      if (row.kind === 'removed') return `Removed ${row.label} SLA property`
-      if (row.left && row.right) return `Updated ${row.label} SLA from ${row.left} to ${row.right}`
-      return `Updated ${row.label} SLA property`
+      if (row.kind === 'added') return `Added ${row.label} ${CHANGELOG_SERVICE_LEVEL}`
+      if (row.kind === 'removed') return `Removed ${row.label} ${CHANGELOG_SERVICE_LEVEL}`
+      if (row.left && row.right) return `Updated ${row.label} ${CHANGELOG_SERVICE_LEVEL} from ${row.left} to ${row.right}`
+      return `Updated ${row.label} ${CHANGELOG_SERVICE_LEVEL}`
     case 'schema':
       if (row.kind === 'added') return `Added ${row.label} field`
       if (row.kind === 'removed') return `Removed ${row.label} field`
@@ -479,9 +490,9 @@ function changelogLineForRow(sectionId: string, row: FormDiffRow): string {
         : row.label.includes('.')
           ? `on ${row.label}`
           : `to ${row.label}`
-      if (row.kind === 'added') return `Added authoritative link ${target}`
-      if (row.kind === 'removed') return `Removed authoritative link from ${row.label}`
-      return `Updated authoritative link ${target}`
+      if (row.kind === 'added') return `Added ${CHANGELOG_REFERENCE_LINK} ${target}`
+      if (row.kind === 'removed') return `Removed ${CHANGELOG_REFERENCE_LINK} from ${row.label}`
+      return `Updated ${CHANGELOG_REFERENCE_LINK} ${target}`
     }
     case 'relationships':
       if (row.kind === 'added') {
