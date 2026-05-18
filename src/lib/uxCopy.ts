@@ -32,8 +32,11 @@ export const STAKEHOLDERS_WITH_ENTRIES_HINT =
 /** Publication readiness — required to publish (governance field, not Publisher role). */
 export const HEALTH_GOVERNANCE_OWNER_CHECK = 'Governance owner defined'
 
+export const PUBLICATION_READY_REQUIRED_COMPLETE =
+  'Required publication metadata complete'
+
 export const READINESS_SCORE_TOOLTIP =
-  'Readiness score based on required metadata and documentation completeness'
+  'Weighted score: required publication metadata (largest), field documentation, then optional governance items'
 
 export const DOCUMENTED_FIELDS_TOOLTIP =
   'Percentage of schema fields with business descriptions'

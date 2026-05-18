@@ -3,6 +3,7 @@ import {
   isAuthoritativeDefinitionComplete,
   isAuthoritativeDefinitionEmpty,
 } from '@/lib/odcsSharedMappers'
+import { countAssignedStakeholders } from '@/lib/stakeholders'
 import {
   isBelongsToRelationshipIncomplete,
   isExportedRelationshipType,
@@ -211,7 +212,7 @@ export function validateContract(contract: DataContract): ValidationResult {
   }
 
   const piiCount = dataset.reduce((a, t) => a + t.columns.filter(c => c.isPII).length, 0)
-  if (piiCount > 0 && contract.stakeholders.length === 0) {
+  if (piiCount > 0 && countAssignedStakeholders(contract.stakeholders) === 0) {
     issues.push({
       code: 'pii-stakeholders',
       message: `${piiCount} PII field(s) detected — add stakeholders for governance contact.`,
