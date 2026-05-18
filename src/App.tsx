@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
-import { AlertTriangle, Eye } from 'lucide-react'
+import { AlertTriangle, Eye, GitBranch, Lock } from 'lucide-react'
+import { Button } from './components/ui/button'
 
 import { AppTopBar } from './components/AppTopBar'
 import { MainSidebar } from './components/MainSidebar'
@@ -312,6 +313,23 @@ export default function App() {
                   </div>
                 )}
 
+                {contract.info.status === 'active' && !contract.inRevision && (
+                  <div className="bg-[#edf6ff] border-b border-[#b8d0fb] px-6 py-2 flex items-center justify-between gap-4 flex-shrink-0">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <Lock className="h-3.5 w-3.5 text-[#00699f] flex-shrink-0" />
+                      <p className="text-[#003d5c] text-xs font-medium">
+                        This contract is active and read-only. Create a new version to make changes.
+                      </p>
+                    </div>
+                    {(myRole === 'owner' || myRole === 'editor') && (
+                      <Button variant="secondary" size="sm" onClick={handleNewVersion} className="gap-1.5 flex-shrink-0 h-7 text-xs">
+                        <GitBranch className="h-3.5 w-3.5" />
+                        New version
+                      </Button>
+                    )}
+                  </div>
+                )}
+
                 {myRole === 'viewer' && (
                   <div className="bg-[#f5f5fa] border-b border-[#d3d3e5] px-6 py-2 flex items-center gap-2 flex-shrink-0">
                     <Eye className="h-3.5 w-3.5 text-[#656574] flex-shrink-0" />
@@ -354,7 +372,11 @@ export default function App() {
                       </div>
                     </div>
                     {activeSection !== 'import' && (
-                      <ReadinessPanel contract={contract} />
+                      <ReadinessPanel
+                        contract={contract}
+                        myRole={myRole}
+                        hasEditedSincePublish={hasEditedSincePublish}
+                      />
                     )}
                   </div>
                 )}

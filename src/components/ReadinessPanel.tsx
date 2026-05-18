@@ -124,7 +124,7 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
 
   const {
     requiredChecks, recommendedChecks,
-    doneRequired, publishStatus,
+    publishStatus,
     fieldCount, fieldsWithDesc, descCoverage, piiCount,
     healthScore, nextSteps, validationErrors,
   } = useHealth(contract, myRole, hasEditedSincePublish)
@@ -143,7 +143,7 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
     'text-[#33333d] bg-[#f5f5fa] border-[#d3d3e5]'
 
   const barColor =
-    healthScore >= 90 ? 'bg-[#f0ffec]0' :
+    healthScore >= 90 ? 'bg-[#3dab3b]' :
     healthScore >= 60 ? 'bg-[#0550dc]' :
     'bg-[#9898a7]'
 
@@ -169,16 +169,16 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
 
         {/* Publish status */}
         <div className="mt-2 flex items-center gap-1.5">
-          {canPublish ? (
+          {publishStatus.ready ? (
             <>
               <CheckCircle2 className="h-3 w-3 text-[#047800] flex-shrink-0" />
-              <span className="text-[11px] text-[#047800] font-medium">Ready to publish</span>
+              <span className="text-[11px] text-[#047800] font-medium">{publishStatus.message}</span>
             </>
           ) : (
             <>
               <AlertCircle className="h-3 w-3 text-[#d27b00] flex-shrink-0" />
-              <span className="text-[11px] text-[#d27b00] line-clamp-2" title={publishBlockReason ?? undefined}>
-                {publishBlockReason ?? `${doneRequired}/${requiredChecks.length} required fields complete`}
+              <span className="text-[11px] text-[#d27b00] line-clamp-2" title={publishStatus.message}>
+                {publishStatus.message}
               </span>
             </>
           )}

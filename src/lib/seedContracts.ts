@@ -1,4 +1,4 @@
-import { DataContract, SchemaTable } from '@/types/odcs'
+import { DataContract, LogicalType, SchemaTable } from '@/types/odcs'
 import { CURRENT_USER } from './currentUser'
 
 const NOW = '2026-05-06T10:00:00.000Z'
@@ -10,7 +10,7 @@ function col(
   physicalName: string,
   logicalName: string,
   physicalType: string,
-  logicalType: string,
+  logicalType: LogicalType,
   required = false,
   isPrimaryKey = false,
 ) {
