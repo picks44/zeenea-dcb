@@ -47,6 +47,35 @@ export function isAuthoritativeDefinitionComplete(d: AuthoritativeDefinition): b
   return !!d.url?.trim() && !!d.type?.trim()
 }
 
+export function isAuthoritativeDefinitionPartial(d: AuthoritativeDefinition): boolean {
+  return !isAuthoritativeDefinitionEmpty(d) && !isAuthoritativeDefinitionComplete(d)
+}
+
+export function getAuthoritativeLinkFieldErrors(
+  def: AuthoritativeDefinition,
+): { url?: string; type?: string } {
+  if (isAuthoritativeDefinitionEmpty(def) || isAuthoritativeDefinitionComplete(def)) {
+    return {}
+  }
+  const errors: { url?: string; type?: string } = {}
+  if (!def.url?.trim()) errors.url = 'URL is required.'
+  if (!def.type?.trim()) errors.type = 'Type is required.'
+  return errors
+}
+
+export function hasInvalidAuthoritativeDefinitions(
+  defs: AuthoritativeDefinition[],
+): boolean {
+  return defs.some(isAuthoritativeDefinitionPartial)
+}
+
+/** Persist only complete links; empty rows are omitted. */
+export function filterAuthoritativeDefinitionsForPersist(
+  defs: AuthoritativeDefinition[],
+): AuthoritativeDefinition[] {
+  return defs.filter(isAuthoritativeDefinitionComplete)
+}
+
 export function mapAuthoritativeDefinitionsToYaml(
   defs: AuthoritativeDefinition[] | undefined,
 ): Record<string, unknown>[] | undefined {

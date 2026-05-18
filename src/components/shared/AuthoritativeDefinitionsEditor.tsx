@@ -4,6 +4,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import type { AuthoritativeDefinition } from '@/types/odcsShared'
 import { AUTH_DEF_TYPE_OPTIONS } from '@/types/odcsShared'
+import { getAuthoritativeLinkFieldErrors } from '@/lib/odcsSharedMappers'
 import { generateId, cn } from '@/lib/utils'
 import { AUTH_LINKS_HELPER } from '@/lib/uxCopy'
 import { governanceTableFooterActionClass } from '@/components/shared/GovernanceSectionHeader'
@@ -24,6 +25,8 @@ interface AuthoritativeDefinitionsEditorProps {
   disabled?: boolean
   /** Tighter spacing for laptop / docCompact metadata surfaces */
   compact?: boolean
+  /** When true, show inline errors on partial rows (URL + type required). */
+  showFieldErrors?: boolean
 }
 
 function emptyRow(): AuthoritativeDefinition {
@@ -35,6 +38,7 @@ function AuthoritativeLinkEditRow({
   compact,
   disabled,
   canRemove,
+  showFieldErrors,
   onUpdate,
   onRemove,
 }: {
@@ -42,9 +46,12 @@ function AuthoritativeLinkEditRow({
   compact?: boolean
   disabled?: boolean
   canRemove: boolean
+  showFieldErrors?: boolean
   onUpdate: (patch: Partial<AuthoritativeDefinition>) => void
   onRemove: () => void
 }) {
+  const fieldErrors = showFieldErrors ? getAuthoritativeLinkFieldErrors(row) : {}
+
   return (
     <div className={cn(compact ? authoritativeLinkRowCompactClass : authoritativeLinkRowClass, !disabled && canRemove && 'pr-9')}>
       {!disabled && canRemove && (
@@ -67,8 +74,12 @@ function AuthoritativeLinkEditRow({
               onChange={e => onUpdate({ url: e.target.value })}
               placeholder="https://..."
               disabled={disabled}
-              className={authoritativeLinkInputClass}
+              className={cn(authoritativeLinkInputClass, fieldErrors.url && 'border-[#c12c11]')}
+              aria-invalid={Boolean(fieldErrors.url)}
             />
+            {fieldErrors.url ? (
+              <p className="text-[10px] text-[#c12c11] mt-0.5">{fieldErrors.url}</p>
+            ) : null}
           </div>
           <div>
             <label className={authoritativeLinkFieldLabelClass}>Type</label>
@@ -77,7 +88,10 @@ function AuthoritativeLinkEditRow({
               onValueChange={v => v && onUpdate({ type: v })}
               disabled={disabled}
             >
-              <SelectTrigger className={authoritativeLinkSelectTriggerClass}>
+              <SelectTrigger
+                className={cn(authoritativeLinkSelectTriggerClass, fieldErrors.type && 'border-[#c12c11]')}
+                aria-invalid={Boolean(fieldErrors.type)}
+              >
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
               <SelectContent>
@@ -88,6 +102,9 @@ function AuthoritativeLinkEditRow({
                 ))}
               </SelectContent>
             </Select>
+            {fieldErrors.type ? (
+              <p className="text-[10px] text-[#c12c11] mt-0.5">{fieldErrors.type}</p>
+            ) : null}
           </div>
         </div>
         <div>
@@ -111,6 +128,7 @@ export function AuthoritativeDefinitionsEditor({
   onChange,
   disabled = false,
   compact = false,
+  showFieldErrors = false,
 }: AuthoritativeDefinitionsEditorProps) {
   const update = (id: string, patch: Partial<AuthoritativeDefinition>) => {
     onChange(definitions.map(r => (r.id === id ? { ...r, ...patch } : r)))
@@ -133,6 +151,7 @@ export function AuthoritativeDefinitionsEditor({
               compact={compact}
               disabled={disabled}
               canRemove={!disabled}
+              showFieldErrors={showFieldErrors}
               onUpdate={patch => update(row.id, patch)}
               onRemove={() => remove(row.id)}
             />

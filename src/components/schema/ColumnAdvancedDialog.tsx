@@ -17,8 +17,10 @@ import { QualityRulesEditor } from '@/components/shared/QualityRulesEditor'
 import { FieldMetadataReadOnlyBody } from '@/components/shared/MetadataModalReadOnly'
 import { generateId } from '@/lib/utils'
 import {
+  filterAuthoritativeDefinitionsForPersist,
   filterAuthoritativeDefinitionsForSave,
   filterQualityRulesForSave,
+  hasInvalidAuthoritativeDefinitions,
   migrateExamplesField,
   normalizeTags,
 } from '@/lib/odcsSharedMappers'
@@ -58,6 +60,7 @@ export function ColumnAdvancedDialog({
   const [tags, setTags] = useState<string[]>([])
   const [authDefs, setAuthDefs] = useState<AuthoritativeDefinition[]>([])
   const [quality, setQuality] = useState<QualityRule[]>([])
+  const [authShowErrors, setAuthShowErrors] = useState(false)
 
   useEffect(() => {
     if (!column || !open) return
@@ -66,18 +69,24 @@ export function ColumnAdvancedDialog({
     setTags(column.tags ?? [])
     setAuthDefs(filterAuthoritativeDefinitionsForSave(column.authoritativeDefinitions ?? []))
     setQuality(loadColumnQuality(column))
+    setAuthShowErrors(false)
   }, [column, open])
 
   if (!column) return null
 
   const handleSave = () => {
+    if (hasInvalidAuthoritativeDefinitions(authDefs)) {
+      setAuthShowErrors(true)
+      return
+    }
     const savedQuality = filterQualityRulesForSave(quality)
+    const savedAuth = filterAuthoritativeDefinitionsForPersist(authDefs)
     onSave({
       ...column,
       description: description.trim(),
       examples: migrateExamplesField(examplesText),
       tags: normalizeTags(tags),
-      authoritativeDefinitions: filterAuthoritativeDefinitionsForSave(authDefs),
+      authoritativeDefinitions: savedAuth.length > 0 ? savedAuth : undefined,
       quality: savedQuality.length > 0 ? savedQuality : undefined,
       qualityRule: '',
     })
@@ -148,8 +157,12 @@ export function ColumnAdvancedDialog({
                 <Label className="text-xs text-[#33333d] mb-1 block">Authoritative links</Label>
                 <AuthoritativeDefinitionsEditor
                   definitions={authDefs}
-                  onChange={setAuthDefs}
+                  onChange={defs => {
+                    setAuthDefs(defs)
+                    if (authShowErrors) setAuthShowErrors(false)
+                  }}
                   compact={docCompact}
+                  showFieldErrors={authShowErrors}
                 />
               </div>
             </div>

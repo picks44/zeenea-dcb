@@ -51,7 +51,7 @@ function validateAuthoritativeDefinitions(
     if (!isAuthoritativeDefinitionComplete(d)) {
       issues.push({
         code: 'auth-def-incomplete',
-        message: `${context}: each authoritative link needs a URL and type.`,
+        message: `${context}: URL and type are required to publish an authoritative link.`,
         severity: 'error',
         section,
       })

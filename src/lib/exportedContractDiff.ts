@@ -1,4 +1,5 @@
 import { buildOdcsDocument, contractFromSnapshot } from './odcsYamlGenerator'
+import { diffExportedAuthLinks, diffExportedQualityRules } from './metadataExportDiff'
 import { DataContract, DataContractSnapshot, OdcsAccessRole, SlaProperty } from '../types/odcs'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -237,15 +238,25 @@ function buildSummaryLines(parts: {
   schema: ArrayChangeCount
   roles: ArrayChangeCount
   sla: ArrayChangeCount
+  quality: ArrayChangeCount
+  authLinks: ArrayChangeCount
   descriptionChanged: boolean
   metadataChanged: boolean
 }): string[] {
   const lines: string[] = []
-  const { schema, roles, sla } = parts
+  const { schema, roles, sla, quality, authLinks } = parts
 
   if (schema.added) lines.push(`${countLabel(schema.added, 'field', 'fields')} added`)
   if (schema.removed) lines.push(`${countLabel(schema.removed, 'field', 'fields')} removed`)
   if (schema.updated) lines.push(`${countLabel(schema.updated, 'field', 'fields')} updated`)
+
+  if (quality.added) lines.push(`${countLabel(quality.added, 'quality rule', 'quality rules')} added`)
+  if (quality.removed) lines.push(`${countLabel(quality.removed, 'quality rule', 'quality rules')} removed`)
+  if (quality.updated) lines.push(`${countLabel(quality.updated, 'quality rule', 'quality rules')} updated`)
+
+  if (authLinks.added) lines.push(`${countLabel(authLinks.added, 'authoritative link', 'authoritative links')} added`)
+  if (authLinks.removed) lines.push(`${countLabel(authLinks.removed, 'authoritative link', 'authoritative links')} removed`)
+  if (authLinks.updated) lines.push(`${countLabel(authLinks.updated, 'authoritative link', 'authoritative links')} updated`)
 
   if (roles.added) lines.push(`${countLabel(roles.added, 'data access role', 'data access roles')} added`)
   if (roles.removed) lines.push(`${countLabel(roles.removed, 'data access role', 'data access roles')} removed`)
@@ -289,6 +300,9 @@ export function compareExportedSnapshots(
   const rightSla = (right.slaProperties ?? []).filter(s => s.property.trim())
   const sla = diffByKey(leftSla, rightSla, slaKey)
 
+  const qualityDiff = diffExportedQualityRules(leftDoc, rightDoc)
+  const authLinksDiff = diffExportedAuthLinks(leftDoc, rightDoc)
+
   const leftDesc = (leftDoc.description ?? {}) as Record<string, unknown>
   const rightDesc = (rightDoc.description ?? {}) as Record<string, unknown>
   const descriptionChanged = JSON.stringify(leftDesc) !== JSON.stringify(rightDesc)
@@ -298,7 +312,15 @@ export function compareExportedSnapshots(
     key => JSON.stringify(leftDoc[key]) !== JSON.stringify(rightDoc[key]),
   )
 
-  const summaryLines = buildSummaryLines({ schema, roles, sla, descriptionChanged, metadataChanged })
+  const summaryLines = buildSummaryLines({
+    schema,
+    roles,
+    sla,
+    quality: qualityDiff.counts,
+    authLinks: authLinksDiff.counts,
+    descriptionChanged,
+    metadataChanged,
+  })
 
   const formSections: FormDiffSection[] = []
 
@@ -352,6 +374,14 @@ export function compareExportedSnapshots(
   const slaRows = buildSlaFormRows(leftSla, rightSla)
   if (slaRows.length > 0) {
     formSections.push({ id: 'sla', title: 'Service levels', rows: slaRows })
+  }
+
+  if (qualityDiff.rows.length > 0) {
+    formSections.push({ id: 'quality', title: 'Quality rules', rows: qualityDiff.rows })
+  }
+
+  if (authLinksDiff.rows.length > 0) {
+    formSections.push({ id: 'authLinks', title: 'Authoritative links', rows: authLinksDiff.rows })
   }
 
   if (formSections.length === 0 && summaryLines.length > 0) {
@@ -422,6 +452,22 @@ function changelogLineForRow(sectionId: string, row: FormDiffRow): string {
       if (row.kind === 'added') return `Added ${row.label} field`
       if (row.kind === 'removed') return `Removed ${row.label} field`
       return `Updated ${row.label} field`
+    case 'quality': {
+      const target = row.label.includes('.') ? `on ${row.label}` : `to ${row.label}`
+      if (row.kind === 'added') return `Added quality rule ${target}${row.right ? ` (${row.right})` : ''}`
+      if (row.kind === 'removed') return `Removed quality rule from ${row.label}${row.left ? ` (${row.left})` : ''}`
+      return `Updated quality rule ${target}${row.right ? ` (${row.right})` : ''}`
+    }
+    case 'authLinks': {
+      const target = row.label === 'contract description'
+        ? 'in contract description'
+        : row.label.includes('.')
+          ? `on ${row.label}`
+          : `to ${row.label}`
+      if (row.kind === 'added') return `Added authoritative link ${target}`
+      if (row.kind === 'removed') return `Removed authoritative link from ${row.label}`
+      return `Updated authoritative link ${target}`
+    }
     case 'metadata':
       if (row.label === 'Purpose') return 'Updated contract purpose description'
       if (row.label === 'Usage') return 'Updated contract usage description'
