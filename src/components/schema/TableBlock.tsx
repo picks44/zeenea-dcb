@@ -225,7 +225,7 @@ export function TableBlock({
                   key={col.id}
                   className={cn(
                     'flex items-center px-4 transition-colors group',
-                    denseReadOnly ? 'py-1.5' : 'py-2 hover:bg-[#f5f5fa]/50',
+                    denseReadOnly ? 'py-2' : 'py-2 hover:bg-[#f5f5fa]/50',
                   )}
                 >
                   <div className="w-52 flex-shrink-0 pr-3">

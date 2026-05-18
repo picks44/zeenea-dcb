@@ -12,6 +12,7 @@ import { SchemaTable } from '@/types/odcs'
 import { TagsEditor } from '@/components/shared/TagsEditor'
 import { QualityRulesEditor } from '@/components/shared/QualityRulesEditor'
 import { AuthoritativeDefinitionsEditor } from '@/components/shared/AuthoritativeDefinitionsEditor'
+import { TableMetadataReadOnlyBody } from '@/components/shared/MetadataModalReadOnly'
 import {
   filterAuthoritativeDefinitionsForSave,
   filterQualityRulesForSave,
@@ -53,36 +54,50 @@ export function TableAdvancedDialog({ table, open, isLocked = false, onClose, on
 
   return (
     <Dialog open={open} onOpenChange={o => { if (!o) onClose() }}>
-      <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-w-md max-h-[85vh] flex flex-col p-0 gap-0">
+        <DialogHeader className="px-6 pt-6 pb-0 flex-shrink-0">
           <DialogTitle className="text-sm">Table metadata</DialogTitle>
-          <DialogDescription className="font-mono text-xs">{table.physicalName}</DialogDescription>
+          <DialogDescription className="font-mono text-xs text-[#656574]">
+            {table.physicalName}
+          </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-5 py-1">
-          <div>
-            <p className="text-xs font-medium text-[#33333d] mb-1">Tags</p>
-            <TagsEditor tags={tags} onChange={setTags} disabled={isLocked} />
-          </div>
-
-          <div>
-            <p className="text-xs font-medium text-[#33333d] mb-1">Quality rules</p>
-            <QualityRulesEditor rules={quality ?? []} onChange={setQuality} disabled={isLocked} />
-          </div>
-
-          <div>
-            <p className="text-xs font-medium text-[#33333d] mb-1">Authoritative links</p>
-            <AuthoritativeDefinitionsEditor
-              definitions={authDefs}
-              onChange={setAuthDefs}
-              disabled={isLocked}
+        <div className="flex-1 overflow-y-auto px-6 py-4 min-h-0">
+          {isLocked ? (
+            <TableMetadataReadOnlyBody
+              tags={tags}
+              quality={quality ?? []}
+              authDefs={authDefs}
             />
-          </div>
+          ) : (
+            <div className="space-y-5">
+              <div>
+                <p className="text-xs font-medium text-[#33333d] mb-1">Tags</p>
+                <TagsEditor tags={tags} onChange={setTags} />
+              </div>
+
+              <div>
+                <p className="text-xs font-medium text-[#33333d] mb-1">Quality rules</p>
+                <QualityRulesEditor rules={quality ?? []} onChange={setQuality} />
+              </div>
+
+              <div>
+                <p className="text-xs font-medium text-[#33333d] mb-1">Authoritative links</p>
+                <AuthoritativeDefinitionsEditor definitions={authDefs} onChange={setAuthDefs} />
+              </div>
+            </div>
+          )}
         </div>
 
-        <DialogFooter className="gap-2">
-          <Button variant="ghost" size="sm" onClick={onClose}>{isLocked ? 'Close' : 'Cancel'}</Button>
-          {!isLocked && <Button size="sm" onClick={handleSave}>Save</Button>}
+        <DialogFooter className="gap-2 px-6 py-4 border-t border-[#e4e4f0] flex-shrink-0">
+          {isLocked ? (
+            <Button variant="outline" size="sm" onClick={onClose}>Close</Button>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" onClick={onClose}>Cancel</Button>
+              <Button size="sm" onClick={handleSave}>Save</Button>
+            </>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

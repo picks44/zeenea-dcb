@@ -25,7 +25,7 @@ export function GovernanceDocRow({
     return (
       <div className={cn(compact ? DOC_COMPACT_ROW : 'px-3 py-2', className)}>
         <div className="text-xs font-medium text-[#12131f] leading-snug">{primary}</div>
-        <p className="text-[11px] text-[#656574] mt-0.5 leading-snug truncate">{metaLine}</p>
+        <p className="text-[11px] text-[#656574] mt-0.5 leading-relaxed truncate">{metaLine}</p>
       </div>
     )
   }

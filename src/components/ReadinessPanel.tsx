@@ -121,10 +121,8 @@ export function ReadinessPanel({
     contract.info.status === 'active' && !contract.inRevision
 
   const [yamlOpen, setYamlOpen] = useState(false)
-  const [recommendedOpen, setRecommendedOpen] = useState(!isPublishedViewEarly)
 
   useEffect(() => {
-    setRecommendedOpen(!isPublishedViewEarly)
     setYamlOpen(false)
   }, [contract.uid, isPublishedViewEarly])
 
@@ -172,7 +170,7 @@ export function ReadinessPanel({
   const publishedDense = isPublishedView && docCompact
   const sectionPad = publishedDense ? 'px-2.5 py-2' : isPublishedView ? 'px-3 py-2.5' : 'px-4 py-3'
   const panelBorder = isPublishedView ? 'border-[#ebebf0]' : 'border-[#d3d3e5]'
-  const listGap = publishedDense ? 'space-y-0' : isPublishedView ? 'space-y-0.5' : 'space-y-1'
+  const listGap = isPublishedView ? 'space-y-0.5' : 'space-y-1'
 
   const yamlBlock = (
     <div className="border-t border-[#e4e4f0] mt-1">
@@ -360,54 +358,25 @@ export function ReadinessPanel({
           </div>
         )}
 
-        {isPublishedView ? (
-          <DocDisclosure
-            className={sectionPad}
-            headerClassName="py-0"
-            open={recommendedOpen}
-            onToggle={() => setRecommendedOpen(o => !o)}
-            title={
-              <SectionHeaderWithScore
-                title="Recommended"
-                earned={scoreContributions.recommended.earned}
-                max={scoreContributions.recommended.max}
-                tone="recommended"
+        <div className={sectionPad}>
+          <SectionHeaderWithScore
+            title="Recommended"
+            earned={scoreContributions.recommended.earned}
+            max={scoreContributions.recommended.max}
+            tone="recommended"
+          />
+          <ul className={listGap}>
+            {recommendedChecks.map(item => (
+              <CheckRow
+                key={item.key}
+                label={item.label}
+                ok={item.ok}
+                variant="recommended"
+                badge={item.badge}
               />
-            }
-          >
-            <ul className={cn(listGap, 'mt-1')}>
-              {recommendedChecks.map(item => (
-                <CheckRow
-                  key={item.key}
-                  label={item.label}
-                  ok={item.ok}
-                  variant="recommended"
-                  badge={item.badge}
-                />
-              ))}
-            </ul>
-          </DocDisclosure>
-        ) : (
-          <div className={sectionPad}>
-            <SectionHeaderWithScore
-              title="Recommended"
-              earned={scoreContributions.recommended.earned}
-              max={scoreContributions.recommended.max}
-              tone="recommended"
-            />
-            <ul className={listGap}>
-              {recommendedChecks.map(item => (
-                <CheckRow
-                  key={item.key}
-                  label={item.label}
-                  ok={item.ok}
-                  variant="recommended"
-                  badge={item.badge}
-                />
-              ))}
-            </ul>
-          </div>
-        )}
+            ))}
+          </ul>
+        </div>
 
         {isPublishedView ? (
           <div className={cn(sectionPad, 'border-t', panelBorder)}>

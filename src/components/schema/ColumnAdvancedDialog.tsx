@@ -14,6 +14,7 @@ import { ColumnDefinition, QualityRule } from '@/types/odcs'
 import { TagsEditor } from '@/components/shared/TagsEditor'
 import { AuthoritativeDefinitionsEditor } from '@/components/shared/AuthoritativeDefinitionsEditor'
 import { QualityRulesEditor } from '@/components/shared/QualityRulesEditor'
+import { FieldMetadataReadOnlyBody } from '@/components/shared/MetadataModalReadOnly'
 import { generateId } from '@/lib/utils'
 import {
   filterAuthoritativeDefinitionsForSave,
@@ -75,63 +76,82 @@ export function ColumnAdvancedDialog({ column, open, isLocked = false, onClose, 
     onClose()
   }
 
+  const displayName = column.logicalName?.trim() || column.physicalName
+
   return (
     <Dialog open={open} onOpenChange={o => { if (!o) onClose() }}>
-      <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-w-md max-h-[85vh] flex flex-col p-0 gap-0">
+        <DialogHeader className="px-6 pt-6 pb-0 flex-shrink-0">
           <DialogTitle className="text-sm">Field properties</DialogTitle>
-          <DialogDescription className="font-mono text-xs">{column.physicalName}</DialogDescription>
+          <DialogDescription className="font-mono text-xs text-[#656574]">
+            {column.physicalName}
+            {displayName !== column.physicalName ? (
+              <span className="font-sans text-[#9898a7]"> · {displayName}</span>
+            ) : null}
+          </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-1">
-          <div>
-            <Label className="text-xs text-[#33333d] mb-1 block">Description</Label>
-            <Textarea
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder="What does this field represent?"
-              rows={3}
-              disabled={isLocked}
-              className="text-sm resize-y min-h-[72px]"
+        <div className="flex-1 overflow-y-auto px-6 py-4 min-h-0">
+          {isLocked ? (
+            <FieldMetadataReadOnlyBody
+              description={description}
+              examples={column.examples ?? []}
+              tags={tags}
+              quality={quality}
+              authDefs={authDefs}
             />
-          </div>
+          ) : (
+            <div className="space-y-5">
+              <div>
+                <Label className="text-xs text-[#33333d] mb-1 block">Description</Label>
+                <Textarea
+                  value={description}
+                  onChange={e => setDescription(e.target.value)}
+                  placeholder="What does this field represent?"
+                  rows={3}
+                  className="text-sm resize-y min-h-[72px]"
+                />
+              </div>
 
-          <div>
-            <Label className="text-xs text-[#33333d] mb-1 block">Examples</Label>
-            <Textarea
-              value={examplesText}
-              onChange={e => setExamplesText(e.target.value)}
-              placeholder="One example per line"
-              rows={3}
-              disabled={isLocked}
-              className="text-sm resize-y"
-            />
-            <p className="text-[10px] text-[#656574] mt-1">One value per line.</p>
-          </div>
+              <div>
+                <Label className="text-xs text-[#33333d] mb-1 block">Examples</Label>
+                <Textarea
+                  value={examplesText}
+                  onChange={e => setExamplesText(e.target.value)}
+                  placeholder="One example per line"
+                  rows={3}
+                  className="text-sm resize-y"
+                />
+                <p className="text-[10px] text-[#656574] mt-1">One value per line.</p>
+              </div>
 
-          <div>
-            <Label className="text-xs text-[#33333d] mb-1 block">Tags</Label>
-            <TagsEditor tags={tags} onChange={setTags} disabled={isLocked} />
-          </div>
+              <div>
+                <Label className="text-xs text-[#33333d] mb-1 block">Tags</Label>
+                <TagsEditor tags={tags} onChange={setTags} />
+              </div>
 
-          <div>
-            <Label className="text-xs text-[#33333d] mb-1 block">Quality rules</Label>
-            <QualityRulesEditor rules={quality} onChange={setQuality} disabled={isLocked} />
-          </div>
+              <div>
+                <Label className="text-xs text-[#33333d] mb-1 block">Quality rules</Label>
+                <QualityRulesEditor rules={quality} onChange={setQuality} />
+              </div>
 
-          <div>
-            <Label className="text-xs text-[#33333d] mb-1 block">Authoritative links</Label>
-            <AuthoritativeDefinitionsEditor
-              definitions={authDefs}
-              onChange={setAuthDefs}
-              disabled={isLocked}
-            />
-          </div>
+              <div>
+                <Label className="text-xs text-[#33333d] mb-1 block">Authoritative links</Label>
+                <AuthoritativeDefinitionsEditor definitions={authDefs} onChange={setAuthDefs} />
+              </div>
+            </div>
+          )}
         </div>
 
-        <DialogFooter className="gap-2">
-          <Button variant="ghost" size="sm" onClick={onClose}>{isLocked ? 'Close' : 'Cancel'}</Button>
-          {!isLocked && <Button size="sm" onClick={handleSave}>Save</Button>}
+        <DialogFooter className="gap-2 px-6 py-4 border-t border-[#e4e4f0] flex-shrink-0">
+          {isLocked ? (
+            <Button variant="outline" size="sm" onClick={onClose}>Close</Button>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" onClick={onClose}>Cancel</Button>
+              <Button size="sm" onClick={handleSave}>Save</Button>
+            </>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
