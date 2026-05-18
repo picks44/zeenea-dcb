@@ -4,94 +4,12 @@ import { Button } from '@/components/ui/button'
 import { parseDDLMulti, summarizeDDLImport } from '@/lib/ddlParser'
 import { SchemaTable } from '@/types/odcs'
 import { cn, generateId } from '@/lib/utils'
+import demoExampleDdl from '../../../demo.sql?raw'
 
 interface ImportSectionProps {
   onParsed: (tables: SchemaTable[], ddl: string) => void
   isLocked: boolean
 }
-
-const EXAMPLES = [
-  `CREATE TABLE customer_orders (
-  order_id         BIGINT        NOT NULL PRIMARY KEY,
-  customer_id      BIGINT        NOT NULL,
-  customer_email   VARCHAR(255)  NOT NULL,
-  order_date       TIMESTAMP     NOT NULL,
-  status           VARCHAR(50)   NOT NULL,
-  subtotal         DECIMAL(10,2),
-  tax_amount       DECIMAL(10,2),
-  total_amount     DECIMAL(10,2) NOT NULL,
-  shipping_address TEXT,
-  is_gift          BOOLEAN       DEFAULT false,
-  notes            TEXT,
-  created_at       TIMESTAMP     NOT NULL,
-  updated_at       TIMESTAMP
-);`,
-  `CREATE TABLE products (
-  product_id   BIGINT        NOT NULL PRIMARY KEY,
-  sku          VARCHAR(100)  NOT NULL UNIQUE,
-  name         VARCHAR(255)  NOT NULL,
-  description  TEXT,
-  category_id  INT           NOT NULL,
-  price        DECIMAL(12,2) NOT NULL,
-  cost         DECIMAL(12,2),
-  stock_qty    INT           NOT NULL DEFAULT 0,
-  is_active    BOOLEAN       NOT NULL DEFAULT true,
-  weight_kg    DECIMAL(6,3),
-  created_at   TIMESTAMP     NOT NULL,
-  updated_at   TIMESTAMP
-);`,
-  `CREATE TABLE user_sessions (
-  session_id    VARCHAR(128) NOT NULL PRIMARY KEY,
-  user_id       BIGINT       NOT NULL,
-  ip_address    VARCHAR(45)  NOT NULL,
-  user_agent    TEXT,
-  started_at    TIMESTAMP    NOT NULL,
-  last_seen_at  TIMESTAMP    NOT NULL,
-  expires_at    TIMESTAMP    NOT NULL,
-  is_revoked    BOOLEAN      NOT NULL DEFAULT false,
-  device_type   VARCHAR(50),
-  country_code  CHAR(2)
-);`,
-  `CREATE TABLE payment_transactions (
-  transaction_id   BIGINT        NOT NULL PRIMARY KEY,
-  order_id         BIGINT        NOT NULL,
-  payment_method   VARCHAR(50)   NOT NULL,
-  provider         VARCHAR(100)  NOT NULL,
-  provider_ref     VARCHAR(255),
-  amount           DECIMAL(12,2) NOT NULL,
-  currency         CHAR(3)       NOT NULL DEFAULT 'EUR',
-  status           VARCHAR(30)   NOT NULL,
-  failure_reason   TEXT,
-  processed_at     TIMESTAMP     NOT NULL,
-  refunded_at      TIMESTAMP
-);`,
-  `CREATE TABLE inventory_movements (
-  movement_id    BIGINT      NOT NULL PRIMARY KEY,
-  product_id     BIGINT      NOT NULL,
-  warehouse_id   INT         NOT NULL,
-  movement_type  VARCHAR(20) NOT NULL,
-  quantity       INT         NOT NULL,
-  unit_cost      DECIMAL(10,2),
-  reference_id   BIGINT,
-  reference_type VARCHAR(50),
-  moved_at       TIMESTAMP   NOT NULL,
-  created_by     BIGINT      NOT NULL
-);`,
-  `CREATE TABLE analytics_events (
-  event_id     VARCHAR(36)  NOT NULL PRIMARY KEY,
-  user_id      BIGINT,
-  session_id   VARCHAR(128),
-  event_type   VARCHAR(100) NOT NULL,
-  page_url     TEXT         NOT NULL,
-  referrer     TEXT,
-  properties   TEXT,
-  device_type  VARCHAR(30),
-  browser      VARCHAR(50),
-  os           VARCHAR(50),
-  country_code CHAR(2),
-  occurred_at  TIMESTAMP    NOT NULL
-);`,
-]
 
 const IMPORT_STEPS = ['Parsing schema', 'Mapping fields', 'Applying types']
 
@@ -99,7 +17,6 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
   const [ddl, setDdl]               = useState('')
   const [error, setError]           = useState<string | null>(null)
   const [isDragOver, setIsDragOver] = useState(false)
-  const [exampleIdx, setExampleIdx] = useState(0)
   const [phase, setPhase]               = useState<'idle' | 'loading' | 'success'>('idle')
   const [importProgress, setImportProgress] = useState(0)
   const [progressDuration, setProgressDuration] = useState(0)
@@ -212,8 +129,7 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
     }], '')
 
   const loadExample = () => {
-    setDdl(EXAMPLES[exampleIdx % EXAMPLES.length])
-    setExampleIdx(i => (i + 1) % EXAMPLES.length)
+    setDdl(demoExampleDdl.trim())
     setError(null)
   }
 
