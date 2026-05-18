@@ -11,6 +11,7 @@ import { FlagBadge } from './FlagBadge'
 import { ColumnAdvancedDialog } from './ColumnAdvancedDialog'
 import { TableAdvancedDialog } from './TableAdvancedDialog'
 import { isBelongsToRelationshipIncomplete, isExportedRelationshipType } from '@/types/odcsShared'
+import { RELATIONSHIP_FK_HELPER, RELATIONSHIP_NOT_IN_YAML, RELATIONSHIPS_EXPORT_NOTE } from '@/lib/uxCopy'
 
 function deriveLogicalName(physicalName: string): string {
   return physicalName
@@ -316,7 +317,7 @@ export function TableBlock({ table, tableIndex, allTables, isLocked, onTableChan
         <div className="border-t border-[#e4e4f0] bg-[#fbfbff]/30 px-4 py-3 rounded-b-xl">
           <p className="text-[10px] font-semibold uppercase tracking-wide text-[#9898a7] mb-2.5">Relationships</p>
           <p className="text-[10px] text-[#656574] mb-2">
-            Only Belongs to and Many-to-many are published in the contract YAML.
+            {RELATIONSHIPS_EXPORT_NOTE}
           </p>
 
           {/* Existing */}
@@ -339,12 +340,12 @@ export function TableBlock({ table, tableIndex, allTables, isLocked, onTableChan
                     </span>
                     {!exported && (
                       <span className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-[#ffebce] text-[#d27b00] border border-[#ffd599]">
-                        Not exported
+                        {RELATIONSHIP_NOT_IN_YAML}
                       </span>
                     )}
                     {incompleteFk && exported && (
                       <span className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-[#ffebce] text-[#d27b00] border border-[#ffd599]">
-                        Not exported
+                        {RELATIONSHIP_NOT_IN_YAML}
                       </span>
                     )}
                     {rel.fromColumn && rel.toColumn && (
@@ -360,7 +361,7 @@ export function TableBlock({ table, tableIndex, allTables, isLocked, onTableChan
                   </div>
                     {incompleteFk && (
                       <p className="text-[10px] text-[#d27b00] pl-1 leading-snug">
-                        Select join columns to export this relationship as a foreign key.
+                        {RELATIONSHIP_FK_HELPER}
                       </p>
                     )}
                   </div>
@@ -440,7 +441,7 @@ export function TableBlock({ table, tableIndex, allTables, isLocked, onTableChan
                     </p>
                     {editingRel.type === 'belongs_to' && (
                       <p className="text-[10px] text-[#d27b00] mb-2 leading-snug">
-                        Select join columns to export this relationship as a foreign key.
+                        {RELATIONSHIP_FK_HELPER}
                       </p>
                     )}
                     <div className="flex items-center gap-2">

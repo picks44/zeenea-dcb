@@ -255,7 +255,7 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
         <div className="px-6 pt-6 pb-5">
           <h1 className="text-base font-semibold text-[#12131f] mb-1">Import from SQL</h1>
           <p className="text-[#656574] text-xs leading-relaxed">
-            Paste one or more <code className="bg-[#f5f5fa] px-1.5 py-0.5 rounded font-mono text-[11px] text-[#3f3f4a]">CREATE TABLE</code> statements to auto-populate your schema, or skip and define fields manually.
+            Paste one or more <code className="bg-[#f5f5fa] px-1.5 py-0.5 rounded font-mono text-[11px] text-[#3f3f4a]">CREATE TABLE</code> statements to generate the contract schema (multi-table supported). Skip to define tables manually.
           </p>
         </div>
 
@@ -371,9 +371,9 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
 
       <div className="mt-6 grid grid-cols-3 gap-4">
         {[
-          { icon: Columns3, title: 'Field names',  desc: 'Physical and logical names extracted and mapped automatically.' },
-          { icon: Table2,   title: 'Data types',   desc: 'SQL types converted to standard logical types.' },
-          { icon: KeyRound, title: 'Constraints',  desc: 'NOT NULL, PRIMARY KEY and UNIQUE markers detected.' },
+          { icon: Columns3, title: 'Field names',  desc: 'Physical and business names mapped from column definitions.' },
+          { icon: Table2,   title: 'Data types',   desc: 'SQL types mapped to ODCS logical types.' },
+          { icon: KeyRound, title: 'Constraints',  desc: 'NOT NULL, PRIMARY KEY, and UNIQUE flags detected on columns.' },
         ].map(({ icon: Icon, title, desc }) => (
           <div key={title} className="flex flex-col gap-1">
             <div className="flex items-center gap-1.5 text-[#33333d]">

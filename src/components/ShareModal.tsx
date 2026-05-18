@@ -5,11 +5,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DataContract, Collaborator, CollaboratorRole } from '@/types/odcs'
 import { cn } from '@/lib/utils'
 import { CURRENT_USER } from '@/lib/currentUser'
+import { MEMBERS_DISCLAIMER } from '@/lib/uxCopy'
 
 const ROLE_OPTIONS: { value: CollaboratorRole; label: string; desc: string }[] = [
-  { value: 'owner',  label: 'Owner',  desc: 'Edit and publish'  },
-  { value: 'editor', label: 'Contributor', desc: 'Edit, not publish' },
-  { value: 'viewer', label: 'Consumer',   desc: 'Read only'         },
+  { value: 'owner',  label: 'Contract owner',  desc: 'Edit, publish, manage members' },
+  { value: 'editor', label: 'Contributor', desc: 'Edit contract content' },
+  { value: 'viewer', label: 'Reader',   desc: 'Read-only access' },
 ]
 
 interface MockUser { id: string; name: string; email: string }
@@ -137,7 +138,7 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-[#12131f]">Members</p>
             <p className="text-[11px] text-[#656574] mt-0.5 leading-snug">
-              Studio edit access only — not ODCS data access roles (see Data access in the contract editor).
+              {MEMBERS_DISCLAIMER}
             </p>
             <p className="text-xs text-[#656574] truncate mt-0.5">{contract.info.title || 'Untitled Contract'}</p>
           </div>

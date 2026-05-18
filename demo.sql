@@ -26,6 +26,19 @@ CREATE TABLE addresses (
     state_region VARCHAR(100),
     country_code CHAR(2) NOT NULL,
     is_default BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP NOT NULL,
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+);
+
+CREATE TABLE suppliers (
+    supplier_id BIGINT PRIMARY KEY,
+    supplier_name VARCHAR(255) NOT NULL,
+    supplier_email VARCHAR(255),
+    supplier_phone VARCHAR(50),
+    supplier_country CHAR(2),
+    contract_start_date DATE,
+    contract_end_date DATE,
+    risk_level VARCHAR(50),
     created_at TIMESTAMP NOT NULL
 );
 
@@ -43,19 +56,8 @@ CREATE TABLE products (
     weight_kg DECIMAL(10,3),
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP
-);
-
-CREATE TABLE suppliers (
-    supplier_id BIGINT PRIMARY KEY,
-    supplier_name VARCHAR(255) NOT NULL,
-    supplier_email VARCHAR(255),
-    supplier_phone VARCHAR(50),
-    supplier_country CHAR(2),
-    contract_start_date DATE,
-    contract_end_date DATE,
-    risk_level VARCHAR(50),
-    created_at TIMESTAMP NOT NULL
+    updated_at TIMESTAMP,
+    FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id)
 );
 
 CREATE TABLE orders (
@@ -74,7 +76,10 @@ CREATE TABLE orders (
     sales_channel VARCHAR(100),
     fraud_score FLOAT,
     created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP
+    updated_at TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
+    FOREIGN KEY (billing_address_id) REFERENCES addresses(address_id),
+    FOREIGN KEY (shipping_address_id) REFERENCES addresses(address_id)
 );
 
 CREATE TABLE order_items (
@@ -88,7 +93,9 @@ CREATE TABLE order_items (
     line_total DECIMAL(14,2) NOT NULL,
     fulfillment_status VARCHAR(50),
     warehouse_code VARCHAR(50),
-    created_at TIMESTAMP NOT NULL
+    created_at TIMESTAMP NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id),
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 
 CREATE TABLE payments (
@@ -101,7 +108,8 @@ CREATE TABLE payments (
     payment_currency CHAR(3) NOT NULL,
     payment_date TIMESTAMP,
     refunded_amount DECIMAL(14,2),
-    created_at TIMESTAMP NOT NULL
+    created_at TIMESTAMP NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id)
 );
 
 CREATE TABLE shipments (
@@ -115,7 +123,8 @@ CREATE TABLE shipments (
     estimated_delivery_date DATE,
     shipping_cost DECIMAL(12,2),
     warehouse_code VARCHAR(50),
-    created_at TIMESTAMP NOT NULL
+    created_at TIMESTAMP NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id)
 );
 
 CREATE TABLE inventory_movements (
@@ -126,7 +135,8 @@ CREATE TABLE inventory_movements (
     quantity_delta INT NOT NULL,
     reference_document VARCHAR(255),
     movement_reason VARCHAR(255),
-    created_at TIMESTAMP NOT NULL
+    created_at TIMESTAMP NOT NULL,
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 
 CREATE TABLE customer_support_tickets (
@@ -140,5 +150,29 @@ CREATE TABLE customer_support_tickets (
     satisfaction_score INT,
     opened_at TIMESTAMP NOT NULL,
     resolved_at TIMESTAMP,
-    issue_summary TEXT
+    issue_summary TEXT,
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
+    FOREIGN KEY (order_id) REFERENCES orders(order_id)
+);
+
+CREATE TABLE warehouses (
+    warehouse_id BIGINT PRIMARY KEY,
+    warehouse_code VARCHAR(50) UNIQUE NOT NULL,
+    warehouse_name VARCHAR(255) NOT NULL,
+    country_code CHAR(2) NOT NULL,
+    city VARCHAR(100),
+    capacity_units INT,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP NOT NULL
+);
+
+CREATE TABLE warehouse_stock (
+    warehouse_id BIGINT NOT NULL,
+    product_id BIGINT NOT NULL,
+    available_quantity INT NOT NULL,
+    reserved_quantity INT DEFAULT 0,
+    last_inventory_check TIMESTAMP,
+    PRIMARY KEY (warehouse_id, product_id),
+    FOREIGN KEY (warehouse_id) REFERENCES warehouses(warehouse_id),
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
 );

@@ -24,9 +24,9 @@ const TABS: { id: EditorTab; label: string; icon: React.ComponentType<{ classNam
 ]
 
 const ROLE_LABELS: Record<CollaboratorRole, string> = {
-  owner:  'Owner',
+  owner:  'Contract owner',
   editor: 'Contributor',
-  viewer: 'Consumer',
+  viewer: 'Reader',
 }
 
 const AVATAR_PALETTE = [

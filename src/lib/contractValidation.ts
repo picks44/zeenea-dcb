@@ -86,7 +86,7 @@ export function validateContract(contract: DataContract): ValidationResult {
     issues.push({ code: 'id', message: 'Contract ID is required.', severity: 'error', section: 'fundamentals' })
   }
   if (!info.owner.trim()) {
-    issues.push({ code: 'owner', message: 'Owner is required.', severity: 'error', section: 'fundamentals' })
+    issues.push({ code: 'owner', message: 'Contract owner is required.', severity: 'error', section: 'fundamentals' })
   }
   if (!SEMVER.test(info.version)) {
     issues.push({ code: 'version', message: 'Version must follow SemVer (e.g. 1.0.0).', severity: 'error', section: 'fundamentals' })
@@ -171,14 +171,14 @@ export function validateContract(contract: DataContract): ValidationResult {
       if (!isExportedRelationshipType(rel.type)) {
         issues.push({
           code: 'relationship-not-exported',
-          message: `Relationship "${rel.type}" on "${table.physicalName}" is not exported to YAML (legacy type).`,
+          message: `Relationship "${rel.type}" on "${table.physicalName}" is not exported to ODCS YAML (legacy type).`,
           severity: 'warning',
           section: 'schema',
         })
       } else if (isBelongsToRelationshipIncomplete(rel)) {
         issues.push({
           code: 'relationship-incomplete-fk',
-          message: `Relationship from ${table.physicalName} to ${rel.toTable} will not be exported until join columns are configured.`,
+          message: `Relationship from ${table.physicalName} to ${rel.toTable} will not be exported to ODCS YAML until join columns are configured.`,
           severity: 'warning',
           section: 'schema',
         })
@@ -214,7 +214,7 @@ export function validateContract(contract: DataContract): ValidationResult {
   if (piiCount > 0 && contract.stakeholders.length === 0) {
     issues.push({
       code: 'pii-stakeholders',
-      message: `${piiCount} PII field(s) detected — consider adding stakeholders.`,
+      message: `${piiCount} PII field(s) detected — add stakeholders for governance contact (not exported to YAML).`,
       severity: 'warning',
       section: 'stakeholders',
     })

@@ -9,6 +9,7 @@ import { TagsEditor } from '@/components/shared/TagsEditor'
 import { AuthoritativeDefinitionsEditor } from '@/components/shared/AuthoritativeDefinitionsEditor'
 import { slugify, cn } from '@/lib/utils'
 import { filterAuthoritativeDefinitionsForSave } from '@/lib/odcsSharedMappers'
+import { CONTRACT_OWNER_HELPER } from '@/lib/uxCopy'
 import type { AuthoritativeDefinition } from '@/types/odcsShared'
 
 interface FundamentalsSectionProps {
@@ -95,7 +96,9 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
     <div className="max-w-[560px] w-full">
       <div className="mb-6">
         <h2 className="text-base font-semibold text-[#12131f]">Fundamentals</h2>
-        <p className="text-[#3f3f4a] text-xs mt-0.5">Essential information that identifies and describes your contract.</p>
+        <p className="text-[#3f3f4a] text-xs mt-0.5">
+          Contract identity and ODCS description fields. Exported fields are included in the published YAML.
+        </p>
       </div>
 
       <div className="space-y-4">
@@ -171,7 +174,7 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
         </div>
 
         <div>
-          <label className={labelClass}>Description (purpose)</label>
+          <label className={labelClass}>Description (purpose, exported)</label>
           <Textarea
             value={info.description}
             onChange={e => onChange({ description: e.target.value })}
@@ -188,10 +191,13 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
             onClick={() => setAdditionalOpen(o => !o)}
           >
             {additionalOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
-            Additional context
+            Additional context (exported)
           </button>
           {additionalOpen && (
             <div className="px-3 py-3 space-y-3 border-t border-[#e4e4f0]">
+              <p className="text-[10px] text-[#656574] leading-snug">
+                Usage, limitations, and authoritative links are included in the ODCS description object when published.
+              </p>
               <div>
                 <label className={labelClass}>Usage</label>
                 <Textarea
@@ -233,7 +239,7 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
 
         <div>
           <label className={labelClass}>
-            Owner <span className="text-red-500">*</span>
+            Contract owner <span className="text-red-500">*</span>
           </label>
           <Input
             value={info.owner}
@@ -243,7 +249,7 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
             className={ownerInputClass}
           />
           <p className="text-[11px] text-[#656574] mt-1 leading-snug">
-            Studio owner used for workflow and publish permissions. Not exported to ODCS YAML in this MVP.
+            {CONTRACT_OWNER_HELPER}
           </p>
         </div>
 

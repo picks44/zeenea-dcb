@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { OdcsAccessRole } from '@/types/odcs'
 import { generateId } from '@/lib/utils'
+import { DATA_ACCESS_ROLES_INTRO } from '@/lib/uxCopy'
 
 interface AccessRolesSectionProps {
   roles: OdcsAccessRole[]
@@ -27,8 +28,7 @@ export function AccessRolesSection({ roles, onChange, isLocked }: AccessRolesSec
       <div className="mb-6">
         <h2 className="text-base font-semibold text-[#12131f]">Data access roles</h2>
         <p className="text-[#3f3f4a] text-xs mt-0.5 leading-relaxed">
-          Define who can access the data product in the published contract (ODCS roles).
-          To manage who can edit this contract in Studio, use Members in the top bar.
+          {DATA_ACCESS_ROLES_INTRO}
         </p>
       </div>
       {roles.length === 0 && !isLocked ? (

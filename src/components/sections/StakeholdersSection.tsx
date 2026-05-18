@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Stakeholder } from '@/types/odcs'
 import { generateId } from '@/lib/utils'
+import { STAKEHOLDERS_BANNER } from '@/lib/uxCopy'
 import { cn } from '@/lib/utils'
 
 interface StakeholdersSectionProps {
@@ -150,7 +151,7 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked }: Stakeh
           <div>
             <h1 className="text-2xl font-bold text-[#12131f] mb-2">Stakeholders</h1>
             <p className="text-[#3f3f4a] text-sm leading-relaxed">
-              Add the people and teams who own, consume, or are responsible for this data contract.
+              Record governance contacts for this contract. Stakeholders support collaboration and accountability in the application.
             </p>
           </div>
           {!isLocked && stakeholders.length > 0 && !showForm && (
@@ -165,7 +166,7 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked }: Stakeh
       <div className="flex items-start gap-2.5 rounded-lg border border-[#e4e4f0] bg-[#fbfbff] px-3 py-2.5 mb-1">
         <Info className="h-3.5 w-3.5 text-[#656574] flex-shrink-0 mt-0.5" />
         <p className="text-[11px] text-[#656574] leading-snug">
-          Stakeholders are captured as Studio collaboration metadata. They are not exported to ODCS YAML in this MVP.
+          {STAKEHOLDERS_BANNER}
         </p>
       </div>
 

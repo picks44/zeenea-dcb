@@ -4,6 +4,7 @@ import { CollaboratorRole, DataContract } from '@/types/odcs'
 import { generateODCSYaml } from '@/lib/odcsYamlGenerator'
 import { validateContract, ValidationResult } from '@/lib/contractValidation'
 import { cn } from '@/lib/utils'
+import { EXPORT_COVERAGE } from '@/lib/uxCopy'
 
 interface ReadinessPanelProps {
   contract: DataContract
@@ -23,10 +24,10 @@ function publishReadinessMessage(
     }
   }
   if (myRole !== 'owner') {
-    return { ready: false, message: 'Only owners can publish.' }
+    return { ready: false, message: 'Only contract owners can publish.' }
   }
   if (!hasEditedSincePublish) {
-    return { ready: false, message: 'No unpublished changes.' }
+    return { ready: false, message: 'No unpublished changes since last publish.' }
   }
   return { ready: true, message: 'Ready to publish' }
 }
@@ -46,7 +47,7 @@ function useHealth(contract: DataContract, myRole: CollaboratorRole, hasEditedSi
   const requiredChecks = [
     { key: 'title',   label: 'Contract name',           ok: !errorKeys.has('title') },
     { key: 'id',      label: 'Contract ID',              ok: !errorKeys.has('id') },
-    { key: 'owner',   label: 'Owner',                    ok: !errorKeys.has('owner') },
+    { key: 'owner',   label: 'Contract owner',           ok: !errorKeys.has('owner') },
     { key: 'version', label: 'Version (e.g. 1.0.0)',    ok: !errorKeys.has('version') },
     { key: 'schema',  label: 'At least 1 field defined', ok: schemaOk },
   ]
@@ -75,7 +76,7 @@ function useHealth(contract: DataContract, myRole: CollaboratorRole, hasEditedSi
   else if (!id.trim())
     nextSteps.push('Set a contract ID in Fundamentals')
   else if (!info.owner.trim())
-    nextSteps.push('Who owns this data? Add an owner in Fundamentals')
+    nextSteps.push('Add a contract owner in Fundamentals')
   if (fieldCount === 0)
     nextSteps.push('Add at least one field in Schema to describe your data')
   else if (fieldsWithDesc < fieldCount)
@@ -85,7 +86,7 @@ function useHealth(contract: DataContract, myRole: CollaboratorRole, hasEditedSi
   if (piiCount > 0 && safeStakeholders.length === 0)
     nextSteps.push(`${piiCount} PII field${piiCount > 1 ? 's' : ''} detected — add stakeholders including Data Privacy`)
   else if (safeStakeholders.length === 0 && fieldCount > 0)
-    nextSteps.push('Add stakeholders so teams know who to contact')
+    nextSteps.push('Add stakeholders for governance contact (not exported to YAML)')
 
   return {
     requiredChecks, recommendedChecks,
@@ -323,10 +324,10 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
                 {copied ? 'Copied' : 'Copy'}
               </button>
             </div>
-            <p className="text-[10px] text-[#656574] px-4 py-2 border-b border-[#e4e4f0] bg-white leading-snug">
-              Exported to YAML: contract identity, description, schema, tags, quality, authoritative links, data access roles, service levels.
-              Studio-only: owner, stakeholders, members, version history.
-            </p>
+            <div className="px-4 py-2 border-b border-[#e4e4f0] bg-white space-y-1">
+              <p className="text-[10px] text-[#656574] leading-snug">{EXPORT_COVERAGE.exported}</p>
+              <p className="text-[10px] text-[#656574] leading-snug">{EXPORT_COVERAGE.workflow}</p>
+            </div>
             <pre className="text-[10px] font-mono text-[#33333d] px-4 py-3 max-h-56 overflow-y-auto bg-[#fbfbff] leading-4">
               {yaml}
             </pre>

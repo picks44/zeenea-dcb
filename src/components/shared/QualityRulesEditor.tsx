@@ -5,11 +5,10 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import type { QualityRule } from '@/types/odcs'
 import { generateId } from '@/lib/utils'
+import { QUALITY_RULES_HELPER } from '@/lib/uxCopy'
 
 const MAX_RULES = 3
-
-const DEFAULT_HELPER =
-  'Natural language quality expectations. These are exported as ODCS quality rules with type text.'
+const DEFAULT_HELPER = QUALITY_RULES_HELPER
 
 interface QualityRulesEditorProps {
   rules: QualityRule[]

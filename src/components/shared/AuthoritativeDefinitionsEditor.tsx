@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import type { AuthoritativeDefinition } from '@/types/odcsShared'
 import { AUTH_DEF_TYPE_OPTIONS } from '@/types/odcsShared'
 import { generateId } from '@/lib/utils'
+import { AUTH_LINKS_HELPER } from '@/lib/uxCopy'
 
 interface AuthoritativeDefinitionsEditorProps {
   definitions: AuthoritativeDefinition[]
@@ -39,7 +40,7 @@ export function AuthoritativeDefinitionsEditor({
   return (
     <div className="space-y-3">
       <p className="text-[10px] text-[#656574]">
-        Link to glossary, policy, documentation, or a Zeenea catalog reference (no picker in this MVP).
+        {AUTH_LINKS_HELPER}
       </p>
       {rows.map(row => (
         <div key={row.id} className="border border-[#e4e4f0] rounded-lg p-3 space-y-2 bg-[#fbfbff]/50">

@@ -87,7 +87,7 @@ export default function App() {
   const canPublish = !!validation?.canPublish && hasEditedSincePublish && myRole === 'owner'
 
   const publishBlockReason = !contract ? null
-    : myRole !== 'owner' ? 'Only owners can publish this contract.'
+    : myRole !== 'owner' ? 'Only contract owners can publish this contract.'
     : !hasEditedSincePublish ? 'No changes since last publish.'
     : validation?.publishBlockReason ?? null
 
@@ -322,7 +322,7 @@ export default function App() {
                     <div className="flex items-center gap-2.5 min-w-0">
                       <Lock className="h-3.5 w-3.5 text-[#00699f] flex-shrink-0" />
                       <p className="text-[#003d5c] text-xs font-medium">
-                        This contract is active and read-only. Create a new version to make changes.
+                        This contract is active and read-only. Start a new version to edit and publish changes.
                       </p>
                     </div>
                     {(myRole === 'owner' || myRole === 'editor') && (
@@ -338,7 +338,7 @@ export default function App() {
                   <div className="bg-[#f5f5fa] border-b border-[#d3d3e5] px-6 py-2 flex items-center gap-2 flex-shrink-0">
                     <Eye className="h-3.5 w-3.5 text-[#656574] flex-shrink-0" />
                     <p className="text-[#656574] text-xs">
-                      You have <strong>view-only access</strong> to this contract. Contact a member with Owner access to request edit rights.
+                      You have <strong>read-only access</strong> to this contract. Contact a contract owner or contributor to request edit access.
                     </p>
                   </div>
                 )}
