@@ -11,9 +11,20 @@ import {
   PUBLICATION_READY_TOOLTIP,
   PUBLISHED_READ_ONLY_STATUS,
   PUBLISHED_REQUIRED_SECTION_TITLE,
+  READINESS_FIELD_QUALITY_TITLE,
+  READINESS_IMPROVE_SECTION_TITLE,
+  READINESS_NEXT_STEPS_TITLE,
+  READINESS_PANEL_TITLE,
+  READINESS_REQUIRED_SECTION_TITLE,
   READINESS_SCORE_TOOLTIP,
+  READINESS_VALIDATION_DETAILS_TITLE,
   START_NEW_VERSION_QUALITY_NOTE,
 } from '@/lib/uxCopy'
+import type { ReadinessGuidanceItem } from '@/lib/readinessGuidance'
+import {
+  navigateToValidationIssue,
+  useReadinessNavigation,
+} from '@/components/readiness/ReadinessNavigationContext'
 import { Tooltip } from '@/components/ui/tooltip'
 import { DocDisclosure } from '@/components/shared/DocDisclosure'
 
@@ -58,53 +69,77 @@ function SectionHeaderWithScore({
 }
 
 function CheckRow({
-  label,
-  ok,
-  variant,
-  badge,
+  item,
+  onNavigate,
 }: {
-  label: string
-  ok: boolean
-  variant: 'required' | 'recommended'
-  badge?: string
+  item: ReadinessGuidanceItem
+  onNavigate?: (item: ReadinessGuidanceItem) => void
 }) {
+  const { label, ok, variant, badge, missingHelper } = item
   const isRequired = variant === 'required'
+  const clickable = Boolean(onNavigate && !ok)
 
-  return (
-    <li className="flex items-center gap-2">
+  const rowInner = (
+    <>
       <div
         className={cn(
           'h-4 w-4 rounded-full flex items-center justify-center flex-shrink-0',
           ok && isRequired && 'bg-[#d3efcd]',
           ok && !isRequired && 'bg-[#e8f5e6]',
-          !ok && isRequired && 'bg-[#f5f5fa]',
+          !ok && isRequired && 'bg-[#fff7ed] border border-[#fed7aa]',
           !ok && !isRequired && 'border border-[#e4e4f0] bg-[#fbfbff]',
         )}
       >
         {ok ? (
           <Check className={cn('h-2.5 w-2.5', isRequired ? 'text-[#047800]' : 'text-[#3a8f38]')} />
         ) : isRequired ? (
+          <AlertCircle className="h-2.5 w-2.5 text-[#d27b00]" />
+        ) : (
           <span className="h-1.5 w-1.5 rounded-full bg-[#d3d3e5]" />
-        ) : null}
-      </div>
-      <span
-        className={cn(
-          'text-xs leading-snug flex-1 min-w-0',
-          ok && isRequired && 'text-[#33333d]',
-          ok && !isRequired && 'text-[#3f3f4a]',
-          !ok && isRequired && 'text-[#656574]',
-          !ok && !isRequired && 'text-[#9898a7]',
         )}
-      >
-        {label}
+      </div>
+      <span className="flex-1 min-w-0 text-left">
+        <span
+          className={cn(
+            'block text-xs leading-snug',
+            ok && isRequired && 'text-[#33333d]',
+            ok && !isRequired && 'text-[#3f3f4a]',
+            !ok && isRequired && 'text-[#8a5c00] font-medium',
+            !ok && !isRequired && 'text-[#9898a7]',
+          )}
+        >
+          {label}
+        </span>
+        {!ok && missingHelper ? (
+          <span className="block text-[10px] text-[#9898a7] leading-snug mt-0.5">{missingHelper}</span>
+        ) : null}
       </span>
       {badge ? (
         <span className="text-[10px] font-medium text-[#9898a7] tabular-nums flex-shrink-0">
           {badge}
         </span>
       ) : null}
-    </li>
+    </>
   )
+
+  if (clickable) {
+    return (
+      <li>
+        <button
+          type="button"
+          onClick={() => onNavigate!(item)}
+          className={cn(
+            'w-full flex items-center gap-2 rounded-md px-1 py-1 -mx-1 text-left transition-colors',
+            'hover:bg-[#fff7ed]/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#0550dc] cursor-pointer',
+          )}
+        >
+          {rowInner}
+        </button>
+      </li>
+    )
+  }
+
+  return <li className="flex items-center gap-2 px-1 py-0.5">{rowInner}</li>
 }
 
 export function ReadinessPanel({
@@ -130,6 +165,12 @@ export function ReadinessPanel({
     () => computePublicationReadiness(contract, myRole, hasEditedSincePublish),
     [contract, myRole, hasEditedSincePublish],
   )
+
+  const nav = useReadinessNavigation()
+  const handleNavigateItem = (item: ReadinessGuidanceItem) => {
+    if (!nav?.enabled || item.ok) return
+    nav.navigateTo({ section: item.section, fieldId: item.fieldId })
+  }
 
   const {
     requiredChecks,
@@ -208,7 +249,7 @@ export function ReadinessPanel({
       <div className={cn(sectionPad, 'border-b flex-shrink-0', panelBorder)}>
         <div className={cn('flex items-center justify-between gap-2', publishedDense ? 'mb-1.5' : 'mb-2.5')}>
           <span className="text-xs font-semibold text-[#33333d] min-w-0 truncate">
-            {isPublishedView ? CONTRACT_QUALITY_PANEL_TITLE : 'Publication readiness'}
+            {isPublishedView ? CONTRACT_QUALITY_PANEL_TITLE : READINESS_PANEL_TITLE}
           </span>
           <div className="flex items-center gap-1 flex-shrink-0">
             <Tooltip content={READINESS_SCORE_TOOLTIP} side="left" delayDuration={400}>
@@ -272,21 +313,21 @@ export function ReadinessPanel({
 
         <div className={sectionPad}>
           <SectionHeaderWithScore
-            title={isPublishedView ? PUBLISHED_REQUIRED_SECTION_TITLE : 'Required to publish'}
+            title={isPublishedView ? PUBLISHED_REQUIRED_SECTION_TITLE : READINESS_REQUIRED_SECTION_TITLE}
             earned={scoreContributions.required.earned}
             max={scoreContributions.required.max}
             tone="required"
           />
           <ul className={listGap}>
             {requiredChecks.map(item => (
-              <CheckRow key={item.key} label={item.label} ok={item.ok} variant="required" />
+              <CheckRow key={item.key} item={item} onNavigate={nav?.enabled ? handleNavigateItem : undefined} />
             ))}
           </ul>
         </div>
 
         <div className={sectionPad}>
           <SectionHeaderWithScore
-            title="Field quality"
+            title={READINESS_FIELD_QUALITY_TITLE}
             earned={scoreContributions.documentation.earned}
             max={scoreContributions.documentation.max}
           />
@@ -335,10 +376,24 @@ export function ReadinessPanel({
 
         {validationErrors.length >= 1 && (
           <div className={sectionPad}>
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-2">Blocking issues</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-2">
+              {READINESS_VALIDATION_DETAILS_TITLE}
+            </p>
             <ul className="space-y-1">
               {validationErrors.slice(0, 6).map((e, i) => (
-                <li key={`${e.code}-${i}`} className="text-[11px] text-[#c12c11] leading-snug">{e.message}</li>
+                <li key={`${e.code}-${i}`}>
+                  {nav?.enabled ? (
+                    <button
+                      type="button"
+                      onClick={() => navigateToValidationIssue(nav.navigateTo, e)}
+                      className="w-full text-left text-[11px] text-[#8a5c00] leading-snug hover:underline cursor-pointer"
+                    >
+                      {e.message}
+                    </button>
+                  ) : (
+                    <span className="text-[11px] text-[#8a5c00] leading-snug">{e.message}</span>
+                  )}
+                </li>
               ))}
             </ul>
           </div>
@@ -360,7 +415,7 @@ export function ReadinessPanel({
 
         <div className={sectionPad}>
           <SectionHeaderWithScore
-            title="Recommended"
+            title={READINESS_IMPROVE_SECTION_TITLE}
             earned={scoreContributions.recommended.earned}
             max={scoreContributions.recommended.max}
             tone="recommended"
@@ -369,10 +424,8 @@ export function ReadinessPanel({
             {recommendedChecks.map(item => (
               <CheckRow
                 key={item.key}
-                label={item.label}
-                ok={item.ok}
-                variant="recommended"
-                badge={item.badge}
+                item={item}
+                onNavigate={nav?.enabled ? handleNavigateItem : undefined}
               />
             ))}
           </ul>
@@ -390,7 +443,7 @@ export function ReadinessPanel({
         ) : nextSteps.length > 0 ? (
           <div className={cn(sectionPad, 'bg-[#fbfbff]/60')}>
             <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-2">
-              Next steps
+              {READINESS_NEXT_STEPS_TITLE}
             </p>
             <ul className="space-y-2">
               {nextSteps.map((step, i) => (

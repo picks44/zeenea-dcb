@@ -109,8 +109,35 @@ export const PUBLISHED_REQUIRED_SECTION_TITLE = 'Publication requirements'
 export const START_NEW_VERSION_QUALITY_NOTE =
   'Start a new version to improve contract quality.'
 
+export const READINESS_PANEL_TITLE = 'Publication readiness'
+export const READINESS_REQUIRED_SECTION_TITLE = 'Required before publishing'
+export const READINESS_IMPROVE_SECTION_TITLE = 'Improve your contract'
+export const READINESS_FIELD_QUALITY_TITLE = 'Field quality'
+export const READINESS_NEXT_STEPS_TITLE = 'Suggested next steps'
+export const READINESS_VALIDATION_DETAILS_TITLE = 'Details to fix'
+
 export const READINESS_SCORE_TOOLTIP =
   'Weighted score: required publication metadata (largest), field documentation, then optional governance items'
+
+// Readiness navigation — field anchors (data attributes / registration ids)
+export const READINESS_FIELD_CONTRACT_TITLE = 'contract-title'
+export const READINESS_FIELD_CONTRACT_ID = 'contract-id'
+export const READINESS_FIELD_CONTRACT_OWNER = 'contract-owner'
+export const READINESS_FIELD_CONTRACT_VERSION = 'contract-version'
+export const READINESS_FIELD_SCHEMA_ROOT = 'schema-root'
+
+export const READINESS_HELPER_CONTRACT_NAME = 'Required to publish this contract.'
+export const READINESS_HELPER_CONTRACT_ID = 'Required to identify this contract in exports.'
+export const READINESS_HELPER_CONTRACT_OWNER = 'Required for governance accountability.'
+export const READINESS_HELPER_CONTRACT_VERSION = 'Use SemVer format, for example 1.0.0.'
+export const READINESS_HELPER_SCHEMA_FIELDS = 'Add at least one table and field in Schema.'
+
+export const READINESS_GUIDANCE_FUNDAMENTALS_BANNER =
+  'This section contains required publication information.'
+export const READINESS_GUIDANCE_SCHEMA_BANNER =
+  'Define at least one table and field before you can publish.'
+export const READINESS_GUIDANCE_STAKEHOLDERS_BANNER =
+  'Adding governance contacts improves accountability — especially when PII fields are present.'
 
 export const DOCUMENTED_FIELDS_TOOLTIP =
   'Percentage of schema fields with business descriptions'

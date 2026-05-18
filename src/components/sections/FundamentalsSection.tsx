@@ -16,7 +16,18 @@ import {
   LABEL_CONTRACT_OWNER,
   LABEL_REFERENCE_LINKS,
   NAV_FUNDAMENTALS,
+  READINESS_FIELD_CONTRACT_ID,
+  READINESS_FIELD_CONTRACT_OWNER,
+  READINESS_FIELD_CONTRACT_TITLE,
+  READINESS_FIELD_CONTRACT_VERSION,
+  READINESS_HELPER_CONTRACT_ID,
+  READINESS_HELPER_CONTRACT_NAME,
+  READINESS_HELPER_CONTRACT_OWNER,
+  READINESS_HELPER_CONTRACT_VERSION,
 } from '@/lib/uxCopy'
+import { GuidanceField } from '@/components/readiness/GuidanceField'
+import { SectionGuidanceBanner } from '@/components/readiness/SectionGuidanceBanner'
+import { useSectionGuidanceRoot } from '@/components/readiness/ReadinessNavigationContext'
 import type { AuthoritativeDefinition } from '@/types/odcsShared'
 
 interface FundamentalsSectionProps {
@@ -99,6 +110,8 @@ export function FundamentalsSection({
   }, [usage, limitations, isLocked])
 
   const tags = info.tags ?? []
+  const { setRef: sectionRootRef, info: sectionInfo, showBanner } = useSectionGuidanceRoot('fundamentals')
+  const semver = /^\d+\.\d+\.\d+$/
 
   const ownerFieldLocked = isLocked || !isOwner
   const labelClass = 'text-xs font-medium text-[#33333d] mb-1 block'
@@ -106,7 +119,10 @@ export function FundamentalsSection({
   const ownerInputClass = cn(ownerFieldLocked && 'bg-[#fbfbff] text-[#3f3f4a] cursor-not-allowed')
 
   return (
-    <div className={isLocked && isPublishedView ? 'max-w-3xl w-full' : 'max-w-[560px] w-full'}>
+    <div
+      ref={sectionRootRef}
+      className={isLocked && isPublishedView ? 'max-w-3xl w-full' : 'max-w-[560px] w-full'}
+    >
       <div className={docCompact && isLocked ? 'mb-3' : 'mb-6'}>
         <h2 className="text-base font-semibold text-[#12131f]">{NAV_FUNDAMENTALS}</h2>
         <p className="text-[#3f3f4a] text-xs mt-0.5 leading-relaxed">
@@ -114,15 +130,22 @@ export function FundamentalsSection({
         </p>
       </div>
 
+      {showBanner && sectionInfo?.bannerMessage && sectionInfo.bannerVariant ? (
+        <SectionGuidanceBanner message={sectionInfo.bannerMessage} variant={sectionInfo.bannerVariant} />
+      ) : null}
+
       {isLocked ? (
         <FundamentalsReadOnlyView contract={contract} compact={docCompact} />
       ) : (
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className={labelClass}>
-              Contract name <span className="text-red-500">*</span>
-            </label>
+          <GuidanceField
+            fieldId={READINESS_FIELD_CONTRACT_TITLE}
+            label="Contract name"
+            required
+            isMissing={!info.title.trim()}
+            missingHelper={READINESS_HELPER_CONTRACT_NAME}
+          >
             <Input
               value={info.title}
               onChange={e => onChange({ title: e.target.value })}
@@ -130,7 +153,7 @@ export function FundamentalsSection({
               disabled={isLocked}
               className={inputClass}
             />
-          </div>
+          </GuidanceField>
           <div>
             <label className={labelClass}>Domain</label>
             <Input
@@ -143,10 +166,13 @@ export function FundamentalsSection({
           </div>
         </div>
 
-        <div>
-          <label className={labelClass}>
-            ID <span className="text-red-500">*</span>
-          </label>
+        <GuidanceField
+          fieldId={READINESS_FIELD_CONTRACT_ID}
+          label="ID"
+          required
+          isMissing={!id.trim()}
+          missingHelper={READINESS_HELPER_CONTRACT_ID}
+        >
           <div className="flex gap-2">
             <Input
               value={id}
@@ -172,15 +198,20 @@ export function FundamentalsSection({
               Auto-generated from the contract name.
             </p>
           )}
-        </div>
+        </GuidanceField>
 
         <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className={labelClass}>Version</label>
+          <GuidanceField
+            fieldId={READINESS_FIELD_CONTRACT_VERSION}
+            label="Version"
+            required
+            isMissing={!semver.test(info.version)}
+            missingHelper={READINESS_HELPER_CONTRACT_VERSION}
+          >
             <div className="font-mono text-sm bg-[#f5f5fa] border border-[#d3d3e5] rounded-md px-3 h-9 flex items-center text-[#33333d]">
               v{info.version}
             </div>
-          </div>
+          </GuidanceField>
           <div>
             <label className={labelClass}>Status</label>
             <div className="h-9 flex items-center">
@@ -250,10 +281,13 @@ export function FundamentalsSection({
           )}
         </div>
 
-        <div>
-          <label className={labelClass}>
-            {LABEL_CONTRACT_OWNER} <span className="text-red-500">*</span>
-          </label>
+        <GuidanceField
+          fieldId={READINESS_FIELD_CONTRACT_OWNER}
+          label={LABEL_CONTRACT_OWNER}
+          required
+          isMissing={!info.owner.trim()}
+          missingHelper={READINESS_HELPER_CONTRACT_OWNER}
+        >
           <Input
             value={info.owner}
             onChange={e => onChange({ owner: e.target.value })}
@@ -261,11 +295,13 @@ export function FundamentalsSection({
             disabled={ownerFieldLocked}
             className={ownerInputClass}
           />
-          <p className="text-[11px] text-[#656574] mt-1 leading-snug flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
-            <span>{CONTRACT_OWNER_HELPER}</span>
-            <WorkflowMetadataPill variant="not-in-odcs" />
-          </p>
-        </div>
+          {!info.owner.trim() ? null : (
+            <p className="text-[11px] text-[#656574] mt-1 leading-snug flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
+              <span>{CONTRACT_OWNER_HELPER}</span>
+              <WorkflowMetadataPill variant="not-in-odcs" />
+            </p>
+          )}
+        </GuidanceField>
 
         <div>
           <label className={labelClass}>Tags</label>

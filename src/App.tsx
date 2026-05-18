@@ -21,6 +21,7 @@ import { StakeholdersSection } from './components/sections/StakeholdersSection'
 import { AccessRolesSection } from './components/sections/AccessRolesSection'
 import { SlaSection } from './components/sections/SlaSection'
 import { ReadinessPanel } from './components/ReadinessPanel'
+import { ReadinessNavigationProvider } from './components/readiness/ReadinessNavigationContext'
 
 import { DataContract, DataContractSnapshot, SectionId, SchemaTable, AppView, EditorTab, Collaborator, CollaboratorRole, OdcsAccessRole, SlaProperty } from './types/odcs'
 import type { PushResult } from './components/PushToGitModal'
@@ -103,6 +104,10 @@ export default function App() {
   const showReadinessPanel =
     !!contract && activeSection !== 'import' && activeTab === 'form' && activeSection !== 'versions'
   const showReadinessToggle = showReadinessPanel && !panelPinned
+
+  const showPublicationGuidance = Boolean(
+    contract && !isLocked && contract.info.status !== 'deprecated',
+  )
 
   const validation = contract ? validateContract(contract) : null
   const canPublish = !!validation?.canPublish && hasEditedSincePublish && myRole === 'owner'
@@ -304,6 +309,12 @@ export default function App() {
               onCreateContract={handleCreate}
             />
           ) : contract ? (
+            <>
+            <ReadinessNavigationProvider
+              contract={contract}
+              enabled={showPublicationGuidance}
+              onSectionChange={setActiveSection}
+            >
             <div className="flex flex-1 min-h-0 overflow-hidden">
 
               {activeSection !== 'import' && (
@@ -462,6 +473,9 @@ export default function App() {
                 )}
               </div>
 
+            </div>
+            </ReadinessNavigationProvider>
+
               <ShareModal
                 contract={contract}
                 open={showShareModal}
@@ -487,7 +501,7 @@ export default function App() {
                   onClose={() => setCompareHash(null)}
                 />
               )}
-            </div>
+            </>
           ) : (
             <div className="flex-1 flex items-center justify-center text-[#656574] text-sm">
               No contract selected.

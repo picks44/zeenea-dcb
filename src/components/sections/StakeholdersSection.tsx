@@ -23,6 +23,8 @@ import {
   STAKEHOLDERS_EMPTY_TITLE,
   STAKEHOLDERS_INTRO,
 } from '@/lib/uxCopy'
+import { SectionGuidanceBanner } from '@/components/readiness/SectionGuidanceBanner'
+import { useSectionGuidanceRoot } from '@/components/readiness/ReadinessNavigationContext'
 
 interface StakeholdersSectionProps {
   stakeholders: Stakeholder[]
@@ -65,18 +67,24 @@ function makeStakeholder(): Stakeholder {
 }
 
 export function StakeholdersSection({ stakeholders, onChange, isLocked, docCompact }: StakeholdersSectionProps) {
+  const { setRef: sectionRootRef, info: sectionInfo, showBanner } = useSectionGuidanceRoot('stakeholders')
+
   const update = (id: string, patch: Partial<Stakeholder>) =>
     onChange(stakeholders.map(s => (s.id === id ? { ...s, ...patch } : s)))
 
   const remove = (id: string) => onChange(stakeholders.filter(s => s.id !== id))
 
   return (
-    <div className="max-w-[720px] w-full">
+    <div ref={sectionRootRef} className="max-w-[720px] w-full">
       <GovernanceSectionHeader
         title={SECTION_GOVERNANCE_CONTACTS}
         description={<WorkflowMetadataNote pill="not-in-odcs">{STAKEHOLDERS_INTRO}</WorkflowMetadataNote>}
         compact={docCompact}
       />
+
+      {showBanner && sectionInfo?.bannerMessage && sectionInfo.bannerVariant ? (
+        <SectionGuidanceBanner message={sectionInfo.bannerMessage} variant={sectionInfo.bannerVariant} />
+      ) : null}
 
       {stakeholders.length === 0 ? (
         <GovernanceEmptyState

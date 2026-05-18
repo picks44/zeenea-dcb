@@ -1,12 +1,8 @@
 import type { CollaboratorRole, DataContract } from '@/types/odcs'
 import { validateContract, type ValidationIssue, type ValidationResult } from '@/lib/contractValidation'
+import { buildReadinessGuidanceItems, type ReadinessGuidanceItem } from '@/lib/readinessGuidance'
 import { countAssignedStakeholders } from '@/lib/stakeholders'
-import {
-  HEALTH_GOVERNANCE_CONTACTS_CHECK,
-  HEALTH_GOVERNANCE_OWNER_CHECK,
-  PUBLISH_REQUIRES_PUBLISHER,
-  PUBLICATION_READY_REQUIRED_COMPLETE,
-} from '@/lib/uxCopy'
+import { PUBLISH_REQUIRES_PUBLISHER, PUBLICATION_READY_REQUIRED_COMPLETE } from '@/lib/uxCopy'
 
 export const READINESS_REQUIRED_WEIGHT = 70
 export const READINESS_DOC_WEIGHT = 25
@@ -23,16 +19,13 @@ export interface ReadinessScoreContributions {
   recommended: ReadinessScoreContribution
 }
 
-export interface ReadinessCheck {
-  key: string
-  label: string
-  ok: boolean
-  badge?: string
-}
+/** @deprecated Use ReadinessGuidanceItem from readinessGuidance */
+export type ReadinessCheck = ReadinessGuidanceItem
 
 export interface PublicationReadiness {
-  requiredChecks: ReadinessCheck[]
-  recommendedChecks: ReadinessCheck[]
+  guidanceItems: ReadinessGuidanceItem[]
+  requiredChecks: ReadinessGuidanceItem[]
+  recommendedChecks: ReadinessGuidanceItem[]
   doneRequired: number
   doneRecommended: number
   publishStatus: { ready: boolean; message: string }
@@ -73,9 +66,12 @@ export function computePublicationReadiness(
   myRole: CollaboratorRole,
   hasEditedSincePublish: boolean,
 ): PublicationReadiness {
-  const { info, id, dataset } = contract
+  const { dataset } = contract
   const validation = validateContract(contract)
   const stakeholderCount = countAssignedStakeholders(contract.stakeholders)
+  const guidanceItems = buildReadinessGuidanceItems(contract)
+  const requiredChecks = guidanceItems.filter(i => i.variant === 'required')
+  const recommendedChecks = guidanceItems.filter(i => i.variant === 'recommended')
 
   const fieldCount = dataset.reduce((acc, t) => acc + t.columns.length, 0)
   const fieldsWithDesc = dataset.reduce(
@@ -86,29 +82,6 @@ export function computePublicationReadiness(
     (acc, t) => acc + t.columns.filter(c => c.isPII).length,
     0,
   )
-
-  const errorKeys = new Set(validation.errors.map(e => e.code))
-  const schemaOk = !validation.errors.some(e => e.section === 'schema')
-
-  const requiredChecks: ReadinessCheck[] = [
-    { key: 'title', label: 'Contract name', ok: !errorKeys.has('title') },
-    { key: 'id', label: 'Contract ID', ok: !errorKeys.has('id') },
-    { key: 'owner', label: HEALTH_GOVERNANCE_OWNER_CHECK, ok: !errorKeys.has('owner') },
-    { key: 'version', label: 'Version (e.g. 1.0.0)', ok: !errorKeys.has('version') },
-    { key: 'schema', label: 'At least one field defined', ok: schemaOk },
-  ]
-
-  const hasStakeholders = stakeholderCount > 0
-  const recommendedChecks: ReadinessCheck[] = [
-    { key: 'domain', label: 'Domain', ok: Boolean(info.domain.trim()) },
-    { key: 'desc', label: 'Business description', ok: Boolean(info.description.trim()) },
-    {
-      key: 'stakeholders',
-      label: HEALTH_GOVERNANCE_CONTACTS_CHECK,
-      ok: hasStakeholders,
-      badge: hasStakeholders ? String(stakeholderCount) : undefined,
-    },
-  ]
 
   const doneRequired = requiredChecks.filter(c => c.ok).length
   const doneRecommended = recommendedChecks.filter(c => c.ok).length
@@ -141,29 +114,25 @@ export function computePublicationReadiness(
   )
 
   const nextSteps: string[] = []
-  if (!info.title.trim()) {
-    nextSteps.push('Give your contract a name in Fundamentals')
-  } else if (!id.trim()) {
-    nextSteps.push('Set a contract ID in Fundamentals')
-  } else if (!info.owner.trim()) {
-    nextSteps.push('Assign a contract owner in Fundamentals')
-  } else if (fieldCount === 0) {
-    nextSteps.push('Add at least one field in Schema to describe your data')
+  for (const check of requiredChecks.filter(c => !c.ok)) {
+    nextSteps.push(check.missingHelper ?? `Complete ${check.label} in ${check.section}`)
+    if (nextSteps.length >= 2) break
   }
   if (nextSteps.length < 2 && fieldCount > 0 && fieldsWithDesc < fieldCount) {
     nextSteps.push('Document schema fields to improve discoverability and reuse')
   }
-  if (nextSteps.length < 2 && !hasStakeholders) {
-    if (piiCount > 0 && fieldCount > 0) {
+  if (nextSteps.length < 2 && stakeholderCount === 0 && fieldCount > 0) {
+    if (piiCount > 0) {
       nextSteps.push(
         `${piiCount} PII field${piiCount > 1 ? 's' : ''} detected — add governance contacts including Data Privacy`,
       )
-    } else if (fieldCount > 0) {
+    } else {
       nextSteps.push('Add governance contacts for ownership and collaboration')
     }
   }
 
   return {
+    guidanceItems,
     requiredChecks,
     recommendedChecks,
     doneRequired,

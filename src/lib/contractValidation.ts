@@ -34,6 +34,8 @@ export interface ValidationIssue {
   message: string
   severity: 'error' | 'warning'
   section?: SectionId
+  /** DOM anchor for readiness navigation (`readinessGuidance` field ids). */
+  fieldId?: string
 }
 
 export interface ValidationResult {
@@ -87,16 +89,40 @@ export function validateContract(contract: DataContract): ValidationResult {
   const { info, id, dataset } = contract
 
   if (!info.title.trim()) {
-    issues.push({ code: 'title', message: 'Contract name is required.', severity: 'error', section: 'fundamentals' })
+    issues.push({
+      code: 'title',
+      message: 'Contract name is required.',
+      severity: 'error',
+      section: 'fundamentals',
+      fieldId: 'contract-title',
+    })
   }
   if (!id.trim()) {
-    issues.push({ code: 'id', message: 'Contract ID is required.', severity: 'error', section: 'fundamentals' })
+    issues.push({
+      code: 'id',
+      message: 'Contract ID is required.',
+      severity: 'error',
+      section: 'fundamentals',
+      fieldId: 'contract-id',
+    })
   }
   if (!info.owner.trim()) {
-    issues.push({ code: 'owner', message: 'Contract owner is required.', severity: 'error', section: 'fundamentals' })
+    issues.push({
+      code: 'owner',
+      message: 'Contract owner is required.',
+      severity: 'error',
+      section: 'fundamentals',
+      fieldId: 'contract-owner',
+    })
   }
   if (!SEMVER.test(info.version)) {
-    issues.push({ code: 'version', message: 'Version must follow SemVer (e.g. 1.0.0).', severity: 'error', section: 'fundamentals' })
+    issues.push({
+      code: 'version',
+      message: 'Version must follow SemVer (e.g. 1.0.0).',
+      severity: 'error',
+      section: 'fundamentals',
+      fieldId: 'contract-version',
+    })
   }
 
   validateAuthoritativeDefinitions(
@@ -107,7 +133,13 @@ export function validateContract(contract: DataContract): ValidationResult {
   )
 
   if (dataset.length === 0) {
-    issues.push({ code: 'schema', message: 'At least one table is required in the schema.', severity: 'error', section: 'schema' })
+    issues.push({
+      code: 'schema',
+      message: 'At least one table is required in the schema.',
+      severity: 'error',
+      section: 'schema',
+      fieldId: 'schema-root',
+    })
   }
 
   for (const table of dataset) {

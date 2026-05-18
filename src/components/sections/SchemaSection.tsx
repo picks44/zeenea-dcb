@@ -3,9 +3,18 @@ import { Plus, Database } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { SchemaTable } from '@/types/odcs'
-import { generateId } from '@/lib/utils'
+import { generateId, cn } from '@/lib/utils'
 import { TableBlock } from '@/components/schema/TableBlock'
 import { SchemaNavigationProvider } from '@/components/schema/SchemaNavigationContext'
+import { SectionGuidanceBanner } from '@/components/readiness/SectionGuidanceBanner'
+import {
+  useReadinessField,
+  useSectionGuidanceRoot,
+} from '@/components/readiness/ReadinessNavigationContext'
+import {
+  READINESS_FIELD_SCHEMA_ROOT,
+  READINESS_HELPER_SCHEMA_FIELDS,
+} from '@/lib/uxCopy'
 
 interface SchemaSectionProps {
   tables: SchemaTable[]
@@ -29,6 +38,13 @@ function makeTable(name: string): SchemaTable {
 }
 
 export function SchemaSection({ tables, onChange, isLocked, docCompact }: SchemaSectionProps) {
+  const fieldCount = tables.reduce((acc, t) => acc + t.columns.length, 0)
+  const { setRef: sectionRootRef, info: sectionInfo, showBanner } = useSectionGuidanceRoot('schema')
+  const { setRef: schemaAnchorRef, showGuidance: showSchemaGuidance } = useReadinessField(
+    READINESS_FIELD_SCHEMA_ROOT,
+    fieldCount === 0,
+  )
+
   const [addingTable, setAddingTable] = useState(false)
   const [newName, setNewName] = useState('')
   const formRef = useRef<HTMLDivElement>(null)
@@ -59,7 +75,7 @@ export function SchemaSection({ tables, onChange, isLocked, docCompact }: Schema
   }
 
   return (
-    <div className="w-full">
+    <div ref={sectionRootRef} className="w-full">
       <div className="flex items-start justify-between gap-4 mb-5">
         <div>
           <h2 className="text-base font-semibold text-[#12131f]">Schema</h2>
@@ -75,12 +91,27 @@ export function SchemaSection({ tables, onChange, isLocked, docCompact }: Schema
         )}
       </div>
 
+      {showBanner && sectionInfo?.bannerMessage && sectionInfo.bannerVariant ? (
+        <SectionGuidanceBanner message={sectionInfo.bannerMessage} variant={sectionInfo.bannerVariant} />
+      ) : null}
+
       {tables.length === 0 && !addingTable ? (
-        <div className="border-2 border-dashed border-[#d3d3e5] rounded-xl p-16 flex flex-col items-center gap-4 bg-[#fbfbff]/50">
+        <div
+          ref={schemaAnchorRef}
+          className={cn(
+            'border-2 border-dashed rounded-xl p-16 flex flex-col items-center gap-4',
+            showSchemaGuidance
+              ? 'border-[#fed7aa] bg-[#fff7ed]/60'
+              : 'border-[#d3d3e5] bg-[#fbfbff]/50',
+          )}
+        >
           <Database className="h-6 w-6 text-[#656574]" />
           <div className="text-center">
             <p className="text-sm font-semibold text-[#12131f] mb-1">No tables defined</p>
             <p className="text-sm text-[#3f3f4a]">Import SQL to auto-populate, or add a table manually.</p>
+            {showSchemaGuidance ? (
+              <p className="text-[11px] text-[#d27b00] leading-snug">{READINESS_HELPER_SCHEMA_FIELDS}</p>
+            ) : null}
           </div>
           {!isLocked && (
             <Button onClick={openForm} className="gap-2">
@@ -91,7 +122,7 @@ export function SchemaSection({ tables, onChange, isLocked, docCompact }: Schema
         </div>
       ) : (
         <SchemaNavigationProvider>
-        <div className="space-y-4">
+        <div ref={fieldCount === 0 ? schemaAnchorRef : undefined} className="space-y-4">
           {tables.map((table, i) => (
             <TableBlock
               key={`table-${i}`}
