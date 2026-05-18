@@ -9,6 +9,7 @@ import {
   COLLABORATORS_MORE_COUNT,
   PUBLISH_REQUIRES_PUBLISHER_CONTRACT,
 } from '@/lib/uxCopy'
+import { useReadinessNavigation } from '@/components/readiness/ReadinessNavigationContext'
 import { cn } from '@/lib/utils'
 
 interface ContractTopBarProps {
@@ -71,6 +72,12 @@ export function ContractTopBar({
   const isConsumer    = myRole === 'viewer'
   const isContributor = myRole === 'editor'
   const isOwner       = myRole === 'owner'
+  const readinessNav = useReadinessNavigation()
+
+  const handlePublishClick = () => {
+    readinessNav?.markPublishAttempted()
+    onPushToGit()
+  }
 
   return (
     <div className="h-11 bg-white border-b border-[#d3d3e5] flex items-center px-3 xl:px-4 gap-2 xl:gap-3 flex-shrink-0 min-w-0">
@@ -168,13 +175,13 @@ export function ContractTopBar({
               {(info.status === 'draft' || contract.inRevision) && (gitState === 'never' || gitState === 'unpushed') && (
                 isOwner ? (
                   canPublish ? (
-                    <Button size="sm" onClick={onPushToGit} className="h-8 text-xs gap-1.5">
+                    <Button size="sm" onClick={handlePublishClick} className="h-8 text-xs gap-1.5">
                       <Upload className="h-3.5 w-3.5" />
                       {gitState === 'never' ? 'Publish' : 'Publish update'}
                     </Button>
                   ) : (
                     <Tooltip content={publishBlockReason!} side="bottom" delayDuration={300}>
-                      <span>
+                      <span className="inline-flex" onClick={handlePublishClick} role="button" tabIndex={0}>
                         <Button size="sm" disabled className="h-8 text-xs gap-1.5 pointer-events-none">
                           <Upload className="h-3.5 w-3.5" />
                           {gitState === 'never' ? 'Publish' : 'Publish update'}

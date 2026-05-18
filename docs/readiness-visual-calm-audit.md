@@ -1,0 +1,64 @@
+# Publication readiness — visual calm pass
+
+**Date:** 2026-05-18  
+**Scope:** Visual hierarchy and progressive emphasis only. No change to readiness logic, validation rules, navigation targets, or ODCS export.
+
+## Problem (before)
+
+Multiple orange signals stacked at once on an empty draft:
+
+- Nav label text turned orange
+- Section banners (card + border + icon)
+- Field borders/backgrounds on every missing required field
+- Orange helpers under every field
+- Readiness panel rows styled like errors
+- Validation block always visible in panel
+
+**Perceived effect:** the form looked broken before the user did anything wrong.
+
+## UX model (after) — 3 levels
+
+| Level | Trigger | Form | Nav | Readiness panel |
+|-------|---------|------|-----|-----------------|
+| **1 — Draft** | Default editable draft | Normal inputs; muted “Required” on missing fields only | Icon/badge only; neutral labels | Neutral checklist; grey incomplete dots |
+| **2 — Guided** | Click item in panel → navigate | Blue flash + orange emphasis on **target** field only (2.5s) | Unchanged | Click-to-scroll preserved |
+| **3 — Blocking publish** | Click **Publish** (enabled or disabled) | Orange emphasis on **all** missing required fields | Unchanged | Warmer status line; “Details to fix” section appears |
+
+## What was lightened
+
+| Element | Before | After |
+|---------|--------|-------|
+| `GuidanceField` | Permanent orange border/bg/helper | Muted “Required” badge only; emphasis on focus or publish attempt |
+| Section banners | Orange bordered cards | **Removed** (nav + panel sufficient) |
+| Nav section labels | Orange text when incomplete | Neutral text; color in icon/count only |
+| Nav incomplete icon | Bright `#d27b00` | Softer `#b8956a` / grey count |
+| Readiness required rows | Orange icons/text/hover | Grey/neutral; soft hover |
+| Panel status (not ready) | Always orange | Grey until publish attempted |
+| Validation details block | Always visible | Only after publish attempt |
+| PII callout in panel | Orange card | Neutral border/card |
+| Schema empty state | Orange when empty | Normal dashed border; orange only on emphasis |
+
+## Files modified
+
+- `src/components/readiness/ReadinessNavigationContext.tsx` — `publishAttempted`, `focusedFieldId`, `markPublishAttempted`
+- `src/components/readiness/GuidanceField.tsx` — progressive emphasis
+- `src/components/readiness/SectionGuidanceBanner.tsx` — inline hint only (banners removed from sections)
+- `src/components/ContractSectionNav.tsx` — calmer nav
+- `src/components/ContractTopBar.tsx` — publish click → `markPublishAttempted`
+- `src/components/ReadinessPanel.tsx` — calmer checklist + conditional validation block
+- `src/components/sections/FundamentalsSection.tsx` — no section banner
+- `src/components/sections/SchemaSection.tsx` — progressive schema empty state
+- `src/components/sections/StakeholdersSection.tsx` — no section banner
+
+**Unchanged:** `readinessGuidance.ts`, `contractValidation.ts`, `publicationReadiness.ts` scoring/rules, `schema-nav-flash` animation (already blue).
+
+## Recommended screenshots
+
+1. **Empty draft** — form looks normal; panel shows neutral checklist; nav shows soft icons  
+2. **After panel click** — single field flash + brief orange highlight  
+3. **After Publish click (blocked)** — missing fields emphasized; panel “Details to fix”  
+4. **Published read-only** — no guidance provider signals  
+
+## Build
+
+Run `npm run build` after changes.

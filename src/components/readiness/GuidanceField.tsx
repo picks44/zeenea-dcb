@@ -12,35 +12,46 @@ interface GuidanceFieldProps {
   children: ReactNode
 }
 
-/** Wraps a form field with soft required-missing guidance (not publish-attempt red). */
+/**
+ * Required-field wrapper with progressive emphasis:
+ * - Draft: muted "Required" badge only
+ * - Guided / publish attempt: temporary orange highlight on missing fields
+ */
 export function GuidanceField({
   fieldId,
   label,
-  required,
+  required = true,
   isMissing,
   missingHelper,
   className,
   children,
 }: GuidanceFieldProps) {
-  const { setRef, showGuidance } = useReadinessField(fieldId, isMissing)
+  const { setRef, showRequiredBadge, showEmphasis } = useReadinessField(fieldId, isMissing, required)
 
   return (
     <div
       ref={setRef}
       className={cn(
         className,
-        showGuidance && 'rounded-md border border-[#fed7aa] bg-[#fff7ed] px-2.5 py-2 -mx-0.5',
+        showEmphasis && 'rounded-md border border-[#fed7aa] bg-[#fff7ed]/80 px-2.5 py-2 -mx-0.5 transition-colors duration-200',
       )}
     >
       <label className="text-xs font-medium text-[#33333d] mb-1 block">
         {label}
-        {required ? (
-          <span className="ml-1.5 text-[10px] font-normal text-[#d27b00]">Required</span>
+        {showRequiredBadge && required ? (
+          <span
+            className={cn(
+              'ml-1.5 text-[10px] font-normal',
+              showEmphasis ? 'text-[#b8956a]' : 'text-[#9898a7]',
+            )}
+          >
+            Required
+          </span>
         ) : null}
       </label>
       {children}
-      {showGuidance && missingHelper ? (
-        <p className="text-[10px] text-[#d27b00] mt-1 leading-snug">{missingHelper}</p>
+      {showEmphasis && missingHelper ? (
+        <p className="text-[10px] text-[#b8956a] mt-1 leading-snug">{missingHelper}</p>
       ) : null}
     </div>
   )

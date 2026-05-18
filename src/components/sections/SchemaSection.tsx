@@ -6,7 +6,6 @@ import { SchemaTable } from '@/types/odcs'
 import { generateId, cn } from '@/lib/utils'
 import { TableBlock } from '@/components/schema/TableBlock'
 import { SchemaNavigationProvider } from '@/components/schema/SchemaNavigationContext'
-import { SectionGuidanceBanner } from '@/components/readiness/SectionGuidanceBanner'
 import {
   useReadinessField,
   useSectionGuidanceRoot,
@@ -39,10 +38,11 @@ function makeTable(name: string): SchemaTable {
 
 export function SchemaSection({ tables, onChange, isLocked, docCompact }: SchemaSectionProps) {
   const fieldCount = tables.reduce((acc, t) => acc + t.columns.length, 0)
-  const { setRef: sectionRootRef, info: sectionInfo, showBanner } = useSectionGuidanceRoot('schema')
-  const { setRef: schemaAnchorRef, showGuidance: showSchemaGuidance } = useReadinessField(
+  const { setRef: sectionRootRef } = useSectionGuidanceRoot('schema')
+  const { setRef: schemaAnchorRef, showEmphasis: showSchemaEmphasis } = useReadinessField(
     READINESS_FIELD_SCHEMA_ROOT,
     fieldCount === 0,
+    true,
   )
 
   const [addingTable, setAddingTable] = useState(false)
@@ -91,16 +91,12 @@ export function SchemaSection({ tables, onChange, isLocked, docCompact }: Schema
         )}
       </div>
 
-      {showBanner && sectionInfo?.bannerMessage && sectionInfo.bannerVariant ? (
-        <SectionGuidanceBanner message={sectionInfo.bannerMessage} variant={sectionInfo.bannerVariant} />
-      ) : null}
-
       {tables.length === 0 && !addingTable ? (
         <div
           ref={schemaAnchorRef}
           className={cn(
             'border-2 border-dashed rounded-xl p-16 flex flex-col items-center gap-4',
-            showSchemaGuidance
+            showSchemaEmphasis
               ? 'border-[#fed7aa] bg-[#fff7ed]/60'
               : 'border-[#d3d3e5] bg-[#fbfbff]/50',
           )}
@@ -109,8 +105,8 @@ export function SchemaSection({ tables, onChange, isLocked, docCompact }: Schema
           <div className="text-center">
             <p className="text-sm font-semibold text-[#12131f] mb-1">No tables defined</p>
             <p className="text-sm text-[#3f3f4a]">Import SQL to auto-populate, or add a table manually.</p>
-            {showSchemaGuidance ? (
-              <p className="text-[11px] text-[#d27b00] leading-snug">{READINESS_HELPER_SCHEMA_FIELDS}</p>
+            {showSchemaEmphasis ? (
+              <p className="text-[11px] text-[#b8956a] leading-snug">{READINESS_HELPER_SCHEMA_FIELDS}</p>
             ) : null}
           </div>
           {!isLocked && (

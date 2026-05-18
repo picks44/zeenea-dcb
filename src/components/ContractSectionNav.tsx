@@ -41,9 +41,9 @@ function StatusIndicator({
   if (status === 'incomplete') {
     return (
       <span className="inline-flex items-center gap-0.5 flex-shrink-0">
-        <AlertCircle className={cn(iconClass, 'text-[#d27b00]')} />
+        <AlertCircle className={cn(iconClass, 'text-[#b8956a]')} />
         {missingCount > 1 ? (
-          <span className="text-[9px] font-semibold text-[#d27b00] tabular-nums min-w-[0.75rem] text-center">
+          <span className="text-[9px] font-medium text-[#9898a7] tabular-nums min-w-[0.75rem] text-center">
             {missingCount}
           </span>
         ) : null}
@@ -98,8 +98,6 @@ export function ContractSectionNav({
         {sections.map(({ id, label, icon: Icon }) => {
           const isActive = activeSection === id
           const { status, missingCount } = navStatusForSection(id, guidance, contract)
-          const accentIncomplete = status === 'incomplete' && !isActive
-
           return (
             <Tooltip
               key={id}
@@ -115,8 +113,7 @@ export function ContractSectionNav({
                     ? 'gap-1.5 px-1 xl:pl-2 xl:pr-2 py-0.5 h-7 text-[13px]'
                     : 'gap-2 px-1 xl:pl-2 xl:pr-2 py-1 h-8 text-sm',
                   isActive && 'bg-[#edf6ff] font-medium text-[#12131f]',
-                  !isActive && accentIncomplete && 'text-[#8a5c00] font-medium',
-                  !isActive && !accentIncomplete && 'text-[#12131f] hover:bg-[rgba(228,228,240,0.3)]',
+                  !isActive && 'text-[#12131f] hover:bg-[rgba(228,228,240,0.3)]',
                 )}
                 aria-label={label}
               >

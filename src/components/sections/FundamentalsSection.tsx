@@ -28,7 +28,6 @@ import {
   READINESS_HELPER_CONTRACT_VERSION,
 } from '@/lib/uxCopy'
 import { GuidanceField } from '@/components/readiness/GuidanceField'
-import { SectionGuidanceBanner } from '@/components/readiness/SectionGuidanceBanner'
 import { useSectionGuidanceRoot } from '@/components/readiness/ReadinessNavigationContext'
 import type { AuthoritativeDefinition } from '@/types/odcsShared'
 
@@ -112,7 +111,7 @@ export function FundamentalsSection({
   }, [usage, limitations, isLocked])
 
   const tags = info.tags ?? []
-  const { setRef: sectionRootRef, info: sectionInfo, showBanner } = useSectionGuidanceRoot('fundamentals')
+  const { setRef: sectionRootRef } = useSectionGuidanceRoot('fundamentals')
   const semver = /^\d+\.\d+\.\d+$/
 
   const ownerFieldLocked = isLocked || !isOwner
@@ -134,10 +133,6 @@ export function FundamentalsSection({
           {FUNDAMENTALS_INTRO}
         </p>
       </div>
-
-      {showBanner && sectionInfo?.bannerMessage && sectionInfo.bannerVariant ? (
-        <SectionGuidanceBanner message={sectionInfo.bannerMessage} variant={sectionInfo.bannerVariant} />
-      ) : null}
 
       {isLocked ? (
         <FundamentalsReadOnlyView contract={contract} compact={docCompact} />

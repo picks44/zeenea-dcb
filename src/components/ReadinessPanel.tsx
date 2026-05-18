@@ -71,9 +71,11 @@ function SectionHeaderWithScore({
 function CheckRow({
   item,
   onNavigate,
+  publishAttempted,
 }: {
   item: ReadinessGuidanceItem
   onNavigate?: (item: ReadinessGuidanceItem) => void
+  publishAttempted?: boolean
 }) {
   const { label, ok, variant, badge, missingHelper } = item
   const isRequired = variant === 'required'
@@ -81,31 +83,28 @@ function CheckRow({
 
   const rowInner = (
     <>
-      <div
+      <span
         className={cn(
           'h-4 w-4 rounded-full flex items-center justify-center flex-shrink-0',
-          ok && isRequired && 'bg-[#d3efcd]',
-          ok && !isRequired && 'bg-[#e8f5e6]',
-          !ok && isRequired && 'bg-[#fff7ed] border border-[#fed7aa]',
+          ok && isRequired && 'bg-[#e8f5e6]',
+          ok && !isRequired && 'bg-[#f0f4ff]',
+          !ok && isRequired && 'border border-[#e4e4f0] bg-[#fbfbff]',
           !ok && !isRequired && 'border border-[#e4e4f0] bg-[#fbfbff]',
         )}
       >
         {ok ? (
           <Check className={cn('h-2.5 w-2.5', isRequired ? 'text-[#047800]' : 'text-[#3a8f38]')} />
         ) : isRequired ? (
-          <AlertCircle className="h-2.5 w-2.5 text-[#d27b00]" />
+          <span className="h-1.5 w-1.5 rounded-full bg-[#c4c4d4]" />
         ) : (
           <span className="h-1.5 w-1.5 rounded-full bg-[#d3d3e5]" />
         )}
-      </div>
+      </span>
       <span className="flex-1 min-w-0 text-left">
         <span
           className={cn(
             'block text-xs leading-snug',
-            ok && isRequired && 'text-[#33333d]',
-            ok && !isRequired && 'text-[#3f3f4a]',
-            !ok && isRequired && 'text-[#8a5c00] font-medium',
-            !ok && !isRequired && 'text-[#9898a7]',
+            ok ? 'text-[#33333d]' : 'text-[#656574]',
           )}
         >
           {label}
@@ -130,7 +129,8 @@ function CheckRow({
           onClick={() => onNavigate!(item)}
           className={cn(
             'w-full flex items-center gap-2 rounded-md px-1 py-1 -mx-1 text-left transition-colors',
-            'hover:bg-[#fff7ed]/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#0550dc] cursor-pointer',
+            'hover:bg-[#f5f5fa] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#0550dc] cursor-pointer',
+            publishAttempted && !ok && isRequired && 'hover:bg-[#fff7ed]/50',
           )}
         >
           {rowInner}
@@ -167,6 +167,7 @@ export function ReadinessPanel({
   )
 
   const nav = useReadinessNavigation()
+  const publishAttempted = nav?.publishAttempted ?? false
   const handleNavigateItem = (item: ReadinessGuidanceItem) => {
     if (!nav?.enabled || item.ok) return
     nav.navigateTo({ section: item.section, fieldId: item.fieldId })
@@ -300,8 +301,19 @@ export function ReadinessPanel({
             </>
           ) : (
             <>
-              <AlertCircle className="h-3 w-3 text-[#d27b00] flex-shrink-0" />
-              <span className="text-[11px] text-[#d27b00] line-clamp-2" title={publishStatus.message}>
+              <AlertCircle
+                className={cn(
+                  'h-3 w-3 flex-shrink-0',
+                  publishAttempted ? 'text-[#b8956a]' : 'text-[#9898a7]',
+                )}
+              />
+              <span
+                className={cn(
+                  'text-[11px] line-clamp-2',
+                  publishAttempted ? 'text-[#8a5c00] font-medium' : 'text-[#656574]',
+                )}
+                title={publishStatus.message}
+              >
                 {publishStatus.message}
               </span>
             </>
@@ -320,7 +332,12 @@ export function ReadinessPanel({
           />
           <ul className={listGap}>
             {requiredChecks.map(item => (
-              <CheckRow key={item.key} item={item} onNavigate={nav?.enabled ? handleNavigateItem : undefined} />
+              <CheckRow
+                key={item.key}
+                item={item}
+                publishAttempted={publishAttempted}
+                onNavigate={nav?.enabled ? handleNavigateItem : undefined}
+              />
             ))}
           </ul>
         </div>
@@ -363,9 +380,9 @@ export function ReadinessPanel({
             </div>
 
               {piiCount > 0 && (
-                <div className="mt-2.5 flex items-center gap-2 bg-[#fff8f3] rounded-lg px-2.5 py-2 border border-[#f0dcc8]">
-                  <AlertTriangle className="h-3 w-3 text-[#8a5c3a] flex-shrink-0" />
-                  <span className="text-[11px] text-[#8a5c3a] leading-snug">
+                <div className="mt-2.5 flex items-center gap-2 rounded-lg px-2.5 py-2 border border-[#e4e4f0] bg-[#fbfbff]">
+                  <AlertTriangle className="h-3 w-3 text-[#9898a7] flex-shrink-0" />
+                  <span className="text-[11px] text-[#656574] leading-snug">
                     <strong>{piiCount}</strong> personal data field{piiCount > 1 ? 's' : ''} (PII) on this contract
                   </span>
                 </div>
@@ -374,7 +391,7 @@ export function ReadinessPanel({
           ) : null}
         </div>
 
-        {validationErrors.length >= 1 && (
+        {publishAttempted && validationErrors.length >= 1 && (
           <div className={sectionPad}>
             <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-2">
               {READINESS_VALIDATION_DETAILS_TITLE}
@@ -404,7 +421,7 @@ export function ReadinessPanel({
             <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-2">Warnings</p>
             <ul className="space-y-1">
               {validationWarnings.slice(0, 6).map((w, i) => (
-                <li key={`${w.code}-${i}`} className="text-[11px] text-[#d27b00] leading-snug flex items-start gap-1.5">
+                <li key={`${w.code}-${i}`} className="text-[11px] text-[#656574] leading-snug flex items-start gap-1.5">
                   <AlertTriangle className="h-3 w-3 flex-shrink-0 mt-0.5" />
                   <span>{w.message}</span>
                 </li>
@@ -425,6 +442,7 @@ export function ReadinessPanel({
               <CheckRow
                 key={item.key}
                 item={item}
+                publishAttempted={publishAttempted}
                 onNavigate={nav?.enabled ? handleNavigateItem : undefined}
               />
             ))}
