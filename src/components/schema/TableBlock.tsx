@@ -397,7 +397,7 @@ export function TableBlock({
           </p>
 
           {rels.length > 0 ? (
-            <div className="space-y-2 mb-3">
+            <div className="space-y-2.5 mb-3">
               {rels.map(rel => (
                 <TableRelationshipRow
                   key={rel.id}
