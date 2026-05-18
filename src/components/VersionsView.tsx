@@ -1,5 +1,4 @@
-import { Upload, Clock, ArrowRight, Undo2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Clock, ArrowRight, Undo2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Tooltip } from '@/components/ui/tooltip'
 import { DataContract } from '@/types/odcs'
@@ -9,16 +8,12 @@ import { summarizeExportChangesSince } from '@/lib/exportedContractDiff'
 
 interface VersionsViewProps {
   contract: DataContract
-  canPublish: boolean
-  publishBlockReason: string | null
-  onPushToGit: () => void
   onVersionClick: (hash: string) => void
   onDiscardDraft: () => void
 }
 
 export function VersionsView({
-  contract, canPublish, publishBlockReason,
-  onPushToGit, onVersionClick, onDiscardDraft,
+  contract, onVersionClick, onDiscardDraft,
 }: VersionsViewProps) {
   const { gitHistory } = contract
   const commits = [...gitHistory].reverse()
@@ -27,10 +22,6 @@ export function VersionsView({
   const hasUnpublishedChanges = !lastCommit || new Date(contract.updatedAt) > new Date(lastCommit.timestamp)
   const hasDraftRow = contract.info.status === 'draft' || contract.inRevision || hasUnpublishedChanges
   const canCompareCurrent = hasDraftRow && !!lastCommit?.snapshot
-
-  const gitState = !lastCommit ? 'never'
-    : new Date(contract.updatedAt) > new Date(lastCommit.timestamp) ? 'unpushed'
-    : 'synced'
 
   const showTimeline = hasDraftRow || commits.length > 0
 
@@ -46,32 +37,13 @@ export function VersionsView({
     <div className="max-w-[600px] w-full">
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h2 className="text-base font-semibold text-neutral-900">Version history</h2>
-          <p className="text-neutral-400 text-xs mt-0.5">
-            {gitHistory.length === 0
-              ? VERSION_HISTORY_INTRO_EMPTY
-              : versionHistoryIntroCount(gitHistory.length)}
-          </p>
-        </div>
-        {contract.info.status !== 'deprecated' && (gitState === 'never' || gitState === 'unpushed') && (
-          canPublish ? (
-            <Button size="sm" onClick={onPushToGit} className="h-8 text-xs gap-1.5">
-              <Upload className="h-3.5 w-3.5" />
-              {gitState === 'never' ? 'Publish' : 'Publish update'}
-            </Button>
-          ) : (
-            <Tooltip content={publishBlockReason!} side="bottom" delayDuration={300}>
-              <span>
-                <Button size="sm" disabled className="h-8 text-xs gap-1.5 pointer-events-none">
-                  <Upload className="h-3.5 w-3.5" />
-                  {gitState === 'never' ? 'Publish' : 'Publish update'}
-                </Button>
-              </span>
-            </Tooltip>
-          )
-        )}
+      <div className="mb-8">
+        <h2 className="text-base font-semibold text-neutral-900">Version history</h2>
+        <p className="text-neutral-400 text-xs mt-0.5">
+          {gitHistory.length === 0
+            ? VERSION_HISTORY_INTRO_EMPTY
+            : versionHistoryIntroCount(gitHistory.length)}
+        </p>
       </div>
 
       {/* Empty state */}
@@ -84,9 +56,6 @@ export function VersionsView({
           <p className="text-xs text-neutral-400 max-w-xs">
             Each time you publish, a snapshot is saved here with a version number and description.
           </p>
-          <button onClick={onPushToGit} className="mt-1 text-xs text-blue-700 font-medium underline">
-            Publish now →
-          </button>
         </div>
       )}
 

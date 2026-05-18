@@ -1,7 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { AlertTriangle, Eye, GitBranch, Lock } from 'lucide-react'
-import { Button } from './components/ui/button'
-
+import { AlertTriangle, Eye, Lock } from 'lucide-react'
 import { AppTopBar } from './components/AppTopBar'
 import { MainSidebar } from './components/MainSidebar'
 import { ContractsBacklog } from './components/ContractsBacklog'
@@ -319,19 +317,11 @@ export default function App() {
                 )}
 
                 {contract.info.status === 'active' && !contract.inRevision && (
-                  <div className="bg-[#edf6ff] border-b border-[#b8d0fb] px-6 py-2 flex items-center justify-between gap-4 flex-shrink-0">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <Lock className="h-3.5 w-3.5 text-[#00699f] flex-shrink-0" />
-                      <p className="text-[#003d5c] text-xs font-medium">
-                        This contract is active and read-only. Start a new version to edit and publish changes.
-                      </p>
-                    </div>
-                    {(myRole === 'owner' || myRole === 'editor') && (
-                      <Button variant="secondary" size="sm" onClick={handleNewVersion} className="gap-1.5 flex-shrink-0 h-7 text-xs">
-                        <GitBranch className="h-3.5 w-3.5" />
-                        New version
-                      </Button>
-                    )}
+                  <div className="bg-[#edf6ff] border-b border-[#b8d0fb] px-6 py-2 flex items-center gap-2.5 flex-shrink-0">
+                    <Lock className="h-3.5 w-3.5 text-[#00699f] flex-shrink-0" />
+                    <p className="text-[#003d5c] text-xs font-medium">
+                      This contract is active and read-only. Start a new version to edit and publish changes.
+                    </p>
                   </div>
                 )}
 
@@ -346,11 +336,8 @@ export default function App() {
                   <div className="flex-1 overflow-y-auto px-8 py-6">
                     <VersionsView
                       contract={contract}
-                      onPushToGit={() => setShowPushModal(true)}
                       onVersionClick={hash => setCompareHash(hash)}
                       onDiscardDraft={handleDiscardDraft}
-                      canPublish={canPublish}
-                      publishBlockReason={publishBlockReason}
                     />
                   </div>
                 ) : activeTab === 'yaml' ? (
