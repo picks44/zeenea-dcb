@@ -5,16 +5,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DataContract, DataContractSnapshot } from '@/types/odcs'
 import { cn, timeAgo } from '@/lib/utils'
 import { snapshotToYaml } from '@/lib/odcsYamlGenerator'
+import {
+  compareExportedSnapshots,
+  contractToComparisonSnapshot,
+  type FormDiffRow,
+} from '@/lib/exportedContractDiff'
 
 function contractToSnapshot(c: DataContract): DataContractSnapshot {
-  return {
-    id: c.id,
-    info: { ...c.info },
-    dataset: JSON.parse(JSON.stringify(c.dataset)),
-    stakeholders: [...c.stakeholders],
-    roles: [...(c.roles ?? [])],
-    slaProperties: [...(c.slaProperties ?? [])],
-  }
+  return contractToComparisonSnapshot(c)
 }
 
 // ─── LCS diff ─────────────────────────────────────────────────────────────────
@@ -161,137 +159,80 @@ function DiffValue({ left, right }: { left: string; right: string }) {
   )
 }
 
-function FormDiffView({ left, right }: { left: DataContractSnapshot; right: DataContractSnapshot }) {
-  const infoFields = [
-    { key: 'title',   label: 'Title',       l: left.info.title,            r: right.info.title            },
-    { key: 'version', label: 'Version',     l: left.info.version,          r: right.info.version          },
-    { key: 'status',  label: 'Status',      l: left.info.status,           r: right.info.status           },
-    { key: 'owner',   label: 'Contract owner', l: left.info.owner,         r: right.info.owner            },
-    { key: 'domain',  label: 'Domain',      l: left.info.domain  ?? '',    r: right.info.domain  ?? ''    },
-    { key: 'desc',    label: 'Description', l: left.info.description ?? '', r: right.info.description ?? '' },
-  ]
-
-  const leftCols  = left.dataset.flatMap(t  => t.columns.map(c => ({ ...c, table: t.physicalName  })))
-  const rightCols = right.dataset.flatMap(t => t.columns.map(c => ({ ...c, table: t.physicalName })))
-  const allNames  = Array.from(new Set([...leftCols.map(c => c.physicalName), ...rightCols.map(c => c.physicalName)]))
-
-  const fieldRows = allNames.map(name => {
-    const l = leftCols.find(c => c.physicalName === name)
-    const r = rightCols.find(c => c.physicalName === name)
-    const status = !l ? 'added' : !r ? 'removed'
-      : JSON.stringify({ ...l, id: '' }) !== JSON.stringify({ ...r, id: '' }) ? 'modified' : 'same'
-    return { name, l, r, status }
-  }).filter(row => row.status !== 'same')
-
-  const changedInfo  = infoFields.filter(f => f.l !== f.r)
-  const hasNoChanges = changedInfo.length === 0 && fieldRows.length === 0
-
-  if (hasNoChanges) {
-    return (
-      <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center">
-        <div className="h-10 w-10 rounded-full bg-[#f5f5fa] flex items-center justify-center">
-          <GitBranch className="h-5 w-5 text-[#9898a7]" />
-        </div>
-        <p className="text-sm text-[#656574] font-medium">These versions are identical</p>
-        <p className="text-xs text-[#9898a7]">No differences found between the selected versions.</p>
-      </div>
-    )
-  }
-
+function IdenticalVersionsView() {
   return (
-    <div className="flex-1 overflow-y-auto">
-      <div className="px-6 py-5 space-y-6 max-w-3xl mx-auto">
+    <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center px-6">
+      <div className="h-10 w-10 rounded-full bg-[#f5f5fa] flex items-center justify-center">
+        <GitBranch className="h-5 w-5 text-[#9898a7]" />
+      </div>
+      <p className="text-sm text-[#656574] font-medium">These versions are identical</p>
+      <p className="text-xs text-[#9898a7] max-w-sm">
+        No differences in the exported ODCS contract payload between the selected versions.
+      </p>
+    </div>
+  )
+}
 
-        {/* Info changes */}
-        {changedInfo.length > 0 && (
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-[#656574]">Contract info</span>
-              <span className="text-[10px] text-[#9898a7] bg-[#f5f5fa] px-1.5 py-0.5 rounded-full">{changedInfo.length} change{changedInfo.length > 1 ? 's' : ''}</span>
-            </div>
-            <div className="bg-white border border-[#d3d3e5] rounded-xl overflow-hidden shadow-sm divide-y divide-zinc-100">
-              {changedInfo.map(({ key, label, l, r }) => (
-                <div key={key} className="flex items-start gap-4 px-4 py-3">
-                  <span className="text-[11px] text-[#656574] w-20 flex-shrink-0 mt-0.5 font-medium">{label}</span>
-                  <DiffValue left={l} right={r} />
-                </div>
-              ))}
-            </div>
+function FormDiffRowView({ row }: { row: FormDiffRow }) {
+  return (
+    <div className={cn(
+      'flex items-start gap-3 px-4 py-3',
+      row.kind === 'added' && 'bg-[#f0ffec]/50',
+      row.kind === 'removed' && 'bg-[#fff2ee]/50',
+      row.kind === 'modified' && 'bg-[#fff8ec]/50',
+    )}>
+      <span className={cn(
+        'text-xs font-bold w-4 flex-shrink-0 mt-0.5 font-mono',
+        row.kind === 'added' && 'text-[#047800]',
+        row.kind === 'removed' && 'text-[#c12c11]',
+        row.kind === 'modified' && 'text-[#d27b00]',
+      )}>
+        {row.kind === 'added' ? '+' : row.kind === 'removed' ? '−' : '~'}
+      </span>
+      <div className="flex-1 min-w-0">
+        <span className="text-xs font-mono font-semibold text-[#2a2a30]">{row.label}</span>
+        {row.kind === 'modified' ? (
+          <div className="mt-1">
+            <DiffValue left={row.left} right={row.right} />
+            {row.detail && <p className="text-[11px] text-[#656574] mt-1">{row.detail}</p>}
           </div>
-        )}
-
-        {/* Schema changes */}
-        {fieldRows.length > 0 && (
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-[#656574]">Schema</span>
-              <span className="text-[10px] text-[#9898a7] bg-[#f0ffec] text-[#047800] px-1.5 py-0.5 rounded-full border border-emerald-100">
-                {fieldRows.filter(r => r.status === 'added').length} added
-              </span>
-              {fieldRows.some(r => r.status === 'removed') && (
-                <span className="text-[10px] bg-[#fff2ee] text-[#c12c11] px-1.5 py-0.5 rounded-full border border-rose-100">
-                  {fieldRows.filter(r => r.status === 'removed').length} removed
-                </span>
-              )}
-              {fieldRows.some(r => r.status === 'modified') && (
-                <span className="text-[10px] bg-[#fff8ec] text-[#d27b00] px-1.5 py-0.5 rounded-full border border-[#ffd599]">
-                  {fieldRows.filter(r => r.status === 'modified').length} modified
-                </span>
-              )}
-            </div>
-            <div className="bg-white border border-[#d3d3e5] rounded-xl overflow-hidden shadow-sm divide-y divide-zinc-100">
-              {fieldRows.map(({ name, l, r, status }) => (
-                <div key={name} className={cn(
-                  'flex items-start gap-3 px-4 py-3',
-                  status === 'added'    && 'bg-[#f0ffec]/50',
-                  status === 'removed'  && 'bg-[#fff2ee]/50',
-                  status === 'modified' && 'bg-[#fff8ec]/50',
-                )}>
-                  <span className={cn(
-                    'text-xs font-bold w-4 flex-shrink-0 mt-0.5 font-mono',
-                    status === 'added'    && 'text-[#047800]',
-                    status === 'removed'  && 'text-[#c12c11]',
-                    status === 'modified' && 'text-[#d27b00]',
-                  )}>
-                    {status === 'added' ? '+' : status === 'removed' ? '−' : '~'}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs font-mono font-semibold text-[#2a2a30]">{name}</span>
-                      {r && !l && <span className="text-[10px] text-[#047800] bg-[#d3efcd] px-1.5 py-px rounded font-medium">{r.logicalType}</span>}
-                      {l && !r && <span className="text-[10px] text-[#c12c11] bg-[#ffdacf] px-1.5 py-px rounded font-medium line-through">{l.logicalType}</span>}
-                    </div>
-                    {status === 'modified' && l && r && (
-                      <div className="mt-1 space-y-0.5">
-                        {l.logicalType  !== r.logicalType  && (
-                          <div className="text-[11px] text-[#3f3f4a]">
-                            Type: <span className="line-through text-[#c12c11] font-mono">{l.logicalType}</span>
-                            <span className="mx-1 text-[#9898a7]">→</span>
-                            <span className="text-[#047800] font-mono">{r.logicalType}</span>
-                          </div>
-                        )}
-                        {l.physicalType !== r.physicalType && (
-                          <div className="text-[11px] text-[#3f3f4a]">
-                            DB type: <span className="line-through text-[#c12c11] font-mono">{l.physicalType}</span>
-                            <span className="mx-1 text-[#9898a7]">→</span>
-                            <span className="text-[#047800] font-mono">{r.physicalType}</span>
-                          </div>
-                        )}
-                        {l.description  !== r.description  && <div className="text-[11px] text-[#656574] italic">Description changed</div>}
-                        {l.required     !== r.required     && <div className="text-[11px] text-[#3f3f4a]">Required: <span className={l.required ? 'text-[#c12c11]' : 'text-[#656574]'}>{l.required ? 'yes' : 'no'}</span> → <span className={r.required ? 'text-[#047800]' : 'text-[#656574]'}>{r.required ? 'yes' : 'no'}</span></div>}
-                        {l.isPII        !== r.isPII        && <div className="text-[11px] text-[#3f3f4a]">PII: <span className={l.isPII ? 'text-[#c12c11]' : 'text-[#656574]'}>{l.isPII ? 'yes' : 'no'}</span> → <span className={r.isPII ? 'text-[#047800]' : 'text-[#656574]'}>{r.isPII ? 'yes' : 'no'}</span></div>}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+        ) : row.kind === 'added' ? (
+          <p className="text-[11px] text-[#047800] mt-0.5">{row.right}</p>
+        ) : (
+          <p className="text-[11px] text-[#c12c11] mt-0.5 line-through">{row.left}</p>
         )}
       </div>
     </div>
   )
 }
+
+function FormDiffView({ left, right }: { left: DataContractSnapshot; right: DataContractSnapshot }) {
+  const diff = useMemo(() => compareExportedSnapshots(left, right), [left, right])
+  if (diff.identical) return <IdenticalVersionsView />
+
+  return (
+    <div className="flex-1 overflow-y-auto">
+      <div className="px-6 py-5 space-y-6 max-w-3xl mx-auto">
+        {diff.formSections.map(section => (
+          <div key={section.id}>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[#656574]">{section.title}</span>
+              <span className="text-[10px] text-[#9898a7] bg-[#f5f5fa] px-1.5 py-0.5 rounded-full">
+                {section.rows.length} change{section.rows.length > 1 ? 's' : ''}
+              </span>
+            </div>
+            <div className="bg-white border border-[#d3d3e5] rounded-xl overflow-hidden shadow-sm divide-y divide-zinc-100">
+              {section.rows.map(row => (
+                <FormDiffRowView key={`${section.id}-${row.label}-${row.kind}`} row={row} />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 
 // ─── Version source ───────────────────────────────────────────────────────────
 
@@ -300,6 +241,31 @@ interface VersionSource {
   version: string
   sublabel: string
   snapshot: DataContractSnapshot
+}
+
+/** Default compare direction: left = baseline, right = incoming changes. */
+function defaultComparePair(
+  initialHash: string,
+  sources: VersionSource[],
+): { leftId: string; rightId: string } {
+  if (sources.length === 0) return { leftId: '', rightId: '' }
+  if (sources.length === 1) return { leftId: sources[0].id, rightId: sources[0].id }
+
+  if (initialHash === 'draft') {
+    const latestPublished = sources.find(s => s.id !== 'draft')
+    return {
+      leftId: latestPublished?.id ?? sources[1]?.id ?? sources[0].id,
+      rightId: 'draft',
+    }
+  }
+
+  const idx = sources.findIndex(s => s.id === initialHash)
+  const base = idx >= 0 ? initialHash : sources[0].id
+  const baseIdx = sources.findIndex(s => s.id === base)
+  return {
+    leftId: base,
+    rightId: sources[baseIdx + 1]?.id ?? sources[0].id,
+  }
 }
 
 // ─── Modal ───────────────────────────────────────────────────────────────────
@@ -330,19 +296,21 @@ export function VersionCompareModal({ contract, initialHash, open, onClose }: Ve
     return list
   }, [contract])
 
-  const [leftId,  setLeftId]  = useState(() =>
-    sources.some(s => s.id === initialHash) ? initialHash : (sources[0]?.id ?? '')
-  )
-  const [rightId, setRightId] = useState(() => {
-    const base = sources.some(s => s.id === initialHash) ? initialHash : sources[0]?.id ?? ''
-    const idx  = sources.findIndex(s => s.id === base)
-    return sources[idx + 1]?.id ?? sources[0]?.id ?? ''
-  })
+  const [leftId, setLeftId] = useState(() => defaultComparePair(initialHash, sources).leftId)
+  const [rightId, setRightId] = useState(() => defaultComparePair(initialHash, sources).rightId)
   const [mode, setMode] = useState<'form' | 'yaml'>('form')
 
   const leftSource  = sources.find(s => s.id === leftId)
   const rightSource = sources.find(s => s.id === rightId)
   const sameSource  = leftId === rightId
+
+  const exportDiff = useMemo(
+    () =>
+      leftSource && rightSource && !sameSource
+        ? compareExportedSnapshots(leftSource.snapshot, rightSource.snapshot)
+        : null,
+    [leftSource, rightSource, sameSource],
+  )
 
   if (!open) return null
 
@@ -468,6 +436,8 @@ export function VersionCompareModal({ contract, initialHash, open, onClose }: Ve
           <div className="flex-1 flex flex-col items-center justify-center gap-3">
             <p className="text-sm text-[#656574]">Not enough versions to compare yet.</p>
           </div>
+        ) : exportDiff?.identical ? (
+          <IdenticalVersionsView />
         ) : mode === 'yaml' ? (
           <YamlDiffView left={leftSource.snapshot} right={rightSource.snapshot} />
         ) : (

@@ -6,6 +6,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { DataContract, GitCommit } from '@/types/odcs'
 import { validateContract } from '@/lib/contractValidation'
+import { buildPublishChangelog, summarizeExportChangesSince } from '@/lib/exportedContractDiff'
 import { cn } from '@/lib/utils'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -189,7 +190,19 @@ export function PushToGitModal({ contract, open, onClose, onPushed }: PushToGitM
     if (!open) return
     setPhase({ kind: 'form' })
     setBumpType('minor')
-    setDescription('')
+
+    const firstPublish = contract.gitHistory.length === 0
+    let initialDescription = ''
+    if (!firstPublish) {
+      const lastCommit = contract.gitHistory[contract.gitHistory.length - 1]
+      if (lastCommit?.snapshot) {
+        initialDescription = buildPublishChangelog(
+          summarizeExportChangesSince(contract, lastCommit.snapshot),
+        )
+      }
+    }
+    setDescription(initialDescription)
+
     setTimeout(() => descRef.current?.focus(), 80)
   }, [open, contract.uid])
 

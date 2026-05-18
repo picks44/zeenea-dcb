@@ -1,10 +1,11 @@
-import { Plus, Minus, Equal, Upload, Clock, ArrowRight, Undo2 } from 'lucide-react'
+import { Upload, Clock, ArrowRight, Undo2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tooltip } from '@/components/ui/tooltip'
-import { DataContract, DataContractSnapshot } from '@/types/odcs'
+import { DataContract } from '@/types/odcs'
 import { timeAgo, cn } from '@/lib/utils'
 import { VERSION_HISTORY_INTRO_EMPTY, versionHistoryIntroCount } from '@/lib/uxCopy'
+import { summarizeExportChangesSince } from '@/lib/exportedContractDiff'
 
 interface VersionsViewProps {
   contract: DataContract
@@ -13,21 +14,6 @@ interface VersionsViewProps {
   onPushToGit: () => void
   onVersionClick: (hash: string) => void
   onDiscardDraft: () => void
-}
-
-function diffSummary(contract: DataContract, snapshot: DataContractSnapshot) {
-  const cur  = contract.dataset.flatMap(t => t.columns)
-  const prev = snapshot.dataset.flatMap(t => t.columns)
-  const names = Array.from(new Set([...cur.map(c => c.physicalName), ...prev.map(c => c.physicalName)]))
-  let added = 0, removed = 0, modified = 0
-  for (const name of names) {
-    const c = cur.find(x => x.physicalName === name)
-    const p = prev.find(x => x.physicalName === name)
-    if (!p) added++
-    else if (!c) removed++
-    else if (JSON.stringify({ ...c, id: '' }) !== JSON.stringify({ ...p, id: '' })) modified++
-  }
-  return { added, removed, modified }
 }
 
 export function VersionsView({
@@ -111,7 +97,9 @@ export function VersionsView({
 
             {/* Draft / working copy card */}
             {hasDraftRow && (() => {
-              const diff = canCompareCurrent ? diffSummary(contract, lastCommit!.snapshot!) : null
+              const exportDiff = canCompareCurrent
+                ? summarizeExportChangesSince(contract, lastCommit!.snapshot!)
+                : null
               const isLast = commits.length === 0
               return (
                 <div className="group flex gap-3">
@@ -127,27 +115,12 @@ export function VersionsView({
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-sm font-semibold text-neutral-900">Draft</span>
                         </div>
-                        {diff ? (
-                          <div className="flex items-center gap-2.5 mt-1.5 text-[11px]">
-                            {diff.added > 0 && (
-                              <span className="flex items-center gap-0.5 text-green-700">
-                                <Plus className="h-3 w-3" />{diff.added} field{diff.added > 1 ? 's' : ''}
-                              </span>
-                            )}
-                            {diff.removed > 0 && (
-                              <span className="flex items-center gap-0.5 text-red-700">
-                                <Minus className="h-3 w-3" />{diff.removed} removed
-                              </span>
-                            )}
-                            {diff.modified > 0 && (
-                              <span className="flex items-center gap-0.5 text-orange-700">
-                                <Equal className="h-3 w-3" />{diff.modified} modified
-                              </span>
-                            )}
-                            {diff.added === 0 && diff.removed === 0 && diff.modified === 0 && (
-                              <span className="text-neutral-300">No field changes since last version</span>
-                            )}
-                          </div>
+                        {exportDiff ? (
+                          <p className="text-[11px] text-neutral-500 mt-1.5 leading-snug">
+                            {exportDiff.identical
+                              ? 'No exported changes since last version'
+                              : exportDiff.summaryLines.join(' · ')}
+                          </p>
                         ) : (
                           <p className="text-[11px] text-neutral-300 mt-1">Not published yet</p>
                         )}
