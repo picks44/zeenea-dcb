@@ -5,7 +5,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { OdcsAccessRole } from '@/types/odcs'
 import { generateId, cn } from '@/lib/utils'
 import { GovernanceEmptyState } from '@/components/shared/GovernanceEmptyState'
+import { AccessRoleDocRow } from '@/components/shared/AccessRoleDocRow'
 import { GovernanceReadOnlyCell } from '@/components/shared/GovernanceReadOnlyCell'
+import { GovernanceDocList } from '@/components/shared/GovernanceDocList'
+import { docGovernanceShellClass, docGovernanceHeadClass, docGovernanceHeadRowClass, docGovernanceRowClass } from '@/components/shared/docViewTokens'
 import {
   governanceTableFooterActionClass,
   governanceTableFooterClass,
@@ -26,6 +29,7 @@ interface AccessRolesSectionProps {
   roles: OdcsAccessRole[]
   onChange: (roles: OdcsAccessRole[]) => void
   isLocked: boolean
+  docCompact?: boolean
 }
 
 const ACCESS_GRID =
@@ -44,7 +48,7 @@ function formatAccess(access: string): string {
   return access.trim() || '—'
 }
 
-function AccessRoleReadOnlyRow({ role }: { role: OdcsAccessRole }) {
+function AccessRoleReadOnlyCells({ role }: { role: OdcsAccessRole }) {
   return (
     <>
       <GovernanceReadOnlyCell value={role.role} />
@@ -54,19 +58,22 @@ function AccessRoleReadOnlyRow({ role }: { role: OdcsAccessRole }) {
   )
 }
 
-export function AccessRolesSection({ roles, onChange, isLocked }: AccessRolesSectionProps) {
+export function AccessRolesSection({ roles, onChange, isLocked, docCompact }: AccessRolesSectionProps) {
   const update = (id: string, patch: Partial<OdcsAccessRole>) =>
     onChange(roles.map(r => (r.id === id ? { ...r, ...patch } : r)))
 
   const remove = (id: string) => onChange(roles.filter(r => r.id !== id))
 
   const gridClass = isLocked ? ACCESS_GRID_READONLY : ACCESS_GRID
+  const useDocLayout = isLocked && roles.length <= 2
+  const hideHeader = isLocked && roles.length === 1
 
   return (
     <div className="max-w-[720px] w-full">
       <GovernanceSectionHeader
         title="Data access roles"
         description={DATA_ACCESS_ROLES_INTRO}
+        compact={docCompact}
       />
 
       {roles.length === 0 ? (
@@ -78,20 +85,48 @@ export function AccessRolesSection({ roles, onChange, isLocked }: AccessRolesSec
           onCta={() => onChange([makeRole()])}
           isLocked={isLocked}
         />
-      ) : (
-        <div className={`${governanceTableShellClass} overflow-x-auto`}>
-          <div className={cn(gridClass, governanceTableHeadRowClass, 'px-3')}>
-            <span className={governanceTableHeadClass}>Role</span>
-            <span className={governanceTableHeadClass}>Access</span>
-            <span className={governanceTableHeadClass}>Description</span>
-            {!isLocked && <span />}
+      ) : useDocLayout ? (
+        roles.length === 1 ? (
+          <div className={docGovernanceShellClass}>
+            <AccessRoleDocRow role={roles[0]} />
           </div>
+        ) : (
+          <GovernanceDocList>
+            {roles.map(r => (
+              <AccessRoleDocRow key={r.id} role={r} />
+            ))}
+          </GovernanceDocList>
+        )
+      ) : (
+        <div
+          className={cn(
+            isLocked ? docGovernanceShellClass : governanceTableShellClass,
+            'overflow-x-auto',
+          )}
+        >
+          {!hideHeader && (
+            <div
+              className={cn(
+                gridClass,
+                isLocked ? docGovernanceHeadRowClass : governanceTableHeadRowClass,
+                'px-3',
+              )}
+            >
+              <span className={isLocked ? docGovernanceHeadClass : governanceTableHeadClass}>Role</span>
+              <span className={isLocked ? docGovernanceHeadClass : governanceTableHeadClass}>Access</span>
+              <span className={isLocked ? docGovernanceHeadClass : governanceTableHeadClass}>Description</span>
+              {!isLocked && <span />}
+            </div>
+          )}
 
           <div className="divide-y divide-[#e4e4f0]">
             {roles.map(r => (
-              <div key={r.id} className={cn(gridClass, governanceTableRowClass)}>
+              <div
+                key={r.id}
+                className={cn(gridClass, isLocked ? docGovernanceRowClass : governanceTableRowClass)}
+              >
                 {isLocked ? (
-                  <AccessRoleReadOnlyRow role={r} />
+                  <AccessRoleReadOnlyCells role={r} />
                 ) : (
                   <>
                     <Input

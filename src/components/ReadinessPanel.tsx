@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Check, Copy, ChevronDown, ChevronUp, CheckCircle2, AlertCircle, AlertTriangle, ArrowRight, X } from 'lucide-react'
 import { CollaboratorRole, DataContract } from '@/types/odcs'
 import { generateODCSYaml } from '@/lib/odcsYamlGenerator'
@@ -15,6 +15,7 @@ import {
   START_NEW_VERSION_QUALITY_NOTE,
 } from '@/lib/uxCopy'
 import { Tooltip } from '@/components/ui/tooltip'
+import { DocDisclosure } from '@/components/shared/DocDisclosure'
 
 interface ReadinessPanelProps {
   contract: DataContract
@@ -112,8 +113,18 @@ export function ReadinessPanel({
   layout = 'pinned',
   onClose,
 }: ReadinessPanelProps) {
-  const [yamlOpen, setYamlOpen] = useState(false)
   const [copied, setCopied] = useState(false)
+
+  const isPublishedViewEarly =
+    contract.info.status === 'active' && !contract.inRevision
+
+  const [yamlOpen, setYamlOpen] = useState(false)
+  const [recommendedOpen, setRecommendedOpen] = useState(!isPublishedViewEarly)
+
+  useEffect(() => {
+    setRecommendedOpen(!isPublishedViewEarly)
+    setYamlOpen(false)
+  }, [contract.uid, isPublishedViewEarly])
 
   const readiness = useMemo(
     () => computePublicationReadiness(contract, myRole, hasEditedSincePublish),
@@ -156,25 +167,55 @@ export function ReadinessPanel({
     healthScore >= 60 ? 'bg-[#0550dc]' :
     'bg-[#9898a7]'
 
+  const sectionPad = isPublishedView ? 'px-3 py-2.5' : 'px-4 py-3'
+  const panelBorder = isPublishedView ? 'border-[#ebebf0]' : 'border-[#d3d3e5]'
+  const listGap = isPublishedView ? 'space-y-0.5' : 'space-y-1'
+
+  const yamlBlock = (
+    <div className="border-t border-[#e4e4f0] mt-1">
+      <div className="px-3 py-2 flex items-center justify-between bg-[#fbfbff]">
+        <span className="text-[10px] font-semibold uppercase tracking-wide text-[#656574]">ODCS v3.1.0</span>
+        <button
+          type="button"
+          onClick={handleCopy}
+          className="flex items-center gap-1 text-[11px] text-[#3f3f4a] hover:text-[#33333d] transition-colors"
+        >
+          {copied ? <Check className="h-3 w-3 text-[#047800]" /> : <Copy className="h-3 w-3" />}
+          {copied ? 'Copied' : 'Copy'}
+        </button>
+      </div>
+      <div className="px-3 py-2 border-b border-[#e4e4f0] bg-white space-y-1">
+        <p className="text-[10px] text-[#656574] leading-snug">{EXPORT_COVERAGE.includedInYaml}</p>
+        <p className="text-[10px] text-[#656574] leading-snug">{EXPORT_COVERAGE.excludedFromYaml}</p>
+      </div>
+      <pre className="text-[10px] font-mono text-[#33333d] px-3 py-3 max-h-56 overflow-y-auto bg-[#fbfbff] leading-4">
+        {yaml}
+      </pre>
+    </div>
+  )
+
   return (
     <div
       className={cn(
         'flex flex-col h-full bg-white overflow-hidden',
         layout === 'pinned'
-          ? 'w-[280px] flex-shrink-0 border-l border-[#d3d3e5]'
-          : 'fixed top-0 right-0 bottom-0 z-50 w-[min(100%,320px)] border-l border-[#d3d3e5] shadow-xl',
+          ? cn('w-[280px] flex-shrink-0 border-l', panelBorder)
+          : cn('fixed top-0 right-0 bottom-0 z-50 w-[min(100%,320px)] border-l shadow-xl', panelBorder),
       )}
     >
 
-      {/* Header */}
-      <div className="px-4 py-3 border-b border-[#d3d3e5] flex-shrink-0">
+      <div className={cn(sectionPad, 'border-b flex-shrink-0', panelBorder)}>
         <div className="flex items-center justify-between gap-2 mb-2.5">
           <span className="text-xs font-semibold text-[#33333d] min-w-0 truncate">
             {isPublishedView ? CONTRACT_QUALITY_PANEL_TITLE : 'Publication readiness'}
           </span>
           <div className="flex items-center gap-1 flex-shrink-0">
             <Tooltip content={READINESS_SCORE_TOOLTIP} side="left" delayDuration={400}>
-              <span className={cn('text-[11px] font-bold px-2 py-0.5 rounded-full border cursor-default', scoreColor)}>
+              <span className={cn(
+                'font-bold px-2 py-0.5 rounded-full border cursor-default',
+                isPublishedView ? 'text-[10px]' : 'text-[11px]',
+                scoreColor,
+              )}>
                 {healthScore}/100
               </span>
             </Tooltip>
@@ -226,23 +267,23 @@ export function ReadinessPanel({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto divide-y divide-[#ebebf0]/90">
+      <div className={cn('flex-1 overflow-y-auto divide-y', isPublishedView ? 'divide-[#f0f0f5]' : 'divide-[#ebebf0]/90')}>
 
-        <div className="px-4 py-3">
+        <div className={sectionPad}>
           <SectionHeaderWithScore
             title={isPublishedView ? PUBLISHED_REQUIRED_SECTION_TITLE : 'Required to publish'}
             earned={scoreContributions.required.earned}
             max={scoreContributions.required.max}
             tone="required"
           />
-          <ul className="space-y-1">
+          <ul className={listGap}>
             {requiredChecks.map(item => (
               <CheckRow key={item.key} label={item.label} ok={item.ok} variant="required" />
             ))}
           </ul>
         </div>
 
-        <div className="px-4 py-3">
+        <div className={sectionPad}>
           <SectionHeaderWithScore
             title="Field quality"
             earned={scoreContributions.documentation.earned}
@@ -292,7 +333,7 @@ export function ReadinessPanel({
         </div>
 
         {validationErrors.length >= 1 && (
-          <div className="px-4 py-3">
+          <div className={sectionPad}>
             <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-2">Blocking issues</p>
             <ul className="space-y-1">
               {validationErrors.slice(0, 6).map((e, i) => (
@@ -303,7 +344,7 @@ export function ReadinessPanel({
         )}
 
         {validationWarnings.length > 0 && (
-          <div className="px-4 py-3">
+          <div className={sectionPad}>
             <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-2">Warnings</p>
             <ul className="space-y-1">
               {validationWarnings.slice(0, 6).map((w, i) => (
@@ -316,34 +357,63 @@ export function ReadinessPanel({
           </div>
         )}
 
-        <div className="px-4 py-3">
-          <SectionHeaderWithScore
-            title="Recommended"
-            earned={scoreContributions.recommended.earned}
-            max={scoreContributions.recommended.max}
-            tone="recommended"
-          />
-          <ul className="space-y-1">
-            {recommendedChecks.map(item => (
-              <CheckRow
-                key={item.key}
-                label={item.label}
-                ok={item.ok}
-                variant="recommended"
-                badge={item.badge}
+        {isPublishedView ? (
+          <DocDisclosure
+            className={sectionPad}
+            headerClassName="py-0"
+            open={recommendedOpen}
+            onToggle={() => setRecommendedOpen(o => !o)}
+            title={
+              <SectionHeaderWithScore
+                title="Recommended"
+                earned={scoreContributions.recommended.earned}
+                max={scoreContributions.recommended.max}
+                tone="recommended"
               />
-            ))}
-          </ul>
-        </div>
+            }
+          >
+            <ul className={cn(listGap, 'mt-1')}>
+              {recommendedChecks.map(item => (
+                <CheckRow
+                  key={item.key}
+                  label={item.label}
+                  ok={item.ok}
+                  variant="recommended"
+                  badge={item.badge}
+                />
+              ))}
+            </ul>
+          </DocDisclosure>
+        ) : (
+          <div className={sectionPad}>
+            <SectionHeaderWithScore
+              title="Recommended"
+              earned={scoreContributions.recommended.earned}
+              max={scoreContributions.recommended.max}
+              tone="recommended"
+            />
+            <ul className={listGap}>
+              {recommendedChecks.map(item => (
+                <CheckRow
+                  key={item.key}
+                  label={item.label}
+                  ok={item.ok}
+                  variant="recommended"
+                  badge={item.badge}
+                />
+              ))}
+            </ul>
+          </div>
+        )}
 
         {isPublishedView ? (
-          <div className="px-4 py-3">
+          <div className={sectionPad}>
             <p className="text-[11px] text-[#656574] leading-snug">
               {START_NEW_VERSION_QUALITY_NOTE}
             </p>
           </div>
         ) : nextSteps.length > 0 ? (
-          <div className="px-4 py-3 bg-[#fbfbff]/60">
+          <div className={cn(sectionPad, 'bg-[#fbfbff]/60')}>
             <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-2">
               Next steps
             </p>
@@ -359,7 +429,26 @@ export function ReadinessPanel({
         ) : null}
       </div>
 
-      <div className="border-t border-[#d3d3e5] flex-shrink-0">
+      <div className={cn('border-t flex-shrink-0', panelBorder)}>
+        {isPublishedView ? (
+          <DocDisclosure
+            className={sectionPad}
+            headerClassName="py-0 hover:bg-transparent"
+            open={yamlOpen}
+            onToggle={() => setYamlOpen(o => !o)}
+            title={
+              <span className="text-left">
+                <span className="block text-xs font-medium text-[#3f3f4a]">Export YAML</span>
+                <span className="block text-[10px] text-[#656574] font-normal leading-snug mt-0.5">
+                  Preview ODCS YAML payload
+                </span>
+              </span>
+            }
+          >
+            {yamlBlock}
+          </DocDisclosure>
+        ) : (
+          <>
         <button
           onClick={() => setYamlOpen(o => !o)}
           className="w-full flex items-center justify-between px-4 py-2.5 text-xs text-[#3f3f4a] hover:bg-[#fbfbff] transition-colors"
@@ -373,26 +462,8 @@ export function ReadinessPanel({
           {yamlOpen ? <ChevronUp className="h-3.5 w-3.5 flex-shrink-0" /> : <ChevronDown className="h-3.5 w-3.5 flex-shrink-0" />}
         </button>
 
-        {yamlOpen && (
-          <div className="border-t border-[#e4e4f0]">
-            <div className="px-4 py-2 flex items-center justify-between bg-[#fbfbff]">
-              <span className="text-[10px] font-semibold uppercase tracking-wide text-[#656574]">ODCS v3.1.0</span>
-              <button
-                onClick={handleCopy}
-                className="flex items-center gap-1 text-[11px] text-[#3f3f4a] hover:text-[#33333d] transition-colors"
-              >
-                {copied ? <Check className="h-3 w-3 text-[#047800]" /> : <Copy className="h-3 w-3" />}
-                {copied ? 'Copied' : 'Copy'}
-              </button>
-            </div>
-            <div className="px-4 py-2 border-b border-[#e4e4f0] bg-white space-y-1">
-              <p className="text-[10px] text-[#656574] leading-snug">{EXPORT_COVERAGE.includedInYaml}</p>
-              <p className="text-[10px] text-[#656574] leading-snug">{EXPORT_COVERAGE.excludedFromYaml}</p>
-            </div>
-            <pre className="text-[10px] font-mono text-[#33333d] px-4 py-3 max-h-56 overflow-y-auto bg-[#fbfbff] leading-4">
-              {yaml}
-            </pre>
-          </div>
+        {yamlOpen && yamlBlock}
+          </>
         )}
       </div>
     </div>

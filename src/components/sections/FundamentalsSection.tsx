@@ -19,6 +19,8 @@ interface FundamentalsSectionProps {
   onChange: (updates: Partial<DataContract['info']> & { id?: string }) => void
   isLocked: boolean
   isOwner: boolean
+  isPublishedView?: boolean
+  docCompact?: boolean
 }
 
 const STATUS_LABELS: Record<LifecycleStatus, string> = {
@@ -27,7 +29,14 @@ const STATUS_LABELS: Record<LifecycleStatus, string> = {
   deprecated: 'Deprecated',
 }
 
-export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: FundamentalsSectionProps) {
+export function FundamentalsSection({
+  contract,
+  onChange,
+  isLocked,
+  isOwner,
+  isPublishedView,
+  docCompact,
+}: FundamentalsSectionProps) {
   const { info, id } = contract
   const [idManuallyEdited, setIdManuallyEdited] = useState(false)
   const [idError, setIdError] = useState<string | null>(null)
@@ -92,7 +101,7 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
   const ownerInputClass = cn(ownerFieldLocked && 'bg-[#fbfbff] text-[#3f3f4a] cursor-not-allowed')
 
   return (
-    <div className="max-w-[560px] w-full">
+    <div className={isLocked && isPublishedView ? 'max-w-3xl w-full' : 'max-w-[560px] w-full'}>
       <div className="mb-6">
         <h2 className="text-base font-semibold text-[#12131f]">Fundamentals</h2>
         <p className="text-[#3f3f4a] text-xs mt-0.5 leading-relaxed">
@@ -101,7 +110,7 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
       </div>
 
       {isLocked ? (
-        <FundamentalsReadOnlyView contract={contract} />
+        <FundamentalsReadOnlyView contract={contract} compact={docCompact} />
       ) : (
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">

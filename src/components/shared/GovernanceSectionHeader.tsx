@@ -5,12 +5,13 @@ interface GovernanceSectionHeaderProps {
   title: string
   description: ReactNode
   action?: ReactNode
+  compact?: boolean
 }
 
 /** Shared h2 + description rhythm for governance/configuration sections. */
-export function GovernanceSectionHeader({ title, description, action }: GovernanceSectionHeaderProps) {
+export function GovernanceSectionHeader({ title, description, action, compact }: GovernanceSectionHeaderProps) {
   return (
-    <div className="mb-6 flex items-start justify-between gap-4">
+    <div className={cn('flex items-start justify-between gap-4', compact ? 'mb-4' : 'mb-6')}>
       <div className="min-w-0">
         <h2 className="text-base font-semibold text-[#12131f]">{title}</h2>
         <p className="text-[#3f3f4a] text-xs mt-0.5 leading-relaxed">{description}</p>

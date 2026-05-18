@@ -1,12 +1,15 @@
 import { useState } from 'react'
-import { Copy, Check, ChevronDown, ChevronRight } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { ChevronDown, ChevronRight } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { DataContract, LifecycleStatus } from '@/types/odcs'
 import { ReadOnlyField } from '@/components/shared/ReadOnlyField'
+import { InlineCopyButton } from '@/components/shared/InlineCopyButton'
 import { WorkflowMetadataPill } from '@/components/shared/WorkflowMetadataPill'
 import { CONTRACT_OWNER_HELPER } from '@/lib/uxCopy'
 import { AUTH_DEF_TYPE_OPTIONS } from '@/types/odcsShared'
+import { cn } from '@/lib/utils'
+import { docShellClass } from '@/components/shared/docViewTokens'
+
 const STATUS_LABELS: Record<LifecycleStatus, string> = {
   draft: 'Draft',
   active: 'Active',
@@ -19,11 +22,11 @@ function authTypeLabel(type: string): string {
 
 interface FundamentalsReadOnlyViewProps {
   contract: DataContract
+  compact?: boolean
 }
 
-export function FundamentalsReadOnlyView({ contract }: FundamentalsReadOnlyViewProps) {
+export function FundamentalsReadOnlyView({ contract, compact }: FundamentalsReadOnlyViewProps) {
   const { info, id } = contract
-  const [copied, setCopied] = useState(false)
   const [additionalOpen, setAdditionalOpen] = useState(true)
 
   const tags = info.tags ?? []
@@ -31,85 +34,86 @@ export function FundamentalsReadOnlyView({ contract }: FundamentalsReadOnlyViewP
     d => d.url.trim() || d.type.trim() || (d.description ?? '').trim(),
   )
 
-  const handleCopyId = () => {
-    navigator.clipboard.writeText(id)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
-  }
+  const usage = (info.descriptionUsage ?? '').trim()
+  const limitations = (info.descriptionLimitations ?? '').trim()
+  const hasAdditionalContext = Boolean(usage || limitations || authDefs.length > 0)
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <ReadOnlyField label="Contract name" value={info.title} required />
-        <ReadOnlyField label="Domain" value={info.domain} />
-      </div>
+    <div className="space-y-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3">
+        <ReadOnlyField label="Contract name" value={info.title} required compact={compact} />
+        <ReadOnlyField label="Domain" value={info.domain} compact={compact} />
 
-      <div>
-        <ReadOnlyField label="ID" value={id} required mono />
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={handleCopyId}
-          className="mt-2 h-8 gap-1.5 text-xs"
-        >
-          {copied ? <Check className="h-3.5 w-3.5 text-[#047800]" /> : <Copy className="h-3.5 w-3.5" />}
-          {copied ? 'Copied' : 'Copy ID'}
-        </Button>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <ReadOnlyField label="Version" value={`v${info.version}`} mono />
         <div>
-          <span className="text-xs font-medium text-[#33333d] mb-1 block">Status</span>
-          <Badge variant={info.status}>{STATUS_LABELS[info.status]}</Badge>
+          <span className={cn('text-xs font-medium text-[#33333d] block', compact ? 'mb-0.5' : 'mb-1')}>
+            ID<span className="text-red-500"> *</span>
+          </span>
+          <div className="flex items-center gap-1 min-w-0">
+            <p className={cn('text-[13px] font-mono text-[#33333d] truncate min-w-0', !id.trim() && 'text-[#9898a7]')}>
+              {id.trim() || '—'}
+            </p>
+            {id.trim() ? <InlineCopyButton value={id} ariaLabel="Copy contract ID" /> : null}
+          </div>
+        </div>
+
+        <div>
+          <span className={cn('text-xs font-medium text-[#33333d] block', compact ? 'mb-0.5' : 'mb-1')}>
+            Version & status
+          </span>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-[13px] font-mono text-[#33333d]">v{info.version}</span>
+            <Badge variant={info.status}>{STATUS_LABELS[info.status]}</Badge>
+          </div>
         </div>
       </div>
 
-      <ReadOnlyField label="Business purpose" value={info.description} multiline />
+      <ReadOnlyField label="Business purpose" value={info.description} multiline compact={compact} />
 
-      <div className="border border-[#e4e4f0] rounded-lg overflow-hidden">
+      <div className={docShellClass}>
         <button
           type="button"
-          className="w-full flex items-center gap-2 px-3 py-2.5 text-left text-xs font-medium text-[#33333d] bg-[#fbfbff]"
+          className="w-full flex items-center gap-2 px-3 py-2 text-left text-xs font-medium text-[#33333d] bg-[#fbfbff]/60"
           onClick={() => setAdditionalOpen(o => !o)}
         >
           {additionalOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
           Additional context
         </button>
         {additionalOpen && (
-          <div className="px-3 py-3 space-y-3 border-t border-[#e4e4f0]">
-            <ReadOnlyField label="Usage" value={info.descriptionUsage ?? ''} multiline />
-            <ReadOnlyField label="Limitations" value={info.descriptionLimitations ?? ''} multiline />
-            <div>
-              <span className="text-xs font-medium text-[#33333d] mb-1 block">Authoritative links</span>
-              {authDefs.length === 0 ? (
-                <p className="text-sm text-[#9898a7]">—</p>
-              ) : (
-                <ul className="space-y-2">
-                  {authDefs.map(def => (
-                    <li
-                      key={def.id}
-                      className="text-xs text-[#656574] border border-[#e4e4f0] rounded-lg px-3 py-2 bg-[#fbfbff]/40"
-                    >
-                      <p className="font-mono text-[11px] text-[#33333d] break-all">{def.url || '—'}</p>
-                      {def.type ? (
-                        <p className="text-[10px] text-[#9898a7] mt-0.5">{authTypeLabel(def.type)}</p>
-                      ) : null}
-                      {def.description?.trim() ? (
-                        <p className="text-[11px] mt-1 leading-snug">{def.description}</p>
-                      ) : null}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+          <div className="px-3 py-2 border-t border-[#e4e4f0] space-y-2">
+            {!hasAdditionalContext ? (
+              <p className="text-xs text-[#9898a7] leading-snug">
+                No additional governance context provided.
+              </p>
+            ) : (
+              <>
+                {usage ? <ReadOnlyField label="Usage" value={usage} multiline compact /> : null}
+                {limitations ? <ReadOnlyField label="Limitations" value={limitations} multiline compact /> : null}
+                {authDefs.length > 0 ? (
+                  <div>
+                    <span className="text-xs font-medium text-[#33333d] mb-0.5 block">Authoritative links</span>
+                    <ul className="space-y-1.5">
+                      {authDefs.map(def => (
+                        <li key={def.id} className="text-xs leading-snug">
+                          <p className="font-mono text-[11px] text-[#33333d] break-all">{def.url || '—'}</p>
+                          {def.type ? (
+                            <p className="text-[10px] text-[#9898a7]">{authTypeLabel(def.type)}</p>
+                          ) : null}
+                          {def.description?.trim() ? (
+                            <p className="text-[11px] text-[#656574] mt-0.5">{def.description}</p>
+                          ) : null}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+              </>
+            )}
           </div>
         )}
       </div>
 
       <div>
-        <ReadOnlyField label="Governance owner" value={info.owner} required />
+        <ReadOnlyField label="Governance owner" value={info.owner} required compact={compact} />
         <p className="text-[11px] text-[#656574] mt-1 leading-snug flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
           <span>{CONTRACT_OWNER_HELPER}</span>
           <WorkflowMetadataPill variant="not-in-odcs" />
@@ -117,9 +121,9 @@ export function FundamentalsReadOnlyView({ contract }: FundamentalsReadOnlyViewP
       </div>
 
       <div>
-        <span className="text-xs font-medium text-[#33333d] mb-1 block">Tags</span>
+        <span className={cn('text-xs font-medium text-[#33333d] block', compact ? 'mb-0.5' : 'mb-1')}>Tags</span>
         {tags.length === 0 ? (
-          <p className="text-sm text-[#9898a7]">—</p>
+          <p className="text-[13px] text-[#9898a7]">—</p>
         ) : (
           <div className="flex flex-wrap gap-1">
             {tags.map(tag => (

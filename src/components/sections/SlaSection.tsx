@@ -2,6 +2,7 @@ import { Plus, Trash2, Clock } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { GovernanceEmptyState } from '@/components/shared/GovernanceEmptyState'
 import { GovernanceReadOnlyCell } from '@/components/shared/GovernanceReadOnlyCell'
+import { SlaCompactList } from '@/components/shared/SlaCompactList'
 import {
   governanceTableFooterActionClass,
   governanceTableFooterClass,
@@ -45,6 +46,8 @@ interface SlaSectionProps {
   slaProperties: SlaProperty[]
   onChange: (sla: SlaProperty[]) => void
   isLocked: boolean
+  isPublishedView?: boolean
+  docCompact?: boolean
 }
 
 function makeSla(): SlaProperty {
@@ -73,7 +76,7 @@ function SlaReadOnlyRow({ row }: { row: SlaProperty }) {
   )
 }
 
-export function SlaSection({ slaProperties, onChange, isLocked }: SlaSectionProps) {
+export function SlaSection({ slaProperties, onChange, isLocked, isPublishedView, docCompact }: SlaSectionProps) {
   const update = (id: string, patch: Partial<SlaProperty>) =>
     onChange(slaProperties.map(s => (s.id === id ? { ...s, ...patch } : s)))
 
@@ -84,6 +87,7 @@ export function SlaSection({ slaProperties, onChange, isLocked }: SlaSectionProp
       <GovernanceSectionHeader
         title="Service levels"
         description="Define latency, retention, availability, and other service level commitments for this contract."
+        compact={docCompact}
       />
 
       {slaProperties.length === 0 ? (
@@ -95,6 +99,8 @@ export function SlaSection({ slaProperties, onChange, isLocked }: SlaSectionProp
           onCta={() => onChange([makeSla()])}
           isLocked={isLocked}
         />
+      ) : isPublishedView && slaProperties.length <= 2 ? (
+        <SlaCompactList rows={slaProperties} />
       ) : (
         <div className={`${governanceTableShellClass} overflow-x-auto`}>
           <table className="w-full text-xs border-collapse table-fixed min-w-[760px]">

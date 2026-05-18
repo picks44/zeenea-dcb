@@ -185,6 +185,8 @@ export function TableBlock({ table, tableIndex, allTables, isLocked, onTableChan
       {/* Fields */}
       {!collapsed && (
         <>
+          <div className="overflow-x-auto min-w-0">
+          <div className="min-w-[640px]">
           <div className="flex items-center px-4 py-1.5 border-b border-[#d3d3e5] bg-[#fbfbff]/50">
             <span className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] w-52 flex-shrink-0">Field</span>
             <span className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] w-32 flex-shrink-0">Type</span>
@@ -299,6 +301,8 @@ export function TableBlock({ table, tableIndex, allTables, isLocked, onTableChan
                 </div>
               )
             })}
+          </div>
+          </div>
           </div>
 
           {!isLocked && (

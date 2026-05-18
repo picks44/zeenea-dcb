@@ -3,7 +3,8 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Stakeholder } from '@/types/odcs'
 import { generateId, cn } from '@/lib/utils'
-import { GovernanceReadOnlyCell } from '@/components/shared/GovernanceReadOnlyCell'
+import { GovernanceDocList } from '@/components/shared/GovernanceDocList'
+import { StakeholderDocRow } from '@/components/shared/StakeholderDocRow'
 import { GovernanceEmptyState } from '@/components/shared/GovernanceEmptyState'
 import {
   governanceTableFooterActionClass,
@@ -26,6 +27,7 @@ interface StakeholdersSectionProps {
   stakeholders: Stakeholder[]
   onChange: (stakeholders: Stakeholder[]) => void
   isLocked: boolean
+  docCompact?: boolean
 }
 
 const GOVERNANCE_ROLES = [
@@ -41,9 +43,6 @@ const GOVERNANCE_ROLES = [
 
 const STAKEHOLDER_GRID =
   'grid grid-cols-[minmax(0,1fr)_minmax(128px,auto)_minmax(0,1.05fr)_minmax(0,1fr)_32px] gap-x-3 gap-y-0 items-center'
-
-const STAKEHOLDER_GRID_READONLY =
-  'grid grid-cols-[minmax(0,1fr)_minmax(128px,auto)_minmax(0,1.05fr)_minmax(0,1fr)] gap-x-3 gap-y-0 items-center'
 
 const INPUT_CLASS = 'h-8 text-xs'
 const SELECT_CLASS = cn(
@@ -64,46 +63,18 @@ function makeStakeholder(): Stakeholder {
   }
 }
 
-function formatContact(email: string, team: string): string {
-  const parts = [email.trim(), team.trim()].filter(Boolean)
-  return parts.length > 0 ? parts.join(' · ') : '—'
-}
-
-function StakeholderReadOnlyRow({ stakeholder }: { stakeholder: Stakeholder }) {
-  const { name, role, email, team, notes } = stakeholder
-  const hasName = Boolean(name.trim())
-
-  return (
-    <>
-      <span
-        className={cn(
-          'text-xs truncate min-w-0',
-          hasName ? 'font-medium text-[#12131f]' : 'text-[#9898a7]',
-        )}
-        title={hasName ? name : undefined}
-      >
-        {hasName ? name : '—'}
-      </span>
-      <GovernanceReadOnlyCell value={role} />
-      <GovernanceReadOnlyCell value={formatContact(email, team)} />
-      <GovernanceReadOnlyCell value={notes} />
-    </>
-  )
-}
-
-export function StakeholdersSection({ stakeholders, onChange, isLocked }: StakeholdersSectionProps) {
+export function StakeholdersSection({ stakeholders, onChange, isLocked, docCompact }: StakeholdersSectionProps) {
   const update = (id: string, patch: Partial<Stakeholder>) =>
     onChange(stakeholders.map(s => (s.id === id ? { ...s, ...patch } : s)))
 
   const remove = (id: string) => onChange(stakeholders.filter(s => s.id !== id))
-
-  const gridClass = isLocked ? STAKEHOLDER_GRID_READONLY : STAKEHOLDER_GRID
 
   return (
     <div className="max-w-[720px] w-full">
       <GovernanceSectionHeader
         title="Stakeholders"
         description={<WorkflowMetadataNote pill="not-in-odcs">{STAKEHOLDERS_INTRO}</WorkflowMetadataNote>}
+        compact={docCompact}
       />
 
       {stakeholders.length === 0 ? (
@@ -115,89 +86,85 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked }: Stakeh
           onCta={() => onChange([makeStakeholder()])}
           isLocked={isLocked}
         />
+      ) : isLocked ? (
+        <GovernanceDocList>
+          {stakeholders.map(s => (
+            <StakeholderDocRow key={s.id} stakeholder={s} />
+          ))}
+        </GovernanceDocList>
       ) : (
         <div className={`${governanceTableShellClass} overflow-x-auto`}>
-          <div className={cn(gridClass, governanceTableHeadRowClass, 'px-3')}>
+          <div className={cn(STAKEHOLDER_GRID, governanceTableHeadRowClass, 'px-3')}>
             <span className={governanceTableHeadClass}>Name</span>
             <span className={governanceTableHeadClass}>Role</span>
             <span className={governanceTableHeadClass}>Contact</span>
             <span className={governanceTableHeadClass}>Notes</span>
-            {!isLocked && <span />}
+            <span />
           </div>
 
           <div className="divide-y divide-[#e4e4f0]">
             {stakeholders.map(s => (
-              <div key={s.id} className={cn(gridClass, governanceTableRowClass)}>
-                {isLocked ? (
-                  <StakeholderReadOnlyRow stakeholder={s} />
-                ) : (
-                  <>
-                    <Input
-                      value={s.name}
-                      onChange={e => update(s.id, { name: e.target.value })}
-                      placeholder="Full name"
-                      className={INPUT_CLASS}
-                    />
-                    <select
-                      value={s.role}
-                      onChange={e => update(s.id, { role: e.target.value })}
-                      className={SELECT_CLASS}
-                      aria-label="Governance role"
-                    >
-                      {GOVERNANCE_ROLES.map(r => (
-                        <option key={r} value={r}>{r}</option>
-                      ))}
-                    </select>
-                    <div className="min-w-0 grid grid-cols-2 gap-1">
-                      <Input
-                        value={s.email}
-                        onChange={e => update(s.id, { email: e.target.value })}
-                        type="email"
-                        placeholder="Email"
-                        className={INPUT_CLASS}
-                      />
-                      <Input
-                        value={s.team}
-                        onChange={e => update(s.id, { team: e.target.value })}
-                        placeholder="Team / org"
-                        className={INPUT_CLASS}
-                      />
-                    </div>
-                    <Textarea
-                      value={s.notes}
-                      onChange={e => update(s.id, { notes: e.target.value })}
-                      placeholder="Optional note"
-                      rows={1}
-                      className="text-xs min-h-[32px] resize-none py-1.5"
-                    />
-                  </>
-                )}
-                {!isLocked && (
-                  <button
-                    type="button"
-                    onClick={() => remove(s.id)}
-                    className="h-7 w-7 flex items-center justify-center text-[#9898a7] hover:text-[#c12c11] hover:bg-[#fff2ee] rounded transition-colors"
-                    aria-label={`Remove ${s.name.trim() || 'stakeholder'}`}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
-                )}
+              <div key={s.id} className={cn(STAKEHOLDER_GRID, governanceTableRowClass)}>
+                <Input
+                  value={s.name}
+                  onChange={e => update(s.id, { name: e.target.value })}
+                  placeholder="Full name"
+                  className={INPUT_CLASS}
+                />
+                <select
+                  value={s.role}
+                  onChange={e => update(s.id, { role: e.target.value })}
+                  className={SELECT_CLASS}
+                  aria-label="Governance role"
+                >
+                  {GOVERNANCE_ROLES.map(r => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
+                </select>
+                <div className="min-w-0 grid grid-cols-2 gap-1">
+                  <Input
+                    value={s.email}
+                    onChange={e => update(s.id, { email: e.target.value })}
+                    type="email"
+                    placeholder="Email"
+                    className={INPUT_CLASS}
+                  />
+                  <Input
+                    value={s.team}
+                    onChange={e => update(s.id, { team: e.target.value })}
+                    placeholder="Team / org"
+                    className={INPUT_CLASS}
+                  />
+                </div>
+                <Textarea
+                  value={s.notes}
+                  onChange={e => update(s.id, { notes: e.target.value })}
+                  placeholder="Optional note"
+                  rows={1}
+                  className="text-xs min-h-[32px] resize-none py-1.5"
+                />
+                <button
+                  type="button"
+                  onClick={() => remove(s.id)}
+                  className="h-7 w-7 flex items-center justify-center text-[#9898a7] hover:text-[#c12c11] hover:bg-[#fff2ee] rounded transition-colors"
+                  aria-label={`Remove ${s.name.trim() || 'stakeholder'}`}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
               </div>
             ))}
           </div>
 
-          {!isLocked && (
-            <div className={governanceTableFooterClass}>
-              <button
-                type="button"
-                onClick={() => onChange([...stakeholders, makeStakeholder()])}
-                className={governanceTableFooterActionClass}
-              >
-                <Plus className="h-3.5 w-3.5" />
-                Add stakeholder
-              </button>
-            </div>
-          )}
+          <div className={governanceTableFooterClass}>
+            <button
+              type="button"
+              onClick={() => onChange([...stakeholders, makeStakeholder()])}
+              className={governanceTableFooterActionClass}
+            >
+              <Plus className="h-3.5 w-3.5" />
+              Add stakeholder
+            </button>
+          </div>
         </div>
       )}
     </div>

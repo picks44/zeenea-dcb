@@ -6,24 +6,25 @@ interface ReadOnlyFieldProps {
   required?: boolean
   mono?: boolean
   multiline?: boolean
+  compact?: boolean
 }
 
 /** Label + value display for published / read-only contract views. */
-export function ReadOnlyField({ label, value, required, mono, multiline }: ReadOnlyFieldProps) {
+export function ReadOnlyField({ label, value, required, mono, multiline, compact }: ReadOnlyFieldProps) {
   const trimmed = value.trim()
   const empty = !trimmed
 
   return (
     <div>
-      <span className="text-xs font-medium text-[#33333d] mb-1 block">
+      <span className={cn('text-xs font-medium text-[#33333d] block', compact ? 'mb-0.5' : 'mb-1')}>
         {label}
         {required ? <span className="text-red-500"> *</span> : null}
       </span>
       <p
         className={cn(
-          'text-sm leading-snug',
+          compact ? 'text-[13px] leading-snug' : 'text-sm leading-snug',
           empty ? 'text-[#9898a7]' : 'text-[#33333d]',
-          mono && !empty && 'font-mono text-[13px]',
+          mono && !empty && 'font-mono',
           multiline && !empty && 'whitespace-pre-wrap',
         )}
       >

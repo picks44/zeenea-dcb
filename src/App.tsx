@@ -30,6 +30,7 @@ import { CURRENT_USER } from './lib/currentUser'
 import { PUBLISH_REQUIRES_PUBLISHER_CONTRACT, VIEWER_ACCESS_BANNER } from './lib/uxCopy'
 import { useMediaQuery } from './hooks/useMediaQuery'
 import { MEDIA_QUERIES } from './lib/layoutBreakpoints'
+import { cn } from './lib/utils'
 
 function makeContract(): DataContract {
   const now = new Date().toISOString()
@@ -93,6 +94,8 @@ export default function App() {
   const isPublishedView = contract
     ? contract.info.status === 'active' && !contract.inRevision
     : false
+
+  const docCompact = isPublishedView && !panelPinned
 
   const readinessToggleLabel = isPublishedView ? 'Quality' : 'Readiness'
   const showReadinessPanel =
@@ -354,7 +357,12 @@ export default function App() {
                 )}
 
                 {activeSection === 'versions' ? (
-                  <div className="flex-1 overflow-y-auto px-4 lg:px-6 xl:px-8 py-6">
+                  <div
+                    className={cn(
+                      'flex-1 overflow-y-auto py-6',
+                      docCompact ? 'px-3 lg:px-4' : 'px-4 lg:px-6 xl:px-8',
+                    )}
+                  >
                     <VersionsView
                       contract={contract}
                       onVersionClick={hash => setCompareHash(hash)}
@@ -366,19 +374,47 @@ export default function App() {
                 ) : (
                   <div className="flex flex-1 min-h-0 overflow-hidden">
                     <div className="flex-1 overflow-y-auto min-w-0">
-                      <div className="px-4 lg:px-6 xl:px-8 py-6 min-w-0">
+                      <div
+                        className={cn(
+                          'min-w-0',
+                          docCompact ? 'px-3 lg:px-4 py-4' : 'px-4 lg:px-6 xl:px-8 py-6',
+                        )}
+                      >
                       {activeSection === 'import' ? (
                         <ImportSection onParsed={handleDDLParsed} isLocked={isLocked} />
                       ) : activeSection === 'fundamentals' ? (
-                        <FundamentalsSection contract={contract} onChange={handleFundamentalsChange} isLocked={isLocked} isOwner={myRole === 'owner'} />
+                        <FundamentalsSection
+                          contract={contract}
+                          onChange={handleFundamentalsChange}
+                          isLocked={isLocked}
+                          isOwner={myRole === 'owner'}
+                          isPublishedView={isPublishedView}
+                          docCompact={docCompact}
+                        />
                       ) : activeSection === 'schema' ? (
                         <SchemaSection tables={contract.dataset} onChange={handleSchemaChange} isLocked={isLocked} />
                       ) : (activeSection === 'stakeholders' || activeSection === 'team') ? (
-                        <StakeholdersSection stakeholders={contract.stakeholders} onChange={handleStakeholdersChange} isLocked={isLocked} />
+                        <StakeholdersSection
+                          stakeholders={contract.stakeholders}
+                          onChange={handleStakeholdersChange}
+                          isLocked={isLocked}
+                          docCompact={docCompact}
+                        />
                       ) : activeSection === 'accessRoles' ? (
-                        <AccessRolesSection roles={contract.roles ?? []} onChange={handleRolesChange} isLocked={isLocked} />
+                        <AccessRolesSection
+                          roles={contract.roles ?? []}
+                          onChange={handleRolesChange}
+                          isLocked={isLocked}
+                          docCompact={docCompact}
+                        />
                       ) : activeSection === 'sla' ? (
-                        <SlaSection slaProperties={contract.slaProperties ?? []} onChange={handleSlaChange} isLocked={isLocked} />
+                        <SlaSection
+                          slaProperties={contract.slaProperties ?? []}
+                          onChange={handleSlaChange}
+                          isLocked={isLocked}
+                          isPublishedView={isPublishedView}
+                          docCompact={docCompact}
+                        />
                       ) : null}
                       </div>
                     </div>
