@@ -3,12 +3,8 @@ import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import type { QualityRule } from '@/types/odcs'
 import { QualityRuleReadOnly } from '@/components/shared/QualityRuleReadOnly'
+import { AuthoritativeLinkReadOnly } from '@/components/shared/AuthoritativeLinkReadOnly'
 import type { AuthoritativeDefinition } from '@/types/odcsShared'
-import { AUTH_DEF_TYPE_OPTIONS } from '@/types/odcsShared'
-
-function authTypeLabel(type: string): string {
-  return AUTH_DEF_TYPE_OPTIONS.find(o => o.value === type)?.label ?? type
-}
 
 export function MetadataReadOnlySection({
   label,
@@ -94,31 +90,14 @@ export function MetadataReadOnlyQualityRules({
 export function MetadataReadOnlyAuthLinks({
   definitions,
   emptyLabel,
+  compact,
 }: {
   definitions: AuthoritativeDefinition[]
   emptyLabel: string
+  compact?: boolean
 }) {
-  const filled = definitions.filter(
-    d => d.url.trim() || d.type.trim() || (d.description ?? '').trim(),
-  )
-  if (filled.length === 0) {
-    return <MetadataReadOnlyEmptyLine>{emptyLabel}</MetadataReadOnlyEmptyLine>
-  }
   return (
-    <ul className="space-y-1.5">
-      {filled.map(def => {
-        const type = def.type.trim() ? authTypeLabel(def.type) : ''
-        const url = def.url.trim()
-        const desc = (def.description ?? '').trim()
-        const primary = [url, type].filter(Boolean).join(' · ') || '—'
-        return (
-          <li key={def.id} className="text-xs leading-snug">
-            <p className="text-[#33333d] break-all">{primary}</p>
-            {desc ? <p className="text-[#656574] mt-0.5">{desc}</p> : null}
-          </li>
-        )
-      })}
-    </ul>
+    <AuthoritativeLinkReadOnly definitions={definitions} emptyLabel={emptyLabel} compact={compact} />
   )
 }
 
@@ -181,7 +160,11 @@ export function FieldMetadataReadOnlyBody({
       </MetadataReadOnlySection>
 
       <MetadataReadOnlySection label="Authoritative links">
-        <MetadataReadOnlyAuthLinks definitions={authDefs} emptyLabel="No authoritative links added." />
+        <MetadataReadOnlyAuthLinks
+          definitions={authDefs}
+          emptyLabel="No authoritative links added."
+          compact={docCompact}
+        />
       </MetadataReadOnlySection>
     </div>
   )
@@ -223,7 +206,11 @@ export function TableMetadataReadOnlyBody({ tags, quality, authDefs, docCompact 
       </MetadataReadOnlySection>
 
       <MetadataReadOnlySection label="Authoritative links">
-        <MetadataReadOnlyAuthLinks definitions={authDefs} emptyLabel="No authoritative links added." />
+        <MetadataReadOnlyAuthLinks
+          definitions={authDefs}
+          emptyLabel="No authoritative links added."
+          compact={docCompact}
+        />
       </MetadataReadOnlySection>
     </div>
   )

@@ -146,7 +146,11 @@ export function ColumnAdvancedDialog({
 
               <div>
                 <Label className="text-xs text-[#33333d] mb-1 block">Authoritative links</Label>
-                <AuthoritativeDefinitionsEditor definitions={authDefs} onChange={setAuthDefs} />
+                <AuthoritativeDefinitionsEditor
+                  definitions={authDefs}
+                  onChange={setAuthDefs}
+                  compact={docCompact}
+                />
               </div>
             </div>
           )}

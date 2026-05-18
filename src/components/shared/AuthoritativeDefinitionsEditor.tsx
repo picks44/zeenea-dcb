@@ -1,28 +1,116 @@
 import { Plus, Trash2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Button } from '@/components/ui/button'
 import type { AuthoritativeDefinition } from '@/types/odcsShared'
 import { AUTH_DEF_TYPE_OPTIONS } from '@/types/odcsShared'
-import { generateId } from '@/lib/utils'
+import { generateId, cn } from '@/lib/utils'
 import { AUTH_LINKS_HELPER } from '@/lib/uxCopy'
+import { governanceTableFooterActionClass } from '@/components/shared/GovernanceSectionHeader'
+import {
+  authoritativeLinkFieldLabelClass,
+  authoritativeLinkInputClass,
+  authoritativeLinkListShellClass,
+  authoritativeLinkRemoveButtonClass,
+  authoritativeLinkRowClass,
+  authoritativeLinkRowCompactClass,
+  authoritativeLinkSelectTriggerClass,
+  authoritativeLinkTextareaClass,
+} from '@/components/shared/authoritativeLinkUx'
 
 interface AuthoritativeDefinitionsEditorProps {
   definitions: AuthoritativeDefinition[]
   onChange: (defs: AuthoritativeDefinition[]) => void
   disabled?: boolean
+  /** Tighter spacing for laptop / docCompact metadata surfaces */
+  compact?: boolean
 }
 
 function emptyRow(): AuthoritativeDefinition {
   return { id: generateId(), url: '', type: '', description: '' }
 }
 
+function AuthoritativeLinkEditRow({
+  row,
+  compact,
+  disabled,
+  canRemove,
+  onUpdate,
+  onRemove,
+}: {
+  row: AuthoritativeDefinition
+  compact?: boolean
+  disabled?: boolean
+  canRemove: boolean
+  onUpdate: (patch: Partial<AuthoritativeDefinition>) => void
+  onRemove: () => void
+}) {
+  return (
+    <div className={cn(compact ? authoritativeLinkRowCompactClass : authoritativeLinkRowClass, !disabled && canRemove && 'pr-9')}>
+      {!disabled && canRemove && (
+        <button
+          type="button"
+          onClick={onRemove}
+          className={authoritativeLinkRemoveButtonClass}
+          aria-label="Remove authoritative link"
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+        </button>
+      )}
+
+      <div className={cn('space-y-2', compact && 'space-y-1.5')}>
+        <div className="grid grid-cols-[1fr_128px] gap-2">
+          <div>
+            <label className={authoritativeLinkFieldLabelClass}>URL</label>
+            <Input
+              value={row.url}
+              onChange={e => onUpdate({ url: e.target.value })}
+              placeholder="https://..."
+              disabled={disabled}
+              className={authoritativeLinkInputClass}
+            />
+          </div>
+          <div>
+            <label className={authoritativeLinkFieldLabelClass}>Type</label>
+            <Select
+              value={row.type || undefined}
+              onValueChange={v => v && onUpdate({ type: v })}
+              disabled={disabled}
+            >
+              <SelectTrigger className={authoritativeLinkSelectTriggerClass}>
+                <SelectValue placeholder="Type" />
+              </SelectTrigger>
+              <SelectContent>
+                {AUTH_DEF_TYPE_OPTIONS.map(({ value, label }) => (
+                  <SelectItem key={value} value={value} className="text-xs">
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <div>
+          <label className={authoritativeLinkFieldLabelClass}>Description (optional)</label>
+          <Textarea
+            value={row.description ?? ''}
+            onChange={e => onUpdate({ description: e.target.value })}
+            placeholder="e.g. Customer ownership reference"
+            rows={2}
+            disabled={disabled}
+            className={authoritativeLinkTextareaClass(compact)}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function AuthoritativeDefinitionsEditor({
   definitions,
   onChange,
   disabled = false,
+  compact = false,
 }: AuthoritativeDefinitionsEditorProps) {
   const rows = definitions.length > 0 ? definitions : [emptyRow()]
 
@@ -38,60 +126,28 @@ export function AuthoritativeDefinitionsEditor({
   }
 
   return (
-    <div className="space-y-3">
-      <p className="text-[10px] text-[#656574]">
-        {AUTH_LINKS_HELPER}
-      </p>
-      {rows.map(row => (
-        <div key={row.id} className="border border-[#e4e4f0] rounded-lg p-3 space-y-2 bg-[#fbfbff]/50">
-          <div className="grid grid-cols-[1fr_140px] gap-2">
-            <div>
-              <Label className="text-[10px] text-[#656574] mb-0.5 block">URL</Label>
-              <Input
-                value={row.url}
-                onChange={e => update(row.id, { url: e.target.value })}
-                placeholder="https://..."
-                disabled={disabled}
-                className="h-8 text-xs"
-              />
-            </div>
-            <div>
-              <Label className="text-[10px] text-[#656574] mb-0.5 block">Type</Label>
-              <Select
-                value={row.type || undefined}
-                onValueChange={v => v && update(row.id, { type: v })}
-                disabled={disabled}
-              >
-                <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Type" /></SelectTrigger>
-                <SelectContent>
-                  {AUTH_DEF_TYPE_OPTIONS.map(({ value, label }) => (
-                    <SelectItem key={value} value={value} className="text-xs">{label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div>
-            <Label className="text-[10px] text-[#656574] mb-0.5 block">Description (optional)</Label>
-            <Textarea
-              value={row.description ?? ''}
-              onChange={e => update(row.id, { description: e.target.value })}
-              rows={2}
-              disabled={disabled}
-              className="text-xs resize-y min-h-[48px]"
-            />
-          </div>
-          {!disabled && rows.length > 1 && (
-            <Button type="button" variant="ghost" size="sm" onClick={() => remove(row.id)} className="h-7 text-xs text-red-600">
-              <Trash2 className="h-3 w-3 mr-1" /> Remove
-            </Button>
-          )}
-        </div>
-      ))}
+    <div className={cn('space-y-2', compact && 'space-y-1.5')}>
+      <p className="text-[10px] text-[#656574] leading-snug">{AUTH_LINKS_HELPER}</p>
+
+      <div className={authoritativeLinkListShellClass}>
+        {rows.map(row => (
+          <AuthoritativeLinkEditRow
+            key={row.id}
+            row={row}
+            compact={compact}
+            disabled={disabled}
+            canRemove={rows.length > 1}
+            onUpdate={patch => update(row.id, patch)}
+            onRemove={() => remove(row.id)}
+          />
+        ))}
+      </div>
+
       {!disabled && (
-        <Button type="button" variant="outline" size="sm" onClick={add} className="h-7 text-xs">
-          <Plus className="h-3 w-3 mr-1" /> Add link
-        </Button>
+        <button type="button" onClick={add} className={governanceTableFooterActionClass}>
+          <Plus className="h-3.5 w-3.5" />
+          Add link
+        </button>
       )}
     </div>
   )

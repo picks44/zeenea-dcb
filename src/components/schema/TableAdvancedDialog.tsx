@@ -91,7 +91,11 @@ export function TableAdvancedDialog({
 
               <div>
                 <p className="text-xs font-medium text-[#33333d] mb-1">Authoritative links</p>
-                <AuthoritativeDefinitionsEditor definitions={authDefs} onChange={setAuthDefs} />
+                <AuthoritativeDefinitionsEditor
+                  definitions={authDefs}
+                  onChange={setAuthDefs}
+                  compact={docCompact}
+                />
               </div>
             </div>
           )}
