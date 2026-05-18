@@ -62,3 +62,42 @@ Multiple orange signals stacked at once on an empty draft:
 ## Build
 
 Run `npm run build` after changes.
+
+---
+
+## Balance pass (2026-05-18)
+
+**Problem:** Calm pass made required fields too invisible; panel too verbose; Improve mappings wrong.
+
+### Required fields — intermediate draft scan
+
+| State | Visual |
+|-------|--------|
+| Draft, missing | Warm grey border `#e4e2dc`, bg `#fafaf8`, semibold label, pill badge **Required** |
+| Draft, suggested (recommended) | Lighter border, badge **Suggested** |
+| Guided / publish emphasis | Orange border/bg + short helper (unchanged 3-level model) |
+
+### Panel simplifications
+
+- Rows: **label only** (no multiline `missingHelper` under each item)
+- Shorter validation copy (e.g. owner → “Business owner required before publishing.”)
+- Tighter padding (`px-3 py-2.5`)
+- “Details to fix” still only after Publish click
+- Field quality: compact link to first undocumented column
+
+### Improve your contract — navigation targets
+
+| Item | Target anchor |
+|------|----------------|
+| Domain | `contract-domain` |
+| Business purpose | `contract-purpose` |
+| Governance contacts | `stakeholders-root` |
+| Field descriptions | `schema-field-{table}-{col}` (first undocumented) |
+| Reference links | `fundamentals-ref-links` (+ opens Additional context) |
+
+### New / updated files
+
+- `src/lib/readinessAnchors.ts`
+- `src/components/readiness/SchemaColumnReadinessAnchor.tsx`
+- `src/lib/readinessGuidance.ts` (mappings + dynamic improve items)
+- `GuidanceField.tsx`, `ReadinessPanel.tsx`, `FundamentalsSection.tsx`, `SchemaSection.tsx`, `StakeholdersSection.tsx`, `TableBlock.tsx`

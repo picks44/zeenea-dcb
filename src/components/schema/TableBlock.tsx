@@ -24,6 +24,7 @@ import { ColumnFkIndicator } from '@/components/schema/ColumnFkIndicator'
 import { TableRelationshipRow } from '@/components/schema/TableRelationshipRow'
 import { RelationshipHeaderSummaryBadge } from '@/components/schema/RelationshipHeaderSummary'
 import { useRegisterSchemaTable } from '@/components/schema/SchemaNavigationContext'
+import { SchemaColumnReadinessAnchor } from '@/components/readiness/SchemaColumnReadinessAnchor'
 
 function deriveLogicalName(physicalName: string): string {
   return physicalName
@@ -253,17 +254,20 @@ export function TableBlock({
                 No fields yet — click "+ Add field" below
               </div>
             )}
-            {table.columns.map(col => {
+            {table.columns.map((col, colIndex) => {
               const tc = typeConfig(col.logicalType)
               const Icon = tc.icon
               const compatibleDbTypes = DB_TYPES_BY_LOGICAL[col.logicalType] ?? ['VARCHAR']
               const hasFk = isColumnForeignKeyComplete(col.foreignKey)
               const hasMetadata = hasFieldMetadata(col)
               return (
-                <div
+                <SchemaColumnReadinessAnchor
                   key={col.id}
-                  ref={el => registerColumn(col.physicalName, el)}
-                  data-schema-column={col.physicalName}
+                  tableIndex={tableIndex}
+                  columnIndex={colIndex}
+                  isMissing={!col.description.trim()}
+                  registerColumn={registerColumn}
+                  columnName={col.physicalName}
                   className={cn(
                     'flex px-4 transition-colors group rounded-md',
                     hasFk ? 'items-start' : 'items-center',
@@ -369,7 +373,7 @@ export function TableBlock({
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
                   )}
-                </div>
+                </SchemaColumnReadinessAnchor>
               )
             })}
           </div>

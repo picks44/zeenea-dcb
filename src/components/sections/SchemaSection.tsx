@@ -39,7 +39,7 @@ function makeTable(name: string): SchemaTable {
 export function SchemaSection({ tables, onChange, isLocked, docCompact }: SchemaSectionProps) {
   const fieldCount = tables.reduce((acc, t) => acc + t.columns.length, 0)
   const { setRef: sectionRootRef } = useSectionGuidanceRoot('schema')
-  const { setRef: schemaAnchorRef, showEmphasis: showSchemaEmphasis } = useReadinessField(
+  const { setRef: schemaAnchorRef, showEmphasis: showSchemaEmphasis, showDraftScan: showSchemaDraft } = useReadinessField(
     READINESS_FIELD_SCHEMA_ROOT,
     fieldCount === 0,
     true,
@@ -98,7 +98,9 @@ export function SchemaSection({ tables, onChange, isLocked, docCompact }: Schema
             'border-2 border-dashed rounded-xl p-16 flex flex-col items-center gap-4',
             showSchemaEmphasis
               ? 'border-[#fed7aa] bg-[#fff7ed]/60'
-              : 'border-[#d3d3e5] bg-[#fbfbff]/50',
+              : showSchemaDraft
+                ? 'border-[#e4e2dc] bg-[#fafaf8]'
+                : 'border-[#d3d3e5] bg-[#fbfbff]/50',
           )}
         >
           <Database className="h-6 w-6 text-[#656574]" />

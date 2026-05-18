@@ -20,6 +20,7 @@ import {
   READINESS_VALIDATION_DETAILS_TITLE,
   START_NEW_VERSION_QUALITY_NOTE,
 } from '@/lib/uxCopy'
+import { findFirstUndocumentedField } from '@/lib/readinessAnchors'
 import type { ReadinessGuidanceItem } from '@/lib/readinessGuidance'
 import {
   navigateToValidationIssue,
@@ -77,7 +78,7 @@ function CheckRow({
   onNavigate?: (item: ReadinessGuidanceItem) => void
   publishAttempted?: boolean
 }) {
-  const { label, ok, variant, badge, missingHelper } = item
+  const { label, ok, variant, badge } = item
   const isRequired = variant === 'required'
   const clickable = Boolean(onNavigate && !ok)
 
@@ -109,9 +110,6 @@ function CheckRow({
         >
           {label}
         </span>
-        {!ok && missingHelper ? (
-          <span className="block text-[10px] text-[#9898a7] leading-snug mt-0.5">{missingHelper}</span>
-        ) : null}
       </span>
       {badge ? (
         <span className="text-[10px] font-medium text-[#9898a7] tabular-nums flex-shrink-0">
@@ -168,9 +166,16 @@ export function ReadinessPanel({
 
   const nav = useReadinessNavigation()
   const publishAttempted = nav?.publishAttempted ?? false
+  const firstUndocumented = useMemo(() => findFirstUndocumentedField(contract), [contract])
+
   const handleNavigateItem = (item: ReadinessGuidanceItem) => {
     if (!nav?.enabled || item.ok) return
     nav.navigateTo({ section: item.section, fieldId: item.fieldId })
+  }
+
+  const handleDocumentFieldsClick = () => {
+    if (!nav?.enabled || !firstUndocumented) return
+    nav.navigateTo({ section: 'schema', fieldId: firstUndocumented.fieldId })
   }
 
   const {
@@ -210,9 +215,9 @@ export function ReadinessPanel({
     'bg-[#9898a7]'
 
   const publishedDense = isPublishedView && docCompact
-  const sectionPad = publishedDense ? 'px-2.5 py-2' : isPublishedView ? 'px-3 py-2.5' : 'px-4 py-3'
+  const sectionPad = publishedDense ? 'px-2.5 py-1.5' : isPublishedView ? 'px-3 py-2' : 'px-3 py-2.5'
   const panelBorder = isPublishedView ? 'border-[#ebebf0]' : 'border-[#d3d3e5]'
-  const listGap = isPublishedView ? 'space-y-0.5' : 'space-y-1'
+  const listGap = isPublishedView ? 'space-y-0.5' : 'space-y-0.5'
 
   const yamlBlock = (
     <div className="border-t border-[#e4e4f0] mt-1">
@@ -372,11 +377,19 @@ export function ReadinessPanel({
                   />
                 </div>
               </Tooltip>
-              {fieldsWithDesc < fieldCount && (
+              {fieldsWithDesc < fieldCount && nav?.enabled && firstUndocumented ? (
+                <button
+                  type="button"
+                  onClick={handleDocumentFieldsClick}
+                  className="text-[10px] text-[#656574] mt-1 leading-snug hover:text-[#0550dc] hover:underline text-left"
+                >
+                  {fieldCount - fieldsWithDesc} undocumented — go to field
+                </button>
+              ) : fieldsWithDesc < fieldCount ? (
                 <p className="text-[10px] text-[#9898a7] mt-1 leading-snug">
-                  {fieldCount - fieldsWithDesc} field{fieldCount - fieldsWithDesc > 1 ? 's' : ''} without documentation
+                  {fieldCount - fieldsWithDesc} undocumented
                 </p>
-              )}
+              ) : null}
             </div>
 
               {piiCount > 0 && (

@@ -19,16 +19,23 @@ import {
   LABEL_REFERENCE_LINKS,
   NAV_FUNDAMENTALS,
   READINESS_FIELD_CONTRACT_ID,
+  READINESS_FIELD_CONTRACT_DOMAIN,
   READINESS_FIELD_CONTRACT_OWNER,
+  READINESS_FIELD_CONTRACT_PURPOSE,
   READINESS_FIELD_CONTRACT_TITLE,
   READINESS_FIELD_CONTRACT_VERSION,
+  READINESS_FIELD_FUNDAMENTALS_REF_LINKS,
   READINESS_HELPER_CONTRACT_ID,
   READINESS_HELPER_CONTRACT_NAME,
   READINESS_HELPER_CONTRACT_OWNER,
   READINESS_HELPER_CONTRACT_VERSION,
 } from '@/lib/uxCopy'
 import { GuidanceField } from '@/components/readiness/GuidanceField'
-import { useSectionGuidanceRoot } from '@/components/readiness/ReadinessNavigationContext'
+import {
+  useReadinessField,
+  useReadinessNavigation,
+  useSectionGuidanceRoot,
+} from '@/components/readiness/ReadinessNavigationContext'
 import type { AuthoritativeDefinition } from '@/types/odcsShared'
 
 interface FundamentalsSectionProps {
@@ -112,7 +119,19 @@ export function FundamentalsSection({
 
   const tags = info.tags ?? []
   const { setRef: sectionRootRef } = useSectionGuidanceRoot('fundamentals')
+  const nav = useReadinessNavigation()
+  const { setRef: refLinksRef } = useReadinessField(READINESS_FIELD_FUNDAMENTALS_REF_LINKS, !hasReferenceLinks(), false)
   const semver = /^\d+\.\d+\.\d+$/
+
+  function hasReferenceLinks() {
+    return authDefs.some(d => d.url.trim() || d.type.trim() || (d.description ?? '').trim())
+  }
+
+  useEffect(() => {
+    if (nav?.focusedFieldId === READINESS_FIELD_FUNDAMENTALS_REF_LINKS) {
+      setAdditionalOpen(true)
+    }
+  }, [nav?.focusedFieldId])
 
   const ownerFieldLocked = isLocked || !isOwner
   const labelClass = 'text-xs font-medium text-[#33333d] mb-1 block'
@@ -154,8 +173,12 @@ export function FundamentalsSection({
               className={inputClass}
             />
           </GuidanceField>
-          <div>
-            <label className={labelClass}>Domain</label>
+          <GuidanceField
+            fieldId={READINESS_FIELD_CONTRACT_DOMAIN}
+            label="Domain"
+            required={false}
+            isMissing={!info.domain.trim()}
+          >
             <Input
               value={info.domain}
               onChange={e => onChange({ domain: e.target.value })}
@@ -163,7 +186,7 @@ export function FundamentalsSection({
               disabled={isLocked}
               className={inputClass}
             />
-          </div>
+          </GuidanceField>
         </div>
 
         <GuidanceField
@@ -220,8 +243,12 @@ export function FundamentalsSection({
           </div>
         </div>
 
-        <div>
-          <label className={labelClass}>Business purpose</label>
+        <GuidanceField
+          fieldId={READINESS_FIELD_CONTRACT_PURPOSE}
+          label="Business purpose"
+          required={false}
+          isMissing={!info.description.trim()}
+        >
           <Textarea
             value={info.description}
             onChange={e => onChange({ description: e.target.value })}
@@ -229,7 +256,7 @@ export function FundamentalsSection({
             disabled={isLocked}
             className={cn(inputClass, 'min-h-[100px] resize-y text-sm')}
           />
-        </div>
+        </GuidanceField>
 
         <div className="border border-[#e4e4f0] rounded-lg overflow-hidden">
           <button
@@ -262,7 +289,7 @@ export function FundamentalsSection({
                   className={cn(inputClass, 'min-h-[72px] resize-y text-sm')}
                 />
               </div>
-              <div>
+              <div ref={refLinksRef}>
                 <label className={labelClass}>{LABEL_REFERENCE_LINKS}</label>
                 <AuthoritativeDefinitionsEditor
                   definitions={authDefs}

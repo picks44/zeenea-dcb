@@ -138,14 +138,25 @@ export const READINESS_FIELD_CONTRACT_TITLE = 'contract-title'
 export const READINESS_FIELD_CONTRACT_ID = 'contract-id'
 export const READINESS_FIELD_CONTRACT_OWNER = 'contract-owner'
 export const READINESS_FIELD_CONTRACT_VERSION = 'contract-version'
+export const READINESS_FIELD_CONTRACT_DOMAIN = 'contract-domain'
+export const READINESS_FIELD_CONTRACT_PURPOSE = 'contract-purpose'
+export const READINESS_FIELD_STAKEHOLDERS_ROOT = 'stakeholders-root'
+export const READINESS_FIELD_FUNDAMENTALS_REF_LINKS = 'fundamentals-ref-links'
 export const READINESS_FIELD_SCHEMA_ROOT = 'schema-root'
 
-export const READINESS_HELPER_CONTRACT_NAME = 'Required to publish this contract.'
-export const READINESS_HELPER_CONTRACT_ID = 'Required to identify this contract in exports.'
-export const READINESS_HELPER_CONTRACT_OWNER =
-  'Every published contract should have a business owner responsible for governance and approval.'
-export const READINESS_HELPER_CONTRACT_VERSION = 'Use SemVer format, for example 1.0.0.'
-export const READINESS_HELPER_SCHEMA_FIELDS = 'Add at least one table and field in Schema.'
+/** Shown in form only after publish attempt or guided navigation (level 2–3). */
+export const READINESS_HELPER_CONTRACT_NAME = 'Needed to publish this contract.'
+export const READINESS_HELPER_CONTRACT_ID = 'Needed for export identity.'
+export const READINESS_HELPER_CONTRACT_OWNER = 'Business owner required before publishing.'
+export const READINESS_HELPER_CONTRACT_VERSION = 'Use SemVer, e.g. 1.0.0.'
+export const READINESS_HELPER_SCHEMA_FIELDS = 'Add at least one table and field.'
+
+/** Short labels for readiness panel rows (no multiline helpers in panel). */
+export const READINESS_PANEL_LABEL_DOMAIN = 'Domain'
+export const READINESS_PANEL_LABEL_PURPOSE = 'Business purpose'
+export const READINESS_PANEL_LABEL_CONTACTS = 'Governance contacts'
+export const READINESS_PANEL_LABEL_FIELD_DOCS = 'Field descriptions'
+export const READINESS_PANEL_LABEL_REF_LINKS = 'Reference links'
 
 export const READINESS_GUIDANCE_FUNDAMENTALS_BANNER =
   'This section contains required publication information.'

@@ -168,7 +168,7 @@ export function useReadinessNavigation() {
   return useContext(ReadinessNavigationContext)
 }
 
-export function useReadinessField(fieldId: string, isMissing: boolean, required = true) {
+export function useReadinessField(fieldId: string, isMissing: boolean, _required = true) {
   const ctx = useReadinessNavigation()
   const setRef = useCallback(
     (node: HTMLElement | null) => {
@@ -183,12 +183,14 @@ export function useReadinessField(fieldId: string, isMissing: boolean, required 
     && (ctx.publishAttempted || ctx.focusedFieldId === fieldId),
   )
 
-  const showRequiredBadge = Boolean(ctx?.enabled && required && isMissing)
+  const showRequiredBadge = Boolean(ctx?.enabled && isMissing)
+  const showDraftScan = Boolean(ctx?.enabled && isMissing && !showEmphasis)
 
   return {
     setRef,
     showRequiredBadge,
     showEmphasis,
+    showDraftScan,
     isFocused: ctx?.focusedFieldId === fieldId,
   }
 }

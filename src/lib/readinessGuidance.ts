@@ -2,33 +2,39 @@ import type { DataContract, SectionId } from '@/types/odcs'
 import { validateContract, type ValidationIssue, type ValidationResult } from '@/lib/contractValidation'
 import { countAssignedStakeholders } from '@/lib/stakeholders'
 import {
+  findFirstUndocumentedField,
+  READINESS_FIELD_CONTRACT_DOMAIN,
+  READINESS_FIELD_CONTRACT_PURPOSE,
+  READINESS_FIELD_FUNDAMENTALS_REF_LINKS,
+  READINESS_FIELD_STAKEHOLDERS_ROOT,
+} from '@/lib/readinessAnchors'
+import {
   READINESS_FIELD_CONTRACT_ID,
   READINESS_FIELD_CONTRACT_OWNER,
   READINESS_FIELD_CONTRACT_TITLE,
   READINESS_FIELD_CONTRACT_VERSION,
   READINESS_FIELD_SCHEMA_ROOT,
-  READINESS_GUIDANCE_FUNDAMENTALS_BANNER,
-  READINESS_GUIDANCE_SCHEMA_BANNER,
-  READINESS_GUIDANCE_STAKEHOLDERS_BANNER,
-  READINESS_HELPER_CONTRACT_ID,
   READINESS_HELPER_CONTRACT_NAME,
+  READINESS_HELPER_CONTRACT_ID,
   READINESS_HELPER_CONTRACT_OWNER,
   READINESS_HELPER_CONTRACT_VERSION,
   READINESS_HELPER_SCHEMA_FIELDS,
+  READINESS_GUIDANCE_FUNDAMENTALS_BANNER,
+  READINESS_GUIDANCE_SCHEMA_BANNER,
+  READINESS_GUIDANCE_STAKEHOLDERS_BANNER,
+  READINESS_PANEL_LABEL_CONTACTS,
+  READINESS_PANEL_LABEL_DOMAIN,
+  READINESS_PANEL_LABEL_FIELD_DOCS,
+  READINESS_PANEL_LABEL_PURPOSE,
+  READINESS_PANEL_LABEL_REF_LINKS,
 } from '@/lib/uxCopy'
 
-export type ReadinessFieldId =
-  | typeof READINESS_FIELD_CONTRACT_TITLE
-  | typeof READINESS_FIELD_CONTRACT_ID
-  | typeof READINESS_FIELD_CONTRACT_OWNER
-  | typeof READINESS_FIELD_CONTRACT_VERSION
-  | typeof READINESS_FIELD_SCHEMA_ROOT
+export type ReadinessFieldId = string
 
 export type SectionGuidanceStatus = 'complete' | 'incomplete' | 'empty'
 
 export interface SectionGuidanceInfo {
   status: SectionGuidanceStatus
-  /** Blocking required items missing in this section. */
   missingCount: number
   bannerMessage: string | null
   bannerVariant: 'required' | 'recommended' | null
@@ -41,6 +47,7 @@ export interface ReadinessGuidanceItem {
   variant: 'required' | 'recommended'
   section: SectionId
   fieldId?: ReadinessFieldId
+  /** Form emphasis only — not shown in readiness panel rows. */
   missingHelper?: string
   badge?: string
 }
@@ -80,6 +87,11 @@ function hasFundamentalsContent(contract: DataContract): boolean {
 
 function hasSchemaContent(contract: DataContract): boolean {
   return contract.dataset.length > 0
+}
+
+function hasReferenceLinks(contract: DataContract): boolean {
+  const defs = contract.info.descriptionAuthoritativeDefinitions ?? []
+  return defs.some(d => d.url.trim() || d.type.trim() || (d.description ?? '').trim())
 }
 
 export function computeSectionGuidance(
@@ -153,8 +165,13 @@ export function buildReadinessGuidanceItems(contract: DataContract): ReadinessGu
   const validation = validateContract(contract)
   const { info, id } = contract
   const fieldCount = contract.dataset.reduce((acc, t) => acc + t.columns.length, 0)
+  const fieldsWithDesc = contract.dataset.reduce(
+    (acc, t) => acc + t.columns.filter(c => c.description.trim()).length,
+    0,
+  )
   const schemaOk = !validation.errors.some(e => e.section === 'schema') && fieldCount > 0
   const contactCount = countAssignedStakeholders(contract.stakeholders)
+  const firstUndocumented = findFirstUndocumentedField(contract)
 
   const required: ReadinessGuidanceItem[] = [
     {
@@ -186,7 +203,7 @@ export function buildReadinessGuidanceItems(contract: DataContract): ReadinessGu
     },
     {
       key: 'version',
-      label: 'Version (e.g. 1.0.0)',
+      label: 'Version',
       ok: SEMVER.test(info.version),
       variant: 'required',
       section: 'fundamentals',
@@ -195,7 +212,7 @@ export function buildReadinessGuidanceItems(contract: DataContract): ReadinessGu
     },
     {
       key: 'schema',
-      label: 'At least one field defined',
+      label: 'Schema fields',
       ok: schemaOk,
       variant: 'required',
       section: 'schema',
@@ -207,35 +224,59 @@ export function buildReadinessGuidanceItems(contract: DataContract): ReadinessGu
   const recommended: ReadinessGuidanceItem[] = [
     {
       key: 'domain',
-      label: 'Domain',
+      label: READINESS_PANEL_LABEL_DOMAIN,
       ok: Boolean(info.domain.trim()),
       variant: 'recommended',
       section: 'fundamentals',
-      fieldId: READINESS_FIELD_CONTRACT_TITLE,
+      fieldId: READINESS_FIELD_CONTRACT_DOMAIN,
     },
     {
       key: 'desc',
-      label: 'Business purpose',
+      label: READINESS_PANEL_LABEL_PURPOSE,
       ok: Boolean(info.description.trim()),
       variant: 'recommended',
       section: 'fundamentals',
-      fieldId: READINESS_FIELD_CONTRACT_TITLE,
+      fieldId: READINESS_FIELD_CONTRACT_PURPOSE,
     },
     {
       key: 'stakeholders',
-      label: 'Governance contacts',
+      label: READINESS_PANEL_LABEL_CONTACTS,
       ok: contactCount > 0,
       variant: 'recommended',
       section: 'stakeholders',
+      fieldId: READINESS_FIELD_STAKEHOLDERS_ROOT,
       badge: contactCount > 0 ? String(contactCount) : undefined,
     },
   ]
+
+  if (fieldCount > 0 && fieldsWithDesc < fieldCount && firstUndocumented) {
+    recommended.push({
+      key: 'field-docs',
+      label: READINESS_PANEL_LABEL_FIELD_DOCS,
+      ok: false,
+      variant: 'recommended',
+      section: 'schema',
+      fieldId: firstUndocumented.fieldId,
+      badge: String(fieldCount - fieldsWithDesc),
+    })
+  }
+
+  if (!hasReferenceLinks(contract)) {
+    recommended.push({
+      key: 'ref-links',
+      label: READINESS_PANEL_LABEL_REF_LINKS,
+      ok: false,
+      variant: 'recommended',
+      section: 'fundamentals',
+      fieldId: READINESS_FIELD_FUNDAMENTALS_REF_LINKS,
+    })
+  }
 
   return [...required, ...recommended]
 }
 
 export function issueToFieldId(issue: ValidationIssue): ReadinessFieldId | undefined {
-  if (issue.fieldId) return issue.fieldId as ReadinessFieldId
+  if (issue.fieldId) return issue.fieldId
   switch (issue.code) {
     case 'title':
       return READINESS_FIELD_CONTRACT_TITLE

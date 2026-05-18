@@ -109,8 +109,7 @@ export function validateContract(contract: DataContract): ValidationResult {
   if (!info.owner.trim()) {
     issues.push({
       code: 'owner',
-      message:
-        'Every published contract should have a business owner responsible for governance and approval.',
+      message: 'Business owner required before publishing.',
       severity: 'error',
       section: 'fundamentals',
       fieldId: 'contract-owner',

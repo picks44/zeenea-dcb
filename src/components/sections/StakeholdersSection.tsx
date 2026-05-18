@@ -24,7 +24,8 @@ import {
   SECTION_CONCEPT_COMMUNICATION,
   STAKEHOLDERS_INTRO,
 } from '@/lib/uxCopy'
-import { useSectionGuidanceRoot } from '@/components/readiness/ReadinessNavigationContext'
+import { READINESS_FIELD_STAKEHOLDERS_ROOT } from '@/lib/uxCopy'
+import { useReadinessField, useSectionGuidanceRoot } from '@/components/readiness/ReadinessNavigationContext'
 
 interface StakeholdersSectionProps {
   stakeholders: Stakeholder[]
@@ -68,6 +69,12 @@ function makeStakeholder(): Stakeholder {
 
 export function StakeholdersSection({ stakeholders, onChange, isLocked, docCompact }: StakeholdersSectionProps) {
   const { setRef: sectionRootRef } = useSectionGuidanceRoot('stakeholders')
+  const contactCount = stakeholders.filter(s => Boolean(s.name?.trim())).length
+  const { setRef: contactsAnchorRef } = useReadinessField(
+    READINESS_FIELD_STAKEHOLDERS_ROOT,
+    contactCount === 0,
+    false,
+  )
 
   const update = (id: string, patch: Partial<Stakeholder>) =>
     onChange(stakeholders.map(s => (s.id === id ? { ...s, ...patch } : s)))
@@ -75,7 +82,13 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked, docCompa
   const remove = (id: string) => onChange(stakeholders.filter(s => s.id !== id))
 
   return (
-    <div ref={sectionRootRef} className="max-w-[720px] w-full">
+    <div
+      ref={el => {
+        sectionRootRef(el)
+        contactsAnchorRef(el)
+      }}
+      className="max-w-[720px] w-full"
+    >
       <GovernanceSectionHeader
         title={SECTION_GOVERNANCE_CONTACTS}
         conceptTag={SECTION_CONCEPT_COMMUNICATION}

@@ -115,20 +115,14 @@ export function computePublicationReadiness(
 
   const nextSteps: string[] = []
   for (const check of requiredChecks.filter(c => !c.ok)) {
-    nextSteps.push(check.missingHelper ?? `Complete ${check.label} in ${check.section}`)
+    nextSteps.push(`Complete ${check.label}`)
     if (nextSteps.length >= 2) break
   }
   if (nextSteps.length < 2 && fieldCount > 0 && fieldsWithDesc < fieldCount) {
-    nextSteps.push('Document schema fields to improve discoverability and reuse')
+    nextSteps.push('Add field descriptions')
   }
-  if (nextSteps.length < 2 && stakeholderCount === 0 && fieldCount > 0) {
-    if (piiCount > 0) {
-      nextSteps.push(
-        `${piiCount} PII field${piiCount > 1 ? 's' : ''} detected — add governance contacts (e.g. Data Privacy)`,
-      )
-    } else {
-      nextSteps.push('Add governance contacts so teams know who to reach')
-    }
+  if (nextSteps.length < 2 && stakeholderCount === 0 && fieldCount > 0 && piiCount > 0) {
+    nextSteps.push('Add governance contacts')
   }
 
   return {
