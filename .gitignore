@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+dist-ssr/
+
+# Local env
+.env
+.env.*
+!.env.example
+
+# Logs & caches
+*.log
+npm-debug.log*
+.npm
+.cache
+
+# Editor / OS
+.DS_Store
+*.local
+
+# Claude Code (local permissions, not for Cursor)
+.claude/
+
+# Netlify local state
+.netlify/state.json

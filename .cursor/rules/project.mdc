@@ -1,0 +1,45 @@
+---
+description: Data Contract Builder — contexte projet, ODCS, architecture
+alwaysApply: true
+---
+
+# Data Contract Builder (Zeenea DCB)
+
+SPA React pour créer des contrats de données **ODCS v3.1.0** (YAML Bitol). MVP : persistance `localStorage`, Git simulé, pas de backend.
+
+## Stack
+
+- React 19 + TypeScript strict + Vite 8
+- Tailwind CSS 4 — tokens Actian dans `src/index.css` (ne pas introduire de palette ad hoc)
+- Composants UI maison dans `src/components/ui/` (Base UI) — réutiliser avant d’en créer
+- Alias `@/` → `src/`
+
+## Structure
+
+| Chemin | Rôle |
+|--------|------|
+| `src/types/odcs.ts` | Source de vérité des types métier |
+| `src/lib/ddlParser.ts` | SQL `CREATE TABLE` → `SchemaTable` |
+| `src/lib/odcsYamlGenerator.ts` | `DataContract` → YAML ODCS |
+| `src/lib/storage.ts` | `loadContracts` / `saveContracts` (clé `data-contracts-v1`) |
+| `src/App.tsx` | État global, lifecycle, permissions |
+| `design.md` | Spec produit & UX — consulter avant changements UI/métier |
+
+## Règles métier
+
+- **Lifecycle** : `draft` → `active` → `deprecated`. Contrat `active` = lecture seule sauf `inRevision`.
+- **Publish** : owner uniquement ; champs requis (title, id, owner, version SemVer `x.y.z`) ; bump major/minor dans `PushToGitModal`.
+- **DDL** : types inconnus → `logicalType: 'string'` + `isUnknownType: true`.
+- **Labels UI** : termes métier (Business Label, Technical Format, Entity Name), pas les clés ODCS brutes.
+- **YAML** : toute évolution du modèle doit passer par `odcsYamlGenerator.ts` et rester alignée ODCS 3.1.0.
+
+## Conventions code
+
+- Modifications ciblées ; pas de refactor hors scope.
+- Pas de backend/API réelle sans demande explicite.
+- `CURRENT_USER` dans `src/lib/currentUser.ts` est un stub prototype.
+- Sections ODCS non implémentées (`terms`, `sla`, …) : ne pas exposer dans l’UI sans spec.
+
+## Référence
+
+README et `design.md` pour le détail fonctionnel.
