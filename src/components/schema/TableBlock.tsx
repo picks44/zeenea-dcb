@@ -12,7 +12,7 @@ import { ColumnAdvancedDialog } from './ColumnAdvancedDialog'
 import { TableAdvancedDialog } from './TableAdvancedDialog'
 import { isBelongsToRelationshipIncomplete, isExportedRelationshipType } from '@/types/odcsShared'
 import { WorkflowMetadataPill } from '@/components/shared/WorkflowMetadataPill'
-import { RELATIONSHIP_FK_HELPER, RELATIONSHIPS_PUBLISH_NOTE } from '@/lib/uxCopy'
+import { RELATIONSHIP_FK_HELPER, RELATIONSHIPS_SECTION_INTRO } from '@/lib/uxCopy'
 
 function deriveLogicalName(physicalName: string): string {
   return physicalName
@@ -317,8 +317,8 @@ export function TableBlock({ table, tableIndex, allTables, isLocked, onTableChan
       {showRelSection && (
         <div className="border-t border-[#e4e4f0] bg-[#fbfbff]/30 px-4 py-3 rounded-b-xl">
           <p className="text-[10px] font-semibold uppercase tracking-wide text-[#9898a7] mb-2.5">Relationships</p>
-          <p className="text-[10px] text-[#656574] mb-2">
-            {RELATIONSHIPS_PUBLISH_NOTE}
+          <p className="text-[10px] text-[#656574] mb-2 leading-snug">
+            {RELATIONSHIPS_SECTION_INTRO}
           </p>
 
           {/* Existing */}
@@ -354,7 +354,7 @@ export function TableBlock({ table, tableIndex, allTables, isLocked, onTableChan
                     )}
                   </div>
                     {incompleteFk && (
-                      <p className="text-[10px] text-[#d27b00] pl-1 leading-snug">
+                      <p className="text-[10px] text-[#656574] pl-1 leading-snug">
                         {RELATIONSHIP_FK_HELPER}
                       </p>
                     )}

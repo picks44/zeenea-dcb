@@ -5,10 +5,14 @@ import { generateODCSYaml } from '@/lib/odcsYamlGenerator'
 import { computePublicationReadiness } from '@/lib/publicationReadiness'
 import { cn } from '@/lib/utils'
 import {
+  CONTRACT_QUALITY_PANEL_TITLE,
   DOCUMENTED_FIELDS_TOOLTIP,
   EXPORT_COVERAGE,
   PUBLICATION_READY_TOOLTIP,
+  PUBLISHED_READ_ONLY_STATUS,
+  PUBLISHED_REQUIRED_SECTION_TITLE,
   READINESS_SCORE_TOOLTIP,
+  START_NEW_VERSION_QUALITY_NOTE,
 } from '@/lib/uxCopy'
 import { Tooltip } from '@/components/ui/tooltip'
 
@@ -124,6 +128,9 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
 
   const yaml = useMemo(() => generateODCSYaml(contract), [contract])
 
+  const isPublishedView =
+    contract.info.status === 'active' && !contract.inRevision
+
   const handleCopy = () => {
     navigator.clipboard.writeText(yaml)
     setCopied(true)
@@ -146,7 +153,9 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
       {/* Header */}
       <div className="px-4 py-3 border-b border-[#d3d3e5] flex-shrink-0">
         <div className="flex items-center justify-between mb-2.5">
-          <span className="text-xs font-semibold text-[#33333d]">Publication readiness</span>
+          <span className="text-xs font-semibold text-[#33333d]">
+            {isPublishedView ? CONTRACT_QUALITY_PANEL_TITLE : 'Publication readiness'}
+          </span>
           <Tooltip content={READINESS_SCORE_TOOLTIP} side="left" delayDuration={400}>
             <span className={cn('text-[11px] font-bold px-2 py-0.5 rounded-full border cursor-default', scoreColor)}>
               {healthScore}/100
@@ -162,7 +171,14 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
         </div>
 
         <div className="mt-2 flex items-center gap-1.5">
-          {publishStatus.ready ? (
+          {isPublishedView ? (
+            <>
+              <CheckCircle2 className="h-3 w-3 text-[#656574] flex-shrink-0" />
+              <span className="text-[11px] text-[#656574] font-medium leading-snug">
+                {PUBLISHED_READ_ONLY_STATUS}
+              </span>
+            </>
+          ) : publishStatus.ready ? (
             <>
               <CheckCircle2 className="h-3 w-3 text-[#047800] flex-shrink-0" />
               <Tooltip content={PUBLICATION_READY_TOOLTIP} side="bottom" delayDuration={400}>
@@ -186,7 +202,7 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
 
         <div className="px-4 py-3">
           <SectionHeaderWithScore
-            title="Required to publish"
+            title={isPublishedView ? PUBLISHED_REQUIRED_SECTION_TITLE : 'Required to publish'}
             earned={scoreContributions.required.earned}
             max={scoreContributions.required.max}
             tone="required"
@@ -230,16 +246,16 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
               </Tooltip>
               {fieldsWithDesc < fieldCount && (
                 <p className="text-[10px] text-[#9898a7] mt-1 leading-snug">
-                  {fieldCount - fieldsWithDesc} field{fieldCount - fieldsWithDesc > 1 ? 's are' : ' is'} missing documentation
+                  {fieldCount - fieldsWithDesc} field{fieldCount - fieldsWithDesc > 1 ? 's' : ''} without documentation
                 </p>
               )}
             </div>
 
               {piiCount > 0 && (
-                <div className="mt-2.5 flex items-center gap-2 bg-[#fff2ee] rounded-lg px-2.5 py-2 border border-rose-100">
-                  <AlertTriangle className="h-3 w-3 text-[#c12c11] flex-shrink-0" />
-                  <span className="text-[11px] text-[#c12c11] leading-snug">
-                    <strong>{piiCount}</strong> personal data field{piiCount > 1 ? 's' : ''} (PII) — ensure data privacy
+                <div className="mt-2.5 flex items-center gap-2 bg-[#fff8f3] rounded-lg px-2.5 py-2 border border-[#f0dcc8]">
+                  <AlertTriangle className="h-3 w-3 text-[#8a5c3a] flex-shrink-0" />
+                  <span className="text-[11px] text-[#8a5c3a] leading-snug">
+                    <strong>{piiCount}</strong> personal data field{piiCount > 1 ? 's' : ''} (PII) on this contract
                   </span>
                 </div>
               )}
@@ -292,7 +308,13 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
           </ul>
         </div>
 
-        {nextSteps.length > 0 && (
+        {isPublishedView ? (
+          <div className="px-4 py-3">
+            <p className="text-[11px] text-[#656574] leading-snug">
+              {START_NEW_VERSION_QUALITY_NOTE}
+            </p>
+          </div>
+        ) : nextSteps.length > 0 ? (
           <div className="px-4 py-3 bg-[#fbfbff]/60">
             <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-2">
               Next steps
@@ -306,7 +328,7 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
               ))}
             </ul>
           </div>
-        )}
+        ) : null}
       </div>
 
       <div className="border-t border-[#d3d3e5] flex-shrink-0">
@@ -337,7 +359,7 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
             </div>
             <div className="px-4 py-2 border-b border-[#e4e4f0] bg-white space-y-1">
               <p className="text-[10px] text-[#656574] leading-snug">{EXPORT_COVERAGE.includedInYaml}</p>
-              <p className="text-[10px] text-[#656574] leading-snug">{EXPORT_COVERAGE.workflowOnly}</p>
+              <p className="text-[10px] text-[#656574] leading-snug">{EXPORT_COVERAGE.excludedFromYaml}</p>
             </div>
             <pre className="text-[10px] font-mono text-[#33333d] px-4 py-3 max-h-56 overflow-y-auto bg-[#fbfbff] leading-4">
               {yaml}

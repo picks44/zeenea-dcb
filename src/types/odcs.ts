@@ -102,6 +102,8 @@ export interface Stakeholder {
   role: string
   email: string
   team: string
+  /** Optional governance context (not in ODCS YAML). */
+  notes: string
 }
 
 export interface OdcsAccessRole {

@@ -1,4 +1,4 @@
-import { DataContract, ColumnDefinition, DataContractSnapshot, SchemaTable } from '@/types/odcs'
+import { DataContract, ColumnDefinition, DataContractSnapshot, SchemaTable, Stakeholder } from '@/types/odcs'
 import type { AuthoritativeDefinition } from '@/types/odcsShared'
 import {
   ensureQualityRuleIds,
@@ -54,6 +54,17 @@ function migrateTable(table: SchemaTable): SchemaTable {
   }
 }
 
+function migrateStakeholder(s: Stakeholder): Stakeholder {
+  return {
+    id: s.id ?? generateId(),
+    name: s.name ?? '',
+    role: s.role ?? 'Data Consumer',
+    email: s.email ?? '',
+    team: s.team ?? '',
+    notes: s.notes ?? '',
+  }
+}
+
 function migrateInfo(info: DataContract['info']): DataContract['info'] {
   return {
     ...info,
@@ -68,7 +79,7 @@ function migrateSnapshot(snapshot: DataContractSnapshot): DataContractSnapshot {
   return {
     ...snapshot,
     info: migrateInfo(snapshot.info),
-    stakeholders: snapshot.stakeholders ?? [],
+    stakeholders: (snapshot.stakeholders ?? []).map(migrateStakeholder),
     roles: snapshot.roles ?? [],
     slaProperties: snapshot.slaProperties ?? [],
     dataset: (snapshot.dataset ?? []).map(migrateTable),
@@ -80,7 +91,7 @@ function migrateContract(c: DataContract): DataContract {
     ...c,
     info: migrateInfo(c.info),
     collaborators: c.collaborators ?? [],
-    stakeholders: c.stakeholders ?? [],
+    stakeholders: (c.stakeholders ?? []).map(migrateStakeholder),
     roles: c.roles ?? [],
     slaProperties: c.slaProperties ?? [],
     gitHistory: (c.gitHistory ?? []).map(commit => {

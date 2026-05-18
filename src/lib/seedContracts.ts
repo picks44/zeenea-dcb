@@ -82,7 +82,7 @@ const CUSTOMER_ORDERS_V2_DATASET: SchemaTable[] = cloneDataset([
 ])
 
 const CUSTOMER_ORDERS_STAKEHOLDERS = [
-  { id: 's1', name: 'Florent Simon', role: 'Data Owner', email: 'florentsimon@gmail.com', team: 'Platform' },
+  { id: 's1', name: 'Florent Simon', role: 'Data Owner', email: 'florentsimon@gmail.com', team: 'Platform', notes: '' },
 ]
 
 // ─── Other seed schemas ───────────────────────────────────────────────────────
@@ -279,7 +279,7 @@ export const SEED_CONTRACTS: DataContract[] = [
     },
     dataset: cloneDataset(ANALYTICS_EVENTS_DATASET),
     stakeholders: [
-      { id: 's2', name: 'Thomas Bernard', role: 'Data Owner', email: 'thomas.bernard@company.com', team: 'Analytics' },
+      { id: 's2', name: 'Thomas Bernard', role: 'Data Owner', email: 'thomas.bernard@company.com', team: 'Analytics', notes: '' },
     ],
     roles: [],
     slaProperties: [],
@@ -308,7 +308,7 @@ export const SEED_CONTRACTS: DataContract[] = [
           },
           dataset: cloneDataset(ANALYTICS_EVENTS_DATASET),
           stakeholders: [
-            { id: 's2', name: 'Thomas Bernard', role: 'Data Owner', email: 'thomas.bernard@company.com', team: 'Analytics' },
+            { id: 's2', name: 'Thomas Bernard', role: 'Data Owner', email: 'thomas.bernard@company.com', team: 'Analytics', notes: '' },
           ],
           roles: [],
           slaProperties: [],
@@ -335,7 +335,7 @@ export const SEED_CONTRACTS: DataContract[] = [
     },
     dataset: cloneDataset(PAYMENT_TRANSACTIONS_DATASET),
     stakeholders: [
-      { id: 's3', name: 'Sophie Lebrun', role: 'Data Owner', email: 'sophie.lebrun@company.com', team: 'Finance' },
+      { id: 's3', name: 'Sophie Lebrun', role: 'Data Owner', email: 'sophie.lebrun@company.com', team: 'Finance', notes: '' },
     ],
     roles: [],
     slaProperties: [],
@@ -364,7 +364,7 @@ export const SEED_CONTRACTS: DataContract[] = [
     },
     dataset: cloneDataset(INVENTORY_DATASET),
     stakeholders: [
-      { id: 's4', name: 'Alice Martin', role: 'Data Owner', email: 'alice.martin@company.com', team: 'Operations' },
+      { id: 's4', name: 'Alice Martin', role: 'Data Owner', email: 'alice.martin@company.com', team: 'Operations', notes: '' },
     ],
     roles: [],
     slaProperties: [],
@@ -393,7 +393,7 @@ export const SEED_CONTRACTS: DataContract[] = [
           },
           dataset: cloneDataset(INVENTORY_DATASET),
           stakeholders: [
-            { id: 's4', name: 'Alice Martin', role: 'Data Owner', email: 'alice.martin@company.com', team: 'Operations' },
+            { id: 's4', name: 'Alice Martin', role: 'Data Owner', email: 'alice.martin@company.com', team: 'Operations', notes: '' },
           ],
           roles: [],
           slaProperties: [],

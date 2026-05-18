@@ -172,14 +172,14 @@ export function validateContract(contract: DataContract): ValidationResult {
       if (!isExportedRelationshipType(rel.type)) {
         issues.push({
           code: 'relationship-not-exported',
-          message: `Relationship "${rel.type}" on "${table.physicalName}" is not exported to ODCS YAML (legacy type).`,
+          message: `Relationship "${rel.type}" on "${table.physicalName}" uses a legacy type (not published to ODCS YAML).`,
           severity: 'warning',
           section: 'schema',
         })
       } else if (isBelongsToRelationshipIncomplete(rel)) {
         issues.push({
           code: 'relationship-incomplete-fk',
-          message: `Relationship from ${table.physicalName} to ${rel.toTable} will not be exported to ODCS YAML until join columns are configured.`,
+          message: `Belongs to relationship from ${table.physicalName} to ${rel.toTable} is not published until join columns are configured.`,
           severity: 'warning',
           section: 'schema',
         })

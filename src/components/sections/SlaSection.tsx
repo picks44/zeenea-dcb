@@ -1,6 +1,7 @@
 import { Plus, Trash2, Clock } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { GovernanceEmptyState } from '@/components/shared/GovernanceEmptyState'
+import { GovernanceReadOnlyCell } from '@/components/shared/GovernanceReadOnlyCell'
 import {
   governanceTableFooterActionClass,
   governanceTableFooterClass,
@@ -52,6 +53,26 @@ function makeSla(): SlaProperty {
 
 const thClass = `${governanceTableHeadClass} text-left px-2 py-2 font-semibold`
 
+function slaPropertyLabel(row: SlaProperty): string {
+  const isCustom = !PROPERTY_PRESETS.slice(0, -1).includes(row.property as (typeof PROPERTY_PRESETS)[number])
+  if (isCustom && row.property.trim()) return row.property.trim()
+  const preset = isCustom ? 'custom' : row.property
+  return SLA_PROPERTY_LABELS[preset as (typeof PROPERTY_PRESETS)[number]] ?? row.property
+}
+
+function SlaReadOnlyRow({ row }: { row: SlaProperty }) {
+  return (
+    <>
+      <td className={SLA_CELL}><GovernanceReadOnlyCell value={slaPropertyLabel(row)} /></td>
+      <td className={SLA_CELL}><GovernanceReadOnlyCell value={row.value} /></td>
+      <td className={SLA_CELL}><GovernanceReadOnlyCell value={row.unit ?? ''} /></td>
+      <td className={SLA_CELL}><GovernanceReadOnlyCell value={row.element ?? ''} mono /></td>
+      <td className={SLA_CELL}><GovernanceReadOnlyCell value={row.driver ?? ''} /></td>
+      <td className={SLA_CELL}><GovernanceReadOnlyCell value={row.description ?? ''} /></td>
+    </>
+  )
+}
+
 export function SlaSection({ slaProperties, onChange, isLocked }: SlaSectionProps) {
   const update = (id: string, patch: Partial<SlaProperty>) =>
     onChange(slaProperties.map(s => (s.id === id ? { ...s, ...patch } : s)))
@@ -84,7 +105,7 @@ export function SlaSection({ slaProperties, onChange, isLocked }: SlaSectionProp
               <col className="w-[124px]" />
               <col className="w-[104px]" />
               <col />
-              <col className="w-[36px]" />
+              {!isLocked && <col className="w-[36px]" />}
             </colgroup>
             <thead>
               <tr className={governanceTableHeadRowClass}>
@@ -94,11 +115,19 @@ export function SlaSection({ slaProperties, onChange, isLocked }: SlaSectionProp
                 <th className={thClass}>Element</th>
                 <th className={thClass}>Driver</th>
                 <th className={thClass}>Description</th>
-                <th className="w-[36px]" />
+                {!isLocked && <th className="w-[36px]" />}
               </tr>
             </thead>
             <tbody className="divide-y divide-[#e4e4f0]">
               {slaProperties.map(row => {
+                if (isLocked) {
+                  return (
+                    <tr key={row.id}>
+                      <SlaReadOnlyRow row={row} />
+                    </tr>
+                  )
+                }
+
                 const isCustom = !PROPERTY_PRESETS.slice(0, -1).includes(row.property as typeof PROPERTY_PRESETS[number])
                 const preset = isCustom ? 'custom' : row.property
                 return (
@@ -110,7 +139,6 @@ export function SlaSection({ slaProperties, onChange, isLocked }: SlaSectionProp
                           if (!v) return
                           update(row.id, { property: v === 'custom' ? '' : v })
                         }}
-                        disabled={isLocked}
                       >
                         <SelectTrigger className={SLA_INPUT}>
                           <SelectValue>
@@ -133,7 +161,6 @@ export function SlaSection({ slaProperties, onChange, isLocked }: SlaSectionProp
                           value={row.property}
                           onChange={e => update(row.id, { property: e.target.value })}
                           placeholder="Custom property"
-                          disabled={isLocked}
                           className={cn(SLA_INPUT, 'mt-1')}
                         />
                       )}
@@ -142,7 +169,6 @@ export function SlaSection({ slaProperties, onChange, isLocked }: SlaSectionProp
                       <Input
                         value={row.value}
                         onChange={e => update(row.id, { value: e.target.value })}
-                        disabled={isLocked}
                         className={SLA_INPUT}
                         placeholder="Value"
                       />
@@ -151,7 +177,6 @@ export function SlaSection({ slaProperties, onChange, isLocked }: SlaSectionProp
                       <Input
                         value={row.unit ?? ''}
                         onChange={e => update(row.id, { unit: e.target.value })}
-                        disabled={isLocked}
                         className={SLA_INPUT}
                         placeholder="Unit"
                       />
@@ -160,7 +185,6 @@ export function SlaSection({ slaProperties, onChange, isLocked }: SlaSectionProp
                       <Input
                         value={row.element ?? ''}
                         onChange={e => update(row.id, { element: e.target.value })}
-                        disabled={isLocked}
                         className={cn(SLA_INPUT, 'font-mono')}
                         placeholder="Table or field"
                       />
@@ -169,7 +193,6 @@ export function SlaSection({ slaProperties, onChange, isLocked }: SlaSectionProp
                       <Input
                         value={row.driver ?? ''}
                         onChange={e => update(row.id, { driver: e.target.value })}
-                        disabled={isLocked}
                         className={SLA_INPUT}
                         placeholder="e.g. Operations"
                       />
@@ -178,22 +201,19 @@ export function SlaSection({ slaProperties, onChange, isLocked }: SlaSectionProp
                       <Input
                         value={row.description ?? ''}
                         onChange={e => update(row.id, { description: e.target.value })}
-                        disabled={isLocked}
                         className={SLA_INPUT}
                         placeholder="Optional note"
                       />
                     </td>
                     <td className={cn(SLA_CELL, 'text-center')}>
-                      {!isLocked && (
-                        <button
-                          type="button"
-                          onClick={() => remove(row.id)}
-                          className="h-7 w-7 inline-flex items-center justify-center text-[#9898a7] hover:text-[#c12c11] hover:bg-[#fff2ee] rounded transition-colors"
-                          aria-label="Remove SLA property"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      )}
+                      <button
+                        type="button"
+                        onClick={() => remove(row.id)}
+                        className="h-7 w-7 inline-flex items-center justify-center text-[#9898a7] hover:text-[#c12c11] hover:bg-[#fff2ee] rounded transition-colors"
+                        aria-label="Remove SLA property"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
                     </td>
                   </tr>
                 )
