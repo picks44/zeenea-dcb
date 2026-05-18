@@ -9,8 +9,8 @@ interface MainSidebarProps {
 }
 
 const NAV_ITEMS: { id: AppView; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
-  { id: 'backlog',    label: 'Contracts',  icon: FileText },
-  { id: 'components', label: 'Components', icon: Layers   },
+  { id: 'backlog', label: 'Contracts', icon: FileText },
+  ...(import.meta.env.DEV ? [{ id: 'components' as AppView, label: 'Components', icon: Layers }] : []),
 ]
 
 export function MainSidebar({ currentView, onNavigate }: MainSidebarProps) {

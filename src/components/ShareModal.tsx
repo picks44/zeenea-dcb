@@ -136,6 +136,9 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
         <div className="flex items-center gap-3 px-5 py-4 border-b border-[#e4e4f0] rounded-t-2xl">
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-[#12131f]">Members</p>
+            <p className="text-[11px] text-[#656574] mt-0.5 leading-snug">
+              Studio edit access only — not ODCS data access roles (see Data access in the contract editor).
+            </p>
             <p className="text-xs text-[#656574] truncate mt-0.5">{contract.info.title || 'Untitled Contract'}</p>
           </div>
           <Button variant="ghost" size="icon-sm" onClick={onClose} className="flex-shrink-0">

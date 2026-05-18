@@ -5,6 +5,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { DataContract, GitCommit } from '@/types/odcs'
+import { validateContract } from '@/lib/contractValidation'
 import { cn } from '@/lib/utils'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -182,6 +183,7 @@ export function PushToGitModal({ contract, open, onClose, onPushed }: PushToGitM
   const isFirstPublish = contract.gitHistory.length === 0
   const newVersion = isFirstPublish ? contract.info.version : bumpVersion(contract.info.version, bumpType)
   const fieldCount = contract.dataset.reduce((a, t) => a + t.columns.length, 0)
+  const validationWarnings = validateContract(contract).warnings
 
   useEffect(() => {
     if (!open) return
@@ -266,6 +268,15 @@ export function PushToGitModal({ contract, open, onClose, onPushed }: PushToGitM
                   </div>
                 </div>
               </div>
+
+              {validationWarnings.length > 0 && (
+                <div className="bg-[#fff8ec] border border-[#ffd599] rounded-lg px-3 py-2.5 space-y-1">
+                  <p className="text-[11px] font-semibold text-[#d27b00]">Recommendations</p>
+                  {validationWarnings.map(w => (
+                    <p key={w.code} className="text-[11px] text-[#3f3f4a] leading-snug">{w.message}</p>
+                  ))}
+                </div>
+              )}
 
               {/* Description */}
               <div>

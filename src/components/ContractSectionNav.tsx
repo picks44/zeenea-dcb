@@ -1,4 +1,4 @@
-import { FileText, Database, Upload, Trash2, CheckCircle2, GitBranch } from 'lucide-react'
+import { FileText, Database, Upload, Trash2, CheckCircle2, GitBranch, Users, Shield, Clock } from 'lucide-react'
 import { DataContract, SectionId } from '@/types/odcs'
 import { cn } from '@/lib/utils'
 
@@ -11,7 +11,7 @@ interface ContractSectionNavProps {
 }
 
 function sectionCompletion(contract: DataContract): Record<SectionId, 'complete' | 'partial' | 'empty'> {
-  const { info, id, dataset, stakeholders } = contract
+  const { info, id, dataset, stakeholders, roles, slaProperties } = contract
   const hasTitle = !!info.title.trim()
   const hasOwner = !!info.owner.trim()
   const hasId = !!id.trim()
@@ -19,11 +19,14 @@ function sectionCompletion(contract: DataContract): Record<SectionId, 'complete'
   return {
     import: dataset.length > 0 ? 'complete' : 'empty',
     fundamentals: hasTitle && hasOwner && hasId ? 'complete' : hasTitle || hasOwner ? 'partial' : 'empty',
-    schema: dataset.length > 0 && dataset[0].columns.length > 0 ? 'complete' : dataset.length > 0 ? 'partial' : 'empty',
+    schema: dataset.length > 0 && dataset.some(t => t.columns.length > 0) ? 'complete' : dataset.length > 0 ? 'partial' : 'empty',
     stakeholders: stakeholders.length > 0 ? 'complete' : 'empty',
+    accessRoles: (roles?.length ?? 0) > 0 ? 'complete' : 'empty',
+    sla: (slaProperties?.length ?? 0) > 0 ? 'complete' : 'empty',
+    versions: 'empty',
     terms: 'empty', servers: 'empty', team: 'empty',
-    sla: 'empty', pricing: 'empty', custom: 'empty',
-    collaboration: 'empty', tests: 'empty', versions: 'empty',
+    pricing: 'empty', custom: 'empty',
+    collaboration: 'empty', tests: 'empty',
   }
 }
 
@@ -40,6 +43,9 @@ export function ContractSectionNav({
     ...(isNew ? [{ id: 'import' as SectionId, label: 'Import SQL', icon: Upload }] : []),
     { id: 'fundamentals', label: 'Fundamentals', icon: FileText },
     { id: 'schema',       label: 'Schema',       icon: Database },
+    { id: 'stakeholders', label: 'Stakeholders', icon: Users },
+    { id: 'accessRoles',  label: 'Data access',  icon: Shield },
+    { id: 'sla',          label: 'Service levels', icon: Clock },
     { id: 'versions',     label: 'Versions',     icon: GitBranch },
   ]
 

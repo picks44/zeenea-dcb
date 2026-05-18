@@ -1,15 +1,39 @@
 import { useState, useMemo } from 'react'
 import { Check, Copy, ChevronDown, ChevronUp, CheckCircle2, AlertCircle, AlertTriangle, ArrowRight } from 'lucide-react'
-import { DataContract } from '@/types/odcs'
+import { CollaboratorRole, DataContract } from '@/types/odcs'
 import { generateODCSYaml } from '@/lib/odcsYamlGenerator'
+import { validateContract, ValidationResult } from '@/lib/contractValidation'
 import { cn } from '@/lib/utils'
 
 interface ReadinessPanelProps {
   contract: DataContract
+  myRole: CollaboratorRole
+  hasEditedSincePublish: boolean
 }
 
-function useHealth(contract: DataContract) {
+function publishReadinessMessage(
+  validation: ValidationResult,
+  myRole: CollaboratorRole,
+  hasEditedSincePublish: boolean,
+): { ready: boolean; message: string } {
+  if (!validation.canPublish) {
+    return {
+      ready: false,
+      message: validation.publishBlockReason ?? 'Complete required fields to publish.',
+    }
+  }
+  if (myRole !== 'owner') {
+    return { ready: false, message: 'Only owners can publish.' }
+  }
+  if (!hasEditedSincePublish) {
+    return { ready: false, message: 'No unpublished changes.' }
+  }
+  return { ready: true, message: 'Ready to publish' }
+}
+
+function useHealth(contract: DataContract, myRole: CollaboratorRole, hasEditedSincePublish: boolean) {
   const { info, id, dataset, stakeholders } = contract
+  const validation = validateContract(contract)
   const safeStakeholders = stakeholders ?? []
   const fieldCount = dataset.reduce((acc, t) => acc + t.columns.length, 0)
   const fieldsWithDesc = dataset.reduce(
@@ -17,12 +41,14 @@ function useHealth(contract: DataContract) {
   )
   const piiCount = dataset.reduce((acc, t) => acc + t.columns.filter(c => c.isPII).length, 0)
 
+  const errorKeys = new Set(validation.errors.map(e => e.code))
+  const schemaOk = !validation.errors.some(e => e.section === 'schema')
   const requiredChecks = [
-    { key: 'title',   label: 'Contract name',           ok: !!info.title.trim() },
-    { key: 'id',      label: 'Contract ID',              ok: !!id.trim() },
-    { key: 'owner',   label: 'Owner',                    ok: !!info.owner.trim() },
-    { key: 'version', label: 'Version (e.g. 1.0.0)',    ok: /^\d+\.\d+\.\d+$/.test(info.version) },
-    { key: 'schema',  label: 'At least 1 field defined', ok: fieldCount > 0 },
+    { key: 'title',   label: 'Contract name',           ok: !errorKeys.has('title') },
+    { key: 'id',      label: 'Contract ID',              ok: !errorKeys.has('id') },
+    { key: 'owner',   label: 'Owner',                    ok: !errorKeys.has('owner') },
+    { key: 'version', label: 'Version (e.g. 1.0.0)',    ok: !errorKeys.has('version') },
+    { key: 'schema',  label: 'At least 1 field defined', ok: schemaOk },
   ]
 
   const recommendedChecks = [
@@ -32,7 +58,7 @@ function useHealth(contract: DataContract) {
   ]
 
   const doneRequired = requiredChecks.filter(c => c.ok).length
-  const canPublish = doneRequired === requiredChecks.length
+  const publishStatus = publishReadinessMessage(validation, myRole, hasEditedSincePublish)
   const descCoverage = fieldCount > 0 ? fieldsWithDesc / fieldCount : 0
 
   // 0–100 health score: required (60) + quality (25) + stakeholders (15)
@@ -63,9 +89,11 @@ function useHealth(contract: DataContract) {
 
   return {
     requiredChecks, recommendedChecks,
-    doneRequired, canPublish,
+    doneRequired, publishStatus,
     fieldCount, fieldsWithDesc, descCoverage, piiCount,
     healthScore, nextSteps: nextSteps.slice(0, 3),
+    validationErrors: validation.errors,
+    validationWarnings: validation.warnings,
   }
 }
 
@@ -90,16 +118,16 @@ function CheckRow({ label, ok, required }: { label: string; ok: boolean; require
   )
 }
 
-export function ReadinessPanel({ contract }: ReadinessPanelProps) {
+export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: ReadinessPanelProps) {
   const [yamlOpen, setYamlOpen] = useState(false)
   const [copied, setCopied] = useState(false)
 
   const {
     requiredChecks, recommendedChecks,
-    doneRequired, canPublish,
+    doneRequired, publishStatus,
     fieldCount, fieldsWithDesc, descCoverage, piiCount,
-    healthScore, nextSteps,
-  } = useHealth(contract)
+    healthScore, nextSteps, validationErrors,
+  } = useHealth(contract, myRole, hasEditedSincePublish)
 
   const yaml = useMemo(() => generateODCSYaml(contract), [contract])
 
@@ -149,8 +177,8 @@ export function ReadinessPanel({ contract }: ReadinessPanelProps) {
           ) : (
             <>
               <AlertCircle className="h-3 w-3 text-[#d27b00] flex-shrink-0" />
-              <span className="text-[11px] text-[#d27b00]">
-                {doneRequired}/{requiredChecks.length} required fields complete
+              <span className="text-[11px] text-[#d27b00] line-clamp-2" title={publishBlockReason ?? undefined}>
+                {publishBlockReason ?? `${doneRequired}/${requiredChecks.length} required fields complete`}
               </span>
             </>
           )}
@@ -215,6 +243,17 @@ export function ReadinessPanel({ contract }: ReadinessPanelProps) {
                 </span>
               </div>
             )}
+          </div>
+        )}
+
+        {validationErrors.length > 1 && (
+          <div className="px-4 py-3 border-t border-[#e4e4f0]">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-2">Blocking issues</p>
+            <ul className="space-y-1">
+              {validationErrors.slice(0, 4).map(e => (
+                <li key={e.code} className="text-[11px] text-[#c12c11] leading-snug">{e.message}</li>
+              ))}
+            </ul>
           </div>
         )}
 

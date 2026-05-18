@@ -2,83 +2,9 @@ import { useState, useMemo } from 'react'
 import { X, GitBranch, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { DataContract, DataContractSnapshot, SchemaTable } from '@/types/odcs'
+import { DataContract, DataContractSnapshot } from '@/types/odcs'
 import { cn, timeAgo } from '@/lib/utils'
-import yaml from 'js-yaml'
-
-// ─── Snapshot utilities ───────────────────────────────────────────────────────
-
-function buildRelationshipData(dataset: SchemaTable[]): {
-  schemaLevel: Record<string, unknown>[]
-  fieldRefs: Map<string, string>
-} {
-  const schemaLevel: Record<string, unknown>[] = []
-  const fieldRefs = new Map<string, string>()
-  for (const table of dataset) {
-    if (!table.relationships?.length) continue
-    for (const rel of table.relationships) {
-      if (rel.type === 'many_to_many') {
-        schemaLevel.push({
-          type: 'manyToMany',
-          from: [rel.fromColumn ? `${table.physicalName}.${rel.fromColumn}` : table.physicalName],
-          to:   [rel.toColumn   ? `${rel.toTable}.${rel.toColumn}`          : rel.toTable],
-        })
-      } else if (rel.type === 'belongs_to' && rel.fromColumn) {
-        const ref = rel.toColumn ? `${rel.toTable}.${rel.toColumn}` : rel.toTable
-        fieldRefs.set(`${table.physicalName}.${rel.fromColumn}`, ref)
-      }
-    }
-  }
-  return { schemaLevel, fieldRefs }
-}
-
-function snapshotToYaml(s: DataContractSnapshot): string {
-  const doc: Record<string, unknown> = {
-    dataContractSpecification: '3.1.0',
-    id: s.id,
-    info: {
-      title: s.info.title || 'Untitled',
-      version: s.info.version,
-      status: s.info.status,
-      domain: s.info.domain || undefined,
-      owner: s.info.owner || undefined,
-      description: s.info.description || undefined,
-      tags: s.info.tags?.length ? s.info.tags : undefined,
-    },
-  }
-  const info = doc.info as Record<string, unknown>
-  for (const k of Object.keys(info)) if (info[k] === undefined) delete info[k]
-
-  const { schemaLevel, fieldRefs } = buildRelationshipData(s.dataset)
-  if (schemaLevel.length > 0) doc.relationships = schemaLevel
-
-  if (s.dataset.length > 0) {
-    doc.dataset = s.dataset.map(table => ({
-      table: table.physicalName, physicalName: table.physicalName,
-      type: table.tableType || 'table', description: table.description || undefined,
-      columns: table.columns.map(col => {
-        const c: Record<string, unknown> = {
-          physicalName: col.physicalName, logicalName: col.logicalName || undefined,
-          physicalType: col.physicalType, logicalType: col.logicalType,
-          required: col.required || undefined, isPrimaryKey: col.isPrimaryKey || undefined,
-          isPII: col.isPII || undefined, isUnique: col.isUnique || undefined,
-          description: col.description || undefined, examples: col.examples || undefined,
-          qualityRule: col.qualityRule || undefined,
-          references: fieldRefs.get(`${table.physicalName}.${col.physicalName}`) || undefined,
-        }
-        for (const k of Object.keys(c)) if (c[k] === undefined) delete c[k]
-        return c
-      }),
-    }))
-  }
-  if (s.stakeholders?.length) {
-    doc.stakeholders = s.stakeholders.map(st => ({
-      name: st.name, role: st.role,
-      email: st.email || undefined, team: st.team || undefined,
-    }))
-  }
-  return yaml.dump(doc, { indent: 2, lineWidth: 120, noRefs: true })
-}
+import { snapshotToYaml } from '@/lib/odcsYamlGenerator'
 
 function contractToSnapshot(c: DataContract): DataContractSnapshot {
   return {
@@ -86,6 +12,8 @@ function contractToSnapshot(c: DataContract): DataContractSnapshot {
     info: { ...c.info },
     dataset: JSON.parse(JSON.stringify(c.dataset)),
     stakeholders: [...c.stakeholders],
+    roles: [...(c.roles ?? [])],
+    slaProperties: [...(c.slaProperties ?? [])],
   }
 }
 

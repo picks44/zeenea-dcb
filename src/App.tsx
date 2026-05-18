@@ -19,10 +19,14 @@ import { ImportSection } from './components/sections/ImportSection'
 import { FundamentalsSection } from './components/sections/FundamentalsSection'
 import { SchemaSection } from './components/sections/SchemaSection'
 import { StakeholdersSection } from './components/sections/StakeholdersSection'
+import { AccessRolesSection } from './components/sections/AccessRolesSection'
+import { SlaSection } from './components/sections/SlaSection'
+import { ReadinessPanel } from './components/ReadinessPanel'
 
-import { DataContract, DataContractSnapshot, SectionId, SchemaTable, AppView, EditorTab, Collaborator, CollaboratorRole } from './types/odcs'
+import { DataContract, DataContractSnapshot, SectionId, SchemaTable, AppView, EditorTab, Collaborator, CollaboratorRole, OdcsAccessRole, SlaProperty } from './types/odcs'
 import type { PushResult } from './components/PushToGitModal'
 import { loadContracts, saveContracts } from './lib/storage'
+import { validateContract } from './lib/contractValidation'
 import { CURRENT_USER } from './lib/currentUser'
 
 function makeContract(): DataContract {
@@ -42,6 +46,8 @@ function makeContract(): DataContract {
     },
     dataset: [],
     stakeholders: [],
+    roles: [],
+    slaProperties: [],
     gitHistory: [],
     openPR: null,
     createdAt: now,
@@ -76,18 +82,13 @@ export default function App() {
     ? myRole === 'viewer' || (contract.info.status === 'active' && !contract.inRevision) || contract.info.status === 'deprecated'
     : false
 
-  const hasRequiredFields = contract
-    ? !!contract.info.title.trim() && !!contract.id.trim() && !!contract.info.owner.trim()
-      && /^\d+\.\d+\.\d+$/.test(contract.info.version)
-    : false
-
-  const canPublish = hasRequiredFields && hasEditedSincePublish && myRole === 'owner'
+  const validation = contract ? validateContract(contract) : null
+  const canPublish = !!validation?.canPublish && hasEditedSincePublish && myRole === 'owner'
 
   const publishBlockReason = !contract ? null
     : myRole !== 'owner' ? 'Only owners can publish this contract.'
-    : !hasRequiredFields ? 'Fill in title, contract ID, owner, and a valid version number first.'
     : !hasEditedSincePublish ? 'No changes since last publish.'
-    : null
+    : validation?.publishBlockReason ?? null
 
   const updateContract = useCallback((updated: DataContract) => {
     setContracts(prev =>
@@ -161,6 +162,18 @@ export default function App() {
     setHasEditedSincePublish(true)
   }, [contract, updateContract])
 
+  const handleRolesChange = useCallback((roles: OdcsAccessRole[]) => {
+    if (!contract) return
+    updateContract({ ...contract, roles })
+    setHasEditedSincePublish(true)
+  }, [contract, updateContract])
+
+  const handleSlaChange = useCallback((slaProperties: SlaProperty[]) => {
+    if (!contract) return
+    updateContract({ ...contract, slaProperties })
+    setHasEditedSincePublish(true)
+  }, [contract, updateContract])
+
   const handleDeleteContract = () => {
     if (!contract) return
     setConfirmConfig({
@@ -204,6 +217,8 @@ export default function App() {
           info: { ...snap.info },
           dataset: JSON.parse(JSON.stringify(snap.dataset)),
           stakeholders: [...snap.stakeholders],
+          roles: [...(snap.roles ?? [])],
+          slaProperties: [...(snap.slaProperties ?? [])],
           inRevision: false,
         })
         setHasEditedSincePublish(false)
@@ -218,6 +233,8 @@ export default function App() {
       info: { ...contract.info, version: result.newVersion, status: 'active' },
       dataset: JSON.parse(JSON.stringify(contract.dataset)),
       stakeholders: [...contract.stakeholders],
+      roles: [...(contract.roles ?? [])],
+      slaProperties: [...(contract.slaProperties ?? [])],
     }
     const commitWithSnapshot = { ...result.commit, snapshot }
     setContracts(prev => prev.map(c => c.uid === contract.uid ? {
@@ -276,10 +293,7 @@ export default function App() {
                 <ContractTopBar
                   contract={contract}
                   activeTab={activeTab}
-                  onTabChange={(tab) => {
-                    setActiveTab(tab)
-                    if (activeSection === 'versions') setActiveSection('fundamentals')
-                  }}
+                  onTabChange={setActiveTab}
                   canPublish={canPublish}
                   publishBlockReason={publishBlockReason}
                   onPushToGit={() => setShowPushModal(true)}
@@ -321,8 +335,9 @@ export default function App() {
                 ) : activeTab === 'yaml' ? (
                   <YamlView contract={contract} />
                 ) : (
-                  <div className="flex-1 overflow-y-auto min-w-0">
-                    <div className="px-8 py-6">
+                  <div className="flex flex-1 min-h-0 overflow-hidden">
+                    <div className="flex-1 overflow-y-auto min-w-0">
+                      <div className="px-8 py-6">
                       {activeSection === 'import' ? (
                         <ImportSection onParsed={handleDDLParsed} isLocked={isLocked} />
                       ) : activeSection === 'fundamentals' ? (
@@ -331,8 +346,16 @@ export default function App() {
                         <SchemaSection tables={contract.dataset} onChange={handleSchemaChange} isLocked={isLocked} />
                       ) : (activeSection === 'stakeholders' || activeSection === 'team') ? (
                         <StakeholdersSection stakeholders={contract.stakeholders} onChange={handleStakeholdersChange} isLocked={isLocked} />
+                      ) : activeSection === 'accessRoles' ? (
+                        <AccessRolesSection roles={contract.roles ?? []} onChange={handleRolesChange} isLocked={isLocked} />
+                      ) : activeSection === 'sla' ? (
+                        <SlaSection slaProperties={contract.slaProperties ?? []} onChange={handleSlaChange} isLocked={isLocked} />
                       ) : null}
+                      </div>
                     </div>
+                    {activeSection !== 'import' && (
+                      <ReadinessPanel contract={contract} />
+                    )}
                   </div>
                 )}
               </div>

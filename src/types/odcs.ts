@@ -17,6 +17,7 @@ export type SectionId =
   | 'schema'
   | 'versions'
   | 'stakeholders'
+  | 'accessRoles'
   | 'terms'
   | 'servers'
   | 'team'
@@ -25,6 +26,16 @@ export type SectionId =
   | 'custom'
   | 'collaboration'
   | 'tests'
+
+export interface QualityRule {
+  id: string
+  name?: string
+  description: string
+  type: 'text'
+  dimension?: string
+  severity?: string
+  businessImpact?: string
+}
 
 export interface ColumnDefinition {
   id: string
@@ -39,6 +50,7 @@ export interface ColumnDefinition {
   description: string
   examples: string
   qualityRule: string
+  quality?: QualityRule[]
   isUnknownType: boolean
 }
 
@@ -69,6 +81,23 @@ export interface Stakeholder {
   team: string
 }
 
+export interface OdcsAccessRole {
+  id: string
+  role: string
+  access: 'read' | 'write'
+  description?: string
+}
+
+export interface SlaProperty {
+  id: string
+  property: string
+  value: string
+  unit?: string
+  element?: string
+  driver?: string
+  description?: string
+}
+
 export type CollaboratorRole = 'owner' | 'editor' | 'viewer'
 
 export interface Collaborator {
@@ -92,6 +121,8 @@ export interface DataContractSnapshot {
   }
   dataset: SchemaTable[]
   stakeholders: Stakeholder[]
+  roles?: OdcsAccessRole[]
+  slaProperties?: SlaProperty[]
   collaborators?: Collaborator[]
 }
 
@@ -130,6 +161,8 @@ export interface DataContract {
   }
   dataset: SchemaTable[]
   stakeholders: Stakeholder[]
+  roles: OdcsAccessRole[]
+  slaProperties: SlaProperty[]
   collaborators?: Collaborator[]
   gitHistory: GitCommit[]
   openPR: GitPR | null

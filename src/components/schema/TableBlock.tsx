@@ -8,6 +8,7 @@ import { cn, generateId } from '@/lib/utils'
 import { LOGICAL_TYPES, DB_TYPES_BY_LOGICAL, typeConfig, makeColumn } from './constants'
 import { TypePicker } from './TypePicker'
 import { FlagBadge } from './FlagBadge'
+import { ColumnAdvancedDialog } from './ColumnAdvancedDialog'
 
 function deriveLogicalName(physicalName: string): string {
   return physicalName
@@ -45,6 +46,7 @@ export function TableBlock({ table, tableIndex, allTables, isLocked, onTableChan
   const [editingType, setEditingType] = useState<string | null>(null)
   const [editingLogicalId, setEditingLogicalId] = useState<string | null>(null)
   const [showTypePicker, setShowTypePicker] = useState(false)
+  const [advancedColId, setAdvancedColId] = useState<string | null>(null)
   const [editingRel, setEditingRel] = useState<{
     id: string | null
     toTable: string
@@ -257,14 +259,19 @@ export function TableBlock({ table, tableIndex, allTables, isLocked, onTableChan
 
                   <div className="flex-1" />
 
-                  {!isLocked && (
-                    <button
-                      title="Advanced properties"
-                      className="h-6 w-6 ml-2 rounded flex items-center justify-center text-[#d3d3e5] group-hover:text-[#9898a7] hover:!text-[#0550dc] hover:bg-[#f0f4ff] transition-all flex-shrink-0"
-                    >
-                      <SlidersHorizontal className="h-3.5 w-3.5" />
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => setAdvancedColId(col.id)}
+                    title="Advanced properties"
+                    className={cn(
+                      'h-6 w-6 ml-2 rounded flex items-center justify-center transition-all flex-shrink-0 relative',
+                      (col.description?.trim() || col.quality?.length || col.qualityRule?.trim())
+                        ? 'text-[#0550dc] bg-[#f0f4ff]'
+                        : 'text-[#d3d3e5] group-hover:text-[#9898a7] hover:!text-[#0550dc] hover:bg-[#f0f4ff]',
+                    )}
+                  >
+                    <SlidersHorizontal className="h-3.5 w-3.5" />
+                  </button>
 
                   {!isLocked && (
                     <button onClick={() => deleteCol(col.id)} className="h-6 w-6 ml-2 rounded flex items-center justify-center text-[#d3d3e5] group-hover:text-[#656574] hover:!text-[#c12c11] hover:bg-[#fff2ee] transition-all flex-shrink-0">
@@ -432,6 +439,17 @@ export function TableBlock({ table, tableIndex, allTables, isLocked, onTableChan
           )}
         </div>
       )}
+
+      <ColumnAdvancedDialog
+        column={table.columns.find(c => c.id === advancedColId) ?? null}
+        open={advancedColId !== null}
+        isLocked={isLocked}
+        onClose={() => setAdvancedColId(null)}
+        onSave={updated => {
+          updateCol(updated.id, updated)
+          setAdvancedColId(null)
+        }}
+      />
     </div>
   )
 }
