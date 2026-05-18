@@ -24,11 +24,19 @@ interface TableAdvancedDialogProps {
   table: SchemaTable | null
   open: boolean
   isLocked?: boolean
+  docCompact?: boolean
   onClose: () => void
   onSave: (updated: SchemaTable) => void
 }
 
-export function TableAdvancedDialog({ table, open, isLocked = false, onClose, onSave }: TableAdvancedDialogProps) {
+export function TableAdvancedDialog({
+  table,
+  open,
+  isLocked = false,
+  docCompact = false,
+  onClose,
+  onSave,
+}: TableAdvancedDialogProps) {
   const [tags, setTags] = useState<string[]>([])
   const [quality, setQuality] = useState<SchemaTable['quality']>([])
   const [authDefs, setAuthDefs] = useState<AuthoritativeDefinition[]>([])
@@ -78,7 +86,7 @@ export function TableAdvancedDialog({ table, open, isLocked = false, onClose, on
 
               <div>
                 <p className="text-xs font-medium text-[#33333d] mb-1">Quality rules</p>
-                <QualityRulesEditor rules={quality ?? []} onChange={setQuality} />
+                <QualityRulesEditor rules={quality ?? []} onChange={setQuality} compact={docCompact} />
               </div>
 
               <div>

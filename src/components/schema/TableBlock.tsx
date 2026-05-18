@@ -520,6 +520,7 @@ export function TableBlock({
         column={table.columns.find(c => c.id === advancedColId) ?? null}
         open={advancedColId !== null}
         isLocked={isLocked}
+        docCompact={docCompact}
         onClose={() => setAdvancedColId(null)}
         onSave={updated => {
           updateCol(updated.id, updated)
@@ -531,6 +532,7 @@ export function TableBlock({
         table={table}
         open={tableAdvancedOpen}
         isLocked={isLocked}
+        docCompact={docCompact}
         onClose={() => setTableAdvancedOpen(false)}
         onSave={updated => onTableChange(tableIndex, updated)}
       />

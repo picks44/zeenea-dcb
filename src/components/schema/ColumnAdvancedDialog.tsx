@@ -28,6 +28,7 @@ interface ColumnAdvancedDialogProps {
   column: ColumnDefinition | null
   open: boolean
   isLocked?: boolean
+  docCompact?: boolean
   onClose: () => void
   onSave: (updated: ColumnDefinition) => void
 }
@@ -44,7 +45,14 @@ function loadColumnQuality(column: ColumnDefinition): QualityRule[] {
   return []
 }
 
-export function ColumnAdvancedDialog({ column, open, isLocked = false, onClose, onSave }: ColumnAdvancedDialogProps) {
+export function ColumnAdvancedDialog({
+  column,
+  open,
+  isLocked = false,
+  docCompact = false,
+  onClose,
+  onSave,
+}: ColumnAdvancedDialogProps) {
   const [description, setDescription] = useState('')
   const [examplesText, setExamplesText] = useState('')
   const [tags, setTags] = useState<string[]>([])
@@ -99,6 +107,7 @@ export function ColumnAdvancedDialog({ column, open, isLocked = false, onClose, 
               tags={tags}
               quality={quality}
               authDefs={authDefs}
+              docCompact={docCompact}
             />
           ) : (
             <div className="space-y-5">
@@ -132,7 +141,7 @@ export function ColumnAdvancedDialog({ column, open, isLocked = false, onClose, 
 
               <div>
                 <Label className="text-xs text-[#33333d] mb-1 block">Quality rules</Label>
-                <QualityRulesEditor rules={quality} onChange={setQuality} />
+                <QualityRulesEditor rules={quality} onChange={setQuality} compact={docCompact} />
               </div>
 
               <div>

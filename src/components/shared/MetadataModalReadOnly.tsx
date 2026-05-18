@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import type { QualityRule } from '@/types/odcs'
+import { QualityRuleReadOnly } from '@/components/shared/QualityRuleReadOnly'
 import type { AuthoritativeDefinition } from '@/types/odcsShared'
 import { AUTH_DEF_TYPE_OPTIONS } from '@/types/odcsShared'
 
@@ -81,24 +82,13 @@ export function MetadataReadOnlyTags({ tags, emptyLabel }: { tags: string[]; emp
 export function MetadataReadOnlyQualityRules({
   rules,
   emptyLabel,
+  compact,
 }: {
   rules: QualityRule[]
   emptyLabel: string
+  compact?: boolean
 }) {
-  const filled = rules.filter(r => r.description.trim())
-  if (filled.length === 0) {
-    return <MetadataReadOnlyEmptyLine>{emptyLabel}</MetadataReadOnlyEmptyLine>
-  }
-  return (
-    <ul className="space-y-0.5">
-      {filled.map(rule => (
-        <li key={rule.id} className="text-xs text-[#33333d] leading-relaxed flex gap-1.5">
-          <span className="text-[#9898a7] flex-shrink-0">·</span>
-          <span>{rule.description.trim()}</span>
-        </li>
-      ))}
-    </ul>
-  )
+  return <QualityRuleReadOnly rules={rules} emptyLabel={emptyLabel} compact={compact} />
 }
 
 export function MetadataReadOnlyAuthLinks({
@@ -138,6 +128,7 @@ interface FieldMetadataReadOnlyProps {
   tags: string[]
   quality: QualityRule[]
   authDefs: AuthoritativeDefinition[]
+  docCompact?: boolean
 }
 
 export function FieldMetadataReadOnlyBody({
@@ -146,12 +137,13 @@ export function FieldMetadataReadOnlyBody({
   tags,
   quality,
   authDefs,
+  docCompact,
 }: FieldMetadataReadOnlyProps) {
   const hasAny =
     description.trim() ||
     examples.some(e => e.trim()) ||
     tags.some(t => t.trim()) ||
-    quality.some(r => r.description.trim()) ||
+    quality.some(r => r.description.trim() || r.name?.trim()) ||
     authDefs.some(d => d.url.trim() || d.type.trim() || (d.description ?? '').trim())
 
   if (!hasAny) {
@@ -181,7 +173,11 @@ export function FieldMetadataReadOnlyBody({
       </MetadataReadOnlySection>
 
       <MetadataReadOnlySection label="Quality rules">
-        <MetadataReadOnlyQualityRules rules={quality} emptyLabel="No quality rules defined." />
+        <MetadataReadOnlyQualityRules
+          rules={quality}
+          emptyLabel="No quality rules defined."
+          compact={docCompact}
+        />
       </MetadataReadOnlySection>
 
       <MetadataReadOnlySection label="Authoritative links">
@@ -195,12 +191,13 @@ interface TableMetadataReadOnlyProps {
   tags: string[]
   quality: QualityRule[]
   authDefs: AuthoritativeDefinition[]
+  docCompact?: boolean
 }
 
-export function TableMetadataReadOnlyBody({ tags, quality, authDefs }: TableMetadataReadOnlyProps) {
+export function TableMetadataReadOnlyBody({ tags, quality, authDefs, docCompact }: TableMetadataReadOnlyProps) {
   const hasAny =
     tags.some(t => t.trim()) ||
-    quality.some(r => r.description.trim()) ||
+    quality.some(r => r.description.trim() || r.name?.trim()) ||
     authDefs.some(d => d.url.trim() || d.type.trim() || (d.description ?? '').trim())
 
   if (!hasAny) {
@@ -218,7 +215,11 @@ export function TableMetadataReadOnlyBody({ tags, quality, authDefs }: TableMeta
       </MetadataReadOnlySection>
 
       <MetadataReadOnlySection label="Quality rules">
-        <MetadataReadOnlyQualityRules rules={quality} emptyLabel="No quality rules defined." />
+        <MetadataReadOnlyQualityRules
+          rules={quality}
+          emptyLabel="No quality rules defined."
+          compact={docCompact}
+        />
       </MetadataReadOnlySection>
 
       <MetadataReadOnlySection label="Authoritative links">
