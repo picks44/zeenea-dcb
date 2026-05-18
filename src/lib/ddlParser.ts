@@ -40,6 +40,16 @@ const SQL_TYPE_MAP: Record<string, { logicalType: LogicalType; label: string }> 
   uuid: { logicalType: 'string', label: 'Text' },
 }
 
+export interface DDLImportSummary {
+  tables: SchemaTable[]
+  tableCount: number
+  totalColumns: number
+  totalPk: number
+  totalRequired: number
+  totalOptional: number
+  tableNames: string[]
+}
+
 function mapSqlType(sqlType: string): { logicalType: LogicalType; isUnknownType: boolean } {
   const baseType = sqlType.toLowerCase().replace(/\(.*\)/, '').trim()
   const mapping = SQL_TYPE_MAP[baseType]
@@ -53,29 +63,27 @@ function formatPhysicalType(rawType: string): string {
   return rawType.toUpperCase()
 }
 
-export function parseDDL(ddl: string): SchemaTable | null {
-  // Clean up the DDL
-  const cleaned = ddl
-    .replace(/--[^\n]*/g, '') // Remove single-line comments
-    .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
+function cleanDDL(ddl: string): string {
+  return ddl
+    .replace(/--[^\n]*/g, '')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
     .trim()
+}
 
-  // Match CREATE TABLE statement
-  const createTableMatch = cleaned.match(
-    /CREATE\s+(?:OR\s+REPLACE\s+)?TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:`([^`]+)`|"([^"]+)"|(\w+(?:\.\w+)*))\s*\(([\s\S]+)\)/i
-  )
-
-  if (!createTableMatch) {
-    return null
+function extractParenBlock(text: string, openIndex: number): string | null {
+  if (text[openIndex] !== '(') return null
+  let depth = 0
+  for (let i = openIndex; i < text.length; i++) {
+    if (text[i] === '(') depth++
+    else if (text[i] === ')') {
+      depth--
+      if (depth === 0) return text.slice(openIndex + 1, i)
+    }
   }
+  return null
+}
 
-  const tableName = (createTableMatch[1] || createTableMatch[2] || createTableMatch[3])
-    .split('.')
-    .pop() || 'unknown_table'
-
-  const columnsBlock = createTableMatch[4]
-
-  // Split by commas but respect nested parentheses
+function splitColumnLines(columnsBlock: string): string[] {
   const columnLines: string[] = []
   let depth = 0
   let current = ''
@@ -95,32 +103,32 @@ export function parseDDL(ddl: string): SchemaTable | null {
     columnLines.push(current.trim())
   }
 
+  return columnLines
+}
+
+function parseColumns(columnsBlock: string): ColumnDefinition[] {
   const columns: ColumnDefinition[] = []
 
-  for (const line of columnLines) {
+  for (const line of splitColumnLines(columnsBlock)) {
     const trimmed = line.trim()
     if (!trimmed) continue
 
-    // Skip constraint definitions
     if (/^(PRIMARY\s+KEY|FOREIGN\s+KEY|UNIQUE|CHECK|INDEX|KEY|CONSTRAINT)/i.test(trimmed)) {
-      // However, check if primary key is inline in previous columns
       continue
     }
 
-    // Parse column: name type [constraints...]
     const colMatch = trimmed.match(
-      /^(?:`([^`]+)`|"([^"]+)"|(\w+))\s+([A-Za-z][A-Za-z0-9]*(?:\s*\([^)]*\))?(?:\s+(?:UNSIGNED|ZEROFILL|CHARACTER\s+SET\s+\w+|COLLATE\s+\w+))*)/i
+      /^(?:`([^`]+)`|"([^"]+)"|(\w+))\s+([A-Za-z][A-Za-z0-9]*(?:\s*\([^)]*\))?(?:\s+(?:UNSIGNED|ZEROFILL|CHARACTER\s+SET\s+\w+|COLLATE\s+\w+))*)/i,
     )
 
     if (!colMatch) continue
 
     const colName = colMatch[1] || colMatch[2] || colMatch[3]
     const colType = colMatch[4].trim()
-
-    // Check constraints in the rest of the line
     const rest = trimmed.slice(colMatch[0].length)
     const isNotNull = /NOT\s+NULL/i.test(rest)
     const isPrimaryKey = /PRIMARY\s+KEY/i.test(rest)
+    const isUnique = /\bUNIQUE\b/i.test(rest)
     const isRequired = isNotNull || isPrimaryKey
 
     const { logicalType, isUnknownType } = mapSqlType(colType)
@@ -137,17 +145,17 @@ export function parseDDL(ddl: string): SchemaTable | null {
       description: '',
       isPrimaryKey,
       isPII: false,
-      isUnique: false,
+      isUnique,
       examples: '',
       qualityRule: '',
       isUnknownType,
     })
   }
 
-  if (columns.length === 0) {
-    return null
-  }
+  return columns
+}
 
+function buildTable(tableName: string, columns: ColumnDefinition[]): SchemaTable {
   return {
     physicalName: tableName,
     quantumName: tableName
@@ -156,5 +164,61 @@ export function parseDDL(ddl: string): SchemaTable | null {
     tableType: 'table',
     description: '',
     columns,
+  }
+}
+
+/** Parse every CREATE TABLE in a DDL script. */
+export function parseDDLMulti(ddl: string): SchemaTable[] {
+  const cleaned = cleanDDL(ddl)
+  const tables: SchemaTable[] = []
+
+  const createRegex =
+    /CREATE\s+(?:OR\s+REPLACE\s+)?TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:`([^`]+)`|"([^"]+)"|(\w+(?:\.\w+)*))\s*\(/gi
+
+  let match: RegExpExecArray | null
+  while ((match = createRegex.exec(cleaned)) !== null) {
+    const tableName = (match[1] || match[2] || match[3]).split('.').pop() || 'unknown_table'
+    const openParenIndex = match.index + match[0].length - 1
+    const columnsBlock = extractParenBlock(cleaned, openParenIndex)
+    if (!columnsBlock) continue
+
+    const columns = parseColumns(columnsBlock)
+    if (columns.length === 0) continue
+
+    tables.push(buildTable(tableName, columns))
+  }
+
+  return tables
+}
+
+/** First CREATE TABLE only (legacy single-table callers). */
+export function parseDDL(ddl: string): SchemaTable | null {
+  const tables = parseDDLMulti(ddl)
+  return tables[0] ?? null
+}
+
+export function summarizeDDLImport(tables: SchemaTable[]): DDLImportSummary | null {
+  if (tables.length === 0) return null
+
+  let totalPk = 0
+  let totalRequired = 0
+  let totalColumns = 0
+
+  for (const table of tables) {
+    totalColumns += table.columns.length
+    for (const col of table.columns) {
+      if (col.isPrimaryKey) totalPk++
+      else if (col.required) totalRequired++
+    }
+  }
+
+  return {
+    tables,
+    tableCount: tables.length,
+    totalColumns,
+    totalPk,
+    totalRequired,
+    totalOptional: totalColumns - totalPk - totalRequired,
+    tableNames: tables.map(t => t.physicalName),
   }
 }

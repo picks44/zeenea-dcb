@@ -127,13 +127,17 @@ export default function App() {
     setSelectedId(null)
   }
 
-  const handleDDLParsed = useCallback((table: SchemaTable, _ddl: string) => {
-    if (!contract) return
+  const handleDDLParsed = useCallback((tables: SchemaTable[], _ddl: string) => {
+    if (!contract || tables.length === 0) return
+    const first = tables[0]
     updateContract({
       ...contract,
-      info: { ...contract.info, title: contract.info.title || table.quantumName },
-      id: contract.id || table.physicalName.toLowerCase().replace(/[^a-z0-9]/g, '-'),
-      dataset: [table],
+      info: {
+        ...contract.info,
+        title: contract.info.title || (tables.length === 1 ? first.quantumName : contract.info.title),
+      },
+      id: contract.id || first.physicalName.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+      dataset: tables,
     })
     setHasEditedSincePublish(true)
     setActiveSection('fundamentals')

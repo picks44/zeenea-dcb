@@ -1,12 +1,12 @@
 import { useState, useRef } from 'react'
 import { Upload, AlertCircle, Sparkles, Table2, Columns3, KeyRound, Asterisk, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { parseDDL } from '@/lib/ddlParser'
+import { parseDDLMulti, summarizeDDLImport } from '@/lib/ddlParser'
 import { SchemaTable } from '@/types/odcs'
 import { cn } from '@/lib/utils'
 
 interface ImportSectionProps {
-  onParsed: (table: SchemaTable, ddl: string) => void
+  onParsed: (tables: SchemaTable[], ddl: string) => void
   isLocked: boolean
 }
 
@@ -104,10 +104,10 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
   const [importProgress, setImportProgress] = useState(0)
   const [progressDuration, setProgressDuration] = useState(0)
   const [importStep, setImportStep]     = useState(0)
-  const pendingImport = useRef<{ table: SchemaTable; ddl: string } | null>(null)
+  const pendingImport = useRef<{ tables: SchemaTable[]; ddl: string } | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
-  const preview = ddl.trim() ? parseDDL(ddl) : null
+  const preview = ddl.trim() ? summarizeDDLImport(parseDDLMulti(ddl)) : null
 
   const handleParse = () => {
     setError(null)
@@ -116,35 +116,36 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
       setError("Couldn't read this SQL. Make sure it contains a valid CREATE TABLE statement.")
       return
     }
-    pendingImport.current = { table: preview, ddl }
+    pendingImport.current = { tables: preview.tables, ddl }
     setPhase('loading')
     setImportStep(0)
     setImportProgress(0)
     setProgressDuration(0)
 
-    // Stage 1 — rush to ~34%
     requestAnimationFrame(() => requestAnimationFrame(() => {
       setProgressDuration(1050)
       setImportProgress(34)
     }))
 
-    // Step 2 — slide in, resume progress to ~67%
     setTimeout(() => setImportStep(1), 1400)
     setTimeout(() => { setProgressDuration(900); setImportProgress(67) }, 1550)
 
-    // Step 3 — slide in, finish to 100%
     setTimeout(() => setImportStep(2), 2700)
     setTimeout(() => { setProgressDuration(1150); setImportProgress(100) }, 2850)
 
     setTimeout(() => setPhase('success'), 4200)
     setTimeout(() => {
-      if (pendingImport.current) onParsed(pendingImport.current.table, pendingImport.current.ddl)
+      if (pendingImport.current) onParsed(pendingImport.current.tables, pendingImport.current.ddl)
     }, 5200)
   }
 
   if (phase === 'loading' || phase === 'success') {
-    const table = pendingImport.current?.table
-    const fieldCount = table?.columns.length ?? 0
+    const summary = pendingImport.current
+      ? summarizeDDLImport(pendingImport.current.tables)
+      : null
+    const tableLabel = summary
+      ? `${summary.tableCount} table${summary.tableCount !== 1 ? 's' : ''}`
+      : ''
     return (
       <div className="max-w-2xl mx-auto py-8">
         <div className="bg-white rounded-2xl border border-[#d3d3e5] shadow-sm flex flex-col items-center justify-center py-16 gap-5">
@@ -152,7 +153,6 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
           {phase === 'loading' ? (
             <>
               <div className="space-y-2 text-center">
-                {/* Vertical ticker */}
                 <div className="relative h-6 w-44 overflow-hidden">
                   {IMPORT_STEPS.map((step, i) => (
                     <div
@@ -167,7 +167,7 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
                     </div>
                   ))}
                 </div>
-                <p className="text-xs text-[#9898a7] font-mono">{table?.physicalName}</p>
+                <p className="text-xs text-[#9898a7] font-mono">{tableLabel}</p>
               </div>
               <div className="w-64 h-2 bg-[#f5f5fa] rounded-full overflow-hidden">
                 <div
@@ -179,7 +179,7 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
                 />
               </div>
               <p className="text-[11px] text-[#9898a7]">
-                {fieldCount} field{fieldCount !== 1 ? 's' : ''} detected
+                {summary?.totalColumns ?? 0} field{(summary?.totalColumns ?? 0) !== 1 ? 's' : ''} detected
               </p>
             </>
           ) : (
@@ -190,7 +190,7 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
               <div className="space-y-1 text-center">
                 <p className="text-sm font-semibold text-[#12131f]">Schema imported</p>
                 <p className="text-xs text-[#9898a7]">
-                  {fieldCount} field{fieldCount !== 1 ? 's' : ''} · <span className="font-mono">{table?.physicalName}</span>
+                  {tableLabel} · {summary?.totalColumns ?? 0} field{(summary?.totalColumns ?? 0) !== 1 ? 's' : ''}
                 </p>
               </div>
             </>
@@ -202,7 +202,7 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
   }
 
   const handleSkip = () =>
-    onParsed({ physicalName: 'my_table', quantumName: 'My Table', tableType: 'table', description: '', columns: [] }, '')
+    onParsed([{ physicalName: 'my_table', quantumName: 'My Table', tableType: 'table', description: '', columns: [] }], '')
 
   const loadExample = () => {
     setDdl(EXAMPLES[exampleIdx % EXAMPLES.length])
@@ -230,14 +230,11 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
     }
   }
 
-  const pkCount       = preview?.columns.filter(c => c.isPrimaryKey).length ?? 0
-  const requiredCount = preview?.columns.filter(c => c.required && !c.isPrimaryKey).length ?? 0
-  const optionalCount = preview ? preview.columns.length - pkCount - requiredCount : 0
+  const previewTableNames = preview?.tableNames.slice(0, 3) ?? []
 
   return (
     <div className="max-w-2xl mx-auto py-8">
 
-      {/* White card */}
       <div
         className={cn(
           'bg-white rounded-2xl border transition-all duration-150',
@@ -248,18 +245,15 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
         onDrop={handleDrop}
       >
 
-        {/* Card header */}
         <div className="px-6 pt-6 pb-5">
           <h1 className="text-base font-semibold text-[#12131f] mb-1">Import from SQL</h1>
           <p className="text-[#656574] text-xs leading-relaxed">
-            Paste a <code className="bg-[#f5f5fa] px-1.5 py-0.5 rounded font-mono text-[11px] text-[#3f3f4a]">CREATE TABLE</code> statement to auto-populate your schema, or skip and define fields manually.
+            Paste one or more <code className="bg-[#f5f5fa] px-1.5 py-0.5 rounded font-mono text-[11px] text-[#3f3f4a]">CREATE TABLE</code> statements to auto-populate your schema, or skip and define fields manually.
           </p>
         </div>
 
-        {/* Code area */}
         <div className="mx-4 mb-4 rounded-xl overflow-hidden border border-[#e4e4f0] bg-[#f5f5fa]">
 
-          {/* Toolbar */}
           <div className="flex items-center justify-between px-4 py-2 bg-[#f5f5fa] border-b border-[#e4e4f0]">
             <span className="text-[10px] font-mono font-medium text-[#9898a7] tracking-wider uppercase select-none">SQL</span>
             <div className="flex items-center gap-3">
@@ -284,7 +278,6 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
             </div>
           </div>
 
-          {/* Textarea */}
           <textarea
             value={ddl}
             onChange={e => { setDdl(e.target.value); setError(null) }}
@@ -300,7 +293,6 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
           />
         </div>
 
-        {/* Drag hint */}
         {!ddl && !isDragOver && (
           <p className="text-center text-[11px] text-[#9898a7] pb-3 flex items-center justify-center gap-1.5">
             <Upload className="h-3 w-3" />
@@ -313,38 +305,44 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
           </p>
         )}
 
-        {/* Preview summary */}
         {preview && !error && (
-          <div className="mx-4 mb-4 flex items-center gap-2 flex-wrap">
-            <span className="inline-flex items-center gap-1.5 h-6 px-2.5 rounded-md bg-[#f5f5fa] border border-[#e4e4f0] font-mono text-[11px] font-medium text-[#33333d]">
-              <Table2 className="h-3 w-3 text-[#9898a7]" />
-              {preview.physicalName}
-            </span>
-            <span className="inline-flex items-center gap-1.5 h-6 px-2.5 rounded-md bg-[#f5f5fa] border border-[#e4e4f0] text-[11px] text-[#656574]">
-              <Columns3 className="h-3 w-3 text-[#9898a7]" />
-              {preview.columns.length} columns
-            </span>
-            {pkCount > 0 && (
+          <div className="mx-4 mb-4 space-y-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="inline-flex items-center gap-1.5 h-6 px-2.5 rounded-md bg-[#f5f5fa] border border-[#e4e4f0] font-mono text-[11px] font-medium text-[#33333d]">
+                <Table2 className="h-3 w-3 text-[#9898a7]" />
+                {preview.tableCount} table{preview.tableCount !== 1 ? 's' : ''}
+              </span>
               <span className="inline-flex items-center gap-1.5 h-6 px-2.5 rounded-md bg-[#f5f5fa] border border-[#e4e4f0] text-[11px] text-[#656574]">
-                <KeyRound className="h-3 w-3 text-[#9898a7]" />
-                {pkCount} PK
+                <Columns3 className="h-3 w-3 text-[#9898a7]" />
+                {preview.totalColumns} columns
               </span>
-            )}
-            {requiredCount > 0 && (
-              <span className="inline-flex items-center gap-1.5 h-6 px-2.5 rounded-md bg-[#f5f5fa] border border-[#e4e4f0] text-[11px] text-[#656574]">
-                <Asterisk className="h-3 w-3 text-[#9898a7]" />
-                {requiredCount} required
-              </span>
-            )}
-            {optionalCount > 0 && (
-              <span className="inline-flex items-center h-6 px-2.5 rounded-md bg-[#f5f5fa] border border-[#e4e4f0] text-[11px] text-[#9898a7]">
-                {optionalCount} optional
-              </span>
+              {preview.totalPk > 0 && (
+                <span className="inline-flex items-center gap-1.5 h-6 px-2.5 rounded-md bg-[#f5f5fa] border border-[#e4e4f0] text-[11px] text-[#656574]">
+                  <KeyRound className="h-3 w-3 text-[#9898a7]" />
+                  {preview.totalPk} PK
+                </span>
+              )}
+              {preview.totalRequired > 0 && (
+                <span className="inline-flex items-center gap-1.5 h-6 px-2.5 rounded-md bg-[#f5f5fa] border border-[#e4e4f0] text-[11px] text-[#656574]">
+                  <Asterisk className="h-3 w-3 text-[#9898a7]" />
+                  {preview.totalRequired} required
+                </span>
+              )}
+              {preview.totalOptional > 0 && (
+                <span className="inline-flex items-center h-6 px-2.5 rounded-md bg-[#f5f5fa] border border-[#e4e4f0] text-[11px] text-[#9898a7]">
+                  {preview.totalOptional} optional
+                </span>
+              )}
+            </div>
+            {previewTableNames.length > 0 && (
+              <p className="text-[11px] text-[#9898a7] font-mono truncate" title={preview.tableNames.join(', ')}>
+                {previewTableNames.join(', ')}
+                {preview.tableCount > 3 && ` +${preview.tableCount - 3} more`}
+              </p>
             )}
           </div>
         )}
 
-        {/* Error */}
         {error && (
           <div className="mx-4 mb-4 flex items-start gap-2 px-4 py-3 bg-[#fff2ee] border border-[#ffc4b0] rounded-lg">
             <AlertCircle className="h-3.5 w-3.5 text-[#c12c11] flex-shrink-0 mt-0.5" />
@@ -352,7 +350,6 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
           </div>
         )}
 
-        {/* Actions */}
         <div className="flex items-center justify-center gap-3 px-6 py-5 border-t border-[#f0f0f7]">
           <Button onClick={handleParse} disabled={!ddl.trim() || isLocked} className="gap-2 px-6">
             <Sparkles className="h-4 w-4" />
@@ -365,7 +362,6 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
 
       </div>
 
-      {/* Feature hints */}
       <div className="mt-6 grid grid-cols-3 gap-4">
         {[
           { icon: Columns3, title: 'Field names',  desc: 'Physical and logical names extracted and mapped automatically.' },
