@@ -354,7 +354,7 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
           <span className="text-left">
             <span className="block font-medium">Export YAML</span>
             <span className="block text-[10px] text-[#656574] font-normal leading-snug mt-0.5">
-              Preview exported ODCS payload
+              Preview ODCS YAML payload
             </span>
           </span>
           {yamlOpen ? <ChevronUp className="h-3.5 w-3.5 flex-shrink-0" /> : <ChevronDown className="h-3.5 w-3.5 flex-shrink-0" />}
@@ -373,8 +373,8 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
               </button>
             </div>
             <div className="px-4 py-2 border-b border-[#e4e4f0] bg-white space-y-1">
-              <p className="text-[10px] text-[#656574] leading-snug">{EXPORT_COVERAGE.exported}</p>
-              <p className="text-[10px] text-[#656574] leading-snug">{EXPORT_COVERAGE.workflow}</p>
+              <p className="text-[10px] text-[#656574] leading-snug">{EXPORT_COVERAGE.includedInYaml}</p>
+              <p className="text-[10px] text-[#656574] leading-snug">{EXPORT_COVERAGE.workflowOnly}</p>
             </div>
             <pre className="text-[10px] font-mono text-[#33333d] px-4 py-3 max-h-56 overflow-y-auto bg-[#fbfbff] leading-4">
               {yaml}

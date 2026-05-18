@@ -109,7 +109,7 @@ export function VersionsView({
                         {exportDiff ? (
                           <p className="text-[11px] text-neutral-500 mt-1.5 leading-snug">
                             {exportDiff.identical
-                              ? 'No exported changes since last version'
+                              ? 'No changes since last version'
                               : exportDiff.summaryLines.join(' · ')}
                           </p>
                         ) : (

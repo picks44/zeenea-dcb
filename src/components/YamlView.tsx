@@ -78,8 +78,8 @@ export function YamlView({ contract }: YamlViewProps) {
         </Button>
       </div>
       <div className="px-6 py-2 bg-[#fbfbff] border-b border-[#e4e4f0] space-y-1 flex-shrink-0">
-        <p className="text-[10px] text-[#656574] leading-snug">{EXPORT_COVERAGE.exported}</p>
-        <p className="text-[10px] text-[#656574] leading-snug">{EXPORT_COVERAGE.workflow}</p>
+        <p className="text-[10px] text-[#656574] leading-snug">{EXPORT_COVERAGE.includedInYaml}</p>
+        <p className="text-[10px] text-[#656574] leading-snug">{EXPORT_COVERAGE.workflowOnly}</p>
       </div>
       <div className="flex-1 overflow-auto">
         <pre className="text-[12.5px] font-mono leading-[22px] min-w-0">

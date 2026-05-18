@@ -106,7 +106,7 @@ export function ColumnAdvancedDialog({ column, open, isLocked = false, onClose, 
               disabled={isLocked}
               className="text-sm resize-y"
             />
-            <p className="text-[10px] text-[#656574] mt-1">One value per line; exported as an array in YAML.</p>
+            <p className="text-[10px] text-[#656574] mt-1">One value per line.</p>
           </div>
 
           <div>

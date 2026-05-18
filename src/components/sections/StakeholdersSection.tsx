@@ -1,12 +1,11 @@
 import { useState } from 'react'
-import { Plus, Trash2, Users, Mail, Building2, Info } from 'lucide-react'
+import { Plus, Trash2, Users, Mail, Building2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Stakeholder } from '@/types/odcs'
 import { generateId } from '@/lib/utils'
 import {
-  STAKEHOLDERS_BANNER,
   STAKEHOLDERS_EMPTY_BODY,
   STAKEHOLDERS_EMPTY_CTA,
   STAKEHOLDERS_EMPTY_TITLE,
@@ -171,13 +170,6 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked }: Stakeh
             </Button>
           )}
         </div>
-      </div>
-
-      <div className="flex items-start gap-2.5 rounded-lg border border-[#e4e4f0] bg-[#fbfbff] px-3 py-2.5 mb-1">
-        <Info className="h-3.5 w-3.5 text-[#656574] flex-shrink-0 mt-0.5" />
-        <p className="text-[11px] text-[#656574] leading-snug">
-          {STAKEHOLDERS_BANNER}
-        </p>
       </div>
 
       <div className="space-y-4">

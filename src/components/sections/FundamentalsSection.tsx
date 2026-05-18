@@ -9,7 +9,7 @@ import { TagsEditor } from '@/components/shared/TagsEditor'
 import { AuthoritativeDefinitionsEditor } from '@/components/shared/AuthoritativeDefinitionsEditor'
 import { slugify, cn } from '@/lib/utils'
 import { filterAuthoritativeDefinitionsForSave } from '@/lib/odcsSharedMappers'
-import { CONTRACT_OWNER_HELPER, FUNDAMENTALS_ADDITIONAL_CONTEXT_HELPER } from '@/lib/uxCopy'
+import { CONTRACT_OWNER_HELPER } from '@/lib/uxCopy'
 import type { AuthoritativeDefinition } from '@/types/odcsShared'
 
 interface FundamentalsSectionProps {
@@ -94,7 +94,7 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
       <div className="mb-6">
         <h2 className="text-base font-semibold text-[#12131f]">Fundamentals</h2>
         <p className="text-[#3f3f4a] text-xs mt-0.5">
-          Contract identity and ODCS description fields. Exported fields are included in the published YAML.
+          Core contract metadata and governance documentation.
         </p>
       </div>
 
@@ -171,7 +171,7 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
         </div>
 
         <div>
-          <label className={labelClass}>Description (purpose, exported)</label>
+          <label className={labelClass}>Business purpose</label>
           <Textarea
             value={info.description}
             onChange={e => onChange({ description: e.target.value })}
@@ -188,13 +188,10 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
             onClick={() => setAdditionalOpen(o => !o)}
           >
             {additionalOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
-            Additional context (exported)
+            Additional context
           </button>
           {additionalOpen && (
             <div className="px-3 py-3 space-y-3 border-t border-[#e4e4f0]">
-              <p className="text-[10px] text-[#656574] leading-snug">
-                {FUNDAMENTALS_ADDITIONAL_CONTEXT_HELPER}
-              </p>
               <div>
                 <label className={labelClass}>Usage</label>
                 <Textarea

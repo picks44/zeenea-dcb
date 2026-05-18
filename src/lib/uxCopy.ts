@@ -6,26 +6,24 @@ export const APP_NAME = 'Data Contract Builder'
 
 export const NOT_EXPORTED_ODCS_MVP = 'Not exported to ODCS YAML in this MVP.'
 
+/** Shown only in YAML preview panels (Export YAML footer, YAML tab). */
 export const EXPORT_COVERAGE = {
-  exported:
-    'Exported to ODCS YAML: contract identity, description, schema, tags, quality, authoritative links, data access roles, and service levels.',
-  workflow:
-    'Workflow metadata (not in YAML): contract owner, stakeholders, members, and version history.',
+  includedInYaml:
+    'In this YAML: contract identity, description, schema, tags, quality, authoritative links, data access roles, and service levels.',
+  workflowOnly:
+    'Not in YAML: governance owner, stakeholders, members, and version history.',
 } as const
 
 /** Fundamentals — governance accountability (not a Members permission role). */
 export const CONTRACT_OWNER_HELPER =
   `Business owner responsible for governance accountability and publication approval. ${NOT_EXPORTED_ODCS_MVP}`
 
-export const STAKEHOLDERS_BANNER =
-  `Stakeholders are collaboration metadata for governance contact. ${NOT_EXPORTED_ODCS_MVP}`
-
 export const STAKEHOLDERS_SECTION_HELPER =
-  'Use stakeholders to document governance contacts and operational ownership around the contract.'
+  'Used for collaboration and governance workflows. Not exported to ODCS YAML in this MVP.'
 
 export const STAKEHOLDERS_EMPTY_TITLE = 'No stakeholders added yet.'
 export const STAKEHOLDERS_EMPTY_BODY =
-  'Add governance and operational contacts to support collaboration and accountability.'
+  'Add governance and operational contacts for ownership and collaboration. Not exported to ODCS YAML in this MVP.'
 export const STAKEHOLDERS_EMPTY_CTA = 'Add stakeholder'
 
 export const STAKEHOLDERS_WITH_ENTRIES_HINT =
@@ -42,15 +40,15 @@ export const DOCUMENTED_FIELDS_TOOLTIP =
 
 export const DATA_ACCESS_EMPTY_TITLE = 'No data access roles defined'
 export const DATA_ACCESS_EMPTY_BODY =
-  'Define ODCS data access roles for consumers of the published contract. These roles are exported to ODCS YAML.'
+  'Add roles to describe expected access for consumers of this contract.'
 export const DATA_ACCESS_EMPTY_CTA = 'Add a role to describe expected access permissions.'
 
 export const VERSION_HISTORY_INTRO_EMPTY =
-  'No published versions yet. Version history is managed in the application lifecycle and is not included in the ODCS export.'
+  'No published versions yet. Version history is managed in this application and is not included in the ODCS YAML export.'
 
 export function versionHistoryIntroCount(count: number): string {
   const noun = count === 1 ? 'version' : 'versions'
-  return `${count} published ${noun} — managed in the application lifecycle, not included in the ODCS export.`
+  return `${count} published ${noun} — managed in this application, not included in the ODCS YAML export.`
 }
 
 export const MEMBERS_DISCLAIMER =
@@ -92,21 +90,18 @@ export const CANNOT_REMOVE_OWN_PUBLISHER_ROLE =
   'You cannot remove your own Publisher role.'
 
 export const DATA_ACCESS_ROLES_INTRO =
-  'Define ODCS data access roles for consumers of the published contract. To manage editing and publishing permissions, use Members in the toolbar.'
+  'Define who may access this contract data and what permissions apply. To manage editing and publishing permissions, use Members in the toolbar.'
 
 export const QUALITY_RULES_HELPER =
-  'Natural language quality expectations. Exported as ODCS quality rules (type: text).'
+  'Natural language quality expectations for this field or table.'
 
 export const AUTH_LINKS_HELPER =
   'Links to glossary, policy, documentation, or external catalog references.'
 
-export const FUNDAMENTALS_ADDITIONAL_CONTEXT_HELPER =
-  'Documentation exported in the ODCS description object.'
-
-export const RELATIONSHIPS_EXPORT_NOTE =
-  'Only Belongs to and Many-to-many relationships are exported to ODCS YAML.'
+export const RELATIONSHIPS_PUBLISH_NOTE =
+  'Only Belongs to and Many-to-many relationships are included in the published contract. Other types are not published.'
 
 export const RELATIONSHIP_FK_HELPER =
-  'Select join columns to export this relationship as a foreign key in ODCS YAML.'
+  'Select join columns to publish this relationship as a foreign key.'
 
-export const RELATIONSHIP_NOT_IN_YAML = 'Not in YAML'
+export const RELATIONSHIP_NOT_PUBLISHED = 'Not published'

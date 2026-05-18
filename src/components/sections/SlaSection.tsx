@@ -37,7 +37,7 @@ export function SlaSection({ slaProperties, onChange, isLocked }: SlaSectionProp
       <div className="mb-6">
         <h2 className="text-base font-semibold text-[#12131f]">Service levels</h2>
         <p className="text-[#3f3f4a] text-xs mt-0.5">
-          Service level commitments exported as <code className="font-mono text-[11px]">slaProperties</code> in the published ODCS YAML.
+          Define latency, retention, availability, and other service level commitments for this contract.
         </p>
       </div>
 

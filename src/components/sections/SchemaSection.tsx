@@ -62,7 +62,7 @@ export function SchemaSection({ tables, onChange, isLocked }: SchemaSectionProps
         <div>
           <h2 className="text-base font-semibold text-[#12131f]">Schema</h2>
           <p className="text-[#3f3f4a] text-xs mt-0.5">
-            Tables and fields exported as ODCS schema. Use the metadata control on each row for tags, quality, and links.
+            Define tables and fields for this contract. Use the metadata control on each row for descriptions, tags, quality, and links.
           </p>
         </div>
         {!isLocked && (

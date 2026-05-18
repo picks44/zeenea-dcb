@@ -214,7 +214,7 @@ export function validateContract(contract: DataContract): ValidationResult {
   if (piiCount > 0 && contract.stakeholders.length === 0) {
     issues.push({
       code: 'pii-stakeholders',
-      message: `${piiCount} PII field(s) detected — add stakeholders for governance contact (not exported to YAML).`,
+      message: `${piiCount} PII field(s) detected — add stakeholders for governance contact.`,
       severity: 'warning',
       section: 'stakeholders',
     })

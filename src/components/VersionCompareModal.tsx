@@ -169,7 +169,7 @@ function IdenticalVersionsView() {
       </div>
       <p className="text-sm text-[#656574] font-medium">These versions are identical</p>
       <p className="text-xs text-[#9898a7] max-w-sm">
-        No differences in the exported ODCS contract payload between the selected versions.
+        No differences in the contract definition between the selected versions.
       </p>
     </div>
   )

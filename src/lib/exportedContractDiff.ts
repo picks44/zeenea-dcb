@@ -159,7 +159,7 @@ function buildSchemaFormRows(
         label,
         left: String(l.logicalType ?? l.name ?? ''),
         right: String(r.logicalType ?? r.name ?? ''),
-        detail: 'Exported field definition changed',
+        detail: 'Field definition changed',
       })
     }
   }
@@ -357,10 +357,10 @@ export function compareExportedSnapshots(
   if (formSections.length === 0 && summaryLines.length > 0) {
     formSections.push({
       id: 'export',
-      title: 'Exported contract',
+      title: 'Contract definition',
       rows: [{
         kind: 'modified',
-        label: 'ODCS export',
+        label: 'Contract',
         left: 'Previous version',
         right: 'Current version',
         detail: summaryLines.join(' · '),
@@ -405,7 +405,7 @@ export function hasWorkingCopyDraft(contract: DataContract): boolean {
   return !summarizeExportChangesSince(contract, lastCommit.snapshot).identical
 }
 
-const NO_EXPORTED_CHANGES = 'No exported ODCS changes'
+const NO_CONTRACT_CHANGES = 'No contract changes'
 
 function changelogLineForRow(sectionId: string, row: FormDiffRow): string {
   switch (sectionId) {
@@ -438,7 +438,7 @@ function changelogLineForRow(sectionId: string, row: FormDiffRow): string {
 
 /** Human-readable multiline changelog for publish (export-aware, deterministic). */
 export function buildPublishChangelog(diff: ExportedContractDiff): string {
-  if (diff.identical) return NO_EXPORTED_CHANGES
+  if (diff.identical) return NO_CONTRACT_CHANGES
 
   const lines: string[] = []
   for (const section of diff.formSections) {
@@ -447,6 +447,6 @@ export function buildPublishChangelog(diff: ExportedContractDiff): string {
     }
   }
 
-  if (lines.length === 0) return NO_EXPORTED_CHANGES
+  if (lines.length === 0) return NO_CONTRACT_CHANGES
   return lines.join('\n')
 }
