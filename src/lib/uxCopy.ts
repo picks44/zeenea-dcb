@@ -142,8 +142,14 @@ export const AUTH_LINKS_HELPER =
   'Links to glossary, policy, documentation, or external catalog references.'
 
 /** Schema relationships — business context; export caveats use WorkflowMetadataPill per row. */
-export const RELATIONSHIPS_SECTION_INTRO =
-  'Composite foreign keys and many-to-many links are configured at table level. Single-column foreign keys are configured on fields.'
+export const TABLE_RELATIONSHIPS_INTRO =
+  'Composite foreign keys and many-to-many relationships defined at table level.'
+
+export const TABLE_RELATIONSHIPS_EMPTY =
+  'No table-level relationships defined.'
+
+/** @deprecated Use TABLE_RELATIONSHIPS_INTRO */
+export const RELATIONSHIPS_SECTION_INTRO = TABLE_RELATIONSHIPS_INTRO
 
 export const RELATIONSHIP_FK_HELPER =
   'Select referenced table and fields to include this relationship in the published contract.'
@@ -155,7 +161,7 @@ export const RELATIONSHIP_SINGLE_FK_HINT =
   'Single-column relationships are configured on fields — open field properties for this table.'
 
 export const FIELD_FK_INTRO =
-  'Single-column foreign key — exported on this field in the published ODCS contract.'
+  'Reference this field to another table field.'
 
 export const FIELD_FK_HELPER =
   'Referenced table and field are required to publish this foreign key.'

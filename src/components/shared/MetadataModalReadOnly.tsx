@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import type { ColumnForeignKey, QualityRule } from '@/types/odcs'
 import { isColumnForeignKeyComplete } from '@/lib/relationshipExport'
+import { RelationshipPreviewBlock } from '@/components/shared/RelationshipPreviewBlock'
 import { QualityRuleReadOnly } from '@/components/shared/QualityRuleReadOnly'
 import { AuthoritativeLinkReadOnly } from '@/components/shared/AuthoritativeLinkReadOnly'
 import type { AuthoritativeDefinition } from '@/types/odcsShared'
@@ -110,6 +111,7 @@ interface FieldMetadataReadOnlyProps {
   authDefs: AuthoritativeDefinition[]
   foreignKey?: ColumnForeignKey
   sourceTableName?: string
+  sourceColumnName?: string
   docCompact?: boolean
 }
 
@@ -121,6 +123,7 @@ export function FieldMetadataReadOnlyBody({
   authDefs,
   foreignKey,
   sourceTableName,
+  sourceColumnName,
   docCompact,
 }: FieldMetadataReadOnlyProps) {
   const hasAny =
@@ -158,9 +161,14 @@ export function FieldMetadataReadOnlyBody({
       </MetadataReadOnlySection>
 
       <MetadataReadOnlySection label="Foreign key">
-        {isColumnForeignKeyComplete(foreignKey) ? (
+        {isColumnForeignKeyComplete(foreignKey) && sourceTableName && sourceColumnName ? (
+          <RelationshipPreviewBlock
+            sourceLine={`${sourceTableName}.${sourceColumnName}`}
+            targetLine={`${foreignKey!.toTable}.${foreignKey!.toColumn}`}
+            compact={docCompact}
+          />
+        ) : isColumnForeignKeyComplete(foreignKey) ? (
           <p className="text-xs text-[#33333d] font-mono leading-snug">
-            {sourceTableName ? `${sourceTableName} → ` : ''}
             {foreignKey!.toTable}.{foreignKey!.toColumn}
           </p>
         ) : (

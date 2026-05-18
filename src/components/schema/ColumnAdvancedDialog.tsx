@@ -133,6 +133,7 @@ export function ColumnAdvancedDialog({
               authDefs={authDefs}
               foreignKey={foreignKey}
               sourceTableName={sourceTableName}
+              sourceColumnName={column.physicalName}
               docCompact={docCompact}
             />
           ) : (
@@ -174,6 +175,7 @@ export function ColumnAdvancedDialog({
                     if (fkShowErrors) setFkShowErrors(false)
                   }}
                   sourceTableName={sourceTableName}
+                  sourceColumnName={column.physicalName}
                   allTables={allTables}
                   compact={docCompact}
                   showFieldErrors={fkShowErrors}

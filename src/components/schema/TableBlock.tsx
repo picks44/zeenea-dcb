@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, Trash2, ChevronDown, ChevronRight, AlertTriangle, Pencil, X, SlidersHorizontal } from 'lucide-react'
+import { Plus, Trash2, ChevronDown, ChevronRight, AlertTriangle, Pencil, SlidersHorizontal, Link2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
@@ -10,18 +10,11 @@ import { TypePicker } from './TypePicker'
 import { FlagBadge } from './FlagBadge'
 import { ColumnAdvancedDialog } from './ColumnAdvancedDialog'
 import { TableAdvancedDialog } from './TableAdvancedDialog'
-import { WorkflowMetadataPill } from '@/components/shared/WorkflowMetadataPill'
-import {
-  RELATIONSHIP_COMPOSITE_HELPER,
-  RELATIONSHIP_FK_HELPER,
-  RELATIONSHIP_SINGLE_FK_HINT,
-  RELATIONSHIPS_SECTION_INTRO,
-} from '@/lib/uxCopy'
-import {
-  isCompositeTableRelationship,
-  isLegacySingleColumnBelongsTo,
-  isTableRelationshipNotPublished,
-} from '@/lib/relationshipExport'
+import { RELATIONSHIP_COMPOSITE_HELPER, TABLE_RELATIONSHIPS_EMPTY, TABLE_RELATIONSHIPS_INTRO } from '@/lib/uxCopy'
+import { countTableRelationships, formatRelationshipHeaderSummary } from '@/lib/schemaRelationshipUx'
+import { isColumnForeignKeyComplete } from '@/lib/relationshipExport'
+import { ColumnFkIndicator } from '@/components/schema/ColumnFkIndicator'
+import { TableRelationshipRow } from '@/components/schema/TableRelationshipRow'
 
 function deriveLogicalName(physicalName: string): string {
   return physicalName
@@ -56,11 +49,6 @@ function toggleOrderedColumn(columns: string[], col: string): string[] {
   const i = columns.indexOf(col)
   if (i >= 0) return columns.filter((_, idx) => idx !== i)
   return [...columns, col]
-}
-
-const LEGACY_REL_LABELS: Partial<Record<RelationshipType, { notation: string; label: (to: string) => string }>> = {
-  has_many: { notation: '1 → N', label: to => `Has many ${to}` },
-  has_one: { notation: '1 → 1', label: to => `Has one ${to}` },
 }
 
 interface TableBlockProps {
@@ -112,6 +100,8 @@ export function TableBlock({
   }
 
   const rels = table.relationships ?? []
+  const relCounts = countTableRelationships(table)
+  const relHeaderLabel = formatRelationshipHeaderSummary(relCounts)
   const otherTables = allTables.filter(t => t.physicalName !== table.physicalName)
 
   const saveRel = () => {
@@ -174,8 +164,11 @@ export function TableBlock({
           />
         )}
         <span className="text-[11px] text-[#656574]">{table.columns.length} field{table.columns.length !== 1 ? 's' : ''}</span>
-        {rels.length > 0 && (
-          <span className="text-[11px] text-[#656574]">· {rels.length} relation{rels.length !== 1 ? 's' : ''}</span>
+        {relHeaderLabel && (
+          <span className="inline-flex items-center gap-1 text-[11px] text-[#656574] flex-shrink-0">
+            <Link2 className="h-3 w-3 text-[#9898a7]" />
+            {relHeaderLabel}
+          </span>
         )}
         {piiCount > 0 && (
           <span className="text-[10px] font-medium px-1.5 py-0.5 rounded border bg-[#fff2ee] text-[#c12c11] border-rose-100 flex-shrink-0">
@@ -251,15 +244,23 @@ export function TableBlock({
               const tc = typeConfig(col.logicalType)
               const Icon = tc.icon
               const compatibleDbTypes = DB_TYPES_BY_LOGICAL[col.logicalType] ?? ['VARCHAR']
+              const hasFk = isColumnForeignKeyComplete(col.foreignKey)
+              const hasMetadata = Boolean(
+                col.description?.trim()
+                || col.quality?.length
+                || col.qualityRule?.trim()
+                || hasFk,
+              )
               return (
                 <div
                   key={col.id}
                   className={cn(
-                    'flex items-center px-4 transition-colors group',
+                    'flex px-4 transition-colors group',
+                    hasFk ? 'items-start' : 'items-center',
                     denseReadOnly ? 'py-2' : 'py-2 hover:bg-[#f5f5fa]/50',
                   )}
                 >
-                  <div className="w-52 flex-shrink-0 pr-3">
+                  <div className="w-52 flex-shrink-0 pr-3 min-w-0">
                     {isLocked ? (
                       <div>
                         <span className={cn('font-semibold text-[#2a2a30]', denseReadOnly ? 'text-[11px]' : 'text-xs')}>{col.physicalName}</span>
@@ -267,6 +268,7 @@ export function TableBlock({
                           'truncate',
                           denseReadOnly ? 'text-[9px] leading-tight text-[#9898a7] mt-0' : 'text-[10px] text-[#656574] mt-0.5',
                         )}>{col.logicalName || deriveLogicalName(col.physicalName)}</div>
+                        <ColumnFkIndicator foreignKey={col.foreignKey} compact={denseReadOnly} />
                       </div>
                     ) : (
                       <div className="space-y-0.5">
@@ -283,11 +285,12 @@ export function TableBlock({
                             </button>
                           </div>
                         )}
+                        <ColumnFkIndicator foreignKey={col.foreignKey} />
                       </div>
                     )}
                   </div>
 
-                  <div className="w-32 flex-shrink-0 pr-3">
+                  <div className={cn('w-32 flex-shrink-0 pr-3', hasFk && 'pt-0.5')}>
                     {isLocked ? (
                       <span className={cn(
                         'inline-flex items-center gap-0.5 font-semibold rounded border',
@@ -315,7 +318,7 @@ export function TableBlock({
                     )}
                   </div>
 
-                  <div className="w-32 flex-shrink-0 pr-3">
+                  <div className={cn('w-32 flex-shrink-0 pr-3', hasFk && 'pt-0.5')}>
                     {isLocked ? (
                       <span className={cn(
                         'font-mono text-[#3f3f4a] bg-[#f5f5fa] rounded',
@@ -329,7 +332,7 @@ export function TableBlock({
                     )}
                   </div>
 
-                  <div className="flex items-center w-44 flex-shrink-0">
+                  <div className={cn('flex items-center w-44 flex-shrink-0', hasFk && 'pt-0.5')}>
                     <FlagBadge shape="left"  flag="PK"  active={col.isPrimaryKey} onClick={() => updateCol(col.id, { isPrimaryKey: !col.isPrimaryKey })} disabled={isLocked} compact={denseReadOnly} />
                     <FlagBadge shape="mid"   flag="REQ" active={col.required}     onClick={() => updateCol(col.id, { required: !col.required })}         disabled={isLocked} compact={denseReadOnly} />
                     <FlagBadge shape="mid"   flag="PII" active={col.isPII}        onClick={() => updateCol(col.id, { isPII: !col.isPII })}               disabled={isLocked} compact={denseReadOnly} />
@@ -341,11 +344,12 @@ export function TableBlock({
                   <button
                     type="button"
                     onClick={() => setAdvancedColId(col.id)}
-                    title="Metadata: description, examples, tags, quality, authoritative links"
-                    aria-label="Metadata: description, examples, tags, quality, authoritative links"
+                    title="Field properties: description, foreign key, quality, authoritative links"
+                    aria-label="Field properties"
                     className={cn(
                       'h-6 w-6 ml-2 rounded flex items-center justify-center transition-all flex-shrink-0 relative',
-                      (col.description?.trim() || col.quality?.length || col.qualityRule?.trim())
+                      hasFk && 'mt-0.5',
+                      hasMetadata
                         ? 'text-[#0550dc] bg-[#f0f4ff]'
                         : 'text-[#d3d3e5] group-hover:text-[#9898a7] hover:!text-[#0550dc] hover:bg-[#f0f4ff]',
                     )}
@@ -354,7 +358,7 @@ export function TableBlock({
                   </button>
 
                   {!isLocked && (
-                    <button onClick={() => deleteCol(col.id)} className="h-6 w-6 ml-2 rounded flex items-center justify-center text-[#d3d3e5] group-hover:text-[#656574] hover:!text-[#c12c11] hover:bg-[#fff2ee] transition-all flex-shrink-0">
+                    <button onClick={() => deleteCol(col.id)} className={cn('h-6 w-6 ml-2 rounded flex items-center justify-center text-[#d3d3e5] group-hover:text-[#656574] hover:!text-[#c12c11] hover:bg-[#fff2ee] transition-all flex-shrink-0', hasFk && 'mt-0.5')}>
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
                   )}
@@ -377,66 +381,28 @@ export function TableBlock({
         </>
       )}
 
-      {/* Relationships */}
+      {/* Table relationships */}
       {showRelSection && (
-        <div className="border-t border-[#e4e4f0] bg-[#fbfbff]/30 px-4 py-3 rounded-b-xl">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-[#9898a7] mb-2.5">Relationships</p>
-          <p className="text-[10px] text-[#656574] mb-2 leading-snug">
-            {RELATIONSHIPS_SECTION_INTRO}
+        <div className="border-t border-[#e4e4f0] bg-[#f5f5fa]/40 px-4 py-3 rounded-b-xl">
+          <p className="text-xs font-semibold text-[#33333d] mb-1">Table relationships</p>
+          <p className="text-[10px] text-[#656574] mb-2.5 leading-snug">
+            {TABLE_RELATIONSHIPS_INTRO}
           </p>
 
-          {/* Existing */}
-          {rels.length > 0 && (
-            <div className="space-y-1.5 mb-3">
-              {rels.map(rel => {
-                const notPublished = isTableRelationshipNotPublished(rel)
-                const legacyBelongs = isLegacySingleColumnBelongsTo(rel)
-                const composite = isCompositeTableRelationship(rel)
-                const opt = REL_OPTIONS.find(r => r.value === rel.type)
-                const legacy = LEGACY_REL_LABELS[rel.type]
-                const labelFn = opt?.label ?? legacy?.label ?? (() => rel.type)
-                const colsLabel = composite
-                  ? `(${(rel.fromColumns ?? []).join(', ')} → ${(rel.toColumns ?? []).join(', ')})`
-                  : rel.fromColumn && rel.toColumn
-                    ? `(${rel.fromColumn} → ${rel.toColumn})`
-                    : null
-                return (
-                  <div key={rel.id} className="space-y-0.5">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono text-neutral-400 bg-neutral-50 border border-neutral-100 px-1.5 py-0.5 rounded flex-shrink-0 tabular-nums">
-                      {opt?.notation ?? legacy?.notation ?? '?'}
-                    </span>
-                    <span className="text-[11px] text-neutral-600">
-                      {labelFn(rel.toTable)}
-                    </span>
-                    {notPublished && (
-                      <WorkflowMetadataPill variant="not-published" />
-                    )}
-                    {colsLabel && (
-                      <span className="text-[10px] font-mono text-neutral-300">
-                        {colsLabel}
-                      </span>
-                    )}
-                    {!isLocked && (
-                      <button onClick={() => removeRel(rel.id)} className="ml-auto text-neutral-200 hover:text-red-700 hover:bg-red-25 rounded p-0.5 transition-colors flex-shrink-0">
-                        <X className="h-3.5 w-3.5" />
-                      </button>
-                    )}
-                  </div>
-                    {legacyBelongs && (
-                      <p className="text-[10px] text-[#656574] pl-1 leading-snug">
-                        {RELATIONSHIP_SINGLE_FK_HINT}
-                      </p>
-                    )}
-                    {notPublished && !legacyBelongs && (
-                      <p className="text-[10px] text-[#656574] pl-1 leading-snug">
-                        {composite ? RELATIONSHIP_COMPOSITE_HELPER : RELATIONSHIP_FK_HELPER}
-                      </p>
-                    )}
-                  </div>
-                )
-              })}
+          {rels.length > 0 ? (
+            <div className="space-y-2 mb-3">
+              {rels.map(rel => (
+                <TableRelationshipRow
+                  key={rel.id}
+                  rel={rel}
+                  sourceTable={table.physicalName}
+                  compact={denseReadOnly}
+                  onRemove={isLocked ? undefined : () => removeRel(rel.id)}
+                />
+              ))}
             </div>
+          ) : (
+            <p className="text-[11px] text-[#9898a7] mb-2.5">{TABLE_RELATIONSHIPS_EMPTY}</p>
           )}
 
           {/* Add form */}

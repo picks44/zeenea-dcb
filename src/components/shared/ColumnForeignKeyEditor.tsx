@@ -1,19 +1,18 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import type { ColumnForeignKey, SchemaTable } from '@/types/odcs'
 import { cn } from '@/lib/utils'
-import {
-  FIELD_FK_HELPER,
-  FIELD_FK_INTRO,
-} from '@/lib/uxCopy'
+import { FIELD_FK_HELPER, FIELD_FK_INTRO } from '@/lib/uxCopy'
 import {
   isColumnForeignKeyComplete,
   isColumnForeignKeyPartial,
 } from '@/lib/relationshipExport'
+import { RelationshipPreviewBlock } from '@/components/shared/RelationshipPreviewBlock'
 
 interface ColumnForeignKeyEditorProps {
   foreignKey: ColumnForeignKey | undefined
   onChange: (fk: ColumnForeignKey | undefined) => void
   sourceTableName: string
+  sourceColumnName?: string
   allTables: SchemaTable[]
   disabled?: boolean
   showFieldErrors?: boolean
@@ -26,6 +25,7 @@ export function ColumnForeignKeyEditor({
   foreignKey,
   onChange,
   sourceTableName,
+  sourceColumnName,
   allTables,
   disabled = false,
   showFieldErrors = false,
@@ -47,11 +47,29 @@ export function ColumnForeignKeyEditor({
     }
   }
 
+  const sourceField = sourceColumnName ?? 'field'
+  const sourceLine = `${sourceTableName}.${sourceField}`
+  const targetLine = complete ? `${fk.toTable}.${fk.toColumn}` : ''
+
+  if (disabled && complete) {
+    return (
+      <RelationshipPreviewBlock
+        sourceLine={sourceLine}
+        targetLine={targetLine}
+        compact={compact}
+      />
+    )
+  }
+
+  if (disabled && !complete) {
+    return <p className="text-xs text-[#9898a7] leading-snug">No foreign key configured.</p>
+  }
+
   return (
     <div className={cn('space-y-2', compact && 'space-y-1.5')}>
       <p className="text-[10px] text-[#656574] leading-snug">{FIELD_FK_INTRO}</p>
 
-      <div className="grid grid-cols-[1fr_128px] gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-[1fr_140px] gap-2">
         <div>
           <label className="text-[10px] font-medium text-[#656574] mb-0.5 block">Referenced table</label>
           <Select
@@ -60,7 +78,7 @@ export function ColumnForeignKeyEditor({
             disabled={disabled}
           >
             <SelectTrigger
-              className={cn('h-7 text-xs', showErrors && !fk.toTable?.trim() && 'border-[#c12c11]')}
+              className={cn('h-8 text-xs', showErrors && !fk.toTable?.trim() && 'border-[#c12c11]')}
             >
               <SelectValue placeholder="Select table" />
             </SelectTrigger>
@@ -84,7 +102,7 @@ export function ColumnForeignKeyEditor({
             disabled={disabled || !fk.toTable}
           >
             <SelectTrigger
-              className={cn('h-7 text-xs', showErrors && !fk.toColumn?.trim() && 'border-[#c12c11]')}
+              className={cn('h-8 text-xs', showErrors && !fk.toColumn?.trim() && 'border-[#c12c11]')}
             >
               <SelectValue placeholder="Select field" />
             </SelectTrigger>
@@ -105,10 +123,13 @@ export function ColumnForeignKeyEditor({
       {partial && !showFieldErrors ? (
         <p className="text-[10px] text-[#d27b00] leading-snug">{FIELD_FK_HELPER}</p>
       ) : null}
+
       {complete ? (
-        <p className="text-[10px] text-[#656574] font-mono leading-snug">
-          {sourceTableName} → {fk.toTable}.{fk.toColumn}
-        </p>
+        <RelationshipPreviewBlock
+          sourceLine={sourceLine}
+          targetLine={targetLine}
+          compact={compact}
+        />
       ) : null}
     </div>
   )
