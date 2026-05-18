@@ -143,7 +143,12 @@ export interface DataContractSnapshot {
 
 export interface GitCommit {
   hash: string
-  message: string
+  /** Stable timeline title, e.g. "Update to v1.2.0" */
+  title?: string
+  /** Multiline changelog from the publish modal ("What changed?") */
+  changelog?: string
+  /** @deprecated use title + changelog — kept for localStorage migration */
+  message?: string
   timestamp: string
   version: string
   contractStatus: LifecycleStatus

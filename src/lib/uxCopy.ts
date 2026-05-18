@@ -31,8 +31,14 @@ export const STAKEHOLDERS_EMPTY_CTA = 'Add stakeholder'
 export const STAKEHOLDERS_WITH_ENTRIES_HINT =
   'Add or update contacts as governance and operational responsibilities evolve.'
 
-/** Contract Health — required to publish (governance field, not Publisher role). */
-export const HEALTH_GOVERNANCE_OWNER_CHECK = 'Governance owner assigned'
+/** Publication readiness — required to publish (governance field, not Publisher role). */
+export const HEALTH_GOVERNANCE_OWNER_CHECK = 'Governance owner defined'
+
+export const READINESS_SCORE_TOOLTIP =
+  'Readiness score based on required metadata and documentation completeness'
+
+export const DOCUMENTED_FIELDS_TOOLTIP =
+  'Percentage of schema fields with business descriptions'
 
 export const DATA_ACCESS_EMPTY_TITLE = 'No data access roles defined'
 export const DATA_ACCESS_EMPTY_BODY =
@@ -92,7 +98,10 @@ export const QUALITY_RULES_HELPER =
   'Natural language quality expectations. Exported as ODCS quality rules (type: text).'
 
 export const AUTH_LINKS_HELPER =
-  'Links to glossary, policy, documentation, or an external catalog reference. No integrated catalog picker in this MVP.'
+  'Links to glossary, policy, documentation, or external catalog references.'
+
+export const FUNDAMENTALS_ADDITIONAL_CONTEXT_HELPER =
+  'Documentation exported in the ODCS description object.'
 
 export const RELATIONSHIPS_EXPORT_NOTE =
   'Only Belongs to and Many-to-many relationships are exported to ODCS YAML.'

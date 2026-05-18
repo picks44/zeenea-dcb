@@ -5,11 +5,34 @@ import { DataContract } from '@/types/odcs'
 import { timeAgo, cn } from '@/lib/utils'
 import { VERSION_HISTORY_INTRO_EMPTY, versionHistoryIntroCount } from '@/lib/uxCopy'
 import { hasWorkingCopyDraft, summarizeExportChangesSince } from '@/lib/exportedContractDiff'
+import { getCommitChangelog, getCommitTitle, parseChangelogLines } from '@/lib/versionHistory'
 
 interface VersionsViewProps {
   contract: DataContract
   onVersionClick: (hash: string) => void
   onDiscardDraft: () => void
+}
+
+function VersionChangelog({ text }: { text: string }) {
+  const lines = parseChangelogLines(text)
+  if (lines.length === 0) return null
+
+  if (lines.length === 1) {
+    return (
+      <p className="text-[11px] text-neutral-500 mt-1.5 leading-snug">{lines[0]}</p>
+    )
+  }
+
+  return (
+    <ul className="mt-1.5 space-y-0.5">
+      {lines.map((line, i) => (
+        <li key={i} className="text-[11px] text-neutral-500 leading-snug flex gap-1.5">
+          <span className="text-neutral-300 select-none">·</span>
+          <span>{line}</span>
+        </li>
+      ))}
+    </ul>
+  )
 }
 
 export function VersionsView({
@@ -147,12 +170,13 @@ export function VersionsView({
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         <p className={cn(
-                          'text-sm font-semibold truncate',
+                          'text-sm font-semibold',
                           isLatest ? 'text-neutral-900' : 'text-neutral-400'
                         )}>
-                          {commit.message || `Version ${commit.version}`}
+                          {getCommitTitle(commit)}
                         </p>
-                        <div className="flex items-center gap-1.5 mt-1">
+                        <VersionChangelog text={getCommitChangelog(commit)} />
+                        <div className="flex items-center gap-1.5 mt-1.5">
                           <Badge variant="version">v{commit.version}</Badge>
                           {isLatest
                             ? <Badge variant="active">Active</Badge>

@@ -6,6 +6,7 @@ import {
   normalizeTags,
 } from '@/lib/odcsSharedMappers'
 import { generateId } from '@/lib/utils'
+import { migrateGitCommit } from '@/lib/versionHistory'
 import { SEED_CONTRACTS } from './seedContracts'
 
 const STORAGE_KEY = 'data-contracts-v1'
@@ -82,10 +83,13 @@ function migrateContract(c: DataContract): DataContract {
     stakeholders: c.stakeholders ?? [],
     roles: c.roles ?? [],
     slaProperties: c.slaProperties ?? [],
-    gitHistory: (c.gitHistory ?? []).map(commit => ({
-      ...commit,
-      snapshot: commit.snapshot ? migrateSnapshot(commit.snapshot) : undefined,
-    })),
+    gitHistory: (c.gitHistory ?? []).map(commit => {
+      const migrated = migrateGitCommit(commit, c.info.title)
+      return {
+        ...migrated,
+        snapshot: commit.snapshot ? migrateSnapshot(commit.snapshot) : undefined,
+      }
+    }),
     dataset: (c.dataset ?? []).map(migrateTable),
     openPR: c.openPR ?? null,
   }

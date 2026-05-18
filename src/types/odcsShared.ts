@@ -15,11 +15,12 @@ export interface CustomProperty {
 }
 
 export const AUTH_DEF_TYPE_OPTIONS = [
-  'businessDefinition',
-  'implementation',
-  'documentation',
-  'actian',
-  'videoTutorial',
+  { value: 'businessDefinition', label: 'Glossary' },
+  { value: 'documentation', label: 'Documentation' },
+  { value: 'privacyPolicy', label: 'Privacy policy' },
+  { value: 'termsAndConditions', label: 'Terms & Conditions' },
+  { value: 'license', label: 'License' },
+  { value: 'externalCatalog', label: 'External catalog' },
 ] as const
 
 export const EXPORTED_RELATIONSHIP_TYPES = ['belongs_to', 'many_to_many'] as const

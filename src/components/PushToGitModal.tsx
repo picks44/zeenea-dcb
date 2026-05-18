@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { DataContract, GitCommit } from '@/types/odcs'
 import { validateContract } from '@/lib/contractValidation'
 import { buildPublishChangelog, summarizeExportChangesSince } from '@/lib/exportedContractDiff'
+import { publishCommitTitle } from '@/lib/versionHistory'
 import { cn } from '@/lib/utils'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -208,16 +209,16 @@ export function PushToGitModal({ contract, open, onClose, onPushed }: PushToGitM
 
   if (!open) return null
 
-  const resolvedMessage = description.trim()
-    || (isFirstPublish ? `Initial version of ${contract.info.title || 'this contract'}` : `Update to v${newVersion}`)
-
   const handlePush = async () => {
     const hash = randomHash()
     const now = new Date().toISOString()
+    const title = publishCommitTitle(newVersion, contract.info.title, isFirstPublish)
+    const changelog = description.trim()
 
     const commit: GitCommit = {
       hash,
-      message: resolvedMessage,
+      title,
+      changelog,
       timestamp: now,
       version: newVersion,
       contractStatus: 'active',
@@ -372,7 +373,7 @@ export function PushToGitModal({ contract, open, onClose, onPushed }: PushToGitM
                     </span>
                   </p>
                   <p className="text-[11px] text-[#3f3f4a] mt-0.5 truncate">
-                    {phase.result.commit.message}
+                    {phase.result.commit.title}
                   </p>
                 </div>
               </div>

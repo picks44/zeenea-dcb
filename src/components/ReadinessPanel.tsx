@@ -4,7 +4,14 @@ import { CollaboratorRole, DataContract } from '@/types/odcs'
 import { generateODCSYaml } from '@/lib/odcsYamlGenerator'
 import { validateContract, ValidationResult } from '@/lib/contractValidation'
 import { cn } from '@/lib/utils'
-import { EXPORT_COVERAGE, HEALTH_GOVERNANCE_OWNER_CHECK, PUBLISH_REQUIRES_PUBLISHER } from '@/lib/uxCopy'
+import {
+  DOCUMENTED_FIELDS_TOOLTIP,
+  EXPORT_COVERAGE,
+  HEALTH_GOVERNANCE_OWNER_CHECK,
+  PUBLISH_REQUIRES_PUBLISHER,
+  READINESS_SCORE_TOOLTIP,
+} from '@/lib/uxCopy'
+import { Tooltip } from '@/components/ui/tooltip'
 
 interface ReadinessPanelProps {
   contract: DataContract
@@ -29,7 +36,7 @@ function publishReadinessMessage(
   if (!hasEditedSincePublish) {
     return { ready: false, message: 'No unpublished changes since last publish.' }
   }
-  return { ready: true, message: 'Ready to publish' }
+  return { ready: true, message: 'Ready for publication' }
 }
 
 function useHealth(contract: DataContract, myRole: CollaboratorRole, hasEditedSincePublish: boolean) {
@@ -49,13 +56,19 @@ function useHealth(contract: DataContract, myRole: CollaboratorRole, hasEditedSi
     { key: 'id',      label: 'Contract ID',              ok: !errorKeys.has('id') },
     { key: 'owner',   label: HEALTH_GOVERNANCE_OWNER_CHECK, ok: !errorKeys.has('owner') },
     { key: 'version', label: 'Version (e.g. 1.0.0)',    ok: !errorKeys.has('version') },
-    { key: 'schema',  label: 'At least 1 field defined', ok: schemaOk },
+    { key: 'schema',  label: 'At least one field defined', ok: schemaOk },
   ]
 
+  const stakeholderCount = safeStakeholders.length
   const recommendedChecks = [
     { key: 'domain',       label: 'Domain',                    ok: !!info.domain.trim() },
-    { key: 'desc',         label: 'Description',               ok: !!info.description.trim() },
-    { key: 'stakeholders', label: `Stakeholders (${safeStakeholders.length})`, ok: safeStakeholders.length > 0 },
+    { key: 'desc',         label: 'Business description',      ok: !!info.description.trim() },
+    {
+      key: 'stakeholders',
+      label: 'Stakeholders assigned',
+      ok: stakeholderCount > 0,
+      badge: stakeholderCount > 0 ? String(stakeholderCount) : undefined,
+    },
   ]
 
   const doneRequired = requiredChecks.filter(c => c.ok).length
@@ -69,36 +82,51 @@ function useHealth(contract: DataContract, myRole: CollaboratorRole, hasEditedSi
     (safeStakeholders.length > 0 ? 15 : 0)
   )
 
-  // Contextual next steps, PM-friendly language, max 3
+  // Next steps: max 2 — required metadata, then documentation, then collaboration
   const nextSteps: string[] = []
-  if (!info.title.trim())
+  if (!info.title.trim()) {
     nextSteps.push('Give your contract a name in Fundamentals')
-  else if (!id.trim())
+  } else if (!id.trim()) {
     nextSteps.push('Set a contract ID in Fundamentals')
-  else if (!info.owner.trim())
+  } else if (!info.owner.trim()) {
     nextSteps.push('Assign a governance owner in Fundamentals')
-  if (fieldCount === 0)
+  } else if (fieldCount === 0) {
     nextSteps.push('Add at least one field in Schema to describe your data')
-  else if (fieldsWithDesc < fieldCount)
-    nextSteps.push(
-      `${fieldCount - fieldsWithDesc} field${fieldCount - fieldsWithDesc > 1 ? 's' : ''} have no description — help your team understand the data`
-    )
-  if (piiCount > 0 && safeStakeholders.length === 0)
-    nextSteps.push(`${piiCount} PII field${piiCount > 1 ? 's' : ''} detected — add stakeholders including Data Privacy`)
-  else if (safeStakeholders.length === 0 && fieldCount > 0)
-    nextSteps.push('Add stakeholders for governance contact (not exported to YAML)')
+  }
+  if (nextSteps.length < 2 && fieldCount > 0 && fieldsWithDesc < fieldCount) {
+    nextSteps.push('Document schema fields to improve discoverability and reuse')
+  }
+  if (nextSteps.length < 2) {
+    if (piiCount > 0 && safeStakeholders.length === 0) {
+      nextSteps.push(
+        `${piiCount} PII field${piiCount > 1 ? 's' : ''} detected — add stakeholders including Data Privacy`,
+      )
+    } else if (safeStakeholders.length === 0 && fieldCount > 0) {
+      nextSteps.push('Assign stakeholders for ownership and collaboration')
+    }
+  }
 
   return {
     requiredChecks, recommendedChecks,
     doneRequired, publishStatus,
     fieldCount, fieldsWithDesc, descCoverage, piiCount,
-    healthScore, nextSteps: nextSteps.slice(0, 3),
+    healthScore, nextSteps: nextSteps.slice(0, 2),
     validationErrors: validation.errors,
     validationWarnings: validation.warnings,
   }
 }
 
-function CheckRow({ label, ok, required }: { label: string; ok: boolean; required: boolean }) {
+function CheckRow({
+  label,
+  ok,
+  required,
+  badge,
+}: {
+  label: string
+  ok: boolean
+  required: boolean
+  badge?: string
+}) {
   return (
     <li className="flex items-center gap-2.5">
       <div className={cn(
@@ -112,9 +140,14 @@ function CheckRow({ label, ok, required }: { label: string; ok: boolean; require
             : <span className="h-1.5 w-1.5 rounded-full bg-[#d3d3e5]" />
         }
       </div>
-      <span className={cn('text-xs leading-snug', ok ? 'text-[#33333d]' : 'text-[#656574]')}>
+      <span className={cn('text-xs leading-snug flex-1 min-w-0', ok ? 'text-[#33333d]' : 'text-[#656574]')}>
         {label}
       </span>
+      {badge && (
+        <span className="text-[10px] font-medium text-[#656574] tabular-nums flex-shrink-0">
+          {badge}
+        </span>
+      )}
     </li>
   )
 }
@@ -154,10 +187,12 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
       {/* Header */}
       <div className="px-4 py-3 border-b border-[#d3d3e5] flex-shrink-0">
         <div className="flex items-center justify-between mb-2.5">
-          <span className="text-xs font-semibold text-[#33333d]">Contract Health</span>
-          <span className={cn('text-[11px] font-bold px-2 py-0.5 rounded-full border', scoreColor)}>
-            {healthScore}/100
-          </span>
+          <span className="text-xs font-semibold text-[#33333d]">Publication readiness</span>
+          <Tooltip content={READINESS_SCORE_TOOLTIP} side="left" delayDuration={400}>
+            <span className={cn('text-[11px] font-bold px-2 py-0.5 rounded-full border cursor-default', scoreColor)}>
+              {healthScore}/100
+            </span>
+          </Tooltip>
         </div>
 
         {/* Progress bar */}
@@ -211,7 +246,7 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
             {/* Description coverage */}
             <div className="mb-1">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs text-[#3f3f4a]">Field descriptions</span>
+                <span className="text-xs text-[#3f3f4a]">Documented fields</span>
                 <span className={cn(
                   'text-[11px] font-semibold',
                   descCoverage === 1 ? 'text-[#047800]' : descCoverage >= 0.5 ? 'text-[#d27b00]' : 'text-[#656574]'
@@ -219,18 +254,20 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
                   {fieldsWithDesc}/{fieldCount}
                 </span>
               </div>
-              <div className="h-1.5 rounded-full bg-[#f5f5fa] overflow-hidden">
-                <div
-                  className={cn(
-                    'h-full rounded-full transition-all',
-                    descCoverage === 1 ? 'bg-[#3dab3b]' : 'bg-[#7aacf8]'
-                  )}
-                  style={{ width: `${Math.round(descCoverage * 100)}%` }}
-                />
-              </div>
+              <Tooltip content={DOCUMENTED_FIELDS_TOOLTIP} side="top" delayDuration={400}>
+                <div className="h-1.5 rounded-full bg-[#f5f5fa] overflow-hidden cursor-default">
+                  <div
+                    className={cn(
+                      'h-full rounded-full transition-all',
+                      descCoverage === 1 ? 'bg-[#3dab3b]' : 'bg-[#7aacf8]'
+                    )}
+                    style={{ width: `${Math.round(descCoverage * 100)}%` }}
+                  />
+                </div>
+              </Tooltip>
               {fieldsWithDesc < fieldCount && (
                 <p className="text-[11px] text-[#656574] mt-1">
-                  {fieldCount - fieldsWithDesc} field{fieldCount - fieldsWithDesc > 1 ? 's' : ''} still need a description
+                  {fieldCount - fieldsWithDesc} field{fieldCount - fieldsWithDesc > 1 ? 's are' : ' is'} missing documentation
                 </p>
               )}
             </div>
@@ -279,7 +316,13 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
           </p>
           <ul className="space-y-1.5">
             {recommendedChecks.map(item => (
-              <CheckRow key={item.key} label={item.label} ok={item.ok} required={false} />
+              <CheckRow
+                key={item.key}
+                label={item.label}
+                ok={item.ok}
+                required={false}
+                badge={item.badge}
+              />
             ))}
           </ul>
         </div>
@@ -308,8 +351,13 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
           onClick={() => setYamlOpen(o => !o)}
           className="w-full flex items-center justify-between px-4 py-2.5 text-xs text-[#3f3f4a] hover:bg-[#fbfbff] transition-colors"
         >
-          <span className="font-medium">Export YAML</span>
-          {yamlOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+          <span className="text-left">
+            <span className="block font-medium">Export YAML</span>
+            <span className="block text-[10px] text-[#656574] font-normal leading-snug mt-0.5">
+              Preview exported ODCS payload
+            </span>
+          </span>
+          {yamlOpen ? <ChevronUp className="h-3.5 w-3.5 flex-shrink-0" /> : <ChevronDown className="h-3.5 w-3.5 flex-shrink-0" />}
         </button>
 
         {yamlOpen && (

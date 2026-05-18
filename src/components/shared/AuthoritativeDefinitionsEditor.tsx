@@ -64,8 +64,8 @@ export function AuthoritativeDefinitionsEditor({
               >
                 <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Type" /></SelectTrigger>
                 <SelectContent>
-                  {AUTH_DEF_TYPE_OPTIONS.map(t => (
-                    <SelectItem key={t} value={t} className="text-xs">{t}</SelectItem>
+                  {AUTH_DEF_TYPE_OPTIONS.map(({ value, label }) => (
+                    <SelectItem key={value} value={value} className="text-xs">{label}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>

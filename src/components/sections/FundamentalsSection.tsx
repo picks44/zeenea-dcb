@@ -9,7 +9,7 @@ import { TagsEditor } from '@/components/shared/TagsEditor'
 import { AuthoritativeDefinitionsEditor } from '@/components/shared/AuthoritativeDefinitionsEditor'
 import { slugify, cn } from '@/lib/utils'
 import { filterAuthoritativeDefinitionsForSave } from '@/lib/odcsSharedMappers'
-import { CONTRACT_OWNER_HELPER } from '@/lib/uxCopy'
+import { CONTRACT_OWNER_HELPER, FUNDAMENTALS_ADDITIONAL_CONTEXT_HELPER } from '@/lib/uxCopy'
 import type { AuthoritativeDefinition } from '@/types/odcsShared'
 
 interface FundamentalsSectionProps {
@@ -30,10 +30,7 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
   const [idManuallyEdited, setIdManuallyEdited] = useState(false)
   const [idError, setIdError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
-  const [additionalOpen, setAdditionalOpen] = useState(
-    !!(info.descriptionUsage?.trim() || info.descriptionLimitations?.trim()
-      || (info.descriptionAuthoritativeDefinitions?.length ?? 0) > 0),
-  )
+  const [additionalOpen, setAdditionalOpen] = useState(true)
   const [usage, setUsage] = useState(info.descriptionUsage ?? '')
   const [limitations, setLimitations] = useState(info.descriptionLimitations ?? '')
   const [authDefs, setAuthDefs] = useState<AuthoritativeDefinition[]>(
@@ -196,14 +193,14 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
           {additionalOpen && (
             <div className="px-3 py-3 space-y-3 border-t border-[#e4e4f0]">
               <p className="text-[10px] text-[#656574] leading-snug">
-                Usage, limitations, and authoritative links are included in the ODCS description object when published.
+                {FUNDAMENTALS_ADDITIONAL_CONTEXT_HELPER}
               </p>
               <div>
                 <label className={labelClass}>Usage</label>
                 <Textarea
                   value={usage}
                   onChange={e => setUsage(e.target.value)}
-                  placeholder="How should consumers use this data?"
+                  placeholder="Describe expected usage patterns or supported use cases"
                   disabled={isLocked}
                   className={cn(inputClass, 'min-h-[72px] resize-y text-sm')}
                 />
@@ -213,7 +210,7 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
                 <Textarea
                   value={limitations}
                   onChange={e => setLimitations(e.target.value)}
-                  placeholder="Known constraints, exclusions, or caveats"
+                  placeholder="Document quality, compliance, retention, or latency constraints"
                   disabled={isLocked}
                   className={cn(inputClass, 'min-h-[72px] resize-y text-sm')}
                 />
@@ -239,7 +236,7 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
 
         <div>
           <label className={labelClass}>
-            Contract owner <span className="text-red-500">*</span>
+            Governance owner <span className="text-red-500">*</span>
           </label>
           <Input
             value={info.owner}
@@ -255,7 +252,12 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
 
         <div>
           <label className={labelClass}>Tags</label>
-          <TagsEditor tags={tags} onChange={t => onChange({ tags: t })} disabled={isLocked} />
+          <TagsEditor
+            tags={tags}
+            onChange={t => onChange({ tags: t })}
+            disabled={isLocked}
+            placeholder="Add governance, domain, or classification tags"
+          />
         </div>
       </div>
     </div>

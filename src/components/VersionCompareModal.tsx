@@ -11,6 +11,7 @@ import {
   hasWorkingCopyDraft,
   type FormDiffRow,
 } from '@/lib/exportedContractDiff'
+import { getCommitTitle } from '@/lib/versionHistory'
 
 function contractToSnapshot(c: DataContract): DataContractSnapshot {
   return contractToComparisonSnapshot(c)
@@ -289,7 +290,7 @@ export function VersionCompareModal({ contract, initialHash, open, onClose }: Ve
         list.push({
           id: commit.hash,
           version: commit.version,
-          sublabel: [commit.message, timeAgo(commit.timestamp)].filter(Boolean).join(' · '),
+          sublabel: [getCommitTitle(commit), timeAgo(commit.timestamp)].filter(Boolean).join(' · '),
           snapshot: commit.snapshot,
         })
       }
