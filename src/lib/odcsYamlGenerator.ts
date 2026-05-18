@@ -12,6 +12,10 @@ import {
   QualityRule,
   SchemaTable,
 } from '../types/odcs'
+import {
+  buildPropertyForeignKeys,
+  buildSchemaLevelRelationships,
+} from './relationshipExport'
 
 function stripUndefined(obj: Record<string, unknown>): void {
   for (const key of Object.keys(obj)) {
@@ -25,35 +29,6 @@ function columnQualityRules(col: ColumnDefinition): QualityRule[] {
     return [{ id: col.id, type: 'text', description: col.qualityRule.trim() }]
   }
   return []
-}
-
-function buildPropertyRelationships(
-  table: SchemaTable,
-): Map<string, Record<string, unknown>[]> {
-  const byColumn = new Map<string, Record<string, unknown>[]>()
-  for (const rel of table.relationships ?? []) {
-    if (rel.type !== 'belongs_to' || !rel.fromColumn) continue
-    const to = rel.toColumn ? `${rel.toTable}.${rel.toColumn}` : rel.toTable
-    const entry = { type: 'foreignKey', to }
-    const list = byColumn.get(rel.fromColumn) ?? []
-    list.push(entry)
-    byColumn.set(rel.fromColumn, list)
-  }
-  return byColumn
-}
-
-function buildSchemaRelationships(table: SchemaTable): Record<string, unknown>[] {
-  const schemaRels: Record<string, unknown>[] = []
-  for (const rel of table.relationships ?? []) {
-    if (rel.type === 'many_to_many') {
-      schemaRels.push({
-        type: 'manyToMany',
-        from: [rel.fromColumn ? `${table.physicalName}.${rel.fromColumn}` : table.physicalName],
-        to: [rel.toColumn ? `${rel.toTable}.${rel.toColumn}` : rel.toTable],
-      })
-    }
-  }
-  return schemaRels
 }
 
 function mapProperty(
@@ -103,7 +78,7 @@ function mapProperty(
 }
 
 function mapSchemaTable(table: SchemaTable): Record<string, unknown> {
-  const propertyRelsByCol = buildPropertyRelationships(table)
+  const propertyRelsByCol = buildPropertyForeignKeys(table)
   let pkIndex = 0
 
   const properties = table.columns.map(col => {
@@ -120,7 +95,7 @@ function mapSchemaTable(table: SchemaTable): Record<string, unknown> {
     properties,
   }
 
-  const schemaRels = buildSchemaRelationships(table)
+  const schemaRels = buildSchemaLevelRelationships(table)
   if (schemaRels.length > 0) {
     schemaObj.relationships = schemaRels
   }

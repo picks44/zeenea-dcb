@@ -29,6 +29,7 @@ import { validateContract } from './lib/contractValidation'
 import { CURRENT_USER } from './lib/currentUser'
 import { PUBLISH_REQUIRES_PUBLISHER_CONTRACT, VIEWER_ACCESS_BANNER } from './lib/uxCopy'
 import { useMediaQuery } from './hooks/useMediaQuery'
+import { useNavCollapsed } from './hooks/useNavCollapsed'
 import { MEDIA_QUERIES } from './lib/layoutBreakpoints'
 import { cn } from './lib/utils'
 
@@ -77,6 +78,7 @@ export default function App() {
   const [showShareModal, setShowShareModal] = useState(false)
   const [readinessOpen, setReadinessOpen] = useState(false)
   const panelPinned = useMediaQuery(MEDIA_QUERIES.panelPinned)
+  const { collapsed: navCollapsed, toggle: toggleNavCollapsed } = useNavCollapsed()
   const toast = useToast()
 
   useEffect(() => {
@@ -276,6 +278,8 @@ export default function App() {
 
       <MainSidebar
         currentView={currentView}
+        collapsed={navCollapsed}
+        onToggleCollapsed={toggleNavCollapsed}
         onNavigate={(view) => {
           if (view === 'backlog') handleBack()
           else { setCurrentView(view); setSelectedId(null) }

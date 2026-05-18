@@ -260,3 +260,104 @@ export function diffExportedAuthLinks(
 
   return { counts: { added, removed, updated }, rows }
 }
+
+// ─── Relationships (exported YAML) ────────────────────────────────────────────
+
+interface ExportedRelationshipRef {
+  key: string
+  location: string
+  label: string
+  payload: Record<string, unknown>
+}
+
+function schemaTableName(table: Record<string, unknown>): string {
+  return String(table.physicalName ?? table.name ?? '')
+}
+
+function schemaColumnName(prop: Record<string, unknown>): string {
+  return String(prop.name ?? prop.physicalName ?? '')
+}
+
+function collectExportedRelationships(doc: Record<string, unknown>): Map<string, ExportedRelationshipRef> {
+  const map = new Map<string, ExportedRelationshipRef>()
+  const schema = doc.schema as unknown[] | undefined
+  if (!schema) return map
+
+  for (const table of schema) {
+    if (!table || typeof table !== 'object') continue
+    const t = table as Record<string, unknown>
+    const tbl = schemaTableName(t)
+
+    for (const rel of (t.relationships ?? []) as Record<string, unknown>[]) {
+      const type = String(rel.type ?? '')
+      const key = `schema|${tbl}|${type}|${JSON.stringify(rel)}`
+      const from = rel.from
+      const label = type === 'manyToMany'
+        ? 'Many-to-many'
+        : `Composite FK (${Array.isArray(from) ? from.join(', ') : String(from ?? '')})`
+      map.set(key, { key, location: tbl, label, payload: rel })
+    }
+
+    for (const prop of (t.properties ?? []) as Record<string, unknown>[]) {
+      const col = schemaColumnName(prop)
+      for (const rel of (prop.relationships ?? []) as Record<string, unknown>[]) {
+        if (String(rel.type ?? '') !== 'foreignKey') continue
+        const to = String(rel.to ?? '')
+        const key = `prop|${tbl}.${col}|${to}`
+        map.set(key, { key, location: `${tbl}.${col}`, label: to, payload: rel })
+      }
+    }
+  }
+
+  return map
+}
+
+export function diffExportedRelationships(
+  leftDoc: Record<string, unknown>,
+  rightDoc: Record<string, unknown>,
+): { counts: ArrayChangeCount; rows: MetadataFormDiffRow[] } {
+  const left = collectExportedRelationships(leftDoc)
+  const right = collectExportedRelationships(rightDoc)
+  const rows: MetadataFormDiffRow[] = []
+  let added = 0
+  let removed = 0
+  let updated = 0
+
+  for (const [key, item] of right) {
+    const prev = left.get(key)
+    if (!prev) {
+      added++
+      rows.push({
+        kind: 'added',
+        label: item.location,
+        left: '',
+        right: item.label,
+        detail: `Added relationship ${item.location} → ${item.label}`,
+      })
+    } else if (JSON.stringify(prev.payload) !== JSON.stringify(item.payload)) {
+      updated++
+      rows.push({
+        kind: 'modified',
+        label: item.location,
+        left: prev.label,
+        right: item.label,
+        detail: `Updated relationship on ${item.location}`,
+      })
+    }
+  }
+
+  for (const [key, item] of left) {
+    if (!right.has(key)) {
+      removed++
+      rows.push({
+        kind: 'removed',
+        label: item.location,
+        left: item.label,
+        right: '',
+        detail: `Removed relationship from ${item.location}`,
+      })
+    }
+  }
+
+  return { counts: { added, removed, updated }, rows }
+}

@@ -143,7 +143,19 @@ export const AUTH_LINKS_HELPER =
 
 /** Schema relationships — business context; export caveats use WorkflowMetadataPill per row. */
 export const RELATIONSHIPS_SECTION_INTRO =
-  'Define how this table links to other entities in the dataset.'
+  'Composite foreign keys and many-to-many links are configured at table level. Single-column foreign keys are configured on fields.'
 
 export const RELATIONSHIP_FK_HELPER =
-  'Select join columns to include this relationship in the published contract.'
+  'Select referenced table and fields to include this relationship in the published contract.'
+
+export const RELATIONSHIP_COMPOSITE_HELPER =
+  'Select at least two source columns and matching referenced columns (same count and order).'
+
+export const RELATIONSHIP_SINGLE_FK_HINT =
+  'Single-column relationships are configured on fields — open field properties for this table.'
+
+export const FIELD_FK_INTRO =
+  'Single-column foreign key — exported on this field in the published ODCS contract.'
+
+export const FIELD_FK_HELPER =
+  'Referenced table and field are required to publish this foreign key.'

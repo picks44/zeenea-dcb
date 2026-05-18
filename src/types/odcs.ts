@@ -58,16 +58,32 @@ export interface ColumnDefinition {
   tags?: string[]
   authoritativeDefinitions?: AuthoritativeDefinition[]
   isUnknownType: boolean
+  /** Single-column foreign key — exported on this property in ODCS YAML. */
+  foreignKey?: ColumnForeignKey
 }
 
-export type RelationshipType = 'has_one' | 'has_many' | 'belongs_to' | 'many_to_many'
+export interface ColumnForeignKey {
+  toTable: string
+  toColumn: string
+}
+
+export type RelationshipType =
+  | 'has_one'
+  | 'has_many'
+  | 'belongs_to'
+  | 'many_to_many'
+  | 'composite_foreign_key'
 
 export interface TableRelationship {
   id: string
   toTable: string
   type: RelationshipType
+  /** Legacy single-column belongs_to — prefer `ColumnDefinition.foreignKey`. */
   fromColumn?: string
   toColumn?: string
+  /** Composite FK — exported at table/object level (2+ column pairs). */
+  fromColumns?: string[]
+  toColumns?: string[]
 }
 
 export interface SchemaTable {

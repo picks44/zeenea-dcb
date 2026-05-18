@@ -1,0 +1,368 @@
+[Lonestone x Zeenea] DCS weekly
+lun. 11 mai 2026
+
+0:01 - Intervenant non identifié
+Hello, everyone. Bonjour. Sorry for the short delay.
+
+0:05 - Vincent GHISLAIN
+I was in another meeting with another customer just before. Tried to make it quick.
+
+0:11 - Aurélien#+#Vincent GHISLAIN
+Don't worry.
+
+0:14 - David Manzano#+#Guillaume Bodet
+Hello, David.
+
+0:15 - Intervenant non identifié
+Hello.
+
+0:19 - Vincent GHISLAIN
+Everything is fine on your side?
+
+0:20 - Chloé Noger#+#Vincent GHISLAIN
+The weekend was nice? Oh, yeah.
+
+0:23 - Aurélien#+#David Manzano
+It was good.
+
+0:26 - Aurélien#+#David Manzano#+#Vincent GHISLAIN
+Good.
+
+0:26 - Aurélien#+#Vincent GHISLAIN
+It was a three-day weekend for you. I don't know if it was the same in Spain, David?
+
+0:33 - David Manzano#+#Vincent GHISLAIN
+No, not really. It's this week. This week we have a long weekend as well. Yeah, also in France. We love a long weekend in May. And the week after, and the week after. No, no, and the week after. I was explaining that to all our foreign colleagues that in France, May is a kind of unique month.
+
+0:55 - Aurélien#+#Vincent GHISLAIN
+It's the holiday month.
+
+0:59 - Vincent GHISLAIN
+Okay, good. Thank you for your time and thank you for the documents, Guillaume, that you sent. I reviewed it, you sent it on Friday, so it was the bank holiday.
+
+1:13 - Guillaume Bodet#+#Vincent GHISLAIN
+So, I just opened it this morning very quickly before my other calls.
+
+1:20 - Vincent GHISLAIN
+So, Florent on our side is on holiday also this week because, yeah, it's a three-day three-day work week so many people at the agency are off so we only have Chloé but I'm also recording for everyone.
+
+1:37 - Vincent GHISLAIN
+Just to align on this so the purpose of this call is to just yeah try to validate the the expectations on the on the design on the prototype and take into account the last things that we need to to solve specifically about the new properties, right?
+
+1:57 - Intervenant non identifié
+Yeah.
+
+1:59 - Vincent GHISLAIN
+Maybe you can present the document?
+
+2:04 - Guillaume Bodet#+#Vincent GHISLAIN
+Yes, sure. Yeah, let me find it.
+
+2:07 - Vincent GHISLAIN
+As it's a bit technical, I think I need a bit of explanations and so on, probably also with the prototype on the side.
+
+2:21 - Guillaume Bodet
+need to find it. I'm going to open it locally at all.
+
+2:59 - Guillaume Bodet
+Yeah, I'm going to share my screen.
+
+3:15 - Guillaume Bodet#+#Vincent GHISLAIN
+If you're struggling, OK, it's fine. It's arriving.
+
+3:20 - Vincent GHISLAIN
+Can you see it?
+
+3:21 - Guillaume Bodet
+Yes.
+
+3:24 - Guillaume Bodet
+So yes, so there is a Well, there are two. So this is just the schema section of the of the of the file. OK, right, but contains typically tables and fields.
+
+3:44 - Guillaume Bodet
+Uh, but could be something else, so it's an object and property. That's that's the schema we are. We are first addressing relational database, so that's the same thing as table and fields. So object is the table.
+
+4:05 - Guillaume Bodet
+So I tried to regroup the properties in various sections. This is important because it might not be managed by the same people.
+
+4:19 - Intervenant non identifié
+OK.
+
+4:22 - Guillaume Bodet
+Um, so, uh, you have some, uh, technical properties.
+
+4:34 - Guillaume Bodet
+When it is a list of value, I, uh, yes, the values values that are, uh, that are possible. So, uh, the physical type as you see it can be a table, but it could be A view, a topic in Kafka, for instance, can be a file or collection in MongoDB. This is a free text to explain the granularity of data. This is second level. Then you have the relationship. And as I told you at this level at the object level, you only have the composite foreign keys, not the single foreign keys.
+
+5:27 - Guillaume Bodet#+#Vincent GHISLAIN
+OK, this is when you have.
+
+5:31 - Guillaume Bodet
+Several several fields you're familiar with the foreign key concept, right?
+
+5:36 - Vincent GHISLAIN
+Yeah, a little bit.
+
+5:37 - Guillaume Bodet#+#Vincent GHISLAIN
+Yes, I was a developer before, so a little bit.
+
+5:43 - Guillaume Bodet
+When you have a foreign key, usually a foreign key is just referencing the primary key of another table. But sometimes you have composite relationship where you need several fields to link to another table. So when you have this situation, it goes into the object. When it is a single standard foreign key, into the field properties.
+
+6:15 - Vincent GHISLAIN
+Okay.
+
+6:21 - Guillaume Bodet
+Then you have the business part that is more, well, the business name, you can see what it is. The description is actually a composite object.
+
+6:42 - Guillaume Bodet
+Where you can provide the purpose, the limitation, and the usage. Free text as well.
+
+6:54 - Guillaume Bodet
+Authoritative definitions, you can have several of them, but the reason why there is an S.
+
+7:00 - Guillaume Bodet
+And there are links to definitions that are stored into another system. You provide the type, that's a list of value, and a URL.
+
+7:22 - Guillaume Bodet
+For us, the main one we want to manage is the link to an item in the business glossary that is in the platform. Remember, this is part of the prototype that you can look up definitions. Retrieve them and incorporate the link.
+
+7:45 - Intervenant non identifié
+OK.
+
+7:47 - Guillaume Bodet#+#Vincent GHISLAIN
+Tags, well, tags are all tags.
+
+7:51 - Guillaume Bodet
+That's an easy one.
+
+7:54 - Guillaume Bodet#+#Vincent GHISLAIN
+Yeah.
+
+7:57 - Guillaume Bodet
+Quality. Is. Is so this quality part?
+
+8:09 - Guillaume Bodet
+Is that the object label so at the table level?
+
+8:14 - Guillaume Bodet
+Uh, so it's it's it. It has a dimension, so typically completeness, accuracy, consistency, timeliness. Validity.
+
+8:27 - Guillaume Bodet
+severity and a metric, what the metric you are monitoring.
+
+8:40 - Guillaume Bodet
+Once again, you can have several of them.
+
+8:47 - Guillaume Bodet
+Under governance, it's pretty easy, owner, domain, classification.
+
+8:56 - Vincent GHISLAIN
+OK, so this goes for one table.
+
+9:00 - Guillaume Bodet
+Yeah, this is at the table level.
+
+9:03 - Vincent GHISLAIN
+OK, for all that you have listed in this file, I mean in this tab of the file.
+
+9:12 - Guillaume Bodet#+#Vincent GHISLAIN
+The tab, so this one, the object slash table.
+
+9:18 - Intervenant non identifié
+Right.
+
+9:19 - Guillaume Bodet
+This is for the field.
+
+9:21 - Vincent GHISLAIN
+OK, this is for the field. Understood.
+
+9:24 - Guillaume Bodet
+Alright, for the field you have the technical part.
+
+9:35 - Guillaume Bodet
+So ID name, physical name, the logical type, the physical type, primary key position only when you have composite So that's the same. Most of the time you only have one primary key in a table, but you can have composite primary keys. And when you have a composite you usually have an order.
+
+10:12 - Guillaume Bodet
+The reason why you have an order is that when you are writing a join in a SQL statement, you have to respect that order to use the indexes.
+
+10:28 - Guillaume Bodet
+You will perform a full scan, which is a bad idea for a SQL statement.
+
+10:39 - Guillaume Bodet
+And then you have things. So the partition and partition key position. Are really information that we can even skip at this stage because because this is this is very technical and to be honest it should not be in the in the contract.
+
+10:59 - Guillaume Bodet#+#Vincent GHISLAIN
+OK, so so we can deprioritize this one for now.
+
+11:05 - Guillaume Bodet
+some kind of advanced area where, because we should support all the properties, but really put them apart. Because they are not important. And relationship is for foreign keys, for single foreign keys. You just reference another field in another table. Usually the primary key of another table.
+
+11:36 - Vincent GHISLAIN
+Yes.
+
+11:48 - Guillaume Bodet
+So that's for the technical part. The business part, very simple description. Some examples and tags.
+
+12:01 - Guillaume Bodet
+Lineage is something we can leave apart as well for now.
+
+12:09 - Vincent GHISLAIN
+Okay.
+
+12:19 - Guillaume Bodet
+Quality, so quality at the field level. So we had a quality at the table level, and now you have quality at the field level.
+
+12:32 - Vincent GHISLAIN
+Yeah, with different properties and values also, I can see.
+
+12:37 - Guillaume Bodet
+Yeah. And on the governance, this is mostly PII classification and critical data elements.
+
+12:50 - Vincent GHISLAIN
+OK.
+
+12:54 - Guillaume Bodet#+#Vincent GHISLAIN
+OK. Right.
+
+12:56 - Guillaume Bodet
+Everything is a classification. So classification here you have a list of value, public, internal, confidential, restricted. This should be this should be something that you can configure.
+
+13:16 - Guillaume Bodet
+This is this is this is a default classification from the contract, but it's an open feed. So you can create your own classification if you want.
+
+13:27 - Vincent GHISLAIN
+OK, so we propose the four values that you have in your file here. And we can also, well, we need also to be able for the user to create his own classification.
+
+13:42 - Guillaume Bodet#+#Vincent GHISLAIN
+Exactly. So does it need to be stored somewhere?
+
+13:48 - Vincent GHISLAIN
+So if you create a new classification type, do we have to make it reusable again at some point?
+
+13:57 - Guillaume Bodet
+That's globally, that's usually the classification standard for the organization.
+
+14:07 - Guillaume Bodet#+#Vincent GHISLAIN
+Okay, so it's like a tag, for instance, that you put globally, and does it need to be shared by all users or is it just at the user level? I don't know, that's for everyone. That's the whole duration for all contracts.
+
+14:24 - Vincent GHISLAIN
+Okay, very clear. I'm overseeing all the specs and so on.
+
+14:31 - Vincent GHISLAIN
+Okay, two questions for me. So, thank you for this. The first one is, do we need to implement all those fields right now for the first print or can we make some incrementation? In the implementation of those fields so maybe the idea is behind is to start delivering something quite simple.
+
+14:56 - Guillaume Bodet
+I can flag the priority information.
+
+15:03 - Vincent GHISLAIN
+Okay well okay I was thinking maybe doing something yeah quite simple and basic at first even if it does not comply already the framework the schema's framework, and then during the next sprint, then we can add a little bit more until we get the full properties and specification.
+
+15:28 - Guillaume Bodet#+#Vincent GHISLAIN
+That was my idea.
+
+15:29 - Guillaume Bodet
+I will flag the most important properties that should be supported in the first iteration, and then the other one we can... What I would like is a proposition for the interface because there are because table fields it's uh but today the the way it is uh it is it is done I mean it's a table it will not work there are too many properties so um so we should we should have uh we should have a way to select probably open a panel and then have the properties organized uh across the various That was my second question actually.
+
+16:13 - Vincent GHISLAIN
+So maybe you can add two columns in your file. One for the, ah, it's Monday morning, sorry. One for the criticity of the implementation, the priority, that's the correct word I was looking for. And the second one is maybe which properties do you think should be visible straight away like on the prototype that we have today and which one we can maybe put in a separate sidebar or model or anything?
+
+16:51 - Guillaume Bodet
+I will put P0 on the one that should be immediately available and P1 for the ones that should be in a side panel. And P2 for booze we can take later.
+
+17:08 - Vincent GHISLAIN
+That will be perfect then. Okay, good.
+
+17:11 - Guillaume Bodet#+#Vincent GHISLAIN
+Thank you very much.
+
+17:15 - Vincent GHISLAIN
+And we can iterate on this. I know Florent has already made, well, I opened this, he worked quite late on Thursday and made some modifications. So we have some new things that I need to review on the prototype that was shared. And I can see that he has implemented some kind of parameters on the field level. So I guess we have some things to rework also in the interface, depending on where we need to display things. But I will wait for your document to be completed. Then we will work on this and send you a new proposal.
+
+17:57 - Guillaume Bodet
+Yeah. And I will do, so we can focus the schema. I will do the same for all the other sections on the contract.
+
+18:06 - Guillaume Bodet#+#Vincent GHISLAIN
+All right, okay.
+
+18:08 - Guillaume Bodet
+I will take every section, every property. I will put P1 or P2 because this is the P0 is really for the schema and table where you already have something quite sophisticated for the others. It's usually blocks of properties that's easier. The structure is much Okay, sounds good.
+
+18:36 - Vincent GHISLAIN
+Okay, on my side I've got the information that I needed. Do you have other topics that you want to see or we can call it a day? Just for you to know, Chloé and Florent, the other Florent, the developer one who is on holiday, they will start implementing things this week. It's only a three day so it will be quite short but we were taking a bit advanced on the on the globe you know the global layout of the of the app and so on so we can dig into the details together while they are doing like the the foundations of the app yeah and for um yeah the schema part is not easy yeah I can see Because there's a lot of information and
+
+19:27 - Guillaume Bodet
+And potentially you can have. You can have dozens of tables, each containing dozens of fields.
+
+19:35 - Vincent GHISLAIN
+Yeah.
+
+19:38 - Intervenant non identifié
+OK.
+
+19:40 - Vincent GHISLAIN
+OK, well, we we are here to to iterate on things and you know we can. I think we will need to probably modify our vision at some point. Get the correct workflow on this schema thing straight away, I'm afraid. But we're here to work together on how to make things clear and easy for everyone.
+
+20:05 - David Manzano#+#Guillaume Bodet#+#Vincent GHISLAIN
+Restrictions are much easier.
+
+20:07 - Guillaume Bodet#+#Vincent GHISLAIN
+Yeah, yeah. From your prototype.
+
+20:11 - Guillaume Bodet
+Yeah, so the other sessions are just standard properties. That's pretty easy. So I will update this file and give it back to you.
+
+20:26 - Guillaume Bodet#+#Vincent GHISLAIN
+Yeah, cool.
+
+20:27 - Vincent GHISLAIN
+Thank you very much.
+
+20:31 - Vincent GHISLAIN
+David, did you add something that you wanted to talk about?
+
+20:37 - David Manzano
+It's fine. The intention was to clarify this.
+
+20:41 - David Manzano#+#Vincent GHISLAIN
+Yeah, it was important.
+
+20:43 - Vincent GHISLAIN
+Okay, Aurélien, for you it's fine too.
+
+20:48 - Vincent GHISLAIN
+Okay, you're mute, but I can see the thumb up.
+
+20:51 - Aurélien#+#Chloé Noger#+#David Manzano#+#Vincent GHISLAIN
+Yeah, that's why I did both, because I take back the screen.
+
+20:58 - Aurélien#+#Vincent GHISLAIN
+No worries.
+
+20:59 - Vincent GHISLAIN
+Okay, well thank you for your time guys. We're waiting for the file and then we'll iterate on the on the prototype and make a new proposal on this. And in between, Chloé will start working on the foundations of the app.
+
+21:17 - David Manzano#+#Vincent GHISLAIN
+That's the plan for the week.
+
+21:19 - Aurélien#+#David Manzano#+#Guillaume Bodet#+#Vincent GHISLAIN
+Thanks.
+
+21:20 - Intervenant non identifié
+Good.
+
+21:20 - Aurélien#+#David Manzano
+Thank you, guys.
+
+21:21 - David Manzano#+#Guillaume Bodet#+#Vincent GHISLAIN
+Thank you, guys.
+
+21:22 - Aurélien#+#Chloé Noger#+#David Manzano#+#Guillaume Bodet#+#Vincent GHISLAIN
+Talk to you later. Bye. Bye.
+
+21:24 - Chloé Noger#+#Guillaume Bodet#+#Vincent GHISLAIN
+Have a nice day.
+
+21:24 - Intervenant non identifié
+Thanks.

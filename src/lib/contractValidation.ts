@@ -5,10 +5,16 @@ import {
 } from '@/lib/odcsSharedMappers'
 import { countAssignedStakeholders } from '@/lib/stakeholders'
 import {
-  isBelongsToRelationshipIncomplete,
   isExportedRelationshipType,
   type AuthoritativeDefinition,
 } from '@/types/odcsShared'
+import {
+  isColumnForeignKeyPartial,
+  isCompositeRelationshipIncomplete,
+  isCompositeTableRelationship,
+  isLegacyBelongsToIncomplete,
+  isLegacySingleColumnBelongsTo,
+} from '@/lib/relationshipExport'
 
 /** Rows with no user-entered content are ignored for validation and export. */
 export function isRoleRowEmpty(r: OdcsAccessRole): boolean {
@@ -158,6 +164,14 @@ export function validateContract(contract: DataContract): ValidationResult {
         `Field "${col.physicalName}"`,
         'schema',
       )
+      if (isColumnForeignKeyPartial(col.foreignKey)) {
+        issues.push({
+          code: 'column-fk-incomplete',
+          message: `Field "${col.physicalName}" on "${table.physicalName}": referenced table and field are required to publish a foreign key.`,
+          severity: 'error',
+          section: 'schema',
+        })
+      }
     }
 
     validateQualityRules(issues, table.quality, `table "${table.physicalName}"`)
@@ -176,10 +190,20 @@ export function validateContract(contract: DataContract): ValidationResult {
           severity: 'warning',
           section: 'schema',
         })
-      } else if (isBelongsToRelationshipIncomplete(rel)) {
+      } else if (isLegacySingleColumnBelongsTo(rel) && isLegacyBelongsToIncomplete(rel)) {
         issues.push({
           code: 'relationship-incomplete-fk',
-          message: `Belongs to relationship from ${table.physicalName} to ${rel.toTable} is not published until join columns are configured.`,
+          message: `Relationship on "${table.physicalName}" is incomplete — configure it on the field properties or complete join columns.`,
+          severity: 'warning',
+          section: 'schema',
+        })
+      } else if (
+        (rel.type === 'composite_foreign_key' || isCompositeTableRelationship(rel))
+        && isCompositeRelationshipIncomplete(rel)
+      ) {
+        issues.push({
+          code: 'composite-fk-incomplete',
+          message: `Composite foreign key on "${table.physicalName}" needs at least two source and referenced columns.`,
           severity: 'warning',
           section: 'schema',
         })

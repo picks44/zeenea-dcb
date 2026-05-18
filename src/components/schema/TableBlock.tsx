@@ -10,9 +10,18 @@ import { TypePicker } from './TypePicker'
 import { FlagBadge } from './FlagBadge'
 import { ColumnAdvancedDialog } from './ColumnAdvancedDialog'
 import { TableAdvancedDialog } from './TableAdvancedDialog'
-import { isBelongsToRelationshipIncomplete, isExportedRelationshipType } from '@/types/odcsShared'
 import { WorkflowMetadataPill } from '@/components/shared/WorkflowMetadataPill'
-import { RELATIONSHIP_FK_HELPER, RELATIONSHIPS_SECTION_INTRO } from '@/lib/uxCopy'
+import {
+  RELATIONSHIP_COMPOSITE_HELPER,
+  RELATIONSHIP_FK_HELPER,
+  RELATIONSHIP_SINGLE_FK_HINT,
+  RELATIONSHIPS_SECTION_INTRO,
+} from '@/lib/uxCopy'
+import {
+  isCompositeTableRelationship,
+  isLegacySingleColumnBelongsTo,
+  isTableRelationshipNotPublished,
+} from '@/lib/relationshipExport'
 
 function deriveLogicalName(physicalName: string): string {
   return physicalName
@@ -29,9 +38,25 @@ const REL_OPTIONS: {
   label: (to: string) => string
   desc: string
 }[] = [
-  { value: 'belongs_to',   notation: 'N → 1', label: to => `Belongs to one ${to}`,    desc: 'Foreign key on this table'           },
-  { value: 'many_to_many', notation: 'N ↔ N', label: to => `Connected to many ${to}`, desc: 'Junction or bridge table pattern'    },
+  {
+    value: 'composite_foreign_key',
+    notation: 'FK*',
+    label: to => `Composite FK to ${to}`,
+    desc: 'Two or more columns as one foreign key',
+  },
+  {
+    value: 'many_to_many',
+    notation: 'N ↔ N',
+    label: to => `Connected to many ${to}`,
+    desc: 'Junction or bridge table pattern',
+  },
 ]
+
+function toggleOrderedColumn(columns: string[], col: string): string[] {
+  const i = columns.indexOf(col)
+  if (i >= 0) return columns.filter((_, idx) => idx !== i)
+  return [...columns, col]
+}
 
 const LEGACY_REL_LABELS: Partial<Record<RelationshipType, { notation: string; label: (to: string) => string }>> = {
   has_many: { notation: '1 → N', label: to => `Has many ${to}` },
@@ -71,6 +96,8 @@ export function TableBlock({
     type: RelationshipType
     fromColumn: string
     toColumn: string
+    fromColumns: string[]
+    toColumns: string[]
   } | null>(null)
 
   const updateCol = (id: string, patch: Partial<ColumnDefinition>) =>
@@ -93,9 +120,13 @@ export function TableBlock({
       id: editingRel.id ?? generateId(),
       toTable: editingRel.toTable,
       type: editingRel.type,
-      ...(editingRel.fromColumn && editingRel.toColumn
-        ? { fromColumn: editingRel.fromColumn, toColumn: editingRel.toColumn }
-        : {}),
+    }
+    if (editingRel.type === 'composite_foreign_key') {
+      rel.fromColumns = editingRel.fromColumns
+      rel.toColumns = editingRel.toColumns
+    } else if (editingRel.fromColumn && editingRel.toColumn) {
+      rel.fromColumn = editingRel.fromColumn
+      rel.toColumn = editingRel.toColumn
     }
     const newRels = rels.find(r => r.id === rel.id)
       ? rels.map(r => r.id === rel.id ? rel : r)
@@ -358,11 +389,17 @@ export function TableBlock({
           {rels.length > 0 && (
             <div className="space-y-1.5 mb-3">
               {rels.map(rel => {
-                const exported = isExportedRelationshipType(rel.type)
-                const incompleteFk = isBelongsToRelationshipIncomplete(rel)
+                const notPublished = isTableRelationshipNotPublished(rel)
+                const legacyBelongs = isLegacySingleColumnBelongsTo(rel)
+                const composite = isCompositeTableRelationship(rel)
                 const opt = REL_OPTIONS.find(r => r.value === rel.type)
                 const legacy = LEGACY_REL_LABELS[rel.type]
                 const labelFn = opt?.label ?? legacy?.label ?? (() => rel.type)
+                const colsLabel = composite
+                  ? `(${(rel.fromColumns ?? []).join(', ')} → ${(rel.toColumns ?? []).join(', ')})`
+                  : rel.fromColumn && rel.toColumn
+                    ? `(${rel.fromColumn} → ${rel.toColumn})`
+                    : null
                 return (
                   <div key={rel.id} className="space-y-0.5">
                   <div className="flex items-center gap-2">
@@ -372,12 +409,12 @@ export function TableBlock({
                     <span className="text-[11px] text-neutral-600">
                       {labelFn(rel.toTable)}
                     </span>
-                    {(!exported || incompleteFk) && (
+                    {notPublished && (
                       <WorkflowMetadataPill variant="not-published" />
                     )}
-                    {rel.fromColumn && rel.toColumn && (
+                    {colsLabel && (
                       <span className="text-[10px] font-mono text-neutral-300">
-                        ({rel.fromColumn} → {rel.toColumn})
+                        {colsLabel}
                       </span>
                     )}
                     {!isLocked && (
@@ -386,9 +423,14 @@ export function TableBlock({
                       </button>
                     )}
                   </div>
-                    {incompleteFk && (
+                    {legacyBelongs && (
                       <p className="text-[10px] text-[#656574] pl-1 leading-snug">
-                        {RELATIONSHIP_FK_HELPER}
+                        {RELATIONSHIP_SINGLE_FK_HINT}
+                      </p>
+                    )}
+                    {notPublished && !legacyBelongs && (
+                      <p className="text-[10px] text-[#656574] pl-1 leading-snug">
+                        {composite ? RELATIONSHIP_COMPOSITE_HELPER : RELATIONSHIP_FK_HELPER}
                       </p>
                     )}
                   </div>
@@ -408,7 +450,14 @@ export function TableBlock({
                   {otherTables.map(t => (
                     <button
                       key={t.physicalName}
-                      onClick={() => setEditingRel(r => r ? { ...r, toTable: t.physicalName, fromColumn: '', toColumn: '' } : r)}
+                      onClick={() => setEditingRel(r => r ? {
+                        ...r,
+                        toTable: t.physicalName,
+                        fromColumn: '',
+                        toColumn: '',
+                        fromColumns: [],
+                        toColumns: [],
+                      } : r)}
                       className={cn(
                         'px-2.5 py-1 rounded-lg border text-xs font-medium transition-all',
                         editingRel.toTable === t.physicalName
@@ -457,20 +506,63 @@ export function TableBlock({
                   </>
                 )}
 
-                {/* Step 3 — optional columns */}
-                {editingRel.toTable && editingRel.type && table.columns.length > 0 && (
+                {editingRel.toTable && editingRel.type === 'composite_foreign_key' && table.columns.length > 0 && (
+                  <div className="mb-4 space-y-3">
+                    <p className="text-[10px] text-[#d27b00] leading-snug">{RELATIONSHIP_COMPOSITE_HELPER}</p>
+                    <div>
+                      <p className="text-xs font-medium text-neutral-500 mb-1.5">Source columns ({table.physicalName})</p>
+                      <div className="flex flex-wrap gap-1">
+                        {table.columns.map(c => (
+                          <button
+                            key={c.id}
+                            type="button"
+                            onClick={() => setEditingRel(r => r ? {
+                              ...r,
+                              fromColumns: toggleOrderedColumn(r.fromColumns, c.physicalName),
+                            } : r)}
+                            className={cn(
+                              'px-2 py-0.5 rounded border text-[10px] font-mono transition-colors',
+                              editingRel.fromColumns.includes(c.physicalName)
+                                ? 'bg-blue-700 border-blue-700 text-white'
+                                : 'bg-white border-neutral-200 text-neutral-600',
+                            )}
+                          >
+                            {c.physicalName}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-neutral-500 mb-1.5">Referenced columns ({editingRel.toTable})</p>
+                      <div className="flex flex-wrap gap-1">
+                        {(allTables.find(t => t.physicalName === editingRel.toTable)?.columns ?? []).map(c => (
+                          <button
+                            key={c.id}
+                            type="button"
+                            onClick={() => setEditingRel(r => r ? {
+                              ...r,
+                              toColumns: toggleOrderedColumn(r.toColumns, c.physicalName),
+                            } : r)}
+                            className={cn(
+                              'px-2 py-0.5 rounded border text-[10px] font-mono transition-colors',
+                              editingRel.toColumns.includes(c.physicalName)
+                                ? 'bg-blue-700 border-blue-700 text-white'
+                                : 'bg-white border-neutral-200 text-neutral-600',
+                            )}
+                          >
+                            {c.physicalName}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {editingRel.toTable && editingRel.type === 'many_to_many' && table.columns.length > 0 && (
                   <div className="mb-4">
                     <p className="text-xs font-medium text-neutral-500 mb-2">
-                      Join columns
-                      {editingRel.type !== 'belongs_to' && (
-                        <span className="text-neutral-300 font-normal"> (optional)</span>
-                      )}
+                      Join columns <span className="text-neutral-300 font-normal">(optional)</span>
                     </p>
-                    {editingRel.type === 'belongs_to' && (
-                      <p className="text-[10px] text-[#d27b00] mb-2 leading-snug">
-                        {RELATIONSHIP_FK_HELPER}
-                      </p>
-                    )}
                     <div className="flex items-center gap-2">
                       <Select value={editingRel.fromColumn} onValueChange={v => v && setEditingRel(r => r ? { ...r, fromColumn: v } : r)}>
                         <SelectTrigger className="h-7 text-xs w-[130px]"><SelectValue placeholder={`${table.physicalName}…`} /></SelectTrigger>
@@ -493,7 +585,14 @@ export function TableBlock({
                   <Button
                     size="sm"
                     onClick={saveRel}
-                    disabled={!editingRel.toTable || !editingRel.type}
+                    disabled={
+                      !editingRel.toTable
+                      || !editingRel.type
+                      || (editingRel.type === 'composite_foreign_key'
+                        && (editingRel.fromColumns.length < 2
+                          || editingRel.toColumns.length < 2
+                          || editingRel.fromColumns.length !== editingRel.toColumns.length))
+                    }
                     className="h-7 text-xs"
                   >
                     Add relationship
@@ -505,7 +604,15 @@ export function TableBlock({
               </div>
             ) : (
               <button
-                onClick={() => setEditingRel({ id: null, toTable: '', type: 'belongs_to', fromColumn: '', toColumn: '' })}
+                onClick={() => setEditingRel({
+                  id: null,
+                  toTable: '',
+                  type: 'composite_foreign_key',
+                  fromColumn: '',
+                  toColumn: '',
+                  fromColumns: [],
+                  toColumns: [],
+                })}
                 className="flex items-center gap-1.5 text-xs text-[#656574] hover:text-[#0550dc] font-medium transition-colors"
               >
                 <Plus className="h-3.5 w-3.5" />
@@ -519,6 +626,8 @@ export function TableBlock({
       <ColumnAdvancedDialog
         column={table.columns.find(c => c.id === advancedColId) ?? null}
         open={advancedColId !== null}
+        allTables={allTables}
+        sourceTableName={table.physicalName}
         isLocked={isLocked}
         docCompact={docCompact}
         onClose={() => setAdvancedColId(null)}

@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
-import type { QualityRule } from '@/types/odcs'
+import type { ColumnForeignKey, QualityRule } from '@/types/odcs'
+import { isColumnForeignKeyComplete } from '@/lib/relationshipExport'
 import { QualityRuleReadOnly } from '@/components/shared/QualityRuleReadOnly'
 import { AuthoritativeLinkReadOnly } from '@/components/shared/AuthoritativeLinkReadOnly'
 import type { AuthoritativeDefinition } from '@/types/odcsShared'
@@ -107,6 +108,8 @@ interface FieldMetadataReadOnlyProps {
   tags: string[]
   quality: QualityRule[]
   authDefs: AuthoritativeDefinition[]
+  foreignKey?: ColumnForeignKey
+  sourceTableName?: string
   docCompact?: boolean
 }
 
@@ -116,6 +119,8 @@ export function FieldMetadataReadOnlyBody({
   tags,
   quality,
   authDefs,
+  foreignKey,
+  sourceTableName,
   docCompact,
 }: FieldMetadataReadOnlyProps) {
   const hasAny =
@@ -123,7 +128,8 @@ export function FieldMetadataReadOnlyBody({
     examples.some(e => e.trim()) ||
     tags.some(t => t.trim()) ||
     quality.some(r => r.description.trim() || r.name?.trim()) ||
-    authDefs.some(d => d.url.trim() || d.type.trim() || (d.description ?? '').trim())
+    authDefs.some(d => d.url.trim() || d.type.trim() || (d.description ?? '').trim()) ||
+    isColumnForeignKeyComplete(foreignKey)
 
   if (!hasAny) {
     return (
@@ -149,6 +155,17 @@ export function FieldMetadataReadOnlyBody({
 
       <MetadataReadOnlySection label="Tags">
         <MetadataReadOnlyTags tags={tags} emptyLabel="No tags added." />
+      </MetadataReadOnlySection>
+
+      <MetadataReadOnlySection label="Foreign key">
+        {isColumnForeignKeyComplete(foreignKey) ? (
+          <p className="text-xs text-[#33333d] font-mono leading-snug">
+            {sourceTableName ? `${sourceTableName} → ` : ''}
+            {foreignKey!.toTable}.{foreignKey!.toColumn}
+          </p>
+        ) : (
+          <MetadataReadOnlyEmptyLine>No foreign key configured.</MetadataReadOnlyEmptyLine>
+        )}
       </MetadataReadOnlySection>
 
       <MetadataReadOnlySection label="Quality rules">

@@ -10,7 +10,8 @@ import {
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import { ColumnDefinition, QualityRule } from '@/types/odcs'
+import { ColumnDefinition, ColumnForeignKey, QualityRule, SchemaTable } from '@/types/odcs'
+import { ColumnForeignKeyEditor } from '@/components/shared/ColumnForeignKeyEditor'
 import { TagsEditor } from '@/components/shared/TagsEditor'
 import { AuthoritativeDefinitionsEditor } from '@/components/shared/AuthoritativeDefinitionsEditor'
 import { QualityRulesEditor } from '@/components/shared/QualityRulesEditor'
@@ -24,11 +25,14 @@ import {
   migrateExamplesField,
   normalizeTags,
 } from '@/lib/odcsSharedMappers'
+import { isColumnForeignKeyPartial } from '@/lib/relationshipExport'
 import type { AuthoritativeDefinition } from '@/types/odcsShared'
 
 interface ColumnAdvancedDialogProps {
   column: ColumnDefinition | null
   open: boolean
+  allTables: SchemaTable[]
+  sourceTableName: string
   isLocked?: boolean
   docCompact?: boolean
   onClose: () => void
@@ -50,6 +54,8 @@ function loadColumnQuality(column: ColumnDefinition): QualityRule[] {
 export function ColumnAdvancedDialog({
   column,
   open,
+  allTables,
+  sourceTableName,
   isLocked = false,
   docCompact = false,
   onClose,
@@ -61,6 +67,8 @@ export function ColumnAdvancedDialog({
   const [authDefs, setAuthDefs] = useState<AuthoritativeDefinition[]>([])
   const [quality, setQuality] = useState<QualityRule[]>([])
   const [authShowErrors, setAuthShowErrors] = useState(false)
+  const [fkShowErrors, setFkShowErrors] = useState(false)
+  const [foreignKey, setForeignKey] = useState<ColumnForeignKey | undefined>()
 
   useEffect(() => {
     if (!column || !open) return
@@ -69,7 +77,9 @@ export function ColumnAdvancedDialog({
     setTags(column.tags ?? [])
     setAuthDefs(filterAuthoritativeDefinitionsForSave(column.authoritativeDefinitions ?? []))
     setQuality(loadColumnQuality(column))
+    setForeignKey(column.foreignKey)
     setAuthShowErrors(false)
+    setFkShowErrors(false)
   }, [column, open])
 
   if (!column) return null
@@ -79,6 +89,10 @@ export function ColumnAdvancedDialog({
       setAuthShowErrors(true)
       return
     }
+    if (isColumnForeignKeyPartial(foreignKey)) {
+      setFkShowErrors(true)
+      return
+    }
     const savedQuality = filterQualityRulesForSave(quality)
     const savedAuth = filterAuthoritativeDefinitionsForPersist(authDefs)
     onSave({
@@ -86,6 +100,7 @@ export function ColumnAdvancedDialog({
       description: description.trim(),
       examples: migrateExamplesField(examplesText),
       tags: normalizeTags(tags),
+      foreignKey: foreignKey?.toTable?.trim() && foreignKey?.toColumn?.trim() ? foreignKey : undefined,
       authoritativeDefinitions: savedAuth.length > 0 ? savedAuth : undefined,
       quality: savedQuality.length > 0 ? savedQuality : undefined,
       qualityRule: '',
@@ -116,6 +131,8 @@ export function ColumnAdvancedDialog({
               tags={tags}
               quality={quality}
               authDefs={authDefs}
+              foreignKey={foreignKey}
+              sourceTableName={sourceTableName}
               docCompact={docCompact}
             />
           ) : (
@@ -146,6 +163,21 @@ export function ColumnAdvancedDialog({
               <div>
                 <Label className="text-xs text-[#33333d] mb-1 block">Tags</Label>
                 <TagsEditor tags={tags} onChange={setTags} />
+              </div>
+
+              <div>
+                <Label className="text-xs text-[#33333d] mb-1 block">Foreign key</Label>
+                <ColumnForeignKeyEditor
+                  foreignKey={foreignKey}
+                  onChange={fk => {
+                    setForeignKey(fk)
+                    if (fkShowErrors) setFkShowErrors(false)
+                  }}
+                  sourceTableName={sourceTableName}
+                  allTables={allTables}
+                  compact={docCompact}
+                  showFieldErrors={fkShowErrors}
+                />
               </div>
 
               <div>

@@ -193,8 +193,8 @@ Le module `src/lib/odcsYamlGenerator.ts` produit un document YAML aligné sur OD
 - `id`, `version`, `status`, `domain`, objet `description` (purpose, usage, limitations, liens)
 - `schema[]` avec `id` stable par table, `properties[]`, tags, quality, authoritativeDefinitions
 - `quality[].id` sur les règles colonne et table
-- `relationships` au niveau schéma pour les relations `many_to_many`
-- `foreignKey` sur les propriétés pour les FK `belongs_to`
+- `relationships` au niveau schéma pour les FK composites et `many_to_many`
+- `foreignKey` sur les propriétés pour les FK simples (colonne → table référencée)
 
 L’aperçu est disponible dans l’onglet **YAML** de l’éditeur (`YamlView`).
 
