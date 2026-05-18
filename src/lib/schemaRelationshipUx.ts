@@ -20,23 +20,34 @@ export function countTableRelationships(table: SchemaTable): TableRelationshipCo
   }
 }
 
-/** Compact header label, e.g. "2 FK · 1 composite". */
-export function formatRelationshipHeaderSummary(counts: TableRelationshipCounts): string | null {
+export interface RelationshipHeaderSummary {
+  label: string
+  detailLines: string[]
+}
+
+/** Compact header label, e.g. "2 relationships" with optional breakdown. */
+export function formatRelationshipHeaderSummary(
+  counts: TableRelationshipCounts,
+): RelationshipHeaderSummary | null {
   if (counts.total === 0) return null
-  const parts: string[] = []
+
+  const label = `${counts.total} relationship${counts.total === 1 ? '' : 's'}`
+  const detailLines: string[] = []
+
   if (counts.fieldFk > 0) {
-    parts.push(`${counts.fieldFk} FK`)
+    detailLines.push(`${counts.fieldFk} field FK${counts.fieldFk === 1 ? '' : 's'}`)
   }
+
   if (counts.composite > 0) {
-    parts.push(`${counts.composite} composite`)
-  } else if (counts.tableRel > counts.composite) {
-    const other = counts.tableRel - counts.composite
-    if (other > 0) {
-      parts.push(`${other} table`)
-    }
+    detailLines.push(`${counts.composite} composite FK${counts.composite === 1 ? '' : 's'}`)
   }
-  if (parts.length === 0 && counts.tableRel > 0) {
-    parts.push(`${counts.tableRel} table`)
+
+  const otherTableRel = counts.tableRel - counts.composite
+  if (otherTableRel > 0) {
+    detailLines.push(
+      `${otherTableRel} table-level relationship${otherTableRel === 1 ? '' : 's'}`,
+    )
   }
-  return parts.join(' · ')
+
+  return { label, detailLines }
 }

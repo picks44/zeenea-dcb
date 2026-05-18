@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { SchemaTable } from '@/types/odcs'
 import { generateId } from '@/lib/utils'
 import { TableBlock } from '@/components/schema/TableBlock'
+import { SchemaNavigationProvider } from '@/components/schema/SchemaNavigationContext'
 
 interface SchemaSectionProps {
   tables: SchemaTable[]
@@ -89,6 +90,7 @@ export function SchemaSection({ tables, onChange, isLocked, docCompact }: Schema
           )}
         </div>
       ) : (
+        <SchemaNavigationProvider>
         <div className="space-y-4">
           {tables.map((table, i) => (
             <TableBlock
@@ -132,6 +134,7 @@ export function SchemaSection({ tables, onChange, isLocked, docCompact }: Schema
             </div>
           )}
         </div>
+        </SchemaNavigationProvider>
       )}
     </div>
   )

@@ -142,3 +142,23 @@ pre code {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
+
+/* Schema relationship navigation flash */
+@keyframes schema-nav-flash {
+  0% {
+    box-shadow: 0 0 0 0 rgba(5, 80, 220, 0);
+    background-color: transparent;
+  }
+  18% {
+    box-shadow: 0 0 0 2px rgba(5, 80, 220, 0.35);
+    background-color: #f0f4ff;
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(5, 80, 220, 0);
+    background-color: transparent;
+  }
+}
+
+.schema-nav-flash {
+  animation: schema-nav-flash 1.2s ease-out;
+}

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, Trash2, ChevronDown, ChevronRight, AlertTriangle, Pencil, SlidersHorizontal, Link2 } from 'lucide-react'
+import { Plus, Trash2, ChevronDown, ChevronRight, AlertTriangle, Pencil, SlidersHorizontal } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
@@ -15,6 +15,8 @@ import { countTableRelationships, formatRelationshipHeaderSummary } from '@/lib/
 import { isColumnForeignKeyComplete } from '@/lib/relationshipExport'
 import { ColumnFkIndicator } from '@/components/schema/ColumnFkIndicator'
 import { TableRelationshipRow } from '@/components/schema/TableRelationshipRow'
+import { RelationshipHeaderSummaryBadge } from '@/components/schema/RelationshipHeaderSummary'
+import { useRegisterSchemaTable } from '@/components/schema/SchemaNavigationContext'
 
 function deriveLogicalName(physicalName: string): string {
   return physicalName
@@ -101,8 +103,12 @@ export function TableBlock({
 
   const rels = table.relationships ?? []
   const relCounts = countTableRelationships(table)
-  const relHeaderLabel = formatRelationshipHeaderSummary(relCounts)
+  const relHeaderSummary = formatRelationshipHeaderSummary(relCounts)
   const otherTables = allTables.filter(t => t.physicalName !== table.physicalName)
+  const { setTableRoot, registerColumn } = useRegisterSchemaTable(
+    table.physicalName,
+    () => setCollapsed(false),
+  )
 
   const saveRel = () => {
     if (!editingRel?.toTable || !editingRel.type) return
@@ -133,7 +139,11 @@ export function TableBlock({
   const showRelSection = !collapsed && (rels.length > 0 || (!isLocked && otherTables.length > 0))
 
   return (
-    <div className="bg-white rounded-xl border border-[#d3d3e5] transition-shadow hover:shadow-sm">
+    <div
+      ref={setTableRoot}
+      data-schema-table={table.physicalName}
+      className="bg-white rounded-xl border border-[#d3d3e5] transition-shadow hover:shadow-sm"
+    >
 
       {/* Table header */}
       <div className="flex items-center gap-2 px-4 py-2.5 bg-[#fbfbff] border-b border-[#e4e4f0] rounded-t-xl">
@@ -164,12 +174,7 @@ export function TableBlock({
           />
         )}
         <span className="text-[11px] text-[#656574]">{table.columns.length} field{table.columns.length !== 1 ? 's' : ''}</span>
-        {relHeaderLabel && (
-          <span className="inline-flex items-center gap-1 text-[11px] text-[#656574] flex-shrink-0">
-            <Link2 className="h-3 w-3 text-[#9898a7]" />
-            {relHeaderLabel}
-          </span>
-        )}
+        {relHeaderSummary && <RelationshipHeaderSummaryBadge summary={relHeaderSummary} />}
         {piiCount > 0 && (
           <span className="text-[10px] font-medium px-1.5 py-0.5 rounded border bg-[#fff2ee] text-[#c12c11] border-rose-100 flex-shrink-0">
             {piiCount} PII
@@ -254,8 +259,10 @@ export function TableBlock({
               return (
                 <div
                   key={col.id}
+                  ref={el => registerColumn(col.physicalName, el)}
+                  data-schema-column={col.physicalName}
                   className={cn(
-                    'flex px-4 transition-colors group',
+                    'flex px-4 transition-colors group rounded-md',
                     hasFk ? 'items-start' : 'items-center',
                     denseReadOnly ? 'py-2' : 'py-2 hover:bg-[#f5f5fa]/50',
                   )}
