@@ -4,7 +4,7 @@ import { CollaboratorRole, DataContract } from '@/types/odcs'
 import { generateODCSYaml } from '@/lib/odcsYamlGenerator'
 import { validateContract, ValidationResult } from '@/lib/contractValidation'
 import { cn } from '@/lib/utils'
-import { EXPORT_COVERAGE } from '@/lib/uxCopy'
+import { EXPORT_COVERAGE, PUBLISH_REQUIRES_PUBLISHER } from '@/lib/uxCopy'
 
 interface ReadinessPanelProps {
   contract: DataContract
@@ -24,7 +24,7 @@ function publishReadinessMessage(
     }
   }
   if (myRole !== 'owner') {
-    return { ready: false, message: 'Only contract owners can publish.' }
+    return { ready: false, message: PUBLISH_REQUIRES_PUBLISHER }
   }
   if (!hasEditedSincePublish) {
     return { ready: false, message: 'No unpublished changes since last publish.' }

@@ -14,7 +14,7 @@
 | Service levels | Service levels | Yes (`slaProperties`) |
 | Contract owner | Fundamentals → **Contract owner** | **No** — workflow metadata |
 | Stakeholders | Stakeholders | **No** — collaboration metadata |
-| Members (owner / contributor / reader) | Members (toolbar) | **No** — editing permissions |
+| Members (publisher / contributor / reader) | Members (toolbar) | **No** — editing and publishing permissions |
 | Version history / publish | Versions | **No** — simulated workflow |
 | Lifecycle (draft / active / deprecated) | Status badge | Partial (`status` in YAML; revision state is app-only) |
 
@@ -31,7 +31,8 @@
 | Studio collaboration metadata | Collaboration metadata for governance contact |
 | Studio edit access only | Members control editing access in Data Contract Builder. Separate from ODCS data access roles |
 | To manage who can edit… in Studio | To manage who can edit… use Members in the toolbar |
-| Only owners can publish | Only contract owners can publish |
+| Only owners can publish | Only members with the Publisher role can publish |
+| Members role: Contract owner | **Publisher** (app permission; internal role value remains `owner`) |
 | Not exported (ambiguous) | **Not in YAML** (relationship badges) |
 | not exported to YAML | **not exported to ODCS YAML** (validation and disclaimers) |
 | not AI-verified | Removed from quality copy; focus on NL + type text export |
@@ -44,12 +45,13 @@
    - Contract Health → Export YAML footer
    - YAML tab header area
 3. Distinguish **ODCS data access roles** (exported) from **Members** (editing permissions, not exported).
-4. Distinguish **contract owner** (Fundamentals, publish gate) from **member role: Contract owner** (same word, different concepts — both labeled explicitly).
+4. Distinguish **Contract owner** (Fundamentals — governance accountability) from **Publisher** (Members — workflow permission to publish). Internal `CollaboratorRole` value `owner` is unchanged.
 
 ## Collaboration vs ODCS distinctions
 
-- **Members:** Who can open and edit the contract in the application (owner / contributor / reader).
-- **Contract owner (Fundamentals):** Governance accountability string; required to publish; not in YAML.
+- **Members:** Who can edit and publish in Data Contract Builder (**Publisher** / **Contributor** / **Reader**). Separate from ODCS data access roles.
+- **Contract owner (Fundamentals):** Business governance accountability; required field for publish readiness; not in YAML.
+- **Publisher (Members):** Workflow permission to edit, manage versions, and publish (`myRole === 'owner'`).
 - **Stakeholders:** Governance contacts (name, role, email, team); recommended for PII; not in YAML.
 - **Data access roles:** ODCS `roles[]` for consumers of the published data product.
 
@@ -77,7 +79,7 @@
 
 | Area | Note |
 |------|------|
-| **Owner** used twice | Fundamentals “Contract owner” vs Members role “Contract owner” — intentional but reviewers should understand both are workflow, only the Fundamentals field gates publish by name |
+| **Contract owner vs Publisher** | Resolved: Fundamentals = governance; Members = Publisher / Contributor / Reader |
 | **`status` in YAML** | Exported as ODCS field; `inRevision` and UI lifecycle nuances are application state |
 | **Simulated Git** | Push/publish copy still references Git metaphor; not claiming real Git integration |
 | **Zeenea** | Removed from primary auth-def helper; may remain in seed data / branding elsewhere |

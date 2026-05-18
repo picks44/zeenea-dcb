@@ -166,7 +166,7 @@ function FormDiffView({ left, right }: { left: DataContractSnapshot; right: Data
     { key: 'title',   label: 'Title',       l: left.info.title,            r: right.info.title            },
     { key: 'version', label: 'Version',     l: left.info.version,          r: right.info.version          },
     { key: 'status',  label: 'Status',      l: left.info.status,           r: right.info.status           },
-    { key: 'owner',   label: 'Owner',       l: left.info.owner,            r: right.info.owner            },
+    { key: 'owner',   label: 'Contract owner', l: left.info.owner,         r: right.info.owner            },
     { key: 'domain',  label: 'Domain',      l: left.info.domain  ?? '',    r: right.info.domain  ?? ''    },
     { key: 'desc',    label: 'Description', l: left.info.description ?? '', r: right.info.description ?? '' },
   ]

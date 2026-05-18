@@ -5,13 +5,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DataContract, Collaborator, CollaboratorRole } from '@/types/odcs'
 import { cn } from '@/lib/utils'
 import { CURRENT_USER } from '@/lib/currentUser'
-import { MEMBERS_DISCLAIMER } from '@/lib/uxCopy'
-
-const ROLE_OPTIONS: { value: CollaboratorRole; label: string; desc: string }[] = [
-  { value: 'owner',  label: 'Contract owner',  desc: 'Edit, publish, manage members' },
-  { value: 'editor', label: 'Contributor', desc: 'Edit contract content' },
-  { value: 'viewer', label: 'Reader',   desc: 'Read-only access' },
-]
+import {
+  CANNOT_REMOVE_OWN_PUBLISHER_ROLE,
+  MEMBER_ROLE_LABELS,
+  MEMBER_ROLE_OPTIONS,
+  MEMBERS_DISCLAIMER,
+} from '@/lib/uxCopy'
 
 interface MockUser { id: string; name: string; email: string }
 
@@ -147,7 +146,7 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
           </Button>
         </div>
 
-        {/* Invite row — owners only */}
+        {/* Invite row — members with Publisher role only */}
         {canManageMembers && <div className="px-5 py-4 border-b border-[#f0f0f7]">
           <div className="flex gap-2">
 
@@ -221,11 +220,11 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
             <Select value={inviteRole} onValueChange={v => setInviteRole(v as CollaboratorRole)}>
               <SelectTrigger className="h-9 text-xs w-24 flex-shrink-0">
                 <SelectValue>
-                    {(v: string) => ROLE_OPTIONS.find(r => r.value === v)?.label ?? v}
+                    {(v: string) => MEMBER_ROLE_OPTIONS.find(r => r.value === v)?.label ?? v}
                   </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {ROLE_OPTIONS.map(r => (
+                {MEMBER_ROLE_OPTIONS.map(r => (
                   <SelectItem key={r.value} value={r.value} className="text-xs py-2">
                     <span className="font-medium">{r.label}</span>
                     <span className="text-neutral-400 ml-1.5 text-[10px]">{r.desc}</span>
@@ -250,7 +249,7 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
           ) : (
             <div className="divide-y divide-[#f5f5fa]">
               {collaborators.map(c => {
-                const isSelfOwner = c.email.toLowerCase() === CURRENT_USER.email.toLowerCase() && c.role === 'owner'
+                const isSelfPublisher = c.email.toLowerCase() === CURRENT_USER.email.toLowerCase() && c.role === 'owner'
                 return (
                 <div key={c.id} className="flex items-center gap-3 px-5 py-3 hover:bg-[#fbfbff] transition-colors">
                   <div className={cn('h-8 w-8 rounded-full flex items-center justify-center text-[#12131f] text-[11px] font-medium flex-shrink-0', avatarBg(c.email))}>
@@ -262,22 +261,22 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
                   </div>
                   {canManageMembers ? (
                     <>
-                      {isSelfOwner ? (
+                      {isSelfPublisher ? (
                         <span
                           className="h-7 text-[11px] w-20 flex items-center px-2 bg-[#f5f5fa] rounded text-[#9898a7] flex-shrink-0 cursor-not-allowed"
-                          title="You can't remove your own owner access"
+                          title={CANNOT_REMOVE_OWN_PUBLISHER_ROLE}
                         >
-                          Owner
+                          {MEMBER_ROLE_LABELS.owner}
                         </span>
                       ) : (
                         <Select value={c.role} onValueChange={v => handleRoleChange(c.id, v as CollaboratorRole)}>
                           <SelectTrigger className="h-7 text-[11px] w-20 border-transparent bg-[#f5f5fa] hover:bg-[#eeeef7] flex-shrink-0 px-2">
                             <SelectValue>
-                              {(v: string) => ROLE_OPTIONS.find(r => r.value === v)?.label ?? v}
+                              {(v: string) => MEMBER_ROLE_OPTIONS.find(r => r.value === v)?.label ?? v}
                             </SelectValue>
                           </SelectTrigger>
                           <SelectContent>
-                            {ROLE_OPTIONS.map(r => (
+                            {MEMBER_ROLE_OPTIONS.map(r => (
                               <SelectItem key={r.value} value={r.value} className="text-xs py-2">
                                 <span className="font-medium">{r.label}</span>
                               </SelectItem>
@@ -285,7 +284,7 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
                           </SelectContent>
                         </Select>
                       )}
-                      {!isSelfOwner && (
+                      {!isSelfPublisher && (
                         <button
                           onClick={() => handleRemove(c.id)}
                           className="h-6 w-6 rounded flex items-center justify-center text-[#c4c4d4] hover:text-[#c12c11] hover:bg-[#fff2ee] transition-colors flex-shrink-0"
@@ -296,7 +295,7 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
                     </>
                   ) : (
                     <span className="text-[11px] text-[#9898a7] flex-shrink-0">
-                      {ROLE_OPTIONS.find(r => r.value === c.role)?.label ?? c.role}
+                      {MEMBER_ROLE_OPTIONS.find(r => r.value === c.role)?.label ?? c.role}
                     </span>
                   )}
                 </div>

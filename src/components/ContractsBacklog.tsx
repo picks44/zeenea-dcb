@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { DataContract, LifecycleStatus, CollaboratorRole } from '@/types/odcs'
 import { cn } from '@/lib/utils'
 import { CURRENT_USER } from '@/lib/currentUser'
+import { MEMBER_ROLE_LABELS } from '@/lib/uxCopy'
 
 interface ContractsBacklogProps {
   contracts: DataContract[]
@@ -235,7 +236,7 @@ export function ContractsBacklog({ contracts, onSelectContract, onCreateContract
                           {(() => {
                             const role = getMyRole(contract)
                             const variant = { owner: 'owner', editor: 'contributor', viewer: 'consumer' }[role] as 'owner' | 'contributor' | 'consumer'
-                            const label   = { owner: 'Owner', editor: 'Contributor', viewer: 'Consumer' }[role]
+                            const label   = MEMBER_ROLE_LABELS[role]
                             return <Badge variant={variant}>{label}</Badge>
                           })()}
                         </td>

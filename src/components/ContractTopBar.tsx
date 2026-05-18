@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tooltip } from '@/components/ui/tooltip'
 import { DataContract, EditorTab, Collaborator, CollaboratorRole } from '@/types/odcs'
+import { MEMBER_ROLE_LABELS, PUBLISH_REQUIRES_PUBLISHER_CONTRACT } from '@/lib/uxCopy'
 import { cn } from '@/lib/utils'
 
 interface ContractTopBarProps {
@@ -22,12 +23,6 @@ const TABS: { id: EditorTab; label: string; icon: React.ComponentType<{ classNam
   { id: 'form', label: 'Form', icon: FileText },
   { id: 'yaml', label: 'YAML', icon: Code2    },
 ]
-
-const ROLE_LABELS: Record<CollaboratorRole, string> = {
-  owner:  'Contract owner',
-  editor: 'Contributor',
-  viewer: 'Reader',
-}
 
 const AVATAR_PALETTE = [
   'bg-[#ecffff]', 'bg-[#d0efed]', 'bg-[#dde6ec]',
@@ -107,7 +102,7 @@ export function ContractTopBar({
                 {collaborators.slice(0, 3).map(c => (
                   <Tooltip
                     key={c.id}
-                    content={<><div>{c.name}</div><div className="text-[10px] opacity-60 mt-0.5">{ROLE_LABELS[c.role]}</div></>}
+                    content={<><div>{c.name}</div><div className="text-[10px] opacity-60 mt-0.5">{MEMBER_ROLE_LABELS[c.role]}</div></>}
                     side="bottom"
                     delayDuration={300}
                   >
@@ -165,7 +160,7 @@ export function ContractTopBar({
                     </Tooltip>
                   )
                 ) : (
-                  <Tooltip content="Only owners can publish this contract." side="bottom" delayDuration={300}>
+                  <Tooltip content={PUBLISH_REQUIRES_PUBLISHER_CONTRACT} side="bottom" delayDuration={300}>
                     <span>
                       <Button size="sm" disabled className="h-8 text-xs gap-1.5 pointer-events-none">
                         <Upload className="h-3.5 w-3.5" />

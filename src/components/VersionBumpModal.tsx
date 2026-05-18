@@ -51,7 +51,7 @@ export function VersionBumpModal({ open, currentVersion, onClose, onConfirm }: V
         'Removing or renaming fields',
         'Changing field types',
         'Restructuring the schema',
-        'Changing contract ownership',
+        'Changing the contract owner (governance)',
       ],
       icon: AlertTriangle,
       color: 'amber',
