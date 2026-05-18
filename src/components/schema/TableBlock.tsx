@@ -13,6 +13,7 @@ import { TableAdvancedDialog } from './TableAdvancedDialog'
 import { RELATIONSHIP_COMPOSITE_HELPER, TABLE_RELATIONSHIPS_EMPTY, TABLE_RELATIONSHIPS_INTRO } from '@/lib/uxCopy'
 import { countTableRelationships, formatRelationshipHeaderSummary } from '@/lib/schemaRelationshipUx'
 import { isColumnForeignKeyComplete } from '@/lib/relationshipExport'
+import { hasFieldMetadata, hasTableMetadata, schemaMetadataButtonClass } from '@/lib/schemaMetadataPresence'
 import { ColumnFkIndicator } from '@/components/schema/ColumnFkIndicator'
 import { TableRelationshipRow } from '@/components/schema/TableRelationshipRow'
 import { RelationshipHeaderSummaryBadge } from '@/components/schema/RelationshipHeaderSummary'
@@ -104,6 +105,7 @@ export function TableBlock({
   const rels = table.relationships ?? []
   const relCounts = countTableRelationships(table)
   const relHeaderSummary = formatRelationshipHeaderSummary(relCounts)
+  const tableHasMetadata = hasTableMetadata(table)
   const otherTables = allTables.filter(t => t.physicalName !== table.physicalName)
   const { setTableRoot, registerColumn } = useRegisterSchemaTable(
     table.physicalName,
@@ -189,9 +191,9 @@ export function TableBlock({
         <button
           type="button"
           onClick={() => setTableAdvancedOpen(true)}
-          className="h-6 w-6 flex items-center justify-center text-[#9898a7] hover:text-[#0550dc] hover:bg-[#f5f5fa] rounded transition-colors flex-shrink-0"
-          title="Metadata: tags, quality, authoritative links"
-          aria-label="Metadata: tags, quality, authoritative links"
+          className={schemaMetadataButtonClass(tableHasMetadata)}
+          title="Table properties: description, tags, quality, authoritative links, relationships"
+          aria-label="Table properties"
         >
           <SlidersHorizontal className="h-3.5 w-3.5" />
         </button>
@@ -250,12 +252,7 @@ export function TableBlock({
               const Icon = tc.icon
               const compatibleDbTypes = DB_TYPES_BY_LOGICAL[col.logicalType] ?? ['VARCHAR']
               const hasFk = isColumnForeignKeyComplete(col.foreignKey)
-              const hasMetadata = Boolean(
-                col.description?.trim()
-                || col.quality?.length
-                || col.qualityRule?.trim()
-                || hasFk,
-              )
+              const hasMetadata = hasFieldMetadata(col)
               return (
                 <div
                   key={col.id}
@@ -353,13 +350,10 @@ export function TableBlock({
                     onClick={() => setAdvancedColId(col.id)}
                     title="Field properties: description, foreign key, quality, authoritative links"
                     aria-label="Field properties"
-                    className={cn(
-                      'h-6 w-6 ml-2 rounded flex items-center justify-center transition-all flex-shrink-0 relative',
-                      hasFk && 'mt-0.5',
-                      hasMetadata
-                        ? 'text-[#0550dc] bg-[#f0f4ff]'
-                        : 'text-[#d3d3e5] group-hover:text-[#9898a7] hover:!text-[#0550dc] hover:bg-[#f0f4ff]',
-                    )}
+                    className={schemaMetadataButtonClass(hasMetadata, {
+                      inFieldRow: true,
+                      className: cn('ml-2 relative', hasFk && 'mt-0.5'),
+                    })}
                   >
                     <SlidersHorizontal className="h-3.5 w-3.5" />
                   </button>
