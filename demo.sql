@@ -1,3 +1,9 @@
+-- Demo SQL for Data Contract Builder QA
+-- Covers multi-table import, primary keys, composite primary keys,
+-- table-level single-column foreign keys, named foreign keys,
+-- inline REFERENCES, quoted identifiers, schema-prefixed references,
+-- ON DELETE / ON UPDATE clauses, and composite foreign keys.
+
 CREATE TABLE customers (
     customer_id BIGINT PRIMARY KEY,
     external_customer_ref VARCHAR(100) UNIQUE NOT NULL,
@@ -27,7 +33,9 @@ CREATE TABLE addresses (
     country_code CHAR(2) NOT NULL,
     is_default BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL,
-    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+    CONSTRAINT fk_addresses_customer
+        FOREIGN KEY (customer_id)
+        REFERENCES customers(customer_id)
 );
 
 CREATE TABLE suppliers (
@@ -49,15 +57,14 @@ CREATE TABLE products (
     product_description TEXT,
     category_name VARCHAR(100),
     brand_name VARCHAR(100),
-    supplier_id BIGINT,
+    supplier_id BIGINT REFERENCES suppliers(supplier_id),
     unit_price DECIMAL(12,2) NOT NULL,
     currency_code CHAR(3) NOT NULL,
     stock_quantity INT NOT NULL,
     weight_kg DECIMAL(10,3),
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP,
-    FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id)
+    updated_at TIMESTAMP
 );
 
 CREATE TABLE orders (
@@ -78,8 +85,14 @@ CREATE TABLE orders (
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP,
     FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
-    FOREIGN KEY (billing_address_id) REFERENCES addresses(address_id),
-    FOREIGN KEY (shipping_address_id) REFERENCES addresses(address_id)
+    CONSTRAINT fk_orders_billing_address
+        FOREIGN KEY (billing_address_id)
+        REFERENCES addresses(address_id)
+        ON DELETE SET NULL,
+    CONSTRAINT fk_orders_shipping_address
+        FOREIGN KEY (shipping_address_id)
+        REFERENCES addresses(address_id)
+        ON UPDATE CASCADE
 );
 
 CREATE TABLE order_items (
@@ -94,8 +107,12 @@ CREATE TABLE order_items (
     fulfillment_status VARCHAR(50),
     warehouse_code VARCHAR(50),
     created_at TIMESTAMP NOT NULL,
-    FOREIGN KEY (order_id) REFERENCES orders(order_id),
-    FOREIGN KEY (product_id) REFERENCES products(product_id)
+    CONSTRAINT fk_order_items_order
+        FOREIGN KEY (order_id)
+        REFERENCES orders(order_id),
+    CONSTRAINT fk_order_items_product
+        FOREIGN KEY (product_id)
+        REFERENCES products(product_id)
 );
 
 CREATE TABLE payments (
@@ -151,8 +168,12 @@ CREATE TABLE customer_support_tickets (
     opened_at TIMESTAMP NOT NULL,
     resolved_at TIMESTAMP,
     issue_summary TEXT,
-    FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
-    FOREIGN KEY (order_id) REFERENCES orders(order_id)
+    CONSTRAINT fk_tickets_customer
+        FOREIGN KEY (customer_id)
+        REFERENCES customers(customer_id),
+    CONSTRAINT fk_tickets_order
+        FOREIGN KEY (order_id)
+        REFERENCES orders(order_id)
 );
 
 CREATE TABLE warehouses (
@@ -175,4 +196,116 @@ CREATE TABLE warehouse_stock (
     PRIMARY KEY (warehouse_id, product_id),
     FOREIGN KEY (warehouse_id) REFERENCES warehouses(warehouse_id),
     FOREIGN KEY (product_id) REFERENCES products(product_id)
+);
+
+CREATE TABLE product_bundle_items (
+    bundle_product_id BIGINT NOT NULL,
+    component_product_id BIGINT NOT NULL,
+    quantity INT NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    PRIMARY KEY (bundle_product_id, component_product_id),
+    CONSTRAINT fk_bundle_product
+        FOREIGN KEY (bundle_product_id)
+        REFERENCES products(product_id),
+    CONSTRAINT fk_component_product
+        FOREIGN KEY (component_product_id)
+        REFERENCES products(product_id)
+);
+
+CREATE TABLE warehouse_stock_audits (
+    audit_id BIGINT PRIMARY KEY,
+    warehouse_id BIGINT NOT NULL,
+    product_id BIGINT NOT NULL,
+    counted_quantity INT NOT NULL,
+    counted_at TIMESTAMP NOT NULL,
+    counted_by VARCHAR(255),
+    CONSTRAINT fk_stock_audit_stock
+        FOREIGN KEY (warehouse_id, product_id)
+        REFERENCES warehouse_stock(warehouse_id, product_id)
+);
+
+CREATE TABLE "loyalty_accounts" (
+    loyalty_account_id BIGINT PRIMARY KEY,
+    customer_id BIGINT NOT NULL,
+    program_code VARCHAR(50) NOT NULL,
+    points_balance INT NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    CONSTRAINT "fk_loyalty_customer"
+        FOREIGN KEY ("customer_id")
+        REFERENCES "customers"("customer_id")
+);
+
+CREATE TABLE [customer_devices] (
+    device_id BIGINT PRIMARY KEY,
+    customer_id BIGINT NOT NULL,
+    device_type VARCHAR(50),
+    last_seen_at TIMESTAMP,
+    FOREIGN KEY ([customer_id]) REFERENCES [customers]([customer_id])
+);
+
+CREATE TABLE marketing_events (
+    event_id BIGINT PRIMARY KEY,
+    customer_id BIGINT NOT NULL,
+    campaign_code VARCHAR(100),
+    event_type VARCHAR(50) NOT NULL,
+    occurred_at TIMESTAMP NOT NULL,
+    FOREIGN KEY (customer_id) REFERENCES public.customers(customer_id)
+);
+
+CREATE TABLE returns (
+    return_id BIGINT PRIMARY KEY,
+    order_id BIGINT NOT NULL,
+    order_item_id BIGINT NOT NULL,
+    return_reason VARCHAR(255),
+    return_status VARCHAR(50),
+    created_at TIMESTAMP NOT NULL,
+    CONSTRAINT fk_returns_order
+        FOREIGN KEY (order_id)
+        REFERENCES orders(order_id),
+    CONSTRAINT fk_returns_order_item
+        FOREIGN KEY (order_item_id)
+        REFERENCES order_items(order_item_id)
+);
+
+CREATE TABLE shipment_packages (
+    shipment_id BIGINT NOT NULL,
+    package_number INT NOT NULL,
+    package_weight_kg DECIMAL(10,3),
+    package_status VARCHAR(50),
+    created_at TIMESTAMP NOT NULL,
+    PRIMARY KEY (shipment_id, package_number),
+    FOREIGN KEY (shipment_id) REFERENCES shipments(shipment_id)
+);
+
+CREATE TABLE package_events (
+    shipment_id BIGINT NOT NULL,
+    package_number INT NOT NULL,
+    event_sequence INT NOT NULL,
+    event_type VARCHAR(100) NOT NULL,
+    event_time TIMESTAMP NOT NULL,
+    event_location VARCHAR(255),
+    PRIMARY KEY (shipment_id, package_number, event_sequence),
+    CONSTRAINT fk_package_events_package
+        FOREIGN KEY (shipment_id, package_number)
+        REFERENCES shipment_packages(shipment_id, package_number)
+);
+
+CREATE TABLE external_tax_reports (
+    report_id BIGINT PRIMARY KEY,
+    order_id BIGINT NOT NULL,
+    jurisdiction_code VARCHAR(50) NOT NULL,
+    reported_amount DECIMAL(14,2) NOT NULL,
+    reported_at TIMESTAMP,
+    CONSTRAINT fk_external_tax_order
+        FOREIGN KEY (order_id)
+        REFERENCES analytics.orders(order_id)
+);
+
+CREATE TABLE inventory_reservations (
+    product_id BIGINT NOT NULL,
+    warehouse_id BIGINT NOT NULL,
+    reserved_qty INT NOT NULL,
+    PRIMARY KEY (product_id, warehouse_id),
+    CONSTRAINT fk_reservation_stock FOREIGN KEY (product_id, warehouse_id)
+        REFERENCES warehouse_stock(product_id, warehouse_id)
 );

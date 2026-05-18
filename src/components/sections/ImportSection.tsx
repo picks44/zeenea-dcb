@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Upload, AlertCircle, Sparkles, Table2, Columns3, KeyRound, Asterisk, Check } from 'lucide-react'
+import { Upload, AlertCircle, Sparkles, Table2, Columns3, KeyRound, Asterisk, Check, Link2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { parseDDLMulti, summarizeDDLImport } from '@/lib/ddlParser'
 import { SchemaTable } from '@/types/odcs'
@@ -60,6 +60,7 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
     const summary = pendingImport.current
       ? summarizeDDLImport(pendingImport.current.tables)
       : null
+    const relCount = (summary?.totalSingleFk ?? 0) + (summary?.totalCompositeFk ?? 0)
     const tableLabel = summary
       ? `${summary.tableCount} table${summary.tableCount !== 1 ? 's' : ''}`
       : ''
@@ -97,6 +98,7 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
               </div>
               <p className="text-[11px] text-[#9898a7]">
                 {summary?.totalColumns ?? 0} field{(summary?.totalColumns ?? 0) !== 1 ? 's' : ''} detected
+                {relCount > 0 ? ` · ${relCount} relationship${relCount !== 1 ? 's' : ''}` : ''}
               </p>
             </>
           ) : (
@@ -108,7 +110,15 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
                 <p className="text-sm font-semibold text-[#12131f]">Schema imported</p>
                 <p className="text-xs text-[#9898a7]">
                   {tableLabel} · {summary?.totalColumns ?? 0} field{(summary?.totalColumns ?? 0) !== 1 ? 's' : ''}
+                  {relCount > 0
+                    ? ` · ${relCount} relationship${relCount !== 1 ? 's' : ''}`
+                    : ''}
                 </p>
+                {relCount > 0 ? (
+                  <p className="text-[11px] text-[#656574] max-w-sm mx-auto leading-snug">
+                    Relationships detected from SQL constraints and added to the contract.
+                  </p>
+                ) : null}
               </div>
             </>
           )}
@@ -256,7 +266,24 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
                   {preview.totalOptional} optional
                 </span>
               )}
+              {preview.totalSingleFk > 0 && (
+                <span className="inline-flex items-center gap-1.5 h-6 px-2.5 rounded-md bg-[#f5f5fa] border border-[#e4e4f0] text-[11px] text-[#656574]">
+                  <Link2 className="h-3 w-3 text-[#9898a7]" />
+                  {preview.totalSingleFk} FK
+                </span>
+              )}
+              {preview.totalCompositeFk > 0 && (
+                <span className="inline-flex items-center gap-1.5 h-6 px-2.5 rounded-md bg-[#f5f5fa] border border-[#e4e4f0] text-[11px] text-[#656574]">
+                  <Link2 className="h-3 w-3 text-[#9898a7]" />
+                  {preview.totalCompositeFk} composite FK
+                </span>
+              )}
             </div>
+            {(preview.totalSingleFk > 0 || preview.totalCompositeFk > 0) && (
+              <p className="text-[11px] text-[#656574] leading-snug">
+                Relationships detected from SQL constraints and added to the contract.
+              </p>
+            )}
             {previewTableNames.length > 0 && (
               <p className="text-[11px] text-[#9898a7] font-mono truncate" title={preview.tableNames.join(', ')}>
                 {previewTableNames.join(', ')}
@@ -289,7 +316,7 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
         {[
           { icon: Columns3, title: 'Field names',  desc: 'Physical and business names mapped from column definitions.' },
           { icon: Table2,   title: 'Data types',   desc: 'SQL types mapped to ODCS logical types.' },
-          { icon: KeyRound, title: 'Constraints',  desc: 'NOT NULL, PRIMARY KEY, and UNIQUE flags detected on columns.' },
+          { icon: Link2, title: 'Relationships', desc: 'FOREIGN KEY constraints mapped to field-level and composite table relationships.' },
         ].map(({ icon: Icon, title, desc }) => (
           <div key={title} className="flex flex-col gap-1">
             <div className="flex items-center gap-1.5 text-[#33333d]">
