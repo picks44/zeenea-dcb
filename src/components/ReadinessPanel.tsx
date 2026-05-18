@@ -18,10 +18,27 @@ interface ReadinessPanelProps {
   hasEditedSincePublish: boolean
 }
 
-function SectionHeaderWithScore({ title, earned, max }: { title: string; earned: number; max: number }) {
+function SectionHeaderWithScore({
+  title,
+  earned,
+  max,
+  tone = 'default',
+}: {
+  title: string
+  earned: number
+  max: number
+  tone?: 'required' | 'recommended' | 'default'
+}) {
   return (
     <div className="flex items-baseline justify-between gap-2 mb-1.5">
-      <span className="text-[10px] font-semibold uppercase tracking-wide text-[#656574]">
+      <span
+        className={cn(
+          'text-[10px] font-semibold uppercase tracking-wide',
+          tone === 'required' && 'text-[#55556a]',
+          tone === 'recommended' && 'text-[#9898a7] font-medium',
+          tone === 'default' && 'text-[#656574]',
+        )}
+      >
         {title}
       </span>
       <span className="text-[10px] font-medium tabular-nums text-[#9898a7] flex-shrink-0 leading-none">
@@ -64,7 +81,10 @@ function CheckRow({
       <span
         className={cn(
           'text-xs leading-snug flex-1 min-w-0',
-          ok ? 'text-[#33333d]' : 'text-[#656574]',
+          ok && isRequired && 'text-[#33333d]',
+          ok && !isRequired && 'text-[#3f3f4a]',
+          !ok && isRequired && 'text-[#656574]',
+          !ok && !isRequired && 'text-[#9898a7]',
         )}
       >
         {label}
@@ -162,13 +182,14 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto divide-y divide-[#e4e4f0]">
+      <div className="flex-1 overflow-y-auto divide-y divide-[#ebebf0]/90">
 
-        <div className="px-4 py-2.5">
+        <div className="px-4 py-3">
           <SectionHeaderWithScore
             title="Required to publish"
             earned={scoreContributions.required.earned}
             max={scoreContributions.required.max}
+            tone="required"
           />
           <ul className="space-y-1">
             {requiredChecks.map(item => (
@@ -177,7 +198,7 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
           </ul>
         </div>
 
-        <div className="px-4 py-2.5">
+        <div className="px-4 py-3">
           <SectionHeaderWithScore
             title="Field quality"
             earned={scoreContributions.documentation.earned}
@@ -227,7 +248,7 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
         </div>
 
         {validationErrors.length >= 1 && (
-          <div className="px-4 py-3 border-t border-[#e4e4f0]">
+          <div className="px-4 py-3">
             <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-2">Blocking issues</p>
             <ul className="space-y-1">
               {validationErrors.slice(0, 6).map((e, i) => (
@@ -238,7 +259,7 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
         )}
 
         {validationWarnings.length > 0 && (
-          <div className="px-4 py-3 border-t border-[#e4e4f0]">
+          <div className="px-4 py-3">
             <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-2">Warnings</p>
             <ul className="space-y-1">
               {validationWarnings.slice(0, 6).map((w, i) => (
@@ -251,11 +272,12 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
           </div>
         )}
 
-        <div className="px-4 py-2.5">
+        <div className="px-4 py-3">
           <SectionHeaderWithScore
             title="Recommended"
             earned={scoreContributions.recommended.earned}
             max={scoreContributions.recommended.max}
+            tone="recommended"
           />
           <ul className="space-y-1">
             {recommendedChecks.map(item => (
@@ -271,15 +293,15 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
         </div>
 
         {nextSteps.length > 0 && (
-          <div className="px-4 py-2.5">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-1.5">
+          <div className="px-4 py-3 bg-[#fbfbff]/60">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-2">
               Next steps
             </p>
-            <ul className="space-y-1.5">
+            <ul className="space-y-2">
               {nextSteps.map((step, i) => (
                 <li key={i} className="flex items-start gap-1.5">
-                  <ArrowRight className="h-3 w-3 text-[#9898a7] flex-shrink-0 mt-0.5" />
-                  <span className="text-[11px] text-[#3f3f4a] leading-snug">{step}</span>
+                  <ArrowRight className="h-3 w-3 text-[#b8b8c8] flex-shrink-0 mt-0.5" />
+                  <span className="text-[11px] text-[#33333d] leading-snug">{step}</span>
                 </li>
               ))}
             </ul>

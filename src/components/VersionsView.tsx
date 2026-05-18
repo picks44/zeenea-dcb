@@ -60,9 +60,9 @@ export function VersionsView({
     <div className="max-w-[600px] w-full">
 
       {/* Header */}
-      <div className="mb-8">
-        <h2 className="text-base font-semibold text-neutral-900">Version history</h2>
-        <p className="text-neutral-400 text-xs mt-0.5 leading-relaxed">
+      <div className="mb-6">
+        <h2 className="text-base font-semibold text-[#12131f]">Version history</h2>
+        <p className="text-[#3f3f4a] text-xs mt-0.5 leading-relaxed">
           <WorkflowMetadataNote pill="application-lifecycle">
             {gitHistory.length === 0
               ? VERSION_HISTORY_INTRO_EMPTY
@@ -73,12 +73,10 @@ export function VersionsView({
 
       {/* Empty state */}
       {!showTimeline && (
-        <div className="border-2 border-dashed border-neutral-200 rounded-xl p-12 flex flex-col items-center gap-3 text-center">
-          <div className="h-10 w-10 rounded-full bg-neutral-50 flex items-center justify-center">
-            <Clock className="h-5 w-5 text-neutral-400" />
-          </div>
-          <p className="text-sm font-medium text-neutral-600">No versions yet</p>
-          <p className="text-xs text-neutral-400 max-w-xs">
+        <div className="border border-dashed border-[#d3d3e5] rounded-xl px-6 py-10 flex flex-col items-center gap-2.5 text-center bg-[#fbfbff]/40">
+          <Clock className="h-5 w-5 text-[#656574]" aria-hidden />
+          <p className="text-sm font-medium text-[#12131f]">No versions yet</p>
+          <p className="text-xs text-[#656574] max-w-xs leading-relaxed">
             Each time you publish, a snapshot is saved here with a version number and description.
           </p>
         </div>

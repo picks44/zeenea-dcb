@@ -33,9 +33,9 @@ export function WorkflowMetadataPill({ variant, label, className }: WorkflowMeta
     <span
       className={cn(
         'inline-flex align-middle items-center shrink-0',
-        'rounded border border-[#e4e4f0] bg-[#fbfbff]',
-        'px-1.5 py-px text-[10px] font-medium leading-none text-[#6b6b7a]',
-        'tracking-[0.02em] whitespace-nowrap',
+        'rounded-sm border border-[#ebebf0] bg-[#fafafc]/80',
+        'px-1 py-px text-[10px] font-normal leading-none text-[#9898a7]',
+        'tracking-normal whitespace-nowrap',
         className,
       )}
     >
@@ -55,7 +55,7 @@ export function WorkflowMetadataNote({
   className?: string
 }) {
   return (
-    <span className={cn('inline-flex flex-wrap items-baseline gap-x-1.5 gap-y-1', className)}>
+    <span className={cn('inline-flex flex-wrap items-baseline gap-x-1 gap-y-0.5', className)}>
       <span>{children}</span>
       <WorkflowMetadataPill variant={pill} />
     </span>

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, Trash2, Users, Mail, Building2 } from 'lucide-react'
+import { Plus, Trash2, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -9,6 +9,7 @@ import { GovernanceEmptyState } from '@/components/shared/GovernanceEmptyState'
 import {
   governanceTableHeadClass,
   governanceTableHeadRowClass,
+  governanceTableRowClass,
   governanceTableShellClass,
   GovernanceSectionHeader,
 } from '@/components/shared/GovernanceSectionHeader'
@@ -42,7 +43,12 @@ const ROLE_COLORS: Record<string, string> = {
   'Compliance Officer': 'bg-[#ffdacf] text-[#c12c11]',
 }
 
-const STAKEHOLDER_GRID = 'grid grid-cols-[minmax(0,1.1fr)_minmax(108px,auto)_minmax(0,1.4fr)_32px] gap-x-3 gap-y-0 items-center'
+const STAKEHOLDER_GRID =
+  'grid grid-cols-[minmax(0,1.05fr)_minmax(100px,auto)_minmax(0,1.45fr)_28px] gap-x-3 gap-y-0 items-center'
+
+const CONTACT_LABEL_CLASS = 'text-[10px] text-[#9898a7] shrink-0 w-[3.25rem]'
+const CONTACT_VALUE_CLASS = 'text-xs text-[#656574] truncate min-w-0'
+const CONTACT_EMPTY_CLASS = 'text-xs text-[#9898a7]'
 
 function AddStakeholderForm({
   onAdd,
@@ -129,23 +135,29 @@ function AddStakeholderForm({
 }
 
 function StakeholderContact({ email, team }: { email: string; team: string }) {
-  if (!email && !team) {
-    return <span className="text-xs text-[#9898a7]">—</span>
-  }
+  const hasEmail = Boolean(email.trim())
+  const hasTeam = Boolean(team.trim())
+
   return (
     <div className="min-w-0 flex flex-col gap-0.5">
-      {email ? (
-        <span className="flex items-center gap-1 text-xs text-[#656574] truncate" title={email}>
-          <Mail className="h-3 w-3 shrink-0" aria-hidden />
-          <span className="truncate">{email}</span>
+      <div className="flex items-baseline gap-1.5 min-w-0">
+        <span className={CONTACT_LABEL_CLASS}>Email</span>
+        <span
+          className={cn(hasEmail ? CONTACT_VALUE_CLASS : CONTACT_EMPTY_CLASS)}
+          title={hasEmail ? email : undefined}
+        >
+          {hasEmail ? email : '—'}
         </span>
-      ) : null}
-      {team ? (
-        <span className="flex items-center gap-1 text-xs text-[#656574] truncate" title={team}>
-          <Building2 className="h-3 w-3 shrink-0" aria-hidden />
-          <span className="truncate">{team}</span>
+      </div>
+      <div className="flex items-baseline gap-1.5 min-w-0">
+        <span className={CONTACT_LABEL_CLASS}>Team</span>
+        <span
+          className={cn(hasTeam ? CONTACT_VALUE_CLASS : CONTACT_EMPTY_CLASS)}
+          title={hasTeam ? team : undefined}
+        >
+          {hasTeam ? team : '—'}
         </span>
-      ) : null}
+      </div>
     </div>
   )
 }
@@ -193,7 +205,7 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked }: Stakeh
 
             <div className="divide-y divide-[#e4e4f0]">
               {stakeholders.map(s => (
-                <div key={s.id} className={cn(STAKEHOLDER_GRID, 'px-3 py-2 group')}>
+                <div key={s.id} className={cn(STAKEHOLDER_GRID, governanceTableRowClass, 'group')}>
                   <span className="text-sm font-medium text-[#12131f] truncate" title={s.name}>
                     {s.name}
                   </span>

@@ -2,12 +2,14 @@ import { Plus, Trash2, Clock } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { GovernanceEmptyState } from '@/components/shared/GovernanceEmptyState'
 import {
+  governanceTableFooterActionClass,
   governanceTableFooterClass,
   governanceTableHeadClass,
   governanceTableHeadRowClass,
   governanceTableShellClass,
   GovernanceSectionHeader,
 } from '@/components/shared/GovernanceSectionHeader'
+import { cn } from '@/lib/utils'
 import { SLA_EMPTY_BODY, SLA_EMPTY_CTA, SLA_EMPTY_TITLE } from '@/lib/uxCopy'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { SlaProperty } from '@/types/odcs'
@@ -23,6 +25,20 @@ const PROPERTY_PRESETS = [
   'timeOfAvailability',
   'custom',
 ] as const
+
+const SLA_PROPERTY_LABELS: Record<(typeof PROPERTY_PRESETS)[number], string> = {
+  latency: 'Latency',
+  retention: 'Retention',
+  frequency: 'Frequency',
+  generalAvailability: 'Availability',
+  endOfSupport: 'End of support',
+  endOfLife: 'End of life',
+  timeOfAvailability: 'Time of availability',
+  custom: 'Custom…',
+}
+
+const SLA_CELL = 'px-2 py-1.5 align-middle'
+const SLA_INPUT = 'h-8 text-xs w-full'
 
 interface SlaSectionProps {
   slaProperties: SlaProperty[]
@@ -62,11 +78,11 @@ export function SlaSection({ slaProperties, onChange, isLocked }: SlaSectionProp
         <div className={`${governanceTableShellClass} overflow-x-auto`}>
           <table className="w-full text-xs border-collapse table-fixed min-w-[760px]">
             <colgroup>
-              <col className="w-[148px]" />
-              <col className="w-[72px]" />
-              <col className="w-[52px]" />
-              <col className="w-[128px]" />
-              <col className="w-[96px]" />
+              <col className="w-[152px]" />
+              <col className="w-[68px]" />
+              <col className="w-[56px]" />
+              <col className="w-[124px]" />
+              <col className="w-[104px]" />
               <col />
               <col className="w-[36px]" />
             </colgroup>
@@ -86,8 +102,8 @@ export function SlaSection({ slaProperties, onChange, isLocked }: SlaSectionProp
                 const isCustom = !PROPERTY_PRESETS.slice(0, -1).includes(row.property as typeof PROPERTY_PRESETS[number])
                 const preset = isCustom ? 'custom' : row.property
                 return (
-                  <tr key={row.id} className="align-middle">
-                    <td className="px-2 py-2 align-top">
+                  <tr key={row.id}>
+                    <td className={SLA_CELL}>
                       <Select
                         value={preset}
                         onValueChange={v => {
@@ -96,11 +112,18 @@ export function SlaSection({ slaProperties, onChange, isLocked }: SlaSectionProp
                         }}
                         disabled={isLocked}
                       >
-                        <SelectTrigger className="h-8 text-xs w-full"><SelectValue /></SelectTrigger>
+                        <SelectTrigger className={SLA_INPUT}>
+                          <SelectValue>
+                            {(v: string) => {
+                              if (v === 'custom' && row.property.trim()) return row.property
+                              return SLA_PROPERTY_LABELS[v as (typeof PROPERTY_PRESETS)[number]] ?? v
+                            }}
+                          </SelectValue>
+                        </SelectTrigger>
                         <SelectContent>
                           {PROPERTY_PRESETS.map(p => (
-                            <SelectItem key={p} value={p} className="text-xs capitalize">
-                              {p === 'custom' ? 'Custom…' : p}
+                            <SelectItem key={p} value={p} className="text-xs">
+                              {SLA_PROPERTY_LABELS[p]}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -109,58 +132,58 @@ export function SlaSection({ slaProperties, onChange, isLocked }: SlaSectionProp
                         <Input
                           value={row.property}
                           onChange={e => update(row.id, { property: e.target.value })}
-                          placeholder="property name"
+                          placeholder="Custom property"
                           disabled={isLocked}
-                          className="h-7 text-xs mt-1"
+                          className={cn(SLA_INPUT, 'mt-1')}
                         />
                       )}
                     </td>
-                    <td className="px-2 py-2">
+                    <td className={SLA_CELL}>
                       <Input
                         value={row.value}
                         onChange={e => update(row.id, { value: e.target.value })}
                         disabled={isLocked}
-                        className="h-8 text-xs"
-                        placeholder="4"
+                        className={SLA_INPUT}
+                        placeholder="Value"
                       />
                     </td>
-                    <td className="px-2 py-2">
+                    <td className={SLA_CELL}>
                       <Input
                         value={row.unit ?? ''}
                         onChange={e => update(row.id, { unit: e.target.value })}
                         disabled={isLocked}
-                        className="h-8 text-xs"
-                        placeholder="d"
+                        className={SLA_INPUT}
+                        placeholder="Unit"
                       />
                     </td>
-                    <td className="px-2 py-2">
+                    <td className={SLA_CELL}>
                       <Input
                         value={row.element ?? ''}
                         onChange={e => update(row.id, { element: e.target.value })}
                         disabled={isLocked}
-                        className="h-8 text-xs font-mono"
-                        placeholder="table.col"
+                        className={cn(SLA_INPUT, 'font-mono')}
+                        placeholder="Table or field"
                       />
                     </td>
-                    <td className="px-2 py-2">
+                    <td className={SLA_CELL}>
                       <Input
                         value={row.driver ?? ''}
                         onChange={e => update(row.id, { driver: e.target.value })}
                         disabled={isLocked}
-                        className="h-8 text-xs"
-                        placeholder="operational"
+                        className={SLA_INPUT}
+                        placeholder="e.g. Operations"
                       />
                     </td>
-                    <td className="px-2 py-2">
+                    <td className={SLA_CELL}>
                       <Input
                         value={row.description ?? ''}
                         onChange={e => update(row.id, { description: e.target.value })}
                         disabled={isLocked}
-                        className="h-8 text-xs"
-                        placeholder="Optional"
+                        className={SLA_INPUT}
+                        placeholder="Optional note"
                       />
                     </td>
-                    <td className="px-1 py-2 text-center">
+                    <td className={cn(SLA_CELL, 'text-center')}>
                       {!isLocked && (
                         <button
                           type="button"
@@ -182,7 +205,7 @@ export function SlaSection({ slaProperties, onChange, isLocked }: SlaSectionProp
               <button
                 type="button"
                 onClick={() => onChange([...slaProperties, makeSla()])}
-                className="flex items-center gap-1.5 text-xs text-[#656574] hover:text-[#0550dc] font-medium transition-colors"
+                className={governanceTableFooterActionClass}
               >
                 <Plus className="h-3.5 w-3.5" />
                 Add SLA property

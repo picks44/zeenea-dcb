@@ -6,8 +6,10 @@ import { OdcsAccessRole } from '@/types/odcs'
 import { generateId } from '@/lib/utils'
 import { GovernanceEmptyState } from '@/components/shared/GovernanceEmptyState'
 import {
+  governanceTableFooterActionClass,
   governanceTableFooterClass,
   governanceTableHeadClass,
+  governanceTableRowClass,
   governanceTableHeadRowClass,
   governanceTableShellClass,
   GovernanceSectionHeader,
@@ -65,7 +67,7 @@ export function AccessRolesSection({ roles, onChange, isLocked }: AccessRolesSec
 
           <div className="divide-y divide-[#e4e4f0]">
             {roles.map(r => (
-              <div key={r.id} className={cn(ACCESS_GRID, 'px-3 py-2')}>
+              <div key={r.id} className={cn(ACCESS_GRID, governanceTableRowClass)}>
                 <Input
                   value={r.role}
                   onChange={e => update(r.id, { role: e.target.value })}
@@ -87,7 +89,7 @@ export function AccessRolesSection({ roles, onChange, isLocked }: AccessRolesSec
                 <Textarea
                   value={r.description ?? ''}
                   onChange={e => update(r.id, { description: e.target.value })}
-                  placeholder="Optional"
+                  placeholder="Optional note"
                   disabled={isLocked}
                   rows={1}
                   className="text-xs min-h-[32px] resize-none py-1.5"
@@ -113,7 +115,7 @@ export function AccessRolesSection({ roles, onChange, isLocked }: AccessRolesSec
               <button
                 type="button"
                 onClick={() => onChange([...roles, makeRole()])}
-                className="flex items-center gap-1.5 text-xs text-[#656574] hover:text-[#0550dc] font-medium transition-colors"
+                className={governanceTableFooterActionClass}
               >
                 <Plus className="h-3.5 w-3.5" />
                 Add role
