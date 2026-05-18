@@ -33,8 +33,8 @@ export function WorkflowMetadataPill({ variant, label, className }: WorkflowMeta
     <span
       className={cn(
         'inline-flex align-middle items-center shrink-0',
-        'rounded border border-[#d3d3e5] bg-[#f5f5fa]',
-        'px-1.5 py-0.5 text-[10px] font-medium leading-none text-[#656574]',
+        'rounded border border-[#e4e4f0] bg-[#fbfbff]',
+        'px-1.5 py-px text-[10px] font-medium leading-none text-[#6b6b7a]',
         'tracking-[0.02em] whitespace-nowrap',
         className,
       )}

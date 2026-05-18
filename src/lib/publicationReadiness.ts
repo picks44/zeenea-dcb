@@ -7,9 +7,20 @@ import {
   PUBLICATION_READY_REQUIRED_COMPLETE,
 } from '@/lib/uxCopy'
 
-const REQUIRED_WEIGHT = 70
-const DOC_WEIGHT = 25
-const RECOMMENDED_WEIGHT = 5
+export const READINESS_REQUIRED_WEIGHT = 70
+export const READINESS_DOC_WEIGHT = 25
+export const READINESS_RECOMMENDED_WEIGHT = 5
+
+export interface ReadinessScoreContribution {
+  earned: number
+  max: number
+}
+
+export interface ReadinessScoreContributions {
+  required: ReadinessScoreContribution
+  documentation: ReadinessScoreContribution
+  recommended: ReadinessScoreContribution
+}
 
 export interface ReadinessCheck {
   key: string
@@ -30,6 +41,7 @@ export interface PublicationReadiness {
   piiCount: number
   stakeholderCount: number
   healthScore: number
+  scoreContributions: ReadinessScoreContributions
   nextSteps: string[]
   validationErrors: ValidationIssue[]
   validationWarnings: ValidationIssue[]
@@ -102,10 +114,25 @@ export function computePublicationReadiness(
   const publishStatus = publishReadinessMessage(validation, myRole, hasEditedSincePublish)
   const descCoverage = fieldCount > 0 ? fieldsWithDesc / fieldCount : 0
 
-  const requiredScore = (doneRequired / requiredChecks.length) * REQUIRED_WEIGHT
-  const docScore = fieldCount > 0 ? descCoverage * DOC_WEIGHT : 0
+  const requiredScore = (doneRequired / requiredChecks.length) * READINESS_REQUIRED_WEIGHT
+  const docScore = fieldCount > 0 ? descCoverage * READINESS_DOC_WEIGHT : 0
   const recommendedScore =
-    (doneRecommended / recommendedChecks.length) * RECOMMENDED_WEIGHT
+    (doneRecommended / recommendedChecks.length) * READINESS_RECOMMENDED_WEIGHT
+
+  const scoreContributions: ReadinessScoreContributions = {
+    required: {
+      earned: Math.round(requiredScore),
+      max: READINESS_REQUIRED_WEIGHT,
+    },
+    documentation: {
+      earned: Math.round(docScore),
+      max: READINESS_DOC_WEIGHT,
+    },
+    recommended: {
+      earned: Math.round(recommendedScore),
+      max: READINESS_RECOMMENDED_WEIGHT,
+    },
+  }
 
   const healthScore = Math.min(
     100,
@@ -147,6 +174,7 @@ export function computePublicationReadiness(
     piiCount,
     stakeholderCount,
     healthScore,
+    scoreContributions,
     nextSteps: nextSteps.slice(0, 2),
     validationErrors: validation.errors,
     validationWarnings: validation.warnings,

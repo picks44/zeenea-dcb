@@ -243,8 +243,8 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
             disabled={ownerFieldLocked}
             className={ownerInputClass}
           />
-          <p className="text-[11px] text-[#656574] mt-1 leading-snug">
-            {CONTRACT_OWNER_HELPER}{' '}
+          <p className="text-[11px] text-[#656574] mt-1 leading-snug flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
+            <span>{CONTRACT_OWNER_HELPER}</span>
             <WorkflowMetadataPill variant="not-in-odcs" />
           </p>
         </div>

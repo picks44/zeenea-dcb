@@ -18,6 +18,19 @@ interface ReadinessPanelProps {
   hasEditedSincePublish: boolean
 }
 
+function SectionHeaderWithScore({ title, earned, max }: { title: string; earned: number; max: number }) {
+  return (
+    <div className="flex items-baseline justify-between gap-2 mb-1.5">
+      <span className="text-[10px] font-semibold uppercase tracking-wide text-[#656574]">
+        {title}
+      </span>
+      <span className="text-[10px] font-medium tabular-nums text-[#9898a7] flex-shrink-0 leading-none">
+        {earned} / {max}
+      </span>
+    </div>
+  )
+}
+
 function CheckRow({
   label,
   ok,
@@ -32,14 +45,14 @@ function CheckRow({
   const isRequired = variant === 'required'
 
   return (
-    <li className="flex items-center gap-2.5">
+    <li className="flex items-center gap-2">
       <div
         className={cn(
           'h-4 w-4 rounded-full flex items-center justify-center flex-shrink-0',
           ok && isRequired && 'bg-[#d3efcd]',
           ok && !isRequired && 'bg-[#e8f5e6]',
           !ok && isRequired && 'bg-[#f5f5fa]',
-          !ok && !isRequired && 'border border-[#d3d3e5] bg-white',
+          !ok && !isRequired && 'border border-[#e4e4f0] bg-[#fbfbff]',
         )}
       >
         {ok ? (
@@ -57,7 +70,7 @@ function CheckRow({
         {label}
       </span>
       {badge ? (
-        <span className="text-[10px] font-medium text-[#656574] tabular-nums flex-shrink-0">
+        <span className="text-[10px] font-medium text-[#9898a7] tabular-nums flex-shrink-0">
           {badge}
         </span>
       ) : null}
@@ -83,6 +96,7 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
     descCoverage,
     piiCount,
     healthScore,
+    scoreContributions,
     nextSteps,
     validationErrors,
     validationWarnings,
@@ -148,31 +162,36 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto divide-y divide-zinc-100">
+      <div className="flex-1 overflow-y-auto divide-y divide-[#e4e4f0]">
 
-        <div className="px-4 py-3">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-2">
-            Required to publish
-          </p>
-          <ul className="space-y-1.5">
+        <div className="px-4 py-2.5">
+          <SectionHeaderWithScore
+            title="Required to publish"
+            earned={scoreContributions.required.earned}
+            max={scoreContributions.required.max}
+          />
+          <ul className="space-y-1">
             {requiredChecks.map(item => (
               <CheckRow key={item.key} label={item.label} ok={item.ok} variant="required" />
             ))}
           </ul>
         </div>
 
-        {fieldCount > 0 && (
-          <div className="px-4 py-3">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-2.5">
-              Field quality
-            </p>
+        <div className="px-4 py-2.5">
+          <SectionHeaderWithScore
+            title="Field quality"
+            earned={scoreContributions.documentation.earned}
+            max={scoreContributions.documentation.max}
+          />
 
-            <div className="mb-1">
-              <div className="flex items-center justify-between mb-1">
+          {fieldCount > 0 ? (
+            <>
+              <div>
+              <div className="flex items-center justify-between gap-2 mb-1">
                 <span className="text-xs text-[#3f3f4a]">Documented fields</span>
                 <span className={cn(
-                  'text-[11px] font-semibold',
-                  descCoverage === 1 ? 'text-[#047800]' : descCoverage >= 0.5 ? 'text-[#d27b00]' : 'text-[#656574]',
+                  'text-[10px] font-medium tabular-nums text-right leading-snug',
+                  descCoverage === 1 ? 'text-[#047800]' : descCoverage >= 0.5 ? 'text-[#656574]' : 'text-[#9898a7]',
                 )}>
                   {fieldsWithDesc} of {fieldCount} documented
                 </span>
@@ -189,22 +208,23 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
                 </div>
               </Tooltip>
               {fieldsWithDesc < fieldCount && (
-                <p className="text-[11px] text-[#656574] mt-1">
+                <p className="text-[10px] text-[#9898a7] mt-1 leading-snug">
                   {fieldCount - fieldsWithDesc} field{fieldCount - fieldsWithDesc > 1 ? 's are' : ' is'} missing documentation
                 </p>
               )}
             </div>
 
-            {piiCount > 0 && (
-              <div className="mt-2.5 flex items-center gap-2 bg-[#fff2ee] rounded-lg px-2.5 py-2 border border-rose-100">
-                <AlertTriangle className="h-3 w-3 text-[#c12c11] flex-shrink-0" />
-                <span className="text-[11px] text-[#c12c11] leading-snug">
-                  <strong>{piiCount}</strong> personal data field{piiCount > 1 ? 's' : ''} (PII) — ensure data privacy
-                </span>
-              </div>
-            )}
-          </div>
-        )}
+              {piiCount > 0 && (
+                <div className="mt-2.5 flex items-center gap-2 bg-[#fff2ee] rounded-lg px-2.5 py-2 border border-rose-100">
+                  <AlertTriangle className="h-3 w-3 text-[#c12c11] flex-shrink-0" />
+                  <span className="text-[11px] text-[#c12c11] leading-snug">
+                    <strong>{piiCount}</strong> personal data field{piiCount > 1 ? 's' : ''} (PII) — ensure data privacy
+                  </span>
+                </div>
+              )}
+            </>
+          ) : null}
+        </div>
 
         {validationErrors.length >= 1 && (
           <div className="px-4 py-3 border-t border-[#e4e4f0]">
@@ -231,11 +251,13 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
           </div>
         )}
 
-        <div className="px-4 py-3">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-2">
-            Recommended
-          </p>
-          <ul className="space-y-1.5">
+        <div className="px-4 py-2.5">
+          <SectionHeaderWithScore
+            title="Recommended"
+            earned={scoreContributions.recommended.earned}
+            max={scoreContributions.recommended.max}
+          />
+          <ul className="space-y-1">
             {recommendedChecks.map(item => (
               <CheckRow
                 key={item.key}
@@ -249,15 +271,15 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
         </div>
 
         {nextSteps.length > 0 && (
-          <div className="px-4 py-3">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-2">
+          <div className="px-4 py-2.5">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-1.5">
               Next steps
             </p>
-            <ul className="space-y-2">
+            <ul className="space-y-1.5">
               {nextSteps.map((step, i) => (
-                <li key={i} className="flex items-start gap-2">
-                  <ArrowRight className="h-3 w-3 text-[#3d7cf4] flex-shrink-0 mt-0.5" />
-                  <span className="text-xs text-[#33333d] leading-snug">{step}</span>
+                <li key={i} className="flex items-start gap-1.5">
+                  <ArrowRight className="h-3 w-3 text-[#9898a7] flex-shrink-0 mt-0.5" />
+                  <span className="text-[11px] text-[#3f3f4a] leading-snug">{step}</span>
                 </li>
               ))}
             </ul>

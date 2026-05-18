@@ -6,17 +6,27 @@ import { OdcsAccessRole } from '@/types/odcs'
 import { generateId } from '@/lib/utils'
 import { GovernanceEmptyState } from '@/components/shared/GovernanceEmptyState'
 import {
+  governanceTableFooterClass,
+  governanceTableHeadClass,
+  governanceTableHeadRowClass,
+  governanceTableShellClass,
+  GovernanceSectionHeader,
+} from '@/components/shared/GovernanceSectionHeader'
+import {
   DATA_ACCESS_EMPTY_BODY,
   DATA_ACCESS_EMPTY_CTA,
   DATA_ACCESS_EMPTY_TITLE,
   DATA_ACCESS_ROLES_INTRO,
 } from '@/lib/uxCopy'
+import { cn } from '@/lib/utils'
 
 interface AccessRolesSectionProps {
   roles: OdcsAccessRole[]
   onChange: (roles: OdcsAccessRole[]) => void
   isLocked: boolean
 }
+
+const ACCESS_GRID = 'grid grid-cols-[minmax(0,1fr)_96px_minmax(0,1.2fr)_32px] gap-x-3 gap-y-0 items-center'
 
 function makeRole(): OdcsAccessRole {
   return { id: generateId(), role: '', access: 'read', description: '' }
@@ -30,12 +40,10 @@ export function AccessRolesSection({ roles, onChange, isLocked }: AccessRolesSec
 
   return (
     <div className="max-w-[720px] w-full">
-      <div className="mb-6">
-        <h2 className="text-base font-semibold text-[#12131f]">Data access roles</h2>
-        <p className="text-[#3f3f4a] text-xs mt-0.5 leading-relaxed">
-          {DATA_ACCESS_ROLES_INTRO}
-        </p>
-      </div>
+      <GovernanceSectionHeader
+        title="Data access roles"
+        description={DATA_ACCESS_ROLES_INTRO}
+      />
 
       {roles.length === 0 ? (
         <GovernanceEmptyState
@@ -47,17 +55,17 @@ export function AccessRolesSection({ roles, onChange, isLocked }: AccessRolesSec
           isLocked={isLocked}
         />
       ) : (
-        <div className="border border-[#d3d3e5] rounded-xl overflow-hidden bg-white">
-          <div className="grid grid-cols-[1fr_100px_1fr_36px] gap-0 border-b border-[#e4e4f0] bg-[#fbfbff]/80 px-3 py-2">
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-[#656574]">Role</span>
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-[#656574]">Access</span>
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-[#656574]">Description</span>
+        <div className={governanceTableShellClass}>
+          <div className={cn(ACCESS_GRID, governanceTableHeadRowClass, 'px-3')}>
+            <span className={governanceTableHeadClass}>Role</span>
+            <span className={governanceTableHeadClass}>Access</span>
+            <span className={governanceTableHeadClass}>Description</span>
             <span />
           </div>
 
           <div className="divide-y divide-[#e4e4f0]">
             {roles.map(r => (
-              <div key={r.id} className="grid grid-cols-[1fr_100px_1fr_36px] gap-2 items-start px-3 py-2.5">
+              <div key={r.id} className={cn(ACCESS_GRID, 'px-3 py-2')}>
                 <Input
                   value={r.role}
                   onChange={e => update(r.id, { role: e.target.value })}
@@ -70,7 +78,7 @@ export function AccessRolesSection({ roles, onChange, isLocked }: AccessRolesSec
                   onValueChange={v => v && update(r.id, { access: v as 'read' | 'write' })}
                   disabled={isLocked}
                 >
-                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="h-8 text-xs w-full"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="read" className="text-xs">Read</SelectItem>
                     <SelectItem value="write" className="text-xs">Write</SelectItem>
@@ -84,21 +92,24 @@ export function AccessRolesSection({ roles, onChange, isLocked }: AccessRolesSec
                   rows={1}
                   className="text-xs min-h-[32px] resize-none py-1.5"
                 />
-                {!isLocked && (
+                {!isLocked ? (
                   <button
                     type="button"
                     onClick={() => remove(r.id)}
-                    className="h-8 w-8 flex items-center justify-center text-[#9898a7] hover:text-[#c12c11] hover:bg-[#fff2ee] rounded transition-colors"
+                    className="h-7 w-7 flex items-center justify-center text-[#9898a7] hover:text-[#c12c11] hover:bg-[#fff2ee] rounded transition-colors"
+                    aria-label="Remove role"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
+                ) : (
+                  <span />
                 )}
               </div>
             ))}
           </div>
 
           {!isLocked && (
-            <div className="px-3 py-2 border-t border-[#e4e4f0] bg-[#fbfbff]/40">
+            <div className={governanceTableFooterClass}>
               <button
                 type="button"
                 onClick={() => onChange([...roles, makeRole()])}
