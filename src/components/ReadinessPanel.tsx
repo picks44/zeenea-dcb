@@ -4,7 +4,7 @@ import { CollaboratorRole, DataContract } from '@/types/odcs'
 import { generateODCSYaml } from '@/lib/odcsYamlGenerator'
 import { validateContract, ValidationResult } from '@/lib/contractValidation'
 import { cn } from '@/lib/utils'
-import { EXPORT_COVERAGE, PUBLISH_REQUIRES_PUBLISHER } from '@/lib/uxCopy'
+import { EXPORT_COVERAGE, HEALTH_GOVERNANCE_OWNER_CHECK, PUBLISH_REQUIRES_PUBLISHER } from '@/lib/uxCopy'
 
 interface ReadinessPanelProps {
   contract: DataContract
@@ -47,7 +47,7 @@ function useHealth(contract: DataContract, myRole: CollaboratorRole, hasEditedSi
   const requiredChecks = [
     { key: 'title',   label: 'Contract name',           ok: !errorKeys.has('title') },
     { key: 'id',      label: 'Contract ID',              ok: !errorKeys.has('id') },
-    { key: 'owner',   label: 'Contract owner',           ok: !errorKeys.has('owner') },
+    { key: 'owner',   label: HEALTH_GOVERNANCE_OWNER_CHECK, ok: !errorKeys.has('owner') },
     { key: 'version', label: 'Version (e.g. 1.0.0)',    ok: !errorKeys.has('version') },
     { key: 'schema',  label: 'At least 1 field defined', ok: schemaOk },
   ]
@@ -76,7 +76,7 @@ function useHealth(contract: DataContract, myRole: CollaboratorRole, hasEditedSi
   else if (!id.trim())
     nextSteps.push('Set a contract ID in Fundamentals')
   else if (!info.owner.trim())
-    nextSteps.push('Add a contract owner in Fundamentals')
+    nextSteps.push('Assign a governance owner in Fundamentals')
   if (fieldCount === 0)
     nextSteps.push('Add at least one field in Schema to describe your data')
   else if (fieldsWithDesc < fieldCount)

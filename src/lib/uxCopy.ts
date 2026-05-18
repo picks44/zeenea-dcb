@@ -20,6 +20,33 @@ export const CONTRACT_OWNER_HELPER =
 export const STAKEHOLDERS_BANNER =
   `Stakeholders are collaboration metadata for governance contact. ${NOT_EXPORTED_ODCS_MVP}`
 
+export const STAKEHOLDERS_SECTION_HELPER =
+  'Use stakeholders to document governance contacts and operational ownership around the contract.'
+
+export const STAKEHOLDERS_EMPTY_TITLE = 'No stakeholders added yet.'
+export const STAKEHOLDERS_EMPTY_BODY =
+  'Add governance and operational contacts to support collaboration and accountability.'
+export const STAKEHOLDERS_EMPTY_CTA = 'Add stakeholder'
+
+export const STAKEHOLDERS_WITH_ENTRIES_HINT =
+  'Add or update contacts as governance and operational responsibilities evolve.'
+
+/** Contract Health — required to publish (governance field, not Publisher role). */
+export const HEALTH_GOVERNANCE_OWNER_CHECK = 'Governance owner assigned'
+
+export const DATA_ACCESS_EMPTY_TITLE = 'No data access roles defined'
+export const DATA_ACCESS_EMPTY_BODY =
+  'Define ODCS data access roles for consumers of the published contract. These roles are exported to ODCS YAML.'
+export const DATA_ACCESS_EMPTY_CTA = 'Add a role to describe expected access permissions.'
+
+export const VERSION_HISTORY_INTRO_EMPTY =
+  'No published versions yet. Version history is managed in the application lifecycle and is not included in the ODCS export.'
+
+export function versionHistoryIntroCount(count: number): string {
+  const noun = count === 1 ? 'version' : 'versions'
+  return `${count} published ${noun} — managed in the application lifecycle, not included in the ODCS export.`
+}
+
 export const MEMBERS_DISCLAIMER =
   `Members control who can edit and publish this contract in ${APP_NAME}. This is separate from ODCS data access roles.`
 

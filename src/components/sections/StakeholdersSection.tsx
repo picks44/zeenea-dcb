@@ -1,11 +1,18 @@
 import { useState } from 'react'
-import { Plus, Trash2, Users, Mail, Building2, Briefcase, Info } from 'lucide-react'
+import { Plus, Trash2, Users, Mail, Building2, Info } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Stakeholder } from '@/types/odcs'
 import { generateId } from '@/lib/utils'
-import { STAKEHOLDERS_BANNER } from '@/lib/uxCopy'
+import {
+  STAKEHOLDERS_BANNER,
+  STAKEHOLDERS_EMPTY_BODY,
+  STAKEHOLDERS_EMPTY_CTA,
+  STAKEHOLDERS_EMPTY_TITLE,
+  STAKEHOLDERS_SECTION_HELPER,
+  STAKEHOLDERS_WITH_ENTRIES_HINT,
+} from '@/lib/uxCopy'
 import { cn } from '@/lib/utils'
 
 interface StakeholdersSectionProps {
@@ -153,6 +160,9 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked }: Stakeh
             <p className="text-[#3f3f4a] text-sm leading-relaxed">
               Record governance contacts for this contract. Stakeholders support collaboration and accountability in the application.
             </p>
+            <p className="text-[#656574] text-xs mt-2 leading-relaxed">
+              {STAKEHOLDERS_SECTION_HELPER}
+            </p>
           </div>
           {!isLocked && stakeholders.length > 0 && !showForm && (
             <Button size="sm" variant="outline" onClick={() => setShowForm(true)} className="gap-1.5 flex-shrink-0">
@@ -239,37 +249,27 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked }: Stakeh
               <Users className="h-6 w-6 text-[#656574]" />
             </div>
             <div className="text-center">
-              <p className="text-[#33333d] font-medium mb-1">No stakeholders added yet</p>
-              <p className="text-[#656574] text-sm">
-                Add the teams and individuals involved with this contract.
-              </p>
+              <p className="text-[#33333d] font-medium mb-1">{STAKEHOLDERS_EMPTY_TITLE}</p>
+              <p className="text-[#656574] text-sm leading-relaxed">{STAKEHOLDERS_EMPTY_BODY}</p>
+              {!isLocked && (
+                <p className="text-[#0550dc] text-xs font-medium mt-3">
+                  {STAKEHOLDERS_EMPTY_CTA} →
+                </p>
+              )}
             </div>
             {!isLocked && (
               <Button onClick={() => setShowForm(true)} className="gap-2">
                 <Plus className="h-4 w-4" />
-                Add first stakeholder
+                {STAKEHOLDERS_EMPTY_CTA}
               </Button>
             )}
           </div>
         ) : null}
 
-        {/* Help box */}
         {stakeholders.length > 0 && (
-          <div className="mt-2 grid grid-cols-3 gap-3">
-            {[
-              { icon: Briefcase, label: 'Data Owner', desc: 'Accountable for data quality and contract' },
-              { icon: Users, label: 'Data Consumer', desc: 'Teams that use this data' },
-              { icon: Building2, label: 'Data Steward', desc: 'Maintains and governs the contract' },
-            ].map(({ icon: Icon, label, desc }) => (
-              <div key={label} className="p-3 bg-[#fbfbff] rounded-lg border border-[#e4e4f0]">
-                <div className="flex items-center gap-2 mb-1">
-                  <Icon className="h-3.5 w-3.5 text-[#656574]" />
-                  <span className="text-xs font-semibold text-[#33333d]">{label}</span>
-                </div>
-                <p className="text-xs text-[#656574] leading-relaxed">{desc}</p>
-              </div>
-            ))}
-          </div>
+          <p className="text-[11px] text-[#656574] leading-snug pt-1">
+            {STAKEHOLDERS_WITH_ENTRIES_HINT}
+          </p>
         )}
       </div>
     </div>

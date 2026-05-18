@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Tooltip } from '@/components/ui/tooltip'
 import { DataContract, DataContractSnapshot } from '@/types/odcs'
 import { timeAgo, cn } from '@/lib/utils'
+import { VERSION_HISTORY_INTRO_EMPTY, versionHistoryIntroCount } from '@/lib/uxCopy'
 
 interface VersionsViewProps {
   contract: DataContract
@@ -64,8 +65,8 @@ export function VersionsView({
           <h2 className="text-base font-semibold text-neutral-900">Version history</h2>
           <p className="text-neutral-400 text-xs mt-0.5">
             {gitHistory.length === 0
-              ? 'No published versions yet. Version history is workflow metadata and is not exported to ODCS YAML.'
-              : `${gitHistory.length} published version${gitHistory.length > 1 ? 's' : ''} (workflow metadata, not in YAML)`}
+              ? VERSION_HISTORY_INTRO_EMPTY
+              : versionHistoryIntroCount(gitHistory.length)}
           </p>
         </div>
         {contract.info.status !== 'deprecated' && (gitState === 'never' || gitState === 'unpushed') && (

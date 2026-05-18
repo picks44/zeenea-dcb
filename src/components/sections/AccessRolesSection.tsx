@@ -5,7 +5,12 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { OdcsAccessRole } from '@/types/odcs'
 import { generateId } from '@/lib/utils'
-import { DATA_ACCESS_ROLES_INTRO } from '@/lib/uxCopy'
+import {
+  DATA_ACCESS_EMPTY_BODY,
+  DATA_ACCESS_EMPTY_CTA,
+  DATA_ACCESS_EMPTY_TITLE,
+  DATA_ACCESS_ROLES_INTRO,
+} from '@/lib/uxCopy'
 
 interface AccessRolesSectionProps {
   roles: OdcsAccessRole[]
@@ -31,23 +36,33 @@ export function AccessRolesSection({ roles, onChange, isLocked }: AccessRolesSec
           {DATA_ACCESS_ROLES_INTRO}
         </p>
       </div>
-      {roles.length === 0 && !isLocked ? (
-        <div className="border-2 border-dashed border-[#d3d3e5] rounded-xl p-10 flex flex-col items-center gap-3 text-center">
-          <Shield className="h-6 w-6 text-[#656574]" />
-          <p className="text-sm font-medium text-[#12131f]">No data access roles yet</p>
-          <Button size="sm" onClick={() => onChange([makeRole()])} className="gap-1.5 mt-1">
-            <Plus className="h-3.5 w-3.5" />
-            Add role
-          </Button>
+
+      <div className="border border-[#d3d3e5] rounded-xl overflow-hidden bg-white">
+        <div className="grid grid-cols-[1fr_100px_1fr_36px] gap-0 border-b border-[#e4e4f0] bg-[#fbfbff]/80 px-3 py-2">
+          <span className="text-[10px] font-semibold uppercase tracking-wide text-[#656574]">Role</span>
+          <span className="text-[10px] font-semibold uppercase tracking-wide text-[#656574]">Access</span>
+          <span className="text-[10px] font-semibold uppercase tracking-wide text-[#656574]">Description</span>
+          <span />
         </div>
-      ) : (
-        <div className="border border-[#d3d3e5] rounded-xl overflow-hidden bg-white">
-          <div className="grid grid-cols-[1fr_100px_1fr_36px] gap-0 border-b border-[#e4e4f0] bg-[#fbfbff]/80 px-3 py-2">
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-[#656574]">Role</span>
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-[#656574]">Access</span>
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-[#656574]">Description</span>
-            <span />
+
+        {roles.length === 0 ? (
+          <div className="px-6 py-10 flex flex-col items-center gap-3 text-center border-b border-[#e4e4f0] bg-[#fbfbff]/30">
+            <Shield className="h-6 w-6 text-[#656574]" />
+            <div className="max-w-md">
+              <p className="text-sm font-medium text-[#12131f]">{DATA_ACCESS_EMPTY_TITLE}</p>
+              <p className="text-xs text-[#656574] mt-1.5 leading-relaxed">{DATA_ACCESS_EMPTY_BODY}</p>
+              {!isLocked && (
+                <p className="text-[#0550dc] text-xs font-medium mt-3">{DATA_ACCESS_EMPTY_CTA}</p>
+              )}
+            </div>
+            {!isLocked && (
+              <Button size="sm" onClick={() => onChange([makeRole()])} className="gap-1.5 mt-1">
+                <Plus className="h-3.5 w-3.5" />
+                Add role
+              </Button>
+            )}
           </div>
+        ) : (
           <div className="divide-y divide-[#e4e4f0]">
             {roles.map(r => (
               <div key={r.id} className="grid grid-cols-[1fr_100px_1fr_36px] gap-2 items-start px-3 py-2.5">
@@ -89,20 +104,21 @@ export function AccessRolesSection({ roles, onChange, isLocked }: AccessRolesSec
               </div>
             ))}
           </div>
-          {!isLocked && (
-            <div className="px-3 py-2 border-t border-[#e4e4f0] bg-[#fbfbff]/40">
-              <button
-                type="button"
-                onClick={() => onChange([...roles, makeRole()])}
-                className="flex items-center gap-1.5 text-xs text-[#656574] hover:text-[#0550dc] font-medium transition-colors"
-              >
-                <Plus className="h-3.5 w-3.5" />
-                Add role
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+        )}
+
+        {!isLocked && roles.length > 0 && (
+          <div className="px-3 py-2 border-t border-[#e4e4f0] bg-[#fbfbff]/40">
+            <button
+              type="button"
+              onClick={() => onChange([...roles, makeRole()])}
+              className="flex items-center gap-1.5 text-xs text-[#656574] hover:text-[#0550dc] font-medium transition-colors"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              Add role
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
