@@ -390,6 +390,21 @@ export function summarizeExportChangesSince(
   return compareExportedSnapshots(previous, contractToComparisonSnapshot(current))
 }
 
+/**
+ * Whether the contract has a working copy distinct from the last publish.
+ * Active + read-only contracts with no export diff do NOT count as a draft.
+ */
+export function hasWorkingCopyDraft(contract: DataContract): boolean {
+  if (contract.info.status === 'draft') return true
+  if (contract.inRevision) return true
+
+  const lastCommit = contract.gitHistory[contract.gitHistory.length - 1]
+  if (!lastCommit?.snapshot) return false
+  if (new Date(contract.updatedAt) <= new Date(lastCommit.timestamp)) return false
+
+  return !summarizeExportChangesSince(contract, lastCommit.snapshot).identical
+}
+
 const NO_EXPORTED_CHANGES = 'No exported ODCS changes'
 
 function changelogLineForRow(sectionId: string, row: FormDiffRow): string {

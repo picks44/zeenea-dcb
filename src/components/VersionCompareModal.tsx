@@ -8,6 +8,7 @@ import { snapshotToYaml } from '@/lib/odcsYamlGenerator'
 import {
   compareExportedSnapshots,
   contractToComparisonSnapshot,
+  hasWorkingCopyDraft,
   type FormDiffRow,
 } from '@/lib/exportedContractDiff'
 
@@ -280,7 +281,7 @@ interface VersionCompareModalProps {
 export function VersionCompareModal({ contract, initialHash, open, onClose }: VersionCompareModalProps) {
   const sources = useMemo((): VersionSource[] => {
     const list: VersionSource[] = []
-    if (contract.info.status === 'draft' || !contract.gitHistory.length || new Date(contract.updatedAt) > new Date(contract.gitHistory[contract.gitHistory.length - 1].timestamp)) {
+    if (hasWorkingCopyDraft(contract)) {
       list.push({ id: 'draft', version: contract.info.version, sublabel: 'Draft · now', snapshot: contractToSnapshot(contract) })
     }
     for (const commit of [...contract.gitHistory].reverse()) {

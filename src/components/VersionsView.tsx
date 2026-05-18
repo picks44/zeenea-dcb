@@ -4,7 +4,7 @@ import { Tooltip } from '@/components/ui/tooltip'
 import { DataContract } from '@/types/odcs'
 import { timeAgo, cn } from '@/lib/utils'
 import { VERSION_HISTORY_INTRO_EMPTY, versionHistoryIntroCount } from '@/lib/uxCopy'
-import { summarizeExportChangesSince } from '@/lib/exportedContractDiff'
+import { hasWorkingCopyDraft, summarizeExportChangesSince } from '@/lib/exportedContractDiff'
 
 interface VersionsViewProps {
   contract: DataContract
@@ -19,8 +19,7 @@ export function VersionsView({
   const commits = [...gitHistory].reverse()
   const lastCommit = gitHistory[gitHistory.length - 1]
 
-  const hasUnpublishedChanges = !lastCommit || new Date(contract.updatedAt) > new Date(lastCommit.timestamp)
-  const hasDraftRow = contract.info.status === 'draft' || contract.inRevision || hasUnpublishedChanges
+  const hasDraftRow = hasWorkingCopyDraft(contract)
   const canCompareCurrent = hasDraftRow && !!lastCommit?.snapshot
 
   const showTimeline = hasDraftRow || commits.length > 0
