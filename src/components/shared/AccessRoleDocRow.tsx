@@ -7,11 +7,11 @@ function formatAccess(access: string): string {
   return access.trim() || '—'
 }
 
-export function AccessRoleDocRow({ role }: { role: OdcsAccessRole }) {
+export function AccessRoleDocRow({ role, compact }: { role: OdcsAccessRole; compact?: boolean }) {
   const name = role.role.trim() || '—'
   const access = formatAccess(role.access)
   const desc = (role.description ?? '').trim()
   const secondary = desc ? `${access} · ${desc}` : access
 
-  return <GovernanceDocRow primary={name} secondary={secondary} />
+  return <GovernanceDocRow primary={name} secondary={secondary} compact={compact} />
 }

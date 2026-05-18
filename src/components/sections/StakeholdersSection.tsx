@@ -89,7 +89,7 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked, docCompa
       ) : isLocked ? (
         <GovernanceDocList>
           {stakeholders.map(s => (
-            <StakeholderDocRow key={s.id} stakeholder={s} />
+            <StakeholderDocRow key={s.id} stakeholder={s} compact={docCompact} />
           ))}
         </GovernanceDocList>
       ) : (

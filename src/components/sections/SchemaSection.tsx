@@ -10,6 +10,7 @@ interface SchemaSectionProps {
   tables: SchemaTable[]
   onChange: (tables: SchemaTable[]) => void
   isLocked: boolean
+  docCompact?: boolean
 }
 
 function makeTable(name: string): SchemaTable {
@@ -26,7 +27,7 @@ function makeTable(name: string): SchemaTable {
   }
 }
 
-export function SchemaSection({ tables, onChange, isLocked }: SchemaSectionProps) {
+export function SchemaSection({ tables, onChange, isLocked, docCompact }: SchemaSectionProps) {
   const [addingTable, setAddingTable] = useState(false)
   const [newName, setNewName] = useState('')
   const formRef = useRef<HTMLDivElement>(null)
@@ -96,6 +97,7 @@ export function SchemaSection({ tables, onChange, isLocked }: SchemaSectionProps
               tableIndex={i}
               allTables={tables}
               isLocked={isLocked}
+              docCompact={docCompact}
               onTableChange={handleTableChange}
               onDeleteTable={idx => onChange(tables.filter((_, j) => j !== idx))}
             />

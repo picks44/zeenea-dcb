@@ -309,6 +309,7 @@ export default function App() {
                   onSectionChange={setActiveSection}
                   isNew={contract.dataset.length === 0 && contract.gitHistory.length === 0}
                   onDeleteContract={handleDeleteContract}
+                  docCompact={docCompact}
                 />
               )}
 
@@ -341,7 +342,10 @@ export default function App() {
                 )}
 
                 {contract.info.status === 'active' && !contract.inRevision && (
-                  <div className="bg-[#edf6ff] border-b border-[#b8d0fb] px-6 py-2 flex items-center gap-2.5 flex-shrink-0">
+                  <div className={cn(
+                    'bg-[#edf6ff] border-b border-[#b8d0fb] flex items-center flex-shrink-0',
+                    docCompact ? 'px-4 py-1.5 gap-2' : 'px-6 py-2 gap-2.5',
+                  )}>
                     <Lock className="h-3.5 w-3.5 text-[#00699f] flex-shrink-0" />
                     <p className="text-[#003d5c] text-xs font-medium">
                       This contract is active and read-only. Start a new version to edit and publish changes.
@@ -392,7 +396,12 @@ export default function App() {
                           docCompact={docCompact}
                         />
                       ) : activeSection === 'schema' ? (
-                        <SchemaSection tables={contract.dataset} onChange={handleSchemaChange} isLocked={isLocked} />
+                        <SchemaSection
+                          tables={contract.dataset}
+                          onChange={handleSchemaChange}
+                          isLocked={isLocked}
+                          docCompact={docCompact}
+                        />
                       ) : (activeSection === 'stakeholders' || activeSection === 'team') ? (
                         <StakeholdersSection
                           stakeholders={contract.stakeholders}
@@ -424,6 +433,7 @@ export default function App() {
                         myRole={myRole}
                         hasEditedSincePublish={hasEditedSincePublish}
                         layout="pinned"
+                        docCompact={docCompact}
                       />
                     )}
                     {showReadinessPanel && !panelPinned && readinessOpen && (
@@ -440,6 +450,7 @@ export default function App() {
                           hasEditedSincePublish={hasEditedSincePublish}
                           layout="overlay"
                           onClose={() => setReadinessOpen(false)}
+                          docCompact={docCompact}
                         />
                       </>
                     )}

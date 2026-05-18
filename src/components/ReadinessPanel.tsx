@@ -24,6 +24,7 @@ interface ReadinessPanelProps {
   /** Pinned in layout (xl+) or floating overlay (lg and below). */
   layout?: 'pinned' | 'overlay'
   onClose?: () => void
+  docCompact?: boolean
 }
 
 function SectionHeaderWithScore({
@@ -112,6 +113,7 @@ export function ReadinessPanel({
   hasEditedSincePublish,
   layout = 'pinned',
   onClose,
+  docCompact,
 }: ReadinessPanelProps) {
   const [copied, setCopied] = useState(false)
 
@@ -167,9 +169,10 @@ export function ReadinessPanel({
     healthScore >= 60 ? 'bg-[#0550dc]' :
     'bg-[#9898a7]'
 
-  const sectionPad = isPublishedView ? 'px-3 py-2.5' : 'px-4 py-3'
+  const publishedDense = isPublishedView && docCompact
+  const sectionPad = publishedDense ? 'px-2.5 py-2' : isPublishedView ? 'px-3 py-2.5' : 'px-4 py-3'
   const panelBorder = isPublishedView ? 'border-[#ebebf0]' : 'border-[#d3d3e5]'
-  const listGap = isPublishedView ? 'space-y-0.5' : 'space-y-1'
+  const listGap = publishedDense ? 'space-y-0' : isPublishedView ? 'space-y-0.5' : 'space-y-1'
 
   const yamlBlock = (
     <div className="border-t border-[#e4e4f0] mt-1">
@@ -205,7 +208,7 @@ export function ReadinessPanel({
     >
 
       <div className={cn(sectionPad, 'border-b flex-shrink-0', panelBorder)}>
-        <div className="flex items-center justify-between gap-2 mb-2.5">
+        <div className={cn('flex items-center justify-between gap-2', publishedDense ? 'mb-1.5' : 'mb-2.5')}>
           <span className="text-xs font-semibold text-[#33333d] min-w-0 truncate">
             {isPublishedView ? CONTRACT_QUALITY_PANEL_TITLE : 'Publication readiness'}
           </span>
@@ -232,14 +235,14 @@ export function ReadinessPanel({
           </div>
         </div>
 
-        <div className="h-1.5 rounded-full bg-[#f5f5fa] overflow-hidden">
+        <div className={cn('rounded-full bg-[#f5f5fa] overflow-hidden', publishedDense ? 'h-1' : 'h-1.5')}>
           <div
             className={cn('h-full rounded-full transition-all duration-500', barColor)}
             style={{ width: `${healthScore}%` }}
           />
         </div>
 
-        <div className="mt-2 flex items-center gap-1.5">
+        <div className={cn('flex items-center gap-1.5', publishedDense ? 'mt-1.5' : 'mt-2')}>
           {isPublishedView ? (
             <>
               <CheckCircle2 className="h-3 w-3 text-[#656574] flex-shrink-0" />
@@ -407,8 +410,11 @@ export function ReadinessPanel({
         )}
 
         {isPublishedView ? (
-          <div className={sectionPad}>
-            <p className="text-[11px] text-[#656574] leading-snug">
+          <div className={cn(sectionPad, 'border-t', panelBorder)}>
+            <p className={cn(
+              'leading-snug',
+              publishedDense ? 'text-[10px] text-[#9898a7]' : 'text-[11px] text-[#656574]',
+            )}>
               {START_NEW_VERSION_QUALITY_NOTE}
             </p>
           </div>

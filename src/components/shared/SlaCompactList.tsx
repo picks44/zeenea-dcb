@@ -1,6 +1,7 @@
 import { SlaProperty } from '@/types/odcs'
 import { GovernanceDocList } from '@/components/shared/GovernanceDocList'
-import { GovernanceDocRow } from '@/components/shared/GovernanceDocRow'
+import { DOC_COMPACT_ROW } from '@/components/shared/docViewTokens'
+import { cn } from '@/lib/utils'
 
 const PROPERTY_PRESETS = [
   'latency',
@@ -31,31 +32,33 @@ function slaPropertyLabel(row: SlaProperty): string {
   return SLA_PROPERTY_LABELS[preset as (typeof PROPERTY_PRESETS)[number]] ?? row.property
 }
 
-function formatValue(row: SlaProperty): string {
+function formatInlineValue(row: SlaProperty): string {
   const value = row.value.trim() || '—'
   const unit = (row.unit ?? '').trim()
-  return unit ? `${value} ${unit}` : value
+  const main = unit ? `${value} ${unit}` : value
+  const extras = [(row.element ?? '').trim(), (row.driver ?? '').trim(), (row.description ?? '').trim()]
+    .filter(Boolean)
+  if (extras.length === 0) return main
+  return `${main} · ${extras.join(' · ')}`
 }
 
-function formatSubline(row: SlaProperty): string | undefined {
-  const parts = [
-    (row.element ?? '').trim(),
-    (row.driver ?? '').trim(),
-    (row.description ?? '').trim(),
-  ].filter(Boolean)
-  return parts.length > 0 ? parts.join(' · ') : undefined
+function SlaInlineRow({ row, compact }: { row: SlaProperty; compact?: boolean }) {
+  const label = slaPropertyLabel(row)
+  const detail = formatInlineValue(row)
+
+  return (
+    <div className={cn(compact ? DOC_COMPACT_ROW : 'px-3 py-2', 'text-xs leading-snug')}>
+      <span className="font-medium text-[#12131f]">{label}</span>
+      <span className="text-[#656574]"> · {detail}</span>
+    </div>
+  )
 }
 
-export function SlaCompactList({ rows }: { rows: SlaProperty[] }) {
+export function SlaCompactList({ rows, compact }: { rows: SlaProperty[]; compact?: boolean }) {
   return (
     <GovernanceDocList>
       {rows.map(row => (
-        <GovernanceDocRow
-          key={row.id}
-          primary={slaPropertyLabel(row)}
-          secondary={formatValue(row)}
-          tertiary={formatSubline(row)}
-        />
+        <SlaInlineRow key={row.id} row={row} compact={compact} />
       ))}
     </GovernanceDocList>
   )

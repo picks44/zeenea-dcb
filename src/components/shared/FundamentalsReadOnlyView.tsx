@@ -8,7 +8,7 @@ import { WorkflowMetadataPill } from '@/components/shared/WorkflowMetadataPill'
 import { CONTRACT_OWNER_HELPER } from '@/lib/uxCopy'
 import { AUTH_DEF_TYPE_OPTIONS } from '@/types/odcsShared'
 import { cn } from '@/lib/utils'
-import { docShellClass } from '@/components/shared/docViewTokens'
+import { docShellClass, DOC_COMPACT_SPACING, DOC_COMPACT_TEXT } from '@/components/shared/docViewTokens'
 
 const STATUS_LABELS: Record<LifecycleStatus, string> = {
   draft: 'Draft',
@@ -27,7 +27,6 @@ interface FundamentalsReadOnlyViewProps {
 
 export function FundamentalsReadOnlyView({ contract, compact }: FundamentalsReadOnlyViewProps) {
   const { info, id } = contract
-  const [additionalOpen, setAdditionalOpen] = useState(true)
 
   const tags = info.tags ?? []
   const authDefs = (info.descriptionAuthoritativeDefinitions ?? []).filter(
@@ -37,32 +36,55 @@ export function FundamentalsReadOnlyView({ contract, compact }: FundamentalsRead
   const usage = (info.descriptionUsage ?? '').trim()
   const limitations = (info.descriptionLimitations ?? '').trim()
   const hasAdditionalContext = Boolean(usage || limitations || authDefs.length > 0)
+  const [additionalOpen, setAdditionalOpen] = useState(hasAdditionalContext)
+
+  const ownerName = info.owner.trim() || '—'
 
   return (
-    <div className="space-y-3">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3">
+    <div className={cn(compact ? DOC_COMPACT_SPACING.sectionStack : 'space-y-3')}>
+      <div
+        className={cn(
+          'grid grid-cols-1 sm:grid-cols-2',
+          compact ? DOC_COMPACT_SPACING.gridGap : 'gap-x-4 gap-y-3',
+        )}
+      >
         <ReadOnlyField label="Contract name" value={info.title} required compact={compact} />
         <ReadOnlyField label="Domain" value={info.domain} compact={compact} />
 
         <div>
-          <span className={cn('text-xs font-medium text-[#33333d] block', compact ? 'mb-0.5' : 'mb-1')}>
+          <span className={cn(compact ? DOC_COMPACT_TEXT.label : 'text-xs font-medium text-[#33333d] mb-0.5 block')}>
             ID<span className="text-red-500"> *</span>
           </span>
-          <div className="flex items-center gap-1 min-w-0">
-            <p className={cn('text-[13px] font-mono text-[#33333d] truncate min-w-0', !id.trim() && 'text-[#9898a7]')}>
+          <div className="flex items-baseline gap-0.5 min-w-0">
+            <p
+              className={cn(
+                'font-mono truncate min-w-0',
+                compact ? DOC_COMPACT_TEXT.value : 'text-[13px] text-[#33333d]',
+                !id.trim() && 'text-[#9898a7]',
+              )}
+            >
               {id.trim() || '—'}
             </p>
-            {id.trim() ? <InlineCopyButton value={id} ariaLabel="Copy contract ID" /> : null}
+            {id.trim() ? (
+              <InlineCopyButton value={id} ariaLabel="Copy contract ID" dense={compact} />
+            ) : null}
           </div>
         </div>
 
         <div>
-          <span className={cn('text-xs font-medium text-[#33333d] block', compact ? 'mb-0.5' : 'mb-1')}>
+          <span className={cn(compact ? DOC_COMPACT_TEXT.label : 'text-xs font-medium text-[#33333d] mb-0.5 block')}>
             Version & status
           </span>
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[13px] font-mono text-[#33333d]">v{info.version}</span>
-            <Badge variant={info.status}>{STATUS_LABELS[info.status]}</Badge>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className={cn('font-mono', compact ? DOC_COMPACT_TEXT.value : 'text-[13px] text-[#33333d]')}>
+              v{info.version}
+            </span>
+            <Badge
+              variant={info.status}
+              className={compact ? 'px-1.5 py-0 text-[10px] leading-4' : undefined}
+            >
+              {STATUS_LABELS[info.status]}
+            </Badge>
           </div>
         </div>
       </div>
@@ -72,62 +94,80 @@ export function FundamentalsReadOnlyView({ contract, compact }: FundamentalsRead
       <div className={docShellClass}>
         <button
           type="button"
-          className="w-full flex items-center gap-2 px-3 py-2 text-left text-xs font-medium text-[#33333d] bg-[#fbfbff]/60"
+          className={cn(
+            'w-full flex items-center gap-1.5 text-left text-xs font-medium text-[#33333d]',
+            compact ? 'px-3 py-1.5 bg-transparent' : 'px-3 py-2 bg-[#fbfbff]/60',
+          )}
           onClick={() => setAdditionalOpen(o => !o)}
         >
-          {additionalOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
-          Additional context
+          {additionalOpen ? <ChevronDown className="h-3 w-3 flex-shrink-0" /> : <ChevronRight className="h-3 w-3 flex-shrink-0" />}
+          <span className="flex-1 min-w-0">Additional context</span>
+          {!hasAdditionalContext && !additionalOpen ? (
+            <span className={cn('font-normal truncate', compact ? DOC_COMPACT_TEXT.muted : 'text-[10px] text-[#9898a7]')}>
+              None provided
+            </span>
+          ) : null}
         </button>
-        {additionalOpen && (
-          <div className="px-3 py-2 border-t border-[#e4e4f0] space-y-2">
-            {!hasAdditionalContext ? (
-              <p className="text-xs text-[#9898a7] leading-snug">
-                No additional governance context provided.
-              </p>
-            ) : (
-              <>
-                {usage ? <ReadOnlyField label="Usage" value={usage} multiline compact /> : null}
-                {limitations ? <ReadOnlyField label="Limitations" value={limitations} multiline compact /> : null}
-                {authDefs.length > 0 ? (
-                  <div>
-                    <span className="text-xs font-medium text-[#33333d] mb-0.5 block">Authoritative links</span>
-                    <ul className="space-y-1.5">
-                      {authDefs.map(def => (
-                        <li key={def.id} className="text-xs leading-snug">
-                          <p className="font-mono text-[11px] text-[#33333d] break-all">{def.url || '—'}</p>
-                          {def.type ? (
-                            <p className="text-[10px] text-[#9898a7]">{authTypeLabel(def.type)}</p>
-                          ) : null}
-                          {def.description?.trim() ? (
-                            <p className="text-[11px] text-[#656574] mt-0.5">{def.description}</p>
-                          ) : null}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-              </>
-            )}
+        {additionalOpen && hasAdditionalContext && (
+          <div className={cn('px-3 border-t border-[#e4e4f0]', compact ? 'py-1.5 space-y-1.5' : 'py-2 space-y-2')}>
+            {usage ? <ReadOnlyField label="Usage" value={usage} multiline compact /> : null}
+            {limitations ? <ReadOnlyField label="Limitations" value={limitations} multiline compact /> : null}
+            {authDefs.length > 0 ? (
+              <div>
+                <span className={DOC_COMPACT_TEXT.label}>Authoritative links</span>
+                <ul className="space-y-1">
+                  {authDefs.map(def => (
+                    <li key={def.id} className="text-[11px] leading-snug">
+                      <p className="font-mono text-[#33333d] break-all">{def.url || '—'}</p>
+                      {def.type ? (
+                        <p className={DOC_COMPACT_TEXT.muted}>{authTypeLabel(def.type)}</p>
+                      ) : null}
+                      {def.description?.trim() ? (
+                        <p className="text-[#656574]">{def.description}</p>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </div>
+        )}
+        {additionalOpen && !hasAdditionalContext && (
+          <p className={cn('px-3 pb-2', DOC_COMPACT_TEXT.muted)}>
+            No additional governance context provided.
+          </p>
         )}
       </div>
 
       <div>
-        <ReadOnlyField label="Governance owner" value={info.owner} required compact={compact} />
-        <p className="text-[11px] text-[#656574] mt-1 leading-snug flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
-          <span>{CONTRACT_OWNER_HELPER}</span>
+        <span className={cn(compact ? DOC_COMPACT_TEXT.label : 'text-xs font-medium text-[#33333d] mb-0.5 block')}>
+          Governance owner<span className="text-red-500"> *</span>
+        </span>
+        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+          <span className={cn(compact ? DOC_COMPACT_TEXT.value : 'text-sm text-[#33333d]')}>{ownerName}</span>
           <WorkflowMetadataPill variant="not-in-odcs" />
+        </div>
+        <p className={cn('mt-0.5', compact ? DOC_COMPACT_TEXT.muted : 'text-[11px] text-[#656574] leading-snug')}>
+          {CONTRACT_OWNER_HELPER}
         </p>
       </div>
 
       <div>
-        <span className={cn('text-xs font-medium text-[#33333d] block', compact ? 'mb-0.5' : 'mb-1')}>Tags</span>
+        <span className={cn(compact ? DOC_COMPACT_TEXT.label : 'text-xs font-medium text-[#33333d] mb-0.5 block')}>
+          Tags
+        </span>
         {tags.length === 0 ? (
-          <p className="text-[13px] text-[#9898a7]">—</p>
+          <p className={cn(compact ? DOC_COMPACT_TEXT.muted : 'text-[13px] text-[#9898a7]')}>—</p>
         ) : (
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-0.5">
             {tags.map(tag => (
-              <Badge key={tag} variant="tag">{tag}</Badge>
+              <Badge
+                key={tag}
+                variant="tag"
+                className={compact ? 'px-1.5 py-0 text-[10px] leading-4 font-normal' : undefined}
+              >
+                {tag}
+              </Badge>
             ))}
           </div>
         )}

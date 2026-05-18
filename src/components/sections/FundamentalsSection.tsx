@@ -102,7 +102,7 @@ export function FundamentalsSection({
 
   return (
     <div className={isLocked && isPublishedView ? 'max-w-3xl w-full' : 'max-w-[560px] w-full'}>
-      <div className="mb-6">
+      <div className={docCompact && isLocked ? 'mb-3' : 'mb-6'}>
         <h2 className="text-base font-semibold text-[#12131f]">Fundamentals</h2>
         <p className="text-[#3f3f4a] text-xs mt-0.5 leading-relaxed">
           Core contract metadata and governance documentation.

@@ -9,6 +9,7 @@ interface ContractSectionNavProps {
   onSectionChange: (section: SectionId) => void
   isNew: boolean
   onDeleteContract?: () => void
+  docCompact?: boolean
 }
 
 function sectionCompletion(contract: DataContract): Record<SectionId, 'complete' | 'partial' | 'empty'> {
@@ -37,6 +38,7 @@ export function ContractSectionNav({
   onSectionChange,
   isNew,
   onDeleteContract,
+  docCompact,
 }: ContractSectionNavProps) {
   const completion = sectionCompletion(contract)
 
@@ -62,14 +64,17 @@ export function ContractSectionNav({
               <button
                 onClick={() => onSectionChange(id)}
                 className={cn(
-                  'w-full flex items-center justify-center xl:justify-start gap-2 px-1 xl:pl-2 xl:pr-2 py-1 h-8 rounded text-left transition-colors text-sm tracking-[0.2px] text-[#12131f]',
+                  'w-full flex items-center justify-center xl:justify-start rounded text-left transition-colors tracking-[0.2px] text-[#12131f]',
+                  docCompact
+                    ? 'gap-1.5 px-1 xl:pl-2 xl:pr-2 py-0.5 h-7 text-[13px]'
+                    : 'gap-2 px-1 xl:pl-2 xl:pr-2 py-1 h-8 text-sm',
                   isActive
                     ? 'bg-[#edf6ff] font-medium'
                     : 'hover:bg-[rgba(228,228,240,0.3)]',
                 )}
                 aria-label={label}
               >
-                <Icon className="h-4 w-4 flex-shrink-0 text-[#656574]" />
+                <Icon className={cn('flex-shrink-0 text-[#656574]', docCompact ? 'h-3.5 w-3.5' : 'h-4 w-4')} />
                 <span className="hidden xl:block flex-1 truncate">{label}</span>
                 {status === 'complete' && (
                   <CheckCircle2 className="h-4 w-4 text-[#047800] flex-shrink-0 hidden xl:block" />

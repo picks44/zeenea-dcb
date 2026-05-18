@@ -43,11 +43,21 @@ interface TableBlockProps {
   tableIndex: number
   allTables: SchemaTable[]
   isLocked: boolean
+  docCompact?: boolean
   onTableChange: (i: number, t: SchemaTable) => void
   onDeleteTable: (i: number) => void
 }
 
-export function TableBlock({ table, tableIndex, allTables, isLocked, onTableChange, onDeleteTable }: TableBlockProps) {
+export function TableBlock({
+  table,
+  tableIndex,
+  allTables,
+  isLocked,
+  docCompact,
+  onTableChange,
+  onDeleteTable,
+}: TableBlockProps) {
+  const denseReadOnly = isLocked && docCompact
   const [collapsed, setCollapsed] = useState(false)
   const [editingTableName, setEditingTableName] = useState(false)
   const [editingType, setEditingType] = useState<string | null>(null)
@@ -187,7 +197,10 @@ export function TableBlock({ table, tableIndex, allTables, isLocked, onTableChan
         <>
           <div className="overflow-x-auto min-w-0">
           <div className="min-w-[640px]">
-          <div className="flex items-center px-4 py-1.5 border-b border-[#d3d3e5] bg-[#fbfbff]/50">
+          <div className={cn(
+            'flex items-center px-4 border-b border-[#d3d3e5] bg-[#fbfbff]/50',
+            denseReadOnly ? 'py-1' : 'py-1.5',
+          )}>
             <span className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] w-52 flex-shrink-0">Field</span>
             <span className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] w-32 flex-shrink-0">Type</span>
             <span className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] w-32 flex-shrink-0">DB Type</span>
@@ -208,12 +221,21 @@ export function TableBlock({ table, tableIndex, allTables, isLocked, onTableChan
               const Icon = tc.icon
               const compatibleDbTypes = DB_TYPES_BY_LOGICAL[col.logicalType] ?? ['VARCHAR']
               return (
-                <div key={col.id} className="flex items-center px-4 py-2 hover:bg-[#f5f5fa]/50 transition-colors group">
+                <div
+                  key={col.id}
+                  className={cn(
+                    'flex items-center px-4 transition-colors group',
+                    denseReadOnly ? 'py-1.5' : 'py-2 hover:bg-[#f5f5fa]/50',
+                  )}
+                >
                   <div className="w-52 flex-shrink-0 pr-3">
                     {isLocked ? (
                       <div>
-                        <span className="text-xs font-semibold text-[#2a2a30]">{col.physicalName}</span>
-                        <div className="text-[10px] text-[#656574] mt-0.5">{col.logicalName || deriveLogicalName(col.physicalName)}</div>
+                        <span className={cn('font-semibold text-[#2a2a30]', denseReadOnly ? 'text-[11px]' : 'text-xs')}>{col.physicalName}</span>
+                        <div className={cn(
+                          'truncate',
+                          denseReadOnly ? 'text-[9px] leading-tight text-[#9898a7] mt-0' : 'text-[10px] text-[#656574] mt-0.5',
+                        )}>{col.logicalName || deriveLogicalName(col.physicalName)}</div>
                       </div>
                     ) : (
                       <div className="space-y-0.5">
@@ -236,7 +258,11 @@ export function TableBlock({ table, tableIndex, allTables, isLocked, onTableChan
 
                   <div className="w-32 flex-shrink-0 pr-3">
                     {isLocked ? (
-                      <span className={cn('inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded border', tc.color)}><Icon className="h-2.5 w-2.5" />{tc.pmLabel}</span>
+                      <span className={cn(
+                        'inline-flex items-center gap-0.5 font-semibold rounded border',
+                        denseReadOnly ? 'text-[10px] px-1 py-0' : 'text-[10px] px-2 py-0.5',
+                        tc.color,
+                      )}><Icon className={denseReadOnly ? 'h-2 w-2' : 'h-2.5 w-2.5'} />{tc.pmLabel}</span>
                     ) : editingType === col.id ? (
                       <Select value={col.logicalType} onValueChange={v => { const firstDb = DB_TYPES_BY_LOGICAL[v as LogicalType]?.[0] ?? 'VARCHAR'; updateCol(col.id, { logicalType: v as LogicalType, isUnknownType: false, physicalType: firstDb }); setEditingType(null) }} open onOpenChange={open => { if (!open) setEditingType(null) }}>
                         <SelectTrigger className="h-7 text-xs w-full"><SelectValue /></SelectTrigger>
@@ -260,7 +286,10 @@ export function TableBlock({ table, tableIndex, allTables, isLocked, onTableChan
 
                   <div className="w-32 flex-shrink-0 pr-3">
                     {isLocked ? (
-                      <span className="text-[11px] font-mono text-[#3f3f4a] bg-[#f5f5fa] px-1.5 py-0.5 rounded">{col.physicalType}</span>
+                      <span className={cn(
+                        'font-mono text-[#3f3f4a] bg-[#f5f5fa] rounded',
+                        denseReadOnly ? 'text-[10px] px-1 py-0' : 'text-[11px] px-1.5 py-0.5',
+                      )}>{col.physicalType}</span>
                     ) : (
                       <Select value={col.physicalType} onValueChange={v => v !== null && updateCol(col.id, { physicalType: v })}>
                         <SelectTrigger className="h-7 text-[11px] font-mono w-full"><SelectValue /></SelectTrigger>
@@ -270,10 +299,10 @@ export function TableBlock({ table, tableIndex, allTables, isLocked, onTableChan
                   </div>
 
                   <div className="flex items-center w-44 flex-shrink-0">
-                    <FlagBadge shape="left"  flag="PK"  active={col.isPrimaryKey} onClick={() => updateCol(col.id, { isPrimaryKey: !col.isPrimaryKey })} disabled={isLocked} />
-                    <FlagBadge shape="mid"   flag="REQ" active={col.required}     onClick={() => updateCol(col.id, { required: !col.required })}         disabled={isLocked} />
-                    <FlagBadge shape="mid"   flag="PII" active={col.isPII}        onClick={() => updateCol(col.id, { isPII: !col.isPII })}               disabled={isLocked} />
-                    <FlagBadge shape="right" flag="UQ"  active={col.isUnique}     onClick={() => updateCol(col.id, { isUnique: !col.isUnique })}         disabled={isLocked} />
+                    <FlagBadge shape="left"  flag="PK"  active={col.isPrimaryKey} onClick={() => updateCol(col.id, { isPrimaryKey: !col.isPrimaryKey })} disabled={isLocked} compact={denseReadOnly} />
+                    <FlagBadge shape="mid"   flag="REQ" active={col.required}     onClick={() => updateCol(col.id, { required: !col.required })}         disabled={isLocked} compact={denseReadOnly} />
+                    <FlagBadge shape="mid"   flag="PII" active={col.isPII}        onClick={() => updateCol(col.id, { isPII: !col.isPII })}               disabled={isLocked} compact={denseReadOnly} />
+                    <FlagBadge shape="right" flag="UQ"  active={col.isUnique}     onClick={() => updateCol(col.id, { isUnique: !col.isUnique })}         disabled={isLocked} compact={denseReadOnly} />
                   </div>
 
                   <div className="flex-1" />

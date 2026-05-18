@@ -15,9 +15,10 @@ interface FlagBadgeProps {
   onClick?: () => void
   disabled: boolean
   shape?: 'left' | 'mid' | 'right'
+  compact?: boolean
 }
 
-export function FlagBadge({ flag, active, onClick, disabled, shape = 'mid' }: FlagBadgeProps) {
+export function FlagBadge({ flag, active, onClick, disabled, shape = 'mid', compact }: FlagBadgeProps) {
   const { title, color } = FLAG_CONFIG[flag]
   return (
     <BaseTooltip.Provider delay={600}>
@@ -29,7 +30,8 @@ export function FlagBadge({ flag, active, onClick, disabled, shape = 'mid' }: Fl
               onClick={disabled ? undefined : onClick}
               disabled={disabled}
               className={cn(
-                'h-7 px-2.5 text-[11px] font-bold border transition-all select-none',
+                'font-bold border transition-all select-none',
+                compact ? 'h-5 px-1.5 text-[10px]' : 'h-7 px-2.5 text-[11px]',
                 shape === 'left'  && 'rounded-l-md',
                 shape === 'mid'   && 'rounded-none -ml-px',
                 shape === 'right' && 'rounded-r-md -ml-px',

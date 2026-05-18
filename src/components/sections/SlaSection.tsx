@@ -100,7 +100,7 @@ export function SlaSection({ slaProperties, onChange, isLocked, isPublishedView,
           isLocked={isLocked}
         />
       ) : isPublishedView && slaProperties.length <= 2 ? (
-        <SlaCompactList rows={slaProperties} />
+        <SlaCompactList rows={slaProperties} compact={docCompact} />
       ) : (
         <div className={`${governanceTableShellClass} overflow-x-auto`}>
           <table className="w-full text-xs border-collapse table-fixed min-w-[760px]">

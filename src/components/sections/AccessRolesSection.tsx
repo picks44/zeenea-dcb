@@ -88,12 +88,12 @@ export function AccessRolesSection({ roles, onChange, isLocked, docCompact }: Ac
       ) : useDocLayout ? (
         roles.length === 1 ? (
           <div className={docGovernanceShellClass}>
-            <AccessRoleDocRow role={roles[0]} />
+            <AccessRoleDocRow role={roles[0]} compact={docCompact} />
           </div>
         ) : (
           <GovernanceDocList>
             {roles.map(r => (
-              <AccessRoleDocRow key={r.id} role={r} />
+              <AccessRoleDocRow key={r.id} role={r} compact={docCompact} />
             ))}
           </GovernanceDocList>
         )
