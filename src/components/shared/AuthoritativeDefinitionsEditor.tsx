@@ -112,36 +112,33 @@ export function AuthoritativeDefinitionsEditor({
   disabled = false,
   compact = false,
 }: AuthoritativeDefinitionsEditorProps) {
-  const rows = definitions.length > 0 ? definitions : [emptyRow()]
-
   const update = (id: string, patch: Partial<AuthoritativeDefinition>) => {
-    onChange(rows.map(r => (r.id === id ? { ...r, ...patch } : r)))
+    onChange(definitions.map(r => (r.id === id ? { ...r, ...patch } : r)))
   }
 
-  const add = () => onChange([...rows, emptyRow()])
+  const add = () => onChange([...definitions, emptyRow()])
 
-  const remove = (id: string) => {
-    const next = rows.filter(r => r.id !== id)
-    onChange(next.length > 0 ? next : [emptyRow()])
-  }
+  const remove = (id: string) => onChange(definitions.filter(r => r.id !== id))
 
   return (
     <div className={cn('space-y-2', compact && 'space-y-1.5')}>
       <p className="text-[10px] text-[#656574] leading-snug">{AUTH_LINKS_HELPER}</p>
 
-      <div className={authoritativeLinkListShellClass}>
-        {rows.map(row => (
-          <AuthoritativeLinkEditRow
-            key={row.id}
-            row={row}
-            compact={compact}
-            disabled={disabled}
-            canRemove={rows.length > 1}
-            onUpdate={patch => update(row.id, patch)}
-            onRemove={() => remove(row.id)}
-          />
-        ))}
-      </div>
+      {definitions.length > 0 ? (
+        <div className={authoritativeLinkListShellClass}>
+          {definitions.map(row => (
+            <AuthoritativeLinkEditRow
+              key={row.id}
+              row={row}
+              compact={compact}
+              disabled={disabled}
+              canRemove={!disabled}
+              onUpdate={patch => update(row.id, patch)}
+              onRemove={() => remove(row.id)}
+            />
+          ))}
+        </div>
+      ) : null}
 
       {!disabled && (
         <button type="button" onClick={add} className={governanceTableFooterActionClass}>

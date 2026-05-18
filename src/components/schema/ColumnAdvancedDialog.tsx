@@ -64,7 +64,7 @@ export function ColumnAdvancedDialog({
     setDescription(column.description ?? '')
     setExamplesText((column.examples ?? []).join('\n'))
     setTags(column.tags ?? [])
-    setAuthDefs(column.authoritativeDefinitions ?? [])
+    setAuthDefs(filterAuthoritativeDefinitionsForSave(column.authoritativeDefinitions ?? []))
     setQuality(loadColumnQuality(column))
   }, [column, open])
 

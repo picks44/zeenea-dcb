@@ -45,7 +45,7 @@ export function TableAdvancedDialog({
     if (!table || !open) return
     setTags(table.tags ?? [])
     setQuality(table.quality ?? [])
-    setAuthDefs(table.authoritativeDefinitions ?? [])
+    setAuthDefs(filterAuthoritativeDefinitionsForSave(table.authoritativeDefinitions ?? []))
   }, [table, open])
 
   if (!table) return null

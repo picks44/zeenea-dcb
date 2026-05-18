@@ -45,7 +45,7 @@ export function FundamentalsSection({
   const [usage, setUsage] = useState(info.descriptionUsage ?? '')
   const [limitations, setLimitations] = useState(info.descriptionLimitations ?? '')
   const [authDefs, setAuthDefs] = useState<AuthoritativeDefinition[]>(
-    info.descriptionAuthoritativeDefinitions ?? [],
+    filterAuthoritativeDefinitionsForSave(info.descriptionAuthoritativeDefinitions ?? []),
   )
 
   useEffect(() => {
@@ -58,7 +58,7 @@ export function FundamentalsSection({
   useEffect(() => {
     setUsage(info.descriptionUsage ?? '')
     setLimitations(info.descriptionLimitations ?? '')
-    setAuthDefs(info.descriptionAuthoritativeDefinitions ?? [])
+    setAuthDefs(filterAuthoritativeDefinitionsForSave(info.descriptionAuthoritativeDefinitions ?? []))
   }, [contract.uid, info.descriptionUsage, info.descriptionLimitations, info.descriptionAuthoritativeDefinitions])
 
   const handleIdChange = (value: string) => {
