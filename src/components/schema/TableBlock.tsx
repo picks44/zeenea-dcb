@@ -9,6 +9,8 @@ import { LOGICAL_TYPES, DB_TYPES_BY_LOGICAL, typeConfig, makeColumn } from './co
 import { TypePicker } from './TypePicker'
 import { FlagBadge } from './FlagBadge'
 import { ColumnAdvancedDialog } from './ColumnAdvancedDialog'
+import { TableAdvancedDialog } from './TableAdvancedDialog'
+import { isBelongsToRelationshipIncomplete, isExportedRelationshipType } from '@/types/odcsShared'
 
 function deriveLogicalName(physicalName: string): string {
   return physicalName
@@ -25,11 +27,14 @@ const REL_OPTIONS: {
   label: (to: string) => string
   desc: string
 }[] = [
-  { value: 'has_many',     notation: '1 → N', label: to => `Has many ${to}`,          desc: 'One record links to multiple'        },
-  { value: 'belongs_to',   notation: 'N → 1', label: to => `Belongs to one ${to}`,    desc: 'Multiple records link to one'        },
-  { value: 'has_one',      notation: '1 → 1', label: to => `Has one ${to}`,           desc: 'Each record links to exactly one'    },
-  { value: 'many_to_many', notation: 'N ↔ N', label: to => `Connected to many ${to}`, desc: 'Multiple records link on both sides' },
+  { value: 'belongs_to',   notation: 'N → 1', label: to => `Belongs to one ${to}`,    desc: 'Foreign key on this table'           },
+  { value: 'many_to_many', notation: 'N ↔ N', label: to => `Connected to many ${to}`, desc: 'Junction or bridge table pattern'    },
 ]
+
+const LEGACY_REL_LABELS: Partial<Record<RelationshipType, { notation: string; label: (to: string) => string }>> = {
+  has_many: { notation: '1 → N', label: to => `Has many ${to}` },
+  has_one: { notation: '1 → 1', label: to => `Has one ${to}` },
+}
 
 interface TableBlockProps {
   table: SchemaTable
@@ -47,6 +52,7 @@ export function TableBlock({ table, tableIndex, allTables, isLocked, onTableChan
   const [editingLogicalId, setEditingLogicalId] = useState<string | null>(null)
   const [showTypePicker, setShowTypePicker] = useState(false)
   const [advancedColId, setAdvancedColId] = useState<string | null>(null)
+  const [tableAdvancedOpen, setTableAdvancedOpen] = useState(false)
   const [editingRel, setEditingRel] = useState<{
     id: string | null
     toTable: string
@@ -139,6 +145,15 @@ export function TableBlock({ table, tableIndex, allTables, isLocked, onTableChan
           </span>
         )}
         <div className="flex-1" />
+        <button
+          type="button"
+          onClick={() => setTableAdvancedOpen(true)}
+          className="h-6 w-6 flex items-center justify-center text-[#9898a7] hover:text-[#0550dc] hover:bg-[#f5f5fa] rounded transition-colors flex-shrink-0"
+          title="Metadata: tags, quality, authoritative links"
+          aria-label="Metadata: tags, quality, authoritative links"
+        >
+          <SlidersHorizontal className="h-3.5 w-3.5" />
+        </button>
         {!isLocked && (
           <Select value={table.tableType || 'table'} onValueChange={v => onTableChange(tableIndex, { ...table, tableType: v as 'table' | 'view' })}>
             <SelectTrigger className="h-6 text-xs w-20 flex-shrink-0 bg-white"><SelectValue /></SelectTrigger>
@@ -262,7 +277,8 @@ export function TableBlock({ table, tableIndex, allTables, isLocked, onTableChan
                   <button
                     type="button"
                     onClick={() => setAdvancedColId(col.id)}
-                    title="Advanced properties"
+                    title="Metadata: description, examples, tags, quality, authoritative links"
+                    aria-label="Metadata: description, examples, tags, quality, authoritative links"
                     className={cn(
                       'h-6 w-6 ml-2 rounded flex items-center justify-center transition-all flex-shrink-0 relative',
                       (col.description?.trim() || col.quality?.length || col.qualityRule?.trim())
@@ -299,20 +315,38 @@ export function TableBlock({ table, tableIndex, allTables, isLocked, onTableChan
       {showRelSection && (
         <div className="border-t border-[#e4e4f0] bg-[#fbfbff]/30 px-4 py-3 rounded-b-xl">
           <p className="text-[10px] font-semibold uppercase tracking-wide text-[#9898a7] mb-2.5">Relationships</p>
+          <p className="text-[10px] text-[#656574] mb-2">
+            Only Belongs to and Many-to-many are published in the contract YAML.
+          </p>
 
           {/* Existing */}
           {rels.length > 0 && (
             <div className="space-y-1.5 mb-3">
               {rels.map(rel => {
+                const exported = isExportedRelationshipType(rel.type)
+                const incompleteFk = isBelongsToRelationshipIncomplete(rel)
                 const opt = REL_OPTIONS.find(r => r.value === rel.type)
+                const legacy = LEGACY_REL_LABELS[rel.type]
+                const labelFn = opt?.label ?? legacy?.label ?? (() => rel.type)
                 return (
-                  <div key={rel.id} className="flex items-center gap-2">
+                  <div key={rel.id} className="space-y-0.5">
+                  <div className="flex items-center gap-2">
                     <span className="text-[10px] font-mono text-neutral-400 bg-neutral-50 border border-neutral-100 px-1.5 py-0.5 rounded flex-shrink-0 tabular-nums">
-                      {opt?.notation}
+                      {opt?.notation ?? legacy?.notation ?? '?'}
                     </span>
                     <span className="text-[11px] text-neutral-600">
-                      {opt?.label(rel.toTable)}
+                      {labelFn(rel.toTable)}
                     </span>
+                    {!exported && (
+                      <span className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-[#ffebce] text-[#d27b00] border border-[#ffd599]">
+                        Not exported
+                      </span>
+                    )}
+                    {incompleteFk && exported && (
+                      <span className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-[#ffebce] text-[#d27b00] border border-[#ffd599]">
+                        Not exported
+                      </span>
+                    )}
                     {rel.fromColumn && rel.toColumn && (
                       <span className="text-[10px] font-mono text-neutral-300">
                         ({rel.fromColumn} → {rel.toColumn})
@@ -322,6 +356,12 @@ export function TableBlock({ table, tableIndex, allTables, isLocked, onTableChan
                       <button onClick={() => removeRel(rel.id)} className="ml-auto text-neutral-200 hover:text-red-700 hover:bg-red-25 rounded p-0.5 transition-colors flex-shrink-0">
                         <X className="h-3.5 w-3.5" />
                       </button>
+                    )}
+                  </div>
+                    {incompleteFk && (
+                      <p className="text-[10px] text-[#d27b00] pl-1 leading-snug">
+                        Select join columns to export this relationship as a foreign key.
+                      </p>
                     )}
                   </div>
                 )
@@ -393,8 +433,16 @@ export function TableBlock({ table, tableIndex, allTables, isLocked, onTableChan
                 {editingRel.toTable && editingRel.type && table.columns.length > 0 && (
                   <div className="mb-4">
                     <p className="text-xs font-medium text-neutral-500 mb-2">
-                      Join columns <span className="text-neutral-300 font-normal">(optional)</span>
+                      Join columns
+                      {editingRel.type !== 'belongs_to' && (
+                        <span className="text-neutral-300 font-normal"> (optional)</span>
+                      )}
                     </p>
+                    {editingRel.type === 'belongs_to' && (
+                      <p className="text-[10px] text-[#d27b00] mb-2 leading-snug">
+                        Select join columns to export this relationship as a foreign key.
+                      </p>
+                    )}
                     <div className="flex items-center gap-2">
                       <Select value={editingRel.fromColumn} onValueChange={v => v && setEditingRel(r => r ? { ...r, fromColumn: v } : r)}>
                         <SelectTrigger className="h-7 text-xs w-[130px]"><SelectValue placeholder={`${table.physicalName}…`} /></SelectTrigger>
@@ -429,7 +477,7 @@ export function TableBlock({ table, tableIndex, allTables, isLocked, onTableChan
               </div>
             ) : (
               <button
-                onClick={() => setEditingRel({ id: null, toTable: '', type: 'has_many', fromColumn: '', toColumn: '' })}
+                onClick={() => setEditingRel({ id: null, toTable: '', type: 'belongs_to', fromColumn: '', toColumn: '' })}
                 className="flex items-center gap-1.5 text-xs text-[#656574] hover:text-[#0550dc] font-medium transition-colors"
               >
                 <Plus className="h-3.5 w-3.5" />
@@ -449,6 +497,14 @@ export function TableBlock({ table, tableIndex, allTables, isLocked, onTableChan
           updateCol(updated.id, updated)
           setAdvancedColId(null)
         }}
+      />
+
+      <TableAdvancedDialog
+        table={table}
+        open={tableAdvancedOpen}
+        isLocked={isLocked}
+        onClose={() => setTableAdvancedOpen(false)}
+        onSave={updated => onTableChange(tableIndex, updated)}
       />
     </div>
   )

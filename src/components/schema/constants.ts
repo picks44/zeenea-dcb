@@ -49,6 +49,6 @@ export function makeColumn(logicalType: LogicalType = 'string'): ColumnDefinitio
     physicalType: DB_TYPES_BY_LOGICAL[logicalType][0],
     logicalType,
     required: false, isPrimaryKey: false, isPII: false, isUnique: false,
-    description: '', examples: '', qualityRule: '', isUnknownType: false,
+    description: '', examples: [], qualityRule: '', isUnknownType: false,
   }
 }

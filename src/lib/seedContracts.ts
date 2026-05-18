@@ -25,7 +25,7 @@ function col(
     isPII: false,
     isUnique: false,
     description: '',
-    examples: '',
+    examples: [] as string[],
     qualityRule: '',
     isUnknownType: false,
   }
@@ -38,22 +38,29 @@ function cloneDataset(tables: SchemaTable[]): SchemaTable[] {
 // ─── Customer Orders schema (stable column ids for snapshots) ─────────────────
 
 const CUSTOMER_ORDERS_ORDERS_TABLE: SchemaTable = {
+  id: 'tbl-co-orders',
   physicalName: 'orders',
   quantumName: 'orders',
   tableType: 'table',
   description: 'One row per customer order.',
+  tags: ['Core', 'Commerce'],
   columns: [
     col('co-o-id', 'id', 'Order ID', 'uuid', 'string', true, true),
     col('co-o-cid', 'customer_id', 'Customer ID', 'uuid', 'string', true),
     col('co-o-ca', 'created_at', 'Created At', 'timestamp', 'timestamp', true),
     col('co-o-ta', 'total_amount', 'Total Amount', 'decimal(10,2)', 'number', true),
-    col('co-o-st', 'status', 'Status', 'varchar(20)', 'string', true),
+    {
+      ...col('co-o-st', 'status', 'Status', 'varchar(20)', 'string', true),
+      tags: ['Lifecycle'],
+      examples: ['pending', 'shipped', 'delivered'],
+    },
     col('co-o-cu', 'currency', 'Currency', 'char(3)', 'string', true),
   ],
   relationships: [],
 }
 
 const CUSTOMER_ORDERS_ORDER_ITEMS_TABLE: SchemaTable = {
+  id: 'tbl-co-order-items',
   physicalName: 'order_items',
   quantumName: 'order_items',
   tableType: 'table',
@@ -82,6 +89,7 @@ const CUSTOMER_ORDERS_STAKEHOLDERS = [
 
 const PRODUCT_CATALOG_DATASET: SchemaTable[] = [
   {
+    id: 'tbl-pc-products',
     physicalName: 'products',
     quantumName: 'products',
     tableType: 'table',
@@ -100,6 +108,7 @@ const PRODUCT_CATALOG_DATASET: SchemaTable[] = [
 
 const ANALYTICS_EVENTS_DATASET: SchemaTable[] = [
   {
+    id: 'tbl-ua-events',
     physicalName: 'events',
     quantumName: 'events',
     tableType: 'table',
@@ -117,6 +126,7 @@ const ANALYTICS_EVENTS_DATASET: SchemaTable[] = [
 
 const PAYMENT_TRANSACTIONS_DATASET: SchemaTable[] = [
   {
+    id: 'tbl-pt-transactions',
     physicalName: 'transactions',
     quantumName: 'transactions',
     tableType: 'table',
@@ -135,6 +145,7 @@ const PAYMENT_TRANSACTIONS_DATASET: SchemaTable[] = [
 
 const INVENTORY_DATASET: SchemaTable[] = [
   {
+    id: 'tbl-inv-inventory',
     physicalName: 'inventory',
     quantumName: 'inventory',
     tableType: 'table',

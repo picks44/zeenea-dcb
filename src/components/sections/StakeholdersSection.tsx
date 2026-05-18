@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, Trash2, Users, Mail, Building2, Briefcase } from 'lucide-react'
+import { Plus, Trash2, Users, Mail, Building2, Briefcase, Info } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -160,6 +160,13 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked }: Stakeh
             </Button>
           )}
         </div>
+      </div>
+
+      <div className="flex items-start gap-2.5 rounded-lg border border-[#e4e4f0] bg-[#fbfbff] px-3 py-2.5 mb-1">
+        <Info className="h-3.5 w-3.5 text-[#656574] flex-shrink-0 mt-0.5" />
+        <p className="text-[11px] text-[#656574] leading-snug">
+          Stakeholders are captured as Studio collaboration metadata. They are not exported to ODCS YAML in this MVP.
+        </p>
       </div>
 
       <div className="space-y-4">

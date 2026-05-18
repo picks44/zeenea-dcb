@@ -29,8 +29,8 @@ Application web pour **créer, éditer et publier des contrats de données** con
 | Domaine | Capacités |
 |--------|-----------|
 | **Backlog** | Liste des contrats, création, filtrage par statut, accès rapide à l’éditeur |
-| **Import SQL** | Coller un `CREATE TABLE` → schéma ODCS pré-rempli (colonnes, types, contraintes) |
-| **Fundamentals** | Titre, ID, version SemVer, domaine, owner, description, tags |
+| **Import SQL** | Coller un ou plusieurs `CREATE TABLE` → schéma ODCS pré-rempli (colonnes, types, contraintes) |
+| **Fundamentals** | Titre, ID, version SemVer, domaine, owner, description (purpose + contexte), tags |
 | **Schéma** | Tables / vues, colonnes, types physiques & logiques, PK, PII, unicité, relations |
 | **Stakeholders** | Propriétaires et parties prenantes (nom, rôle, email, équipe) |
 | **YAML** | Aperçu en temps réel du contrat ODCS généré |
@@ -189,12 +189,12 @@ Les contraintes de table (`PRIMARY KEY`, `FOREIGN KEY`, etc. en ligne séparée)
 
 Le module `src/lib/odcsYamlGenerator.ts` produit un document YAML aligné sur ODCS 3.1.0 :
 
-- `dataContractSpecification: "3.1.0"`
-- `id`, `info` (title, version, status, domain, owner, …)
-- `dataset[]` avec `table`, `physicalName`, `columns[]`
-- `stakeholders[]`
+- `apiVersion: v3.1.0`, `name` et `dataProduct` (depuis le titre du contrat)
+- `id`, `version`, `status`, `domain`, objet `description` (purpose, usage, limitations, liens)
+- `schema[]` avec `id` stable par table, `properties[]`, tags, quality, authoritativeDefinitions
+- `quality[].id` sur les règles colonne et table
 - `relationships` au niveau schéma pour les relations `many_to_many`
-- Références de champs (`references`) pour les FK `belongs_to`
+- `foreignKey` sur les propriétés pour les FK `belongs_to`
 
 L’aperçu est disponible dans l’onglet **YAML** de l’éditeur (`YamlView`).
 
@@ -299,9 +299,10 @@ Build statique : aucune API backend requise pour le MVP.
 - **Pas de backend** — Données et historique Git uniquement côté navigateur.
 - **Git simulé** — Pas de connexion réelle à GitHub/GitLab ; commits et hash générés localement.
 - **Authentification** — Utilisateur fixe ; pas de SSO.
-- **Parseur DDL** — Sous-ensemble SQL ; pas de support multi-tables en une passe, vues complexes ou dialectes exotiques.
-- **ODCS partiel** — Sections `terms`, `servers`, `sla`, `pricing`, etc. typées mais non implémentées dans l’UI.
-- **Relations** — `has_one` / `has_many` sont des aides UI ; seuls `belongs_to` et `many_to_many` sont exportés en YAML.
+- **Parseur DDL** — Sous-ensemble SQL ; import multi-tables supporté, mais pas de vues complexes ni dialectes exotiques.
+- **ODCS partiel** — Sections `terms`, `servers`, `pricing`, etc. non implémentées ; SLA et rôles d’accès partiels.
+- **Relations** — Seuls `belongs_to` et `many_to_many` sont proposés à la création et exportés en YAML ; d’anciens types `has_one` / `has_many` restent visibles avec le badge « Not exported ».
+- **Shared components** — Pas de `customProperties` UI, pas de picker Zeenea ; quality en langage naturel (type text), pas de règles SQL/métriques.
 
 ---
 
@@ -313,7 +314,7 @@ Alignées sur `design.md` et l’architecture actuelle :
 - [ ] Authentification plateforme Zeenea / Actian
 - [ ] Validation ODCS complète (schéma Bitol)
 - [ ] Sections ODCS additionnelles (SLA, quality, servers)
-- [ ] Import multi-tables et dialectes SQL étendus
+- [ ] Dialectes SQL étendus et contraintes de table (PK/FK hors colonnes)
 - [ ] API de persistance et collaboration temps réel
 - [ ] Tests unitaires (parseur DDL, générateur YAML, règles de lifecycle)
 

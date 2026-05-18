@@ -1,4 +1,13 @@
 import { DataContract, OdcsAccessRole, SectionId, SlaProperty } from '@/types/odcs'
+import {
+  isAuthoritativeDefinitionComplete,
+  isAuthoritativeDefinitionEmpty,
+} from '@/lib/odcsSharedMappers'
+import {
+  isBelongsToRelationshipIncomplete,
+  isExportedRelationshipType,
+  type AuthoritativeDefinition,
+} from '@/types/odcsShared'
 
 /** Rows with no user-entered content are ignored for validation and export. */
 export function isRoleRowEmpty(r: OdcsAccessRole): boolean {
@@ -30,6 +39,42 @@ export interface ValidationResult {
 
 const SEMVER = /^\d+\.\d+\.\d+$/
 
+function validateAuthoritativeDefinitions(
+  issues: ValidationIssue[],
+  defs: AuthoritativeDefinition[] | undefined,
+  context: string,
+  section: SectionId,
+): void {
+  for (const d of defs ?? []) {
+    if (isAuthoritativeDefinitionEmpty(d)) continue
+    if (!isAuthoritativeDefinitionComplete(d)) {
+      issues.push({
+        code: 'auth-def-incomplete',
+        message: `${context}: each authoritative link needs a URL and type.`,
+        severity: 'error',
+        section,
+      })
+    }
+  }
+}
+
+function validateQualityRules(
+  issues: ValidationIssue[],
+  rules: { id?: string; description?: string }[] | undefined,
+  context: string,
+): void {
+  for (const q of rules ?? []) {
+    if (!q.description?.trim()) {
+      issues.push({
+        code: 'quality-empty',
+        message: `Quality rule on ${context} needs a description.`,
+        severity: 'error',
+        section: 'schema',
+      })
+    }
+  }
+}
+
 export function validateContract(contract: DataContract): ValidationResult {
   const issues: ValidationIssue[] = []
   const { info, id, dataset } = contract
@@ -46,6 +91,13 @@ export function validateContract(contract: DataContract): ValidationResult {
   if (!SEMVER.test(info.version)) {
     issues.push({ code: 'version', message: 'Version must follow SemVer (e.g. 1.0.0).', severity: 'error', section: 'fundamentals' })
   }
+
+  validateAuthoritativeDefinitions(
+    issues,
+    info.descriptionAuthoritativeDefinitions,
+    'Contract description',
+    'fundamentals',
+  )
 
   if (dataset.length === 0) {
     issues.push({ code: 'schema', message: 'At least one table is required in the schema.', severity: 'error', section: 'schema' })
@@ -98,18 +150,38 @@ export function validateContract(contract: DataContract): ValidationResult {
     }
 
     for (const col of table.columns) {
-      for (const q of col.quality ?? []) {
-        if (!q.description?.trim()) {
-          issues.push({
-            code: 'quality-empty',
-            message: `Quality rule on "${col.physicalName}" needs a description.`,
-            severity: 'error',
-            section: 'schema',
-          })
-        }
-      }
-      if (col.qualityRule?.trim() && !col.quality?.length) {
-        // migrated at export; no block
+      validateQualityRules(issues, col.quality, `"${col.physicalName}"`)
+      validateAuthoritativeDefinitions(
+        issues,
+        col.authoritativeDefinitions,
+        `Field "${col.physicalName}"`,
+        'schema',
+      )
+    }
+
+    validateQualityRules(issues, table.quality, `table "${table.physicalName}"`)
+    validateAuthoritativeDefinitions(
+      issues,
+      table.authoritativeDefinitions,
+      `Table "${table.physicalName}"`,
+      'schema',
+    )
+
+    for (const rel of table.relationships ?? []) {
+      if (!isExportedRelationshipType(rel.type)) {
+        issues.push({
+          code: 'relationship-not-exported',
+          message: `Relationship "${rel.type}" on "${table.physicalName}" is not exported to YAML (legacy type).`,
+          severity: 'warning',
+          section: 'schema',
+        })
+      } else if (isBelongsToRelationshipIncomplete(rel)) {
+        issues.push({
+          code: 'relationship-incomplete-fk',
+          message: `Relationship from ${table.physicalName} to ${rel.toTable} will not be exported until join columns are configured.`,
+          severity: 'warning',
+          section: 'schema',
+        })
       }
     }
   }

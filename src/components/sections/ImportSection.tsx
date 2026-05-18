@@ -3,7 +3,7 @@ import { Upload, AlertCircle, Sparkles, Table2, Columns3, KeyRound, Asterisk, Ch
 import { Button } from '@/components/ui/button'
 import { parseDDLMulti, summarizeDDLImport } from '@/lib/ddlParser'
 import { SchemaTable } from '@/types/odcs'
-import { cn } from '@/lib/utils'
+import { cn, generateId } from '@/lib/utils'
 
 interface ImportSectionProps {
   onParsed: (tables: SchemaTable[], ddl: string) => void
@@ -202,7 +202,14 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
   }
 
   const handleSkip = () =>
-    onParsed([{ physicalName: 'my_table', quantumName: 'My Table', tableType: 'table', description: '', columns: [] }], '')
+    onParsed([{
+      id: generateId(),
+      physicalName: 'my_table',
+      quantumName: 'My Table',
+      tableType: 'table',
+      description: '',
+      columns: [],
+    }], '')
 
   const loadExample = () => {
     setDdl(EXAMPLES[exampleIdx % EXAMPLES.length])

@@ -1,66 +1,21 @@
-import { useEffect, useState, useRef, KeyboardEvent } from 'react'
-import { Copy, Check, AlertCircle, X as XIcon } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { Copy, Check, AlertCircle, ChevronDown, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { DataContract, LifecycleStatus } from '@/types/odcs'
-import { slugify } from '@/lib/utils'
-import { cn } from '@/lib/utils'
+import { TagsEditor } from '@/components/shared/TagsEditor'
+import { AuthoritativeDefinitionsEditor } from '@/components/shared/AuthoritativeDefinitionsEditor'
+import { slugify, cn } from '@/lib/utils'
+import { filterAuthoritativeDefinitionsForSave } from '@/lib/odcsSharedMappers'
+import type { AuthoritativeDefinition } from '@/types/odcsShared'
 
 interface FundamentalsSectionProps {
   contract: DataContract
   onChange: (updates: Partial<DataContract['info']> & { id?: string }) => void
   isLocked: boolean
   isOwner: boolean
-}
-
-function TagInput({ tags, onChange, disabled }: { tags: string[]; onChange: (t: string[]) => void; disabled: boolean }) {
-  const [input, setInput] = useState('')
-  const ref = useRef<HTMLInputElement>(null)
-
-  const add = (val: string) => {
-    const slug = val.trim().toLowerCase().replace(/\s+/g, '-')
-    const tag  = slug.charAt(0).toUpperCase() + slug.slice(1)
-    if (tag && !tags.includes(tag)) onChange([...tags, tag])
-    setInput('')
-  }
-
-  const remove = (tag: string) => onChange(tags.filter(t => t !== tag))
-
-  const onKey = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); add(input) }
-    if (e.key === 'Backspace' && !input && tags.length > 0) remove(tags[tags.length - 1])
-  }
-
-  return (
-    <div
-      className="min-h-[36px] border border-[#d3d3e5] rounded px-2 py-1 flex flex-wrap gap-1 items-center cursor-text hover:border-[#9898a7] focus-within:border-2 focus-within:border-[#0550dc] bg-white transition-colors"
-      onClick={() => ref.current?.focus()}
-    >
-      {tags.map(tag => (
-        <Badge key={tag} variant="tag" className="gap-1">
-          {tag}
-          {!disabled && (
-            <button type="button" onClick={() => remove(tag)} className="hover:text-blue-800 ml-0.5">
-              <XIcon className="h-2.5 w-2.5" />
-            </button>
-          )}
-        </Badge>
-      ))}
-      {!disabled && (
-        <input
-          ref={ref}
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={onKey}
-          onBlur={() => { if (input) add(input) }}
-          placeholder={tags.length === 0 ? 'Add tags (press Enter)...' : ''}
-          className="flex-1 min-w-[120px] text-xs outline-none bg-transparent py-0.5"
-        />
-      )}
-    </div>
-  )
 }
 
 const STATUS_LABELS: Record<LifecycleStatus, string> = {
@@ -74,14 +29,28 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
   const [idManuallyEdited, setIdManuallyEdited] = useState(false)
   const [idError, setIdError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
+  const [additionalOpen, setAdditionalOpen] = useState(
+    !!(info.descriptionUsage?.trim() || info.descriptionLimitations?.trim()
+      || (info.descriptionAuthoritativeDefinitions?.length ?? 0) > 0),
+  )
+  const [usage, setUsage] = useState(info.descriptionUsage ?? '')
+  const [limitations, setLimitations] = useState(info.descriptionLimitations ?? '')
+  const [authDefs, setAuthDefs] = useState<AuthoritativeDefinition[]>(
+    info.descriptionAuthoritativeDefinitions ?? [],
+  )
 
-  // Auto-derive ID from title if not manually edited
   useEffect(() => {
     if (!idManuallyEdited && info.title) {
       const slug = slugify(info.title)
       onChange({ id: slug })
     }
   }, [info.title, idManuallyEdited])
+
+  useEffect(() => {
+    setUsage(info.descriptionUsage ?? '')
+    setLimitations(info.descriptionLimitations ?? '')
+    setAuthDefs(info.descriptionAuthoritativeDefinitions ?? [])
+  }, [contract.uid, info.descriptionUsage, info.descriptionLimitations, info.descriptionAuthoritativeDefinitions])
 
   const handleIdChange = (value: string) => {
     setIdManuallyEdited(true)
@@ -101,6 +70,20 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
     setTimeout(() => setCopied(false), 1500)
   }
 
+  const onChangeRef = useRef(onChange)
+  onChangeRef.current = onChange
+
+  useEffect(() => {
+    if (isLocked) return
+    const timer = window.setTimeout(() => {
+      onChangeRef.current({
+        descriptionUsage: usage.trim() || undefined,
+        descriptionLimitations: limitations.trim() || undefined,
+      })
+    }, 300)
+    return () => window.clearTimeout(timer)
+  }, [usage, limitations, isLocked])
+
   const tags = info.tags ?? []
 
   const ownerFieldLocked = isLocked || !isOwner
@@ -116,7 +99,6 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
       </div>
 
       <div className="space-y-4">
-        {/* Row 1: Contract name + Domain */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className={labelClass}>
@@ -142,7 +124,6 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
           </div>
         </div>
 
-        {/* Row 2: ID (full width) */}
         <div>
           <label className={labelClass}>
             ID <span className="text-red-500">*</span>
@@ -156,7 +137,7 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
               className={cn(
                 ownerInputClass,
                 'font-mono text-sm flex-1',
-                idError && 'border-[#c12c11] focus-visible:border-[#c12c11]'
+                idError && 'border-[#c12c11] focus-visible:border-[#c12c11]',
               )}
             />
             <Button type="button" variant="outline" size="icon" onClick={handleCopyId} className="flex-shrink-0 h-9 w-9">
@@ -174,7 +155,6 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
           )}
         </div>
 
-        {/* Row 3: Version + Status */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className={labelClass}>Version</label>
@@ -190,9 +170,8 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
           </div>
         </div>
 
-        {/* Row 4: Description */}
         <div>
-          <label className={labelClass}>Description</label>
+          <label className={labelClass}>Description (purpose)</label>
           <Textarea
             value={info.description}
             onChange={e => onChange({ description: e.target.value })}
@@ -202,7 +181,56 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
           />
         </div>
 
-        {/* Row 5: Owner */}
+        <div className="border border-[#e4e4f0] rounded-lg overflow-hidden">
+          <button
+            type="button"
+            className="w-full flex items-center gap-2 px-3 py-2.5 text-left text-xs font-medium text-[#33333d] bg-[#fbfbff] hover:bg-[#f5f5fa] transition-colors"
+            onClick={() => setAdditionalOpen(o => !o)}
+          >
+            {additionalOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+            Additional context
+          </button>
+          {additionalOpen && (
+            <div className="px-3 py-3 space-y-3 border-t border-[#e4e4f0]">
+              <div>
+                <label className={labelClass}>Usage</label>
+                <Textarea
+                  value={usage}
+                  onChange={e => setUsage(e.target.value)}
+                  placeholder="How should consumers use this data?"
+                  disabled={isLocked}
+                  className={cn(inputClass, 'min-h-[72px] resize-y text-sm')}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Limitations</label>
+                <Textarea
+                  value={limitations}
+                  onChange={e => setLimitations(e.target.value)}
+                  placeholder="Known constraints, exclusions, or caveats"
+                  disabled={isLocked}
+                  className={cn(inputClass, 'min-h-[72px] resize-y text-sm')}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Authoritative links</label>
+                <AuthoritativeDefinitionsEditor
+                  definitions={authDefs}
+                  onChange={defs => {
+                    setAuthDefs(defs)
+                    if (!isLocked) {
+                      onChange({
+                        descriptionAuthoritativeDefinitions: filterAuthoritativeDefinitionsForSave(defs),
+                      })
+                    }
+                  }}
+                  disabled={isLocked}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
         <div>
           <label className={labelClass}>
             Owner <span className="text-red-500">*</span>
@@ -214,12 +242,14 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
             disabled={ownerFieldLocked}
             className={ownerInputClass}
           />
+          <p className="text-[11px] text-[#656574] mt-1 leading-snug">
+            Studio owner used for workflow and publish permissions. Not exported to ODCS YAML in this MVP.
+          </p>
         </div>
 
-        {/* Row 6: Tags — pill input */}
         <div>
           <label className={labelClass}>Tags</label>
-          <TagInput tags={tags} onChange={t => onChange({ tags: t })} disabled={isLocked} />
+          <TagsEditor tags={tags} onChange={t => onChange({ tags: t })} disabled={isLocked} />
         </div>
       </div>
     </div>

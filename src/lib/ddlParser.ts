@@ -146,7 +146,7 @@ function parseColumns(columnsBlock: string): ColumnDefinition[] {
       isPrimaryKey,
       isPII: false,
       isUnique,
-      examples: '',
+      examples: [],
       qualityRule: '',
       isUnknownType,
     })
@@ -157,6 +157,7 @@ function parseColumns(columnsBlock: string): ColumnDefinition[] {
 
 function buildTable(tableName: string, columns: ColumnDefinition[]): SchemaTable {
   return {
+    id: generateId(),
     physicalName: tableName,
     quantumName: tableName
       .replace(/_/g, ' ')
@@ -164,6 +165,9 @@ function buildTable(tableName: string, columns: ColumnDefinition[]): SchemaTable
     tableType: 'table',
     description: '',
     columns,
+    tags: [],
+    quality: [],
+    authoritativeDefinitions: [],
   }
 }
 

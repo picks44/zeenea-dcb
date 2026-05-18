@@ -126,7 +126,7 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
     requiredChecks, recommendedChecks,
     publishStatus,
     fieldCount, fieldsWithDesc, descCoverage, piiCount,
-    healthScore, nextSteps, validationErrors,
+    healthScore, nextSteps, validationErrors, validationWarnings,
   } = useHealth(contract, myRole, hasEditedSincePublish)
 
   const yaml = useMemo(() => generateODCSYaml(contract), [contract])
@@ -246,12 +246,26 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
           </div>
         )}
 
-        {validationErrors.length > 1 && (
+        {validationErrors.length >= 1 && (
           <div className="px-4 py-3 border-t border-[#e4e4f0]">
             <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-2">Blocking issues</p>
             <ul className="space-y-1">
-              {validationErrors.slice(0, 4).map(e => (
-                <li key={e.code} className="text-[11px] text-[#c12c11] leading-snug">{e.message}</li>
+              {validationErrors.slice(0, 6).map((e, i) => (
+                <li key={`${e.code}-${i}`} className="text-[11px] text-[#c12c11] leading-snug">{e.message}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {validationWarnings.length > 0 && (
+          <div className="px-4 py-3 border-t border-[#e4e4f0]">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-2">Warnings</p>
+            <ul className="space-y-1">
+              {validationWarnings.slice(0, 6).map((w, i) => (
+                <li key={`${w.code}-${i}`} className="text-[11px] text-[#d27b00] leading-snug flex items-start gap-1.5">
+                  <AlertTriangle className="h-3 w-3 flex-shrink-0 mt-0.5" />
+                  <span>{w.message}</span>
+                </li>
               ))}
             </ul>
           </div>
@@ -309,6 +323,10 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
                 {copied ? 'Copied' : 'Copy'}
               </button>
             </div>
+            <p className="text-[10px] text-[#656574] px-4 py-2 border-b border-[#e4e4f0] bg-white leading-snug">
+              Exported to YAML: contract identity, description, schema, tags, quality, authoritative links, data access roles, service levels.
+              Studio-only: owner, stakeholders, members, version history.
+            </p>
             <pre className="text-[10px] font-mono text-[#33333d] px-4 py-3 max-h-56 overflow-y-auto bg-[#fbfbff] leading-4">
               {yaml}
             </pre>

@@ -1,6 +1,11 @@
 import yaml from 'js-yaml'
 import { isRoleRowEmpty, isSlaRowEmpty } from './contractValidation'
 import {
+  mapAuthoritativeDefinitionsToYaml,
+  mapQualityRulesToYaml,
+  mapTagsToYaml,
+} from './odcsSharedMappers'
+import {
   ColumnDefinition,
   DataContract,
   DataContractSnapshot,
@@ -77,26 +82,17 @@ function mapProperty(
     prop.classification = 'restricted'
   }
 
-  if (col.examples?.trim()) {
-    const parts = col.examples.split(',').map(s => s.trim()).filter(Boolean)
-    prop.examples = parts.length > 1 ? parts : [col.examples.trim()]
-  }
+  const examples = mapTagsToYaml(col.examples)
+  if (examples) prop.examples = examples
 
-  const quality = columnQualityRules(col)
-  if (quality.length > 0) {
-    prop.quality = quality.map(q => {
-      const rule: Record<string, unknown> = {
-        type: 'text',
-        description: q.description,
-      }
-      if (q.name) rule.name = q.name
-      if (q.dimension) rule.dimension = q.dimension
-      if (q.severity) rule.severity = q.severity
-      if (q.businessImpact) rule.businessImpact = q.businessImpact
-      stripUndefined(rule)
-      return rule
-    })
-  }
+  const quality = mapQualityRulesToYaml(columnQualityRules(col))
+  if (quality.length > 0) prop.quality = quality
+
+  const tags = mapTagsToYaml(col.tags)
+  if (tags) prop.tags = tags
+
+  const authDefs = mapAuthoritativeDefinitionsToYaml(col.authoritativeDefinitions)
+  if (authDefs) prop.authoritativeDefinitions = authDefs
 
   if (propertyRels?.length) {
     prop.relationships = propertyRels
@@ -116,7 +112,7 @@ function mapSchemaTable(table: SchemaTable): Record<string, unknown> {
   })
 
   const schemaObj: Record<string, unknown> = {
-    id: table.physicalName,
+    id: table.id,
     name: table.physicalName,
     physicalName: table.physicalName,
     physicalType: table.tableType || 'table',
@@ -129,32 +125,59 @@ function mapSchemaTable(table: SchemaTable): Record<string, unknown> {
     schemaObj.relationships = schemaRels
   }
 
+  const tags = mapTagsToYaml(table.tags)
+  if (tags) schemaObj.tags = tags
+
+  const quality = mapQualityRulesToYaml(table.quality ?? [])
+  if (quality.length > 0) schemaObj.quality = quality
+
+  const authDefs = mapAuthoritativeDefinitionsToYaml(table.authoritativeDefinitions)
+  if (authDefs) schemaObj.authoritativeDefinitions = authDefs
+
   stripUndefined(schemaObj)
   return schemaObj
 }
 
+function buildDescriptionObject(contract: DataContract): Record<string, unknown> | undefined {
+  const { info } = contract
+  const purpose = info.description?.trim()
+  const usage = info.descriptionUsage?.trim()
+  const limitations = info.descriptionLimitations?.trim()
+  const authDefs = mapAuthoritativeDefinitionsToYaml(info.descriptionAuthoritativeDefinitions)
+
+  if (!purpose && !usage && !limitations && !authDefs) return undefined
+
+  const desc: Record<string, unknown> = {}
+  if (purpose) desc.purpose = purpose
+  if (usage) desc.usage = usage
+  if (limitations) desc.limitations = limitations
+  if (authDefs) desc.authoritativeDefinitions = authDefs
+  return desc
+}
+
 /** Build an ODCS v3.1.0 document object from the internal contract model. */
 export function buildOdcsDocument(contract: DataContract): Record<string, unknown> {
+  const title = contract.info.title?.trim() || 'Untitled Contract'
+
   const doc: Record<string, unknown> = {
     kind: 'DataContract',
     apiVersion: 'v3.1.0',
     id: contract.id || 'my-contract-id',
     version: contract.info.version,
     status: contract.info.status,
-    dataProduct: contract.info.title || 'Untitled Contract',
+    name: title,
+    dataProduct: title,
   }
 
   if (contract.info.domain?.trim()) {
     doc.domain = contract.info.domain.trim()
   }
 
-  if (contract.info.description?.trim()) {
-    doc.description = { purpose: contract.info.description.trim() }
-  }
+  const description = buildDescriptionObject(contract)
+  if (description) doc.description = description
 
-  if (contract.info.tags?.length) {
-    doc.tags = contract.info.tags
-  }
+  const tags = mapTagsToYaml(contract.info.tags)
+  if (tags) doc.tags = tags
 
   if (contract.dataset.length > 0) {
     doc.schema = contract.dataset.map(mapSchemaTable)

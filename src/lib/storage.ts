@@ -1,32 +1,72 @@
 import { DataContract, ColumnDefinition, DataContractSnapshot, SchemaTable } from '@/types/odcs'
+import type { AuthoritativeDefinition } from '@/types/odcsShared'
+import {
+  ensureQualityRuleIds,
+  migrateExamplesField,
+  normalizeTags,
+} from '@/lib/odcsSharedMappers'
 import { generateId } from '@/lib/utils'
 import { SEED_CONTRACTS } from './seedContracts'
 
 const STORAGE_KEY = 'data-contracts-v1'
 
+function migrateAuthoritativeDefinitions(
+  defs: AuthoritativeDefinition[] | undefined,
+): AuthoritativeDefinition[] {
+  return (defs ?? []).map(d => ({
+    id: d.id ?? generateId(),
+    url: d.url ?? '',
+    type: d.type ?? '',
+    description: d.description,
+  }))
+}
+
 function migrateColumn(col: ColumnDefinition): ColumnDefinition {
-  const next = { ...col }
-  if (col.qualityRule?.trim() && !(col.quality ?? []).length) {
-    next.quality = [{
+  const next: ColumnDefinition = {
+    ...col,
+    examples: migrateExamplesField(col.examples as string | string[] | undefined),
+    tags: normalizeTags(col.tags),
+    authoritativeDefinitions: migrateAuthoritativeDefinitions(col.authoritativeDefinitions),
+    quality: ensureQualityRuleIds(col.quality ?? []),
+  }
+
+  if (col.qualityRule?.trim() && !(next.quality ?? []).length) {
+    next.quality = ensureQualityRuleIds([{
       id: col.id || generateId(),
       type: 'text',
       description: col.qualityRule.trim(),
-    }]
+    }])
   }
+
   return next
 }
 
 function migrateTable(table: SchemaTable): SchemaTable {
   return {
     ...table,
+    id: table.id ?? generateId(),
+    tags: normalizeTags(table.tags),
+    quality: ensureQualityRuleIds(table.quality ?? []),
+    authoritativeDefinitions: migrateAuthoritativeDefinitions(table.authoritativeDefinitions),
     columns: (table.columns ?? []).map(migrateColumn),
     relationships: table.relationships ?? [],
+  }
+}
+
+function migrateInfo(info: DataContract['info']): DataContract['info'] {
+  return {
+    ...info,
+    tags: normalizeTags(info.tags),
+    descriptionAuthoritativeDefinitions: migrateAuthoritativeDefinitions(
+      info.descriptionAuthoritativeDefinitions,
+    ),
   }
 }
 
 function migrateSnapshot(snapshot: DataContractSnapshot): DataContractSnapshot {
   return {
     ...snapshot,
+    info: migrateInfo(snapshot.info),
     stakeholders: snapshot.stakeholders ?? [],
     roles: snapshot.roles ?? [],
     slaProperties: snapshot.slaProperties ?? [],
@@ -37,6 +77,7 @@ function migrateSnapshot(snapshot: DataContractSnapshot): DataContractSnapshot {
 function migrateContract(c: DataContract): DataContract {
   return {
     ...c,
+    info: migrateInfo(c.info),
     collaborators: c.collaborators ?? [],
     stakeholders: c.stakeholders ?? [],
     roles: c.roles ?? [],

@@ -3,6 +3,7 @@ import { Plus, Database } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { SchemaTable } from '@/types/odcs'
+import { generateId } from '@/lib/utils'
 import { TableBlock } from '@/components/schema/TableBlock'
 
 interface SchemaSectionProps {
@@ -12,7 +13,17 @@ interface SchemaSectionProps {
 }
 
 function makeTable(name: string): SchemaTable {
-  return { physicalName: name, quantumName: name, tableType: 'table', description: '', columns: [] }
+  return {
+    id: generateId(),
+    physicalName: name,
+    quantumName: name,
+    tableType: 'table',
+    description: '',
+    columns: [],
+    tags: [],
+    quality: [],
+    authoritativeDefinitions: [],
+  }
 }
 
 export function SchemaSection({ tables, onChange, isLocked }: SchemaSectionProps) {

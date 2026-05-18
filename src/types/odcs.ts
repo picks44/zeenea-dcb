@@ -1,3 +1,7 @@
+import type { AuthoritativeDefinition } from './odcsShared'
+
+export type { AuthoritativeDefinition } from './odcsShared'
+
 export type LifecycleStatus = 'draft' | 'active' | 'deprecated'
 
 export type LogicalType =
@@ -48,9 +52,11 @@ export interface ColumnDefinition {
   isPII: boolean
   isUnique: boolean
   description: string
-  examples: string
+  examples: string[]
   qualityRule: string
   quality?: QualityRule[]
+  tags?: string[]
+  authoritativeDefinitions?: AuthoritativeDefinition[]
   isUnknownType: boolean
 }
 
@@ -65,12 +71,29 @@ export interface TableRelationship {
 }
 
 export interface SchemaTable {
+  id: string
   physicalName: string
   quantumName: string
   tableType: 'table' | 'view'
   description: string
   columns: ColumnDefinition[]
   relationships?: TableRelationship[]
+  tags?: string[]
+  quality?: QualityRule[]
+  authoritativeDefinitions?: AuthoritativeDefinition[]
+}
+
+export interface ContractInfo {
+  title: string
+  version: string
+  domain: string
+  owner: string
+  description: string
+  status: LifecycleStatus
+  tags: string[]
+  descriptionUsage?: string
+  descriptionLimitations?: string
+  descriptionAuthoritativeDefinitions?: AuthoritativeDefinition[]
 }
 
 export interface Stakeholder {
@@ -110,15 +133,7 @@ export interface Collaborator {
 
 export interface DataContractSnapshot {
   id: string
-  info: {
-    title: string
-    version: string
-    domain: string
-    owner: string
-    description: string
-    status: LifecycleStatus
-    tags: string[]
-  }
+  info: ContractInfo
   dataset: SchemaTable[]
   stakeholders: Stakeholder[]
   roles?: OdcsAccessRole[]
@@ -150,15 +165,7 @@ export interface DataContract {
   uid: string
   dataContractSpecification: '3.1.0'
   id: string
-  info: {
-    title: string
-    version: string
-    domain: string
-    owner: string
-    description: string
-    status: LifecycleStatus
-    tags: string[]
-  }
+  info: ContractInfo
   dataset: SchemaTable[]
   stakeholders: Stakeholder[]
   roles: OdcsAccessRole[]
