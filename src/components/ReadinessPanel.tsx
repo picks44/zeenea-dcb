@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { Check, Copy, ChevronDown, ChevronUp, CheckCircle2, AlertCircle, AlertTriangle, ArrowRight } from 'lucide-react'
+import { Check, Copy, ChevronDown, ChevronUp, CheckCircle2, AlertCircle, AlertTriangle, ArrowRight, X } from 'lucide-react'
 import { CollaboratorRole, DataContract } from '@/types/odcs'
 import { generateODCSYaml } from '@/lib/odcsYamlGenerator'
 import { computePublicationReadiness } from '@/lib/publicationReadiness'
@@ -20,6 +20,9 @@ interface ReadinessPanelProps {
   contract: DataContract
   myRole: CollaboratorRole
   hasEditedSincePublish: boolean
+  /** Pinned in layout (xl+) or floating overlay (lg and below). */
+  layout?: 'pinned' | 'overlay'
+  onClose?: () => void
 }
 
 function SectionHeaderWithScore({
@@ -102,7 +105,13 @@ function CheckRow({
   )
 }
 
-export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: ReadinessPanelProps) {
+export function ReadinessPanel({
+  contract,
+  myRole,
+  hasEditedSincePublish,
+  layout = 'pinned',
+  onClose,
+}: ReadinessPanelProps) {
   const [yamlOpen, setYamlOpen] = useState(false)
   const [copied, setCopied] = useState(false)
 
@@ -148,19 +157,38 @@ export function ReadinessPanel({ contract, myRole, hasEditedSincePublish }: Read
     'bg-[#9898a7]'
 
   return (
-    <div className="w-[280px] flex-shrink-0 border-l border-[#d3d3e5] bg-white flex flex-col h-full overflow-hidden">
+    <div
+      className={cn(
+        'flex flex-col h-full bg-white overflow-hidden',
+        layout === 'pinned'
+          ? 'w-[280px] flex-shrink-0 border-l border-[#d3d3e5]'
+          : 'fixed top-0 right-0 bottom-0 z-50 w-[min(100%,320px)] border-l border-[#d3d3e5] shadow-xl',
+      )}
+    >
 
       {/* Header */}
       <div className="px-4 py-3 border-b border-[#d3d3e5] flex-shrink-0">
-        <div className="flex items-center justify-between mb-2.5">
-          <span className="text-xs font-semibold text-[#33333d]">
+        <div className="flex items-center justify-between gap-2 mb-2.5">
+          <span className="text-xs font-semibold text-[#33333d] min-w-0 truncate">
             {isPublishedView ? CONTRACT_QUALITY_PANEL_TITLE : 'Publication readiness'}
           </span>
-          <Tooltip content={READINESS_SCORE_TOOLTIP} side="left" delayDuration={400}>
-            <span className={cn('text-[11px] font-bold px-2 py-0.5 rounded-full border cursor-default', scoreColor)}>
-              {healthScore}/100
-            </span>
-          </Tooltip>
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <Tooltip content={READINESS_SCORE_TOOLTIP} side="left" delayDuration={400}>
+              <span className={cn('text-[11px] font-bold px-2 py-0.5 rounded-full border cursor-default', scoreColor)}>
+                {healthScore}/100
+              </span>
+            </Tooltip>
+            {layout === 'overlay' && onClose ? (
+              <button
+                type="button"
+                onClick={onClose}
+                className="h-6 w-6 flex items-center justify-center rounded text-[#9898a7] hover:text-[#33333d] hover:bg-[#f5f5fa]"
+                aria-label="Close panel"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            ) : null}
+          </div>
         </div>
 
         <div className="h-1.5 rounded-full bg-[#f5f5fa] overflow-hidden">

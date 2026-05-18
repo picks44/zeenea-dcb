@@ -28,6 +28,8 @@ import { loadContracts, saveContracts } from './lib/storage'
 import { validateContract } from './lib/contractValidation'
 import { CURRENT_USER } from './lib/currentUser'
 import { PUBLISH_REQUIRES_PUBLISHER_CONTRACT, VIEWER_ACCESS_BANNER } from './lib/uxCopy'
+import { useMediaQuery } from './hooks/useMediaQuery'
+import { MEDIA_QUERIES } from './lib/layoutBreakpoints'
 
 function makeContract(): DataContract {
   const now = new Date().toISOString()
@@ -72,7 +74,13 @@ export default function App() {
   const [hasEditedSincePublish, setHasEditedSincePublish] = useState(false)
   const [confirmConfig, setConfirmConfig] = useState<ConfirmConfig | null>(null)
   const [showShareModal, setShowShareModal] = useState(false)
+  const [readinessOpen, setReadinessOpen] = useState(false)
+  const panelPinned = useMediaQuery(MEDIA_QUERIES.panelPinned)
   const toast = useToast()
+
+  useEffect(() => {
+    setReadinessOpen(panelPinned)
+  }, [panelPinned])
 
   useEffect(() => { saveContracts(contracts) }, [contracts])
 
@@ -81,6 +89,15 @@ export default function App() {
   const isLocked = contract
     ? myRole === 'viewer' || (contract.info.status === 'active' && !contract.inRevision) || contract.info.status === 'deprecated'
     : false
+
+  const isPublishedView = contract
+    ? contract.info.status === 'active' && !contract.inRevision
+    : false
+
+  const readinessToggleLabel = isPublishedView ? 'Quality' : 'Readiness'
+  const showReadinessPanel =
+    !!contract && activeSection !== 'import' && activeTab === 'form' && activeSection !== 'versions'
+  const showReadinessToggle = showReadinessPanel && !panelPinned
 
   const validation = contract ? validateContract(contract) : null
   const canPublish = !!validation?.canPublish && hasEditedSincePublish && myRole === 'owner'
@@ -305,6 +322,10 @@ export default function App() {
                   collaborators={contract.collaborators ?? []}
                   onShare={() => setShowShareModal(true)}
                   myRole={myRole}
+                  showReadinessToggle={showReadinessToggle}
+                  readinessToggleLabel={readinessToggleLabel}
+                  readinessPanelOpen={readinessOpen}
+                  onReadinessToggle={() => setReadinessOpen(o => !o)}
                 />
 
                 {contract.info.status === 'deprecated' && (
@@ -333,7 +354,7 @@ export default function App() {
                 )}
 
                 {activeSection === 'versions' ? (
-                  <div className="flex-1 overflow-y-auto px-8 py-6">
+                  <div className="flex-1 overflow-y-auto px-4 lg:px-6 xl:px-8 py-6">
                     <VersionsView
                       contract={contract}
                       onVersionClick={hash => setCompareHash(hash)}
@@ -345,7 +366,7 @@ export default function App() {
                 ) : (
                   <div className="flex flex-1 min-h-0 overflow-hidden">
                     <div className="flex-1 overflow-y-auto min-w-0">
-                      <div className="px-8 py-6">
+                      <div className="px-4 lg:px-6 xl:px-8 py-6 min-w-0">
                       {activeSection === 'import' ? (
                         <ImportSection onParsed={handleDDLParsed} isLocked={isLocked} />
                       ) : activeSection === 'fundamentals' ? (
@@ -361,12 +382,30 @@ export default function App() {
                       ) : null}
                       </div>
                     </div>
-                    {activeSection !== 'import' && (
+                    {showReadinessPanel && panelPinned && (
                       <ReadinessPanel
                         contract={contract}
                         myRole={myRole}
                         hasEditedSincePublish={hasEditedSincePublish}
+                        layout="pinned"
                       />
+                    )}
+                    {showReadinessPanel && !panelPinned && readinessOpen && (
+                      <>
+                        <button
+                          type="button"
+                          className="fixed inset-0 z-40 bg-black/20"
+                          aria-label="Close panel"
+                          onClick={() => setReadinessOpen(false)}
+                        />
+                        <ReadinessPanel
+                          contract={contract}
+                          myRole={myRole}
+                          hasEditedSincePublish={hasEditedSincePublish}
+                          layout="overlay"
+                          onClose={() => setReadinessOpen(false)}
+                        />
+                      </>
                     )}
                   </div>
                 )}

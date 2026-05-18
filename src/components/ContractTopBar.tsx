@@ -1,4 +1,4 @@
-import { FileText, Code2, Upload, Check, AlertCircle, GitBranch, Users } from 'lucide-react'
+import { FileText, Code2, Upload, Check, AlertCircle, GitBranch, Users, Gauge } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tooltip } from '@/components/ui/tooltip'
@@ -17,6 +17,11 @@ interface ContractTopBarProps {
   collaborators: Collaborator[]
   onShare: () => void
   myRole: CollaboratorRole
+  /** Show Readiness/Quality toggle when panel is not pinned (below xl). */
+  showReadinessToggle?: boolean
+  readinessToggleLabel?: string
+  readinessPanelOpen?: boolean
+  onReadinessToggle?: () => void
 }
 
 const TABS: { id: EditorTab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
@@ -44,6 +49,10 @@ export function ContractTopBar({
   contract, activeTab, onTabChange,
   canPublish, publishBlockReason, onPushToGit, onNewVersion,
   collaborators, onShare, myRole,
+  showReadinessToggle,
+  readinessToggleLabel,
+  readinessPanelOpen,
+  onReadinessToggle,
 }: ContractTopBarProps) {
   const { info, gitHistory, openPR } = contract
 
@@ -59,11 +68,10 @@ export function ContractTopBar({
   const isOwner       = myRole === 'owner'
 
   return (
-    <div className="h-11 bg-white border-b border-[#d3d3e5] flex items-center px-4 gap-3 flex-shrink-0">
+    <div className="h-11 bg-white border-b border-[#d3d3e5] flex items-center px-3 xl:px-4 gap-2 xl:gap-3 flex-shrink-0 min-w-0">
 
-      {/* Contract identity */}
-      <div className="flex items-center gap-2 min-w-0">
-        <span className="font-semibold text-[#12131f] text-sm truncate max-w-[200px]">
+      <div className="flex items-center gap-2 min-w-0 flex-shrink">
+        <span className="font-semibold text-[#12131f] text-sm truncate max-w-[120px] md:max-w-[180px] xl:max-w-[240px]">
           {info.title || 'Untitled Contract'}
         </span>
         <Badge variant={info.status}>{info.status.charAt(0).toUpperCase() + info.status.slice(1)}</Badge>
@@ -90,12 +98,22 @@ export function ContractTopBar({
         ))}
       </div>
 
-      <div className="flex-1" />
+      <div className="flex-1 min-w-2" />
 
-      {/* Right side — hidden entirely for consumers */}
       {!isConsumer && (
         <>
-          {/* Avatar stack + Members button */}
+          {showReadinessToggle && onReadinessToggle && (
+            <Button
+              variant={readinessPanelOpen ? 'secondary' : 'outline'}
+              size="sm"
+              onClick={onReadinessToggle}
+              className="gap-1.5 xl:hidden flex-shrink-0"
+            >
+              <Gauge className="h-3.5 w-3.5" />
+              {readinessToggleLabel ?? 'Readiness'}
+            </Button>
+          )}
+
           <div className="flex items-center gap-2 flex-shrink-0">
             {collaborators.length > 0 && (
               <div className="flex items-center -space-x-1">
@@ -125,7 +143,7 @@ export function ContractTopBar({
             )}
             <Button variant="outline" size="sm" onClick={onShare} className="gap-1.5">
               <Users className="h-3.5 w-3.5" />
-              Members
+              <span className="hidden lg:inline">Members</span>
             </Button>
           </div>
 

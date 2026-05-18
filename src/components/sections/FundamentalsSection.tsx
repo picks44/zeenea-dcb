@@ -10,6 +10,7 @@ import { AuthoritativeDefinitionsEditor } from '@/components/shared/Authoritativ
 import { slugify, cn } from '@/lib/utils'
 import { filterAuthoritativeDefinitionsForSave } from '@/lib/odcsSharedMappers'
 import { WorkflowMetadataPill } from '@/components/shared/WorkflowMetadataPill'
+import { FundamentalsReadOnlyView } from '@/components/shared/FundamentalsReadOnlyView'
 import { CONTRACT_OWNER_HELPER } from '@/lib/uxCopy'
 import type { AuthoritativeDefinition } from '@/types/odcsShared'
 
@@ -99,6 +100,9 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
         </p>
       </div>
 
+      {isLocked ? (
+        <FundamentalsReadOnlyView contract={contract} />
+      ) : (
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -259,6 +263,7 @@ export function FundamentalsSection({ contract, onChange, isLocked, isOwner }: F
           />
         </div>
       </div>
+      )}
     </div>
   )
 }

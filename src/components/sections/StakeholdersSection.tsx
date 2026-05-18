@@ -116,7 +116,7 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked }: Stakeh
           isLocked={isLocked}
         />
       ) : (
-        <div className={governanceTableShellClass}>
+        <div className={`${governanceTableShellClass} overflow-x-auto`}>
           <div className={cn(gridClass, governanceTableHeadRowClass, 'px-3')}>
             <span className={governanceTableHeadClass}>Name</span>
             <span className={governanceTableHeadClass}>Role</span>

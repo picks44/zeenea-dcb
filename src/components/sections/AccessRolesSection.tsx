@@ -79,7 +79,7 @@ export function AccessRolesSection({ roles, onChange, isLocked }: AccessRolesSec
           isLocked={isLocked}
         />
       ) : (
-        <div className={governanceTableShellClass}>
+        <div className={`${governanceTableShellClass} overflow-x-auto`}>
           <div className={cn(gridClass, governanceTableHeadRowClass, 'px-3')}>
             <span className={governanceTableHeadClass}>Role</span>
             <span className={governanceTableHeadClass}>Access</span>
