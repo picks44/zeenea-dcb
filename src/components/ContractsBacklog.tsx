@@ -5,13 +5,14 @@ import {
   ChevronUp,
   ChevronDown,
   ChevronsUpDown,
-  LayoutList,
+  FileText,
 } from 'lucide-react'
-import { LIFECYCLE_STATUS_ICONS, LifecycleStatusBadge } from '@/lib/lifecycleStatusUi'
+import { LifecycleStatusBadge } from '@/lib/lifecycleStatusUi'
 import { Tooltip } from '@/components/ui/tooltip'
 import { LIFECYCLE_FILTER_ALL_TOOLTIP, LIFECYCLE_STATUS_TOOLTIPS } from '@/lib/uxCopy'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { EmptyState } from '@/components/ui/empty-state'
 import { Input } from '@/components/ui/input'
 import { DataContract, LifecycleStatus, CollaboratorRole } from '@/types/odcs'
 import { cn } from '@/lib/utils'
@@ -28,10 +29,10 @@ type SortField = 'title' | 'status' | 'version' | 'owner' | 'domain' | 'updatedA
 type SortDir = 'asc' | 'desc'
 
 function SortIcon({ field, sortField, sortDir }: { field: SortField; sortField: SortField; sortDir: SortDir }) {
-  if (sortField !== field) return <ChevronsUpDown className="h-3 w-3 text-[#9898a7] ml-1" />
+  if (sortField !== field) return <ChevronsUpDown className="h-3 w-3 text-neutral-400 ml-1" />
   return sortDir === 'asc'
-    ? <ChevronUp className="h-3 w-3 text-[#3f3f4a] ml-1" />
-    : <ChevronDown className="h-3 w-3 text-[#3f3f4a] ml-1" />
+    ? <ChevronUp className="h-3 w-3 text-neutral-500 ml-1" />
+    : <ChevronDown className="h-3 w-3 text-neutral-500 ml-1" />
 }
 
 const PAGE_SIZE = 10
@@ -88,21 +89,33 @@ export function ContractsBacklog({ contracts, onSelectContract, onCreateContract
   const showStart = filtered.length === 0 ? 0 : (page - 1) * PAGE_SIZE + 1
   const showEnd = Math.min(page * PAGE_SIZE, filtered.length)
 
-  const thClass = 'text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-[#656574] cursor-pointer select-none whitespace-nowrap'
+  const thClass = 'text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-neutral-400 cursor-pointer select-none whitespace-nowrap'
+
+  const lifecycleFilters: {
+    status: '' | LifecycleStatus
+    label: string
+    count: number
+    variant: 'secondary' | LifecycleStatus
+  }[] = [
+    { status: '', label: 'All', count: contracts.length, variant: 'secondary' },
+    { status: 'draft', label: 'Draft', count: contracts.filter(c => c.info.status === 'draft').length, variant: 'draft' },
+    { status: 'active', label: 'Active', count: contracts.filter(c => c.info.status === 'active').length, variant: 'active' },
+    { status: 'deprecated', label: 'Deprecated', count: contracts.filter(c => c.info.status === 'deprecated').length, variant: 'deprecated' },
+  ]
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#fbfbff]">
+    <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-neutral-25">
       {/* Page header */}
-      <div className="bg-white border-b border-[#d3d3e5] px-8 py-5 flex-shrink-0">
+      <div className="bg-white border-b border-neutral-200 px-8 py-5 flex-shrink-0">
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-xl font-bold text-[#12131f]">Contracts</h1>
-              <span className="bg-[#f5f5fa] text-[#33333d] text-xs font-medium px-2 py-0.5 rounded-full">
+              <h1 className="text-xl font-bold text-neutral-900">Contracts</h1>
+              <span className="bg-neutral-50 text-neutral-600 text-xs font-medium px-2 py-0.5 rounded-full">
                 {contracts.length}
               </span>
             </div>
-            <p className="text-[#3f3f4a] text-sm mt-0.5">
+            <p className="text-neutral-500 text-sm mt-0.5">
               Manage your data contracts across their lifecycle.
             </p>
           </div>
@@ -115,41 +128,36 @@ export function ContractsBacklog({ contracts, onSelectContract, onCreateContract
         </div>
 
         {/* Status stats — clickable filters */}
-        <div className="mt-4 flex items-center gap-2">
-          {([
-            { status: '' as '' | LifecycleStatus, label: 'All', count: contracts.length, cls: 'bg-[#f5f5fa] text-[#33333d] hover:bg-[#d3d3e5]', icon: LayoutList },
-            { status: 'draft' as LifecycleStatus, label: 'Draft', count: contracts.filter(c => c.info.status === 'draft').length, cls: 'bg-[#ecf6ff] text-[#00699f] hover:bg-[#cfeafd] border border-blue-200', icon: LIFECYCLE_STATUS_ICONS.draft },
-            { status: 'active' as LifecycleStatus, label: 'Active', count: contracts.filter(c => c.info.status === 'active').length, cls: 'bg-[#f0ffec] text-[#047800] hover:bg-[#d3efcd] border border-emerald-200', icon: LIFECYCLE_STATUS_ICONS.active },
-            { status: 'deprecated' as LifecycleStatus, label: 'Deprecated', count: contracts.filter(c => c.info.status === 'deprecated').length, cls: 'bg-[#fff2ee] text-[#c12c11] hover:bg-[#ffdacf] border border-rose-200', icon: LIFECYCLE_STATUS_ICONS.deprecated },
-          ] as { status: '' | LifecycleStatus; label: string; count: number; cls: string; icon: typeof LayoutList }[]).map(item => {
-            const FilterIcon = item.icon
+        <div className="mt-4 flex items-center gap-2 flex-wrap">
+          {lifecycleFilters.map(item => {
             const filterTooltip = item.status
               ? LIFECYCLE_STATUS_TOOLTIPS[item.status]
               : LIFECYCLE_FILTER_ALL_TOOLTIP
             return (
-            <Tooltip key={item.label} content={filterTooltip} side="bottom" delayDuration={400}>
-              <button
-                type="button"
-                onClick={() => { setLifecycleFilter(item.status); setPage(1) }}
-                className={cn(
-                  'flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors cursor-help',
-                  item.cls,
-                  lifecycleFilter === item.status && 'ring-2 ring-offset-1 ring-[#0550dc]'
-                )}
-                aria-label={`${item.label} (${item.count}): ${filterTooltip}`}
-              >
-                <FilterIcon className="h-3.5 w-3.5 flex-shrink-0 opacity-90" aria-hidden />
-                {item.label}
-                <span className="font-semibold">{item.count}</span>
-              </button>
-            </Tooltip>
-          )})}
+              <Tooltip key={item.label} content={filterTooltip} side="bottom" delayDuration={400}>
+                <button
+                  type="button"
+                  onClick={() => { setLifecycleFilter(item.status); setPage(1) }}
+                  className={cn(
+                    'inline-flex rounded transition-shadow cursor-help',
+                    lifecycleFilter === item.status && 'ring-2 ring-blue-700 ring-offset-1',
+                  )}
+                  aria-label={`${item.label} (${item.count}): ${filterTooltip}`}
+                >
+                  <Badge variant={item.variant} className="gap-1">
+                    {item.label}
+                    <span className="font-semibold tabular-nums">{item.count}</span>
+                  </Badge>
+                </button>
+              </Tooltip>
+            )
+          })}
         </div>
 
         {/* Search row */}
         <div className="mt-3 flex items-center gap-3">
           <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#656574]" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-neutral-400" />
             <Input
               value={search}
               onChange={e => { setSearch(e.target.value); setPage(1) }}
@@ -160,7 +168,7 @@ export function ContractsBacklog({ contracts, onSelectContract, onCreateContract
           {(search || lifecycleFilter) && (
             <button
               onClick={() => { setSearch(''); setLifecycleFilter(''); setPage(1) }}
-              className="text-xs text-[#656574] hover:text-[#33333d] underline"
+              className="text-xs text-neutral-400 hover:text-neutral-600 underline"
             >
               Clear
             </button>
@@ -170,11 +178,11 @@ export function ContractsBacklog({ contracts, onSelectContract, onCreateContract
 
       {/* Table */}
       <div className="flex-1 overflow-auto px-8 py-6">
-        <div className="bg-white border border-[#d3d3e5] rounded-xl shadow-sm overflow-hidden">
+        <div className="bg-white border border-neutral-200 rounded-xl shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-[#fbfbff] border-b border-[#d3d3e5]">
+                <tr className="bg-neutral-25 border-b border-neutral-200">
                   <th className={thClass} onClick={() => handleSort('title')}>
                     <span className="flex items-center">Name <SortIcon field="title" sortField={sortField} sortDir={sortDir} /></span>
                   </th>
@@ -203,25 +211,14 @@ export function ContractsBacklog({ contracts, onSelectContract, onCreateContract
                   <tr>
                     <td colSpan={9} className="px-4 py-20 text-center">
                       {contracts.length === 0 ? (
-                        <div className="flex flex-col items-center gap-3">
-                          <div className="h-12 w-12 rounded-full bg-[#f5f5fa] flex items-center justify-center mx-auto">
-                            <span className="text-2xl">📄</span>
-                          </div>
-                          <div>
-                            <p className="font-medium text-[#33333d] mb-1">No contracts yet</p>
-                            <p className="text-[#656574] text-xs max-w-xs mx-auto">
-                              A data contract describes the structure, ownership, and lifecycle of a dataset. Create your first one to get started.
-                            </p>
-                          </div>
-                          <button
-                            onClick={onCreateContract}
-                            className="mt-1 text-xs text-[#0550dc] font-medium hover:text-[#0550dc] underline"
-                          >
-                            Create your first contract →
-                          </button>
-                        </div>
+                        <EmptyState
+                          icon={<FileText className="h-6 w-6" />}
+                          title="No contracts yet"
+                          description="A data contract describes the structure, ownership, and lifecycle of a dataset. Create your first one to get started."
+                          action={{ label: 'Create your first contract', onClick: onCreateContract }}
+                        />
                       ) : (
-                        <p className="text-[#656574] text-sm">No contracts match your search.</p>
+                        <p className="text-neutral-500 text-sm">No contracts match your search.</p>
                       )}
                     </td>
                   </tr>
@@ -236,15 +233,15 @@ export function ContractsBacklog({ contracts, onSelectContract, onCreateContract
                       <tr
                         key={contract.uid}
                         onClick={() => onSelectContract(contract.uid)}
-                        className="border-b border-[#e4e4f0] hover:bg-[#ecf6ff]/40 cursor-pointer transition-colors last:border-b-0"
+                        className="border-b border-neutral-100 hover:bg-blue-25/40 cursor-pointer transition-colors last:border-b-0"
                       >
                         <td className="px-4 py-3">
                           <div>
-                            <span className="font-medium text-[#12131f] text-sm hover:text-[#0550dc]">
-                              {contract.info.title || <span className="text-[#656574] italic">Untitled</span>}
+                            <span className="font-medium text-neutral-900 text-sm hover:text-blue-700">
+                              {contract.info.title || <span className="text-neutral-400 italic">Untitled</span>}
                             </span>
                             {contract.id && (
-                              <div className="text-[11px] text-[#656574] font-mono mt-0.5">{contract.id}</div>
+                              <div className="text-[11px] text-neutral-400 font-mono mt-0.5">{contract.id}</div>
                             )}
                           </div>
                         </td>
@@ -262,14 +259,14 @@ export function ContractsBacklog({ contracts, onSelectContract, onCreateContract
                         <td className="px-4 py-3">
                           <Badge variant="version">v{contract.info.version}</Badge>
                         </td>
-                        <td className="px-4 py-3 text-xs text-[#33333d]">
-                          {contract.info.owner || <span className="text-[#9898a7]">—</span>}
+                        <td className="px-4 py-3 text-xs text-neutral-600">
+                          {contract.info.owner || <span className="text-neutral-400">—</span>}
                         </td>
-                        <td className="px-4 py-3 text-xs text-[#33333d]">
-                          {contract.info.domain || <span className="text-[#9898a7]">—</span>}
+                        <td className="px-4 py-3 text-xs text-neutral-600">
+                          {contract.info.domain || <span className="text-neutral-400">—</span>}
                         </td>
-                        <td className="px-4 py-3 text-xs text-[#33333d] text-center">
-                          {fieldCount > 0 ? fieldCount : <span className="text-[#9898a7]">—</span>}
+                        <td className="px-4 py-3 text-xs text-neutral-600 text-center">
+                          {fieldCount > 0 ? fieldCount : <span className="text-neutral-400">—</span>}
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex flex-wrap gap-1">
@@ -281,7 +278,7 @@ export function ContractsBacklog({ contracts, onSelectContract, onCreateContract
                             )}
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-xs text-[#3f3f4a] whitespace-nowrap">{updatedDate}</td>
+                        <td className="px-4 py-3 text-xs text-neutral-500 whitespace-nowrap">{updatedDate}</td>
                       </tr>
                     )
                   })
@@ -292,15 +289,15 @@ export function ContractsBacklog({ contracts, onSelectContract, onCreateContract
 
           {/* Pagination */}
           {filtered.length > 0 && (
-            <div className="px-4 py-3 border-t border-[#e4e4f0] flex items-center justify-between">
-              <span className="text-xs text-[#3f3f4a]">
+            <div className="px-4 py-3 border-t border-neutral-100 flex items-center justify-between">
+              <span className="text-xs text-neutral-500">
                 Showing {showStart}–{showEnd} of {filtered.length}
               </span>
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => setPage(p => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="px-2 py-1 text-xs text-[#3f3f4a] hover:text-[#33333d] disabled:opacity-40 disabled:cursor-not-allowed border border-[#d3d3e5] rounded hover:bg-[#fbfbff] transition-colors"
+                  className="px-2 py-1 text-xs text-neutral-500 hover:text-neutral-600 disabled:opacity-40 disabled:cursor-not-allowed border border-neutral-200 rounded hover:bg-neutral-25 transition-colors"
                 >
                   Prev
                 </button>
@@ -315,7 +312,7 @@ export function ContractsBacklog({ contracts, onSelectContract, onCreateContract
                   }, [])
                   .map((p, i) =>
                     p === '...' ? (
-                      <span key={`ellipsis-${i}`} className="px-1 text-[#656574] text-xs">…</span>
+                      <span key={`ellipsis-${i}`} className="px-1 text-neutral-400 text-xs">…</span>
                     ) : (
                       <button
                         key={p}
@@ -323,8 +320,8 @@ export function ContractsBacklog({ contracts, onSelectContract, onCreateContract
                         className={cn(
                           'px-2 py-1 text-xs rounded border transition-colors',
                           page === p
-                            ? 'bg-[#0550dc] text-white border-[#0550dc]'
-                            : 'text-[#3f3f4a] border-[#d3d3e5] hover:bg-[#fbfbff] hover:text-[#33333d]'
+                            ? 'bg-blue-700 text-white border-blue-700'
+                            : 'text-neutral-500 border-neutral-200 hover:bg-neutral-25 hover:text-neutral-600'
                         )}
                       >
                         {p}
@@ -334,7 +331,7 @@ export function ContractsBacklog({ contracts, onSelectContract, onCreateContract
                 <button
                   onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
-                  className="px-2 py-1 text-xs text-[#3f3f4a] hover:text-[#33333d] disabled:opacity-40 disabled:cursor-not-allowed border border-[#d3d3e5] rounded hover:bg-[#fbfbff] transition-colors"
+                  className="px-2 py-1 text-xs text-neutral-500 hover:text-neutral-600 disabled:opacity-40 disabled:cursor-not-allowed border border-neutral-200 rounded hover:bg-neutral-25 transition-colors"
                 >
                   Next
                 </button>

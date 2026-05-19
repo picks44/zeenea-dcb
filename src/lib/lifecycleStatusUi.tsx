@@ -37,20 +37,10 @@ export function LifecycleStatusBadge({
   className?: string
   tooltipSide?: 'top' | 'bottom' | 'left' | 'right'
 }) {
-  const Icon = LIFECYCLE_STATUS_ICONS[status]
   const label = LIFECYCLE_STATUS_LABELS[status]
   const badge = (
-    <Badge
-      variant={status}
-      className={cn(
-        'inline-flex h-8 items-center justify-center gap-1.5 rounded-[6px] px-2.5 py-0 text-xs leading-none cursor-help',
-        className,
-      )}
-    >
-      <span className="flex size-3 shrink-0 items-center justify-center" aria-hidden>
-        <Icon className="size-3" strokeWidth={2} />
-      </span>
-      <span className="leading-none">{label}</span>
+    <Badge variant={status} className={cn('cursor-help', className)}>
+      {label}
     </Badge>
   )
 

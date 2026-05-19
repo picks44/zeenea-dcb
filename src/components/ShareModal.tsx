@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
 import { X, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Avatar } from '@/components/ui/avatar'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { DataContract, Collaborator, CollaboratorRole } from '@/types/odcs'
-import { cn } from '@/lib/utils'
 import { CURRENT_USER } from '@/lib/currentUser'
 import {
   CANNOT_REMOVE_OWN_PUBLISHER_ROLE,
@@ -23,22 +23,6 @@ const DIRECTORY: MockUser[] = [
   { id: 'u2', name: 'Thomas Bernard', email: 'thomas.bernard@company.com' },
   { id: 'u3', name: 'Sophie Lebrun',  email: 'sophie.lebrun@company.com'  },
 ]
-
-const AVATAR_PALETTE = [
-  'bg-[#ecffff]', 'bg-[#d0efed]', 'bg-[#dde6ec]',
-  'bg-[#eed7ff]', 'bg-[#ffd5dd]', 'bg-[#d3efcd]',
-  'bg-[#ffdacf]', 'bg-[#ffebce]',
-]
-
-function avatarBg(email: string): string {
-  let h = 0
-  for (let i = 0; i < email.length; i++) h = (h * 31 + email.charCodeAt(i)) | 0
-  return AVATAR_PALETTE[Math.abs(h) % AVATAR_PALETTE.length]
-}
-
-function getInitials(name: string): string {
-  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
-}
 
 function nameFromEmail(email: string): string {
   return email.split('@')[0].split(/[._-]/).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ')
@@ -158,9 +142,7 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
             <div className="flex-1 min-w-0 relative">
               {selected ? (
                 <div className="flex items-center gap-2 h-9 px-2.5 rounded-lg border border-neutral-200 bg-[#f5f5fa]">
-                  <div className={cn('h-5 w-5 rounded-full flex items-center justify-center text-[#12131f] text-[9px] font-medium flex-shrink-0', avatarBg(selected.email))}>
-                    {getInitials(selected.name)}
-                  </div>
+                  <Avatar name={selected.name} size="sm" className="h-5 w-5 text-[9px]" />
                   <span className="text-xs font-medium text-[#12131f] truncate flex-1">{selected.name}</span>
                   <button onClick={() => { setSelected(null); setQuery(''); setTimeout(() => inputRef.current?.focus(), 0) }} className="text-neutral-400 hover:text-neutral-600 flex-shrink-0">
                     <X className="h-3 w-3" />
@@ -190,9 +172,7 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
                           onClick={() => handleSelect(u)}
                           className="flex items-center gap-2.5 w-full px-3 py-2.5 text-left hover:bg-[#f5f5fa] transition-colors"
                         >
-                          <div className={cn('h-7 w-7 rounded-full flex items-center justify-center text-[#12131f] text-[10px] font-medium flex-shrink-0', avatarBg(u.email))}>
-                            {getInitials(u.name)}
-                          </div>
+                          <Avatar name={u.name} size="sm" className="h-7 w-7 text-[10px]" />
                           <div className="flex-1 min-w-0">
                             <p className="text-xs font-medium text-[#12131f]">{u.name}</p>
                             <p className="text-[10px] text-[#9898a7]">{u.email}</p>
@@ -256,9 +236,7 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
                 const isSelfPublisher = c.email.toLowerCase() === CURRENT_USER.email.toLowerCase() && c.role === 'owner'
                 return (
                 <div key={c.id} className="flex items-center gap-3 px-5 py-3 hover:bg-[#fbfbff] transition-colors">
-                  <div className={cn('h-8 w-8 rounded-full flex items-center justify-center text-[#12131f] text-[11px] font-medium flex-shrink-0', avatarBg(c.email))}>
-                    {getInitials(c.name)}
-                  </div>
+                  <Avatar name={c.name} size="md" />
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-semibold text-[#12131f] truncate">{c.name}</p>
                     <p className="text-[11px] text-[#9898a7] truncate">{c.email}</p>

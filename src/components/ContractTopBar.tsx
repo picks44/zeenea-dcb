@@ -14,7 +14,9 @@ import {
 import { LifecycleStatusBadge } from '@/lib/lifecycleStatusUi'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Tooltip } from '@/components/ui/tooltip'
+import { Avatar } from '@/components/ui/avatar'
 import { DataContract, EditorTab, Collaborator, CollaboratorRole } from '@/types/odcs'
 import {
   COLLABORATOR_ROLE_LABELS,
@@ -59,22 +61,6 @@ const TABS: { id: EditorTab; label: string; icon: React.ComponentType<{ classNam
   { id: 'yaml', label: 'YAML', icon: Code2    },
 ]
 
-const AVATAR_PALETTE = [
-  'bg-[#ecffff]', 'bg-[#d0efed]', 'bg-[#dde6ec]',
-  'bg-[#eed7ff]', 'bg-[#ffd5dd]', 'bg-[#d3efcd]',
-  'bg-[#ffdacf]', 'bg-[#ffebce]',
-]
-
-function avatarBg(email: string): string {
-  let h = 0
-  for (let i = 0; i < email.length; i++) h = (h * 31 + email.charCodeAt(i)) | 0
-  return AVATAR_PALETTE[Math.abs(h) % AVATAR_PALETTE.length]
-}
-
-function getInitials(name: string): string {
-  return name.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)
-}
-
 export function ContractTopBar({
   contract, activeTab, onTabChange,
   canPublish, publishBlockReason, onPushToGit, onNewVersion, onStartDraft, onDeprecate, onRetire,
@@ -106,37 +92,27 @@ export function ContractTopBar({
   }
 
   return (
-    <div className="h-11 bg-white border-b border-[#d3d3e5] flex items-center px-3 xl:px-4 gap-2 xl:gap-3 flex-shrink-0 min-w-0">
+    <div className="h-11 bg-white border-b border-neutral-200 flex items-center px-3 xl:px-4 gap-2 xl:gap-3 flex-shrink-0 min-w-0">
 
       <div className="flex h-8 items-center gap-2 min-w-0 flex-shrink">
-        <span className="font-semibold text-[#12131f] text-sm leading-none truncate max-w-[120px] md:max-w-[180px] xl:max-w-[240px]">
+        <span className="font-semibold text-neutral-900 text-sm leading-none truncate max-w-[120px] md:max-w-[180px] xl:max-w-[240px]">
           {info.title || 'Untitled Contract'}
         </span>
         <LifecycleStatusBadge status={info.status} />
-        <Badge variant="version" className={cn(TOP_BAR_CONTROL, 'items-center rounded-[6px] px-2.5 py-0 leading-none font-mono')}>
-          v{info.version}
-        </Badge>
+        <Badge variant="version">v{info.version}</Badge>
       </div>
 
       {/* Tabs */}
-      <div className={cn('flex items-center gap-0 border border-[#d3d3e5] rounded-lg overflow-hidden flex-shrink-0', TOP_BAR_CONTROL)}>
-        {TABS.map(({ id, label, icon: Icon }, i) => (
-          <button
-            key={id}
-            onClick={() => onTabChange(id)}
-            className={cn(
-              'flex items-center gap-1.5 px-3 h-8 text-xs font-medium transition-all',
-              i > 0 && 'border-l border-[#d3d3e5]',
-              activeTab === id
-                ? 'bg-[#0550dc] text-white'
-                : 'bg-white text-[#3f3f4a] hover:bg-[#fbfbff] hover:text-[#33333d]'
-            )}
-          >
-            <Icon className="h-3.5 w-3.5" />
-            {label}
-          </button>
-        ))}
-      </div>
+      <Tabs value={activeTab} onValueChange={v => onTabChange(v as EditorTab)} className="flex-shrink-0">
+        <TabsList className={TOP_BAR_CONTROL}>
+          {TABS.map(({ id, label, icon: Icon }) => (
+            <TabsTrigger key={id} value={id}>
+              <Icon className="h-3.5 w-3.5" />
+              {label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
 
       <div className="flex-1 min-w-2" />
 
@@ -164,17 +140,12 @@ export function ContractTopBar({
                     side="bottom"
                     delayDuration={300}
                   >
-                    <div className={cn(
-                      'h-6 w-6 rounded-full flex items-center justify-center text-[#12131f] text-[10px] font-medium ring-1 ring-white flex-shrink-0 cursor-default',
-                      avatarBg(c.email)
-                    )}>
-                      {getInitials(c.name)}
-                    </div>
+                    <Avatar name={c.name} size="sm" className="cursor-default" />
                   </Tooltip>
                 ))}
                 {collaborators.length > 3 && (
                   <Tooltip content={COLLABORATORS_MORE_COUNT(collaborators.length - 3)} side="bottom" delayDuration={300}>
-                    <div className="h-6 w-6 rounded-full bg-[#f5f5fa] text-[#656574] text-[10px] font-medium flex items-center justify-center ring-1 ring-white flex-shrink-0 cursor-default">
+                    <div className="h-6 w-6 rounded-full bg-neutral-50 text-neutral-400 text-[10px] font-medium flex items-center justify-center ring-1 ring-white flex-shrink-0 cursor-default">
                       +{collaborators.length - 3}
                     </div>
                   </Tooltip>

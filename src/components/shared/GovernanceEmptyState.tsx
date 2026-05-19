@@ -1,6 +1,7 @@
 import type { LucideIcon } from 'lucide-react'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { EmptyState } from '@/components/ui/empty-state'
 import { cn } from '@/lib/utils'
 
 /**
@@ -29,18 +30,19 @@ export function GovernanceEmptyState({
   return (
     <div
       className={cn(
-        'border border-dashed border-[#d3d3e5] rounded-xl px-6 py-7',
-        'flex flex-col items-center text-center bg-[#fbfbff]/40',
+        'border border-dashed border-neutral-200 rounded-xl px-6 py-7',
+        'flex flex-col items-center text-center bg-neutral-25/40',
         className,
       )}
     >
-      <Icon className="h-5 w-5 text-[#656574] shrink-0" aria-hidden />
-      <div className="mt-2.5 max-w-xs space-y-1">
-        <p className="text-sm font-medium text-[#12131f] leading-snug">{title}</p>
-        <p className="text-xs text-[#656574] leading-relaxed">{body}</p>
-      </div>
+      <EmptyState
+        icon={<Icon className="h-6 w-6" />}
+        title={title}
+        description={body}
+        className="gap-3"
+      />
       {!isLocked && onCta ? (
-        <Button size="sm" variant="outline" onClick={onCta} className="gap-1.5 mt-3">
+        <Button size="sm" variant="outline" onClick={onCta} className="gap-1.5 -mt-1">
           <Plus className="h-3.5 w-3.5" aria-hidden />
           {ctaLabel}
         </Button>
