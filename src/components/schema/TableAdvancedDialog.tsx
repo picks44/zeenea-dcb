@@ -75,7 +75,7 @@ export function TableAdvancedDialog({
       <DialogContent className="max-w-md max-h-[85vh] flex flex-col p-0 gap-0">
         <DialogHeader className="px-6 pt-6 pb-0 flex-shrink-0">
           <DialogTitle className="text-sm">Table metadata</DialogTitle>
-          <DialogDescription className="font-mono text-xs text-[#656574]">
+          <DialogDescription className="font-mono text-xs text-neutral-400">
             {table.physicalName}
           </DialogDescription>
         </DialogHeader>
@@ -91,20 +91,20 @@ export function TableAdvancedDialog({
           ) : (
             <div className="space-y-5">
               <div>
-                <p className="text-xs font-medium text-[#33333d] mb-1">Schema ID</p>
-                <p className="font-mono text-xs text-[#656574] bg-[#f5f5fa] border border-[#e4e4f0] rounded px-2 py-1.5">
+                <p className="text-xs font-medium text-neutral-600 mb-1">Schema ID</p>
+                <p className="font-mono text-xs text-neutral-400 bg-neutral-50 border border-neutral-100 rounded px-2 py-1.5">
                   {table.id}
                 </p>
-                <p className="text-[10px] text-[#9898a7] mt-1">Stable identifier (read-only, used in YAML export).</p>
+                <p className="text-[10px] text-neutral-300 mt-1">Stable identifier (read-only, used in YAML export).</p>
               </div>
 
               <div>
-                <p className="text-xs font-medium text-[#33333d] mb-1">Tags</p>
+                <p className="text-xs font-medium text-neutral-600 mb-1">Tags</p>
                 <TagsEditor tags={tags} onChange={setTags} />
               </div>
 
               <div>
-                <p className="text-xs font-medium text-[#33333d] mb-1">{LABEL_QUALITY_RULES}</p>
+                <p className="text-xs font-medium text-neutral-600 mb-1">{LABEL_QUALITY_RULES}</p>
                 <QualityRulesEditor
                   rules={quality ?? []}
                   onChange={setQuality}
@@ -114,7 +114,7 @@ export function TableAdvancedDialog({
               </div>
 
               <div>
-                <p className="text-xs font-medium text-[#33333d] mb-1">{LABEL_REFERENCE_LINKS}</p>
+                <p className="text-xs font-medium text-neutral-600 mb-1">{LABEL_REFERENCE_LINKS}</p>
                 <AuthoritativeDefinitionsEditor
                   variant="zeenea"
                   definitions={authDefs}
@@ -130,7 +130,7 @@ export function TableAdvancedDialog({
           )}
         </div>
 
-        <DialogFooter className="gap-2 px-6 py-4 border-t border-[#e4e4f0] flex-shrink-0">
+        <DialogFooter className="gap-2 px-6 py-4 border-t border-neutral-100 flex-shrink-0">
           {isLocked ? (
             <Button variant="outline" size="sm" onClick={onClose}>Close</Button>
           ) : (

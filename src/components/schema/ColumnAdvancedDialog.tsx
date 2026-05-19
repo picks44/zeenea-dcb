@@ -120,11 +120,11 @@ export function ColumnAdvancedDialog({
       <DialogContent className="max-w-md max-h-[85vh] flex flex-col p-0 gap-0">
         <DialogHeader className="px-6 pt-6 pb-0 flex-shrink-0">
           <DialogTitle className="text-sm">Field properties</DialogTitle>
-          <DialogDescription className="font-mono text-xs text-[#656574]">
-            <span className="block text-[10px] text-[#9898a7] mb-0.5">id: {column.id}</span>
+          <DialogDescription className="font-mono text-xs text-neutral-400">
+            <span className="block text-[10px] text-neutral-300 mb-0.5">id: {column.id}</span>
             {column.physicalName}
             {displayName !== column.physicalName ? (
-              <span className="font-sans text-[#9898a7]"> · {displayName}</span>
+              <span className="font-sans text-neutral-300"> · {displayName}</span>
             ) : null}
           </DialogDescription>
         </DialogHeader>
@@ -145,7 +145,7 @@ export function ColumnAdvancedDialog({
           ) : (
             <div className="space-y-5">
               <div>
-                <Label className="text-xs text-[#33333d] mb-1 block">Description</Label>
+                <Label className="text-xs text-neutral-600 mb-1 block">Description</Label>
                 <Textarea
                   value={description}
                   onChange={e => setDescription(e.target.value)}
@@ -156,7 +156,7 @@ export function ColumnAdvancedDialog({
               </div>
 
               <div>
-                <Label className="text-xs text-[#33333d] mb-1 block">Examples</Label>
+                <Label className="text-xs text-neutral-600 mb-1 block">Examples</Label>
                 <Textarea
                   value={examplesText}
                   onChange={e => setExamplesText(e.target.value)}
@@ -164,11 +164,11 @@ export function ColumnAdvancedDialog({
                   rows={3}
                   className="text-sm resize-y"
                 />
-                <p className="text-[10px] text-[#656574] mt-1">One value per line.</p>
+                <p className="text-[10px] text-neutral-400 mt-1">One value per line.</p>
               </div>
 
               <div>
-                <Label className="text-xs text-[#33333d] mb-1 block">Tags</Label>
+                <Label className="text-xs text-neutral-600 mb-1 block">Tags</Label>
                 <TagsEditor tags={tags} onChange={setTags} />
               </div>
 
@@ -181,7 +181,7 @@ export function ColumnAdvancedDialog({
               )}
 
               <div>
-                <Label className="text-xs text-[#33333d] mb-1 block">Foreign key</Label>
+                <Label className="text-xs text-neutral-600 mb-1 block">Foreign key</Label>
                 <ColumnForeignKeyEditor
                   foreignKey={foreignKey}
                   onChange={fk => {
@@ -197,12 +197,12 @@ export function ColumnAdvancedDialog({
               </div>
 
               <div>
-                <Label className="text-xs text-[#33333d] mb-1 block">{LABEL_QUALITY_RULES}</Label>
+                <Label className="text-xs text-neutral-600 mb-1 block">{LABEL_QUALITY_RULES}</Label>
                 <QualityRulesEditor rules={quality} onChange={setQuality} compact={docCompact} />
               </div>
 
               <div>
-                <Label className="text-xs text-[#33333d] mb-1 block">{LABEL_REFERENCE_LINKS}</Label>
+                <Label className="text-xs text-neutral-600 mb-1 block">{LABEL_REFERENCE_LINKS}</Label>
                 <AuthoritativeDefinitionsEditor
                   variant="zeenea"
                   definitions={authDefs}
@@ -218,7 +218,7 @@ export function ColumnAdvancedDialog({
           )}
         </div>
 
-        <DialogFooter className="gap-2 px-6 py-4 border-t border-[#e4e4f0] flex-shrink-0">
+        <DialogFooter className="gap-2 px-6 py-4 border-t border-neutral-100 flex-shrink-0">
           {isLocked ? (
             <Button variant="outline" size="sm" onClick={onClose}>Close</Button>
           ) : (

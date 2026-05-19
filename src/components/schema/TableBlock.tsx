@@ -247,7 +247,7 @@ export function TableBlock({
             {!isLocked && <div className="w-6 flex-shrink-0 ml-2" />}
           </div>
 
-          <div className="divide-y divide-zinc-100">
+          <div className="divide-y divide-neutral-100">
             {table.columns.length === 0 && (
               <div className="px-4 py-6 text-center text-neutral-400 text-xs italic">
                 No fields yet — click "+ Add field" below

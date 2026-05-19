@@ -36,10 +36,10 @@ export function schemaMetadataButtonClass(
   return cn(
     'h-6 w-6 rounded flex items-center justify-center transition-all flex-shrink-0',
     active
-      ? 'text-[#0550dc] bg-[#f0f4ff]'
+      ? 'text-blue-700 bg-blue-25'
       : cn(
-          'text-[#d3d3e5] hover:!text-[#0550dc] hover:bg-[#f0f4ff]',
-          options?.inFieldRow && 'group-hover:text-[#9898a7]',
+          'text-neutral-200 hover:!text-blue-700 hover:bg-blue-25',
+          options?.inFieldRow && 'group-hover:text-neutral-300',
         ),
     options?.className,
   )
