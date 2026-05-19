@@ -234,6 +234,7 @@ export function ReadinessPanel({
                 title={READINESS_SCORE_TOOLTIP}
               >
                 {healthScore}
+                <span className="text-[#9898a7] font-medium"> / 100</span>
               </span>
             ) : null}
             {layout === 'overlay' && onClose ? (
@@ -312,9 +313,12 @@ export function ReadinessPanel({
         </div>
 
         <div className={sectionPad}>
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-1.5">
-            {READINESS_FIELD_QUALITY_TITLE}
-          </p>
+          <SectionHeaderWithScore
+            title={READINESS_FIELD_QUALITY_TITLE}
+            earned={scoreContributions.documentation.earned}
+            max={scoreContributions.documentation.max}
+            tone="default"
+          />
 
           {fieldCount > 0 ? (
             <>
@@ -411,13 +415,12 @@ export function ReadinessPanel({
             earned={scoreContributions.recommended.earned}
             max={scoreContributions.recommended.max}
             tone="recommended"
-            showFraction={false}
           />
           <ul className={listGap}>
             {recommendedChecks.map(item => (
               <CheckRow
                 key={item.key}
-                item={item}
+                item={item.key === 'field-docs' ? { ...item, badge: undefined } : item}
                 onNavigate={nav?.enabled ? handleNavigateItem : undefined}
               />
             ))}

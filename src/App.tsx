@@ -32,6 +32,7 @@ import {
   applyStartFromScratch,
   createContract,
   createContractWithImportedSchema,
+  getProposedLifecycleBannerMessage,
   shouldHideStartDraftingInTopBar,
 } from './lib/createContract'
 import type { PushResult } from './components/PushToGitModal'
@@ -43,7 +44,6 @@ import {
   NO_CHANGES_TO_PUBLISH,
   PUBLISH_REQUIRES_PUBLISHER_CONTRACT,
   VIEWER_ACCESS_BANNER,
-  PROPOSED_STATUS_BANNER,
 } from './lib/uxCopy'
 import { useMediaQuery } from './hooks/useMediaQuery'
 import { useNavCollapsed } from './hooks/useNavCollapsed'
@@ -461,7 +461,7 @@ export default function App() {
                   )}>
                     <Lock className="h-3.5 w-3.5 text-neutral-600 flex-shrink-0" />
                     <p className="text-neutral-700 text-xs font-medium">
-                      {PROPOSED_STATUS_BANNER}
+                      {getProposedLifecycleBannerMessage(contract)}
                     </p>
                   </div>
                 )}

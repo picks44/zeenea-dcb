@@ -4,8 +4,14 @@ import {
   createContract,
   createContractWithImportedSchema,
   getInitialLifecycleStatus,
+  getProposedLifecycleBannerMessage,
   shouldHideStartDraftingInTopBar,
 } from '@/lib/createContract'
+import {
+  PROPOSED_BANNER_IMPORTED,
+  PROPOSED_BANNER_IMPORT_PENDING,
+  PROPOSED_BANNER_LEGACY,
+} from '@/lib/uxCopy'
 import type { SchemaTable } from '@/types/odcs'
 
 describe('getInitialLifecycleStatus', () => {
@@ -57,6 +63,24 @@ const sampleTables: SchemaTable[] = [{
     isUnknownType: false,
   }],
 }]
+
+describe('getProposedLifecycleBannerMessage', () => {
+  it('returns import pending when proposed import with empty dataset', () => {
+    const c = createContract('import')
+    expect(getProposedLifecycleBannerMessage(c)).toBe(PROPOSED_BANNER_IMPORT_PENDING)
+  })
+
+  it('returns imported review when proposed import with dataset', () => {
+    const c = createContractWithImportedSchema(sampleTables)
+    expect(getProposedLifecycleBannerMessage(c)).toBe(PROPOSED_BANNER_IMPORTED)
+  })
+
+  it('returns legacy message when creationSource is undefined', () => {
+    const c = createContract('import')
+    const legacy = { ...c, creationSource: undefined }
+    expect(getProposedLifecycleBannerMessage(legacy)).toBe(PROPOSED_BANNER_LEGACY)
+  })
+})
 
 describe('createContractWithImportedSchema', () => {
   it('creates proposed import contract with dataset and derived id', () => {

@@ -272,8 +272,14 @@ export const PUBLISH_REQUIRES_PUBLISHER_CONTRACT =
 export const VIEWER_ACCESS_BANNER =
   'You have read-only access in the app. Ask a Publisher or Contributor to change your collaborator role.'
 
-export const PROPOSED_STATUS_BANNER =
-  'Import a SQL schema or start from scratch on the Import step. Other sections unlock after you start drafting.'
+export const PROPOSED_BANNER_IMPORT_PENDING =
+  'Import a SQL schema or start from scratch. Other sections unlock after drafting starts.'
+
+export const PROPOSED_BANNER_IMPORTED =
+  'Review the imported schema, then start drafting to edit the full contract.'
+
+export const PROPOSED_BANNER_LEGACY =
+  'Start drafting to edit this contract.'
 
 export const IMPORT_SECTION_INTRO =
   'Paste one or more CREATE TABLE statements to generate the contract schema, or start from scratch to define everything manually.'

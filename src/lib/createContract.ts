@@ -1,5 +1,10 @@
 import { applyLifecycleAction } from '@/lib/contractLifecycle'
 import { deriveContractId } from '@/lib/idDerivation'
+import {
+  PROPOSED_BANNER_IMPORTED,
+  PROPOSED_BANNER_IMPORT_PENDING,
+  PROPOSED_BANNER_LEGACY,
+} from '@/lib/uxCopy'
 import type { ContractCreationSource, DataContract, LifecycleStatus, SchemaTable, SectionId } from '@/types/odcs'
 
 export type ContractCreationMode = ContractCreationSource
@@ -50,6 +55,18 @@ export function createContractWithImportedSchema(tables: SchemaTable[]): DataCon
     id: deriveContractId(title || first.physicalName, c.uid),
     dataset: tables,
   }
+}
+
+/** Contextual read-only banner copy for proposed contracts (null when not applicable). */
+export function getProposedLifecycleBannerMessage(
+  contract: Pick<DataContract, 'creationSource' | 'dataset'>,
+): string {
+  if (contract.creationSource === 'import') {
+    return contract.dataset.length > 0
+      ? PROPOSED_BANNER_IMPORTED
+      : PROPOSED_BANNER_IMPORT_PENDING
+  }
+  return PROPOSED_BANNER_LEGACY
 }
 
 /** Hide top-bar Start drafting on the initial Import step (Start from scratch is the primary action). */
