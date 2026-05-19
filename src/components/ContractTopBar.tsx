@@ -1,8 +1,21 @@
-import { FileText, Code2, Upload, Check, AlertCircle, GitBranch, Users, Gauge } from 'lucide-react'
+import {
+  FileText,
+  Code2,
+  Upload,
+  Check,
+  AlertCircle,
+  GitBranch,
+  Users,
+  Gauge,
+  PenLine,
+  AlertTriangle,
+  ArchiveX,
+} from 'lucide-react'
+import { LifecycleStatusBadge } from '@/lib/lifecycleStatusUi'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tooltip } from '@/components/ui/tooltip'
-import { DataContract, EditorTab, Collaborator, CollaboratorRole, LifecycleStatus } from '@/types/odcs'
+import { DataContract, EditorTab, Collaborator, CollaboratorRole } from '@/types/odcs'
 import {
   COLLABORATOR_ROLE_LABELS,
   COLLABORATORS_MODAL_TITLE,
@@ -37,13 +50,9 @@ interface ContractTopBarProps {
   hideStartDrafting?: boolean
 }
 
-const STATUS_LABELS: Record<LifecycleStatus, string> = {
-  proposed: 'Proposed',
-  draft: 'Draft',
-  active: 'Active',
-  deprecated: 'Deprecated',
-  retired: 'Retired',
-}
+/** Shared height for badges, tabs, and actions in the contract top bar (32px). */
+const TOP_BAR_CONTROL = 'h-8 shrink-0 text-xs'
+const TOP_BAR_BTN = cn(TOP_BAR_CONTROL, 'gap-1.5 px-3')
 
 const TABS: { id: EditorTab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { id: 'form', label: 'Form', icon: FileText },
@@ -98,16 +107,18 @@ export function ContractTopBar({
   return (
     <div className="h-11 bg-white border-b border-[#d3d3e5] flex items-center px-3 xl:px-4 gap-2 xl:gap-3 flex-shrink-0 min-w-0">
 
-      <div className="flex items-center gap-2 min-w-0 flex-shrink">
-        <span className="font-semibold text-[#12131f] text-sm truncate max-w-[120px] md:max-w-[180px] xl:max-w-[240px]">
+      <div className="flex h-8 items-center gap-2 min-w-0 flex-shrink">
+        <span className="font-semibold text-[#12131f] text-sm leading-none truncate max-w-[120px] md:max-w-[180px] xl:max-w-[240px]">
           {info.title || 'Untitled Contract'}
         </span>
-        <Badge variant={info.status}>{STATUS_LABELS[info.status]}</Badge>
-        <Badge variant="version" className="flex-shrink-0">v{info.version}</Badge>
+        <LifecycleStatusBadge status={info.status} />
+        <Badge variant="version" className={cn(TOP_BAR_CONTROL, 'items-center px-2.5 py-0 leading-none font-mono')}>
+          v{info.version}
+        </Badge>
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-0 border border-[#d3d3e5] rounded-lg overflow-hidden flex-shrink-0">
+      <div className={cn('flex items-center gap-0 border border-[#d3d3e5] rounded-lg overflow-hidden flex-shrink-0', TOP_BAR_CONTROL)}>
         {TABS.map(({ id, label, icon: Icon }, i) => (
           <button
             key={id}
@@ -135,16 +146,16 @@ export function ContractTopBar({
               variant={readinessPanelOpen ? 'secondary' : 'outline'}
               size="sm"
               onClick={onReadinessToggle}
-              className="gap-1.5 xl:hidden flex-shrink-0"
+              className={cn(TOP_BAR_BTN, 'xl:hidden')}
             >
               <Gauge className="h-3.5 w-3.5" />
               {readinessToggleLabel ?? 'Readiness'}
             </Button>
           )}
 
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex h-8 items-center gap-2 flex-shrink-0">
             {collaborators.length > 0 && (
-              <div className="flex items-center -space-x-1">
+              <div className="flex h-8 items-center -space-x-1">
                 {collaborators.slice(0, 3).map(c => (
                   <Tooltip
                     key={c.id}
@@ -169,7 +180,7 @@ export function ContractTopBar({
                 )}
               </div>
             )}
-            <Button variant="outline" size="sm" onClick={onShare} className="gap-1.5">
+            <Button variant="outline" size="sm" onClick={onShare} className={TOP_BAR_BTN}>
               <Users className="h-3.5 w-3.5" />
               <span className="hidden lg:inline">{COLLABORATORS_MODAL_TITLE}</span>
             </Button>
@@ -180,7 +191,8 @@ export function ContractTopBar({
             <div className="flex items-center gap-2 flex-shrink-0">
 
               {(isOwner || isContributor) && info.status === 'proposed' && !hideStartDrafting && (
-                <Button variant="secondary" size="sm" onClick={onStartDraft}>
+                <Button variant="secondary" size="sm" onClick={onStartDraft} className="gap-1.5">
+                  <PenLine className="h-3.5 w-3.5" />
                   Start drafting
                 </Button>
               )}
@@ -193,7 +205,8 @@ export function ContractTopBar({
                     New version
                   </Button>
                   {isOwner && (
-                    <Button variant="outline" size="sm" onClick={onDeprecate}>
+                    <Button variant="outline" size="sm" onClick={onDeprecate} className="gap-1.5">
+                      <AlertTriangle className="h-3.5 w-3.5" />
                       Deprecate
                     </Button>
                   )}
@@ -250,7 +263,8 @@ export function ContractTopBar({
           )}
 
           {isOwner && info.status === 'deprecated' && (
-            <Button variant="outline" size="sm" onClick={onRetire}>
+            <Button variant="outline" size="sm" onClick={onRetire} className="gap-1.5">
+              <ArchiveX className="h-3.5 w-3.5" />
               Retire contract
             </Button>
           )}

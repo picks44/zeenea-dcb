@@ -1,5 +1,15 @@
 import { useState, useMemo } from 'react'
-import { Plus, Search, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react'
+import {
+  Plus,
+  Search,
+  ChevronUp,
+  ChevronDown,
+  ChevronsUpDown,
+  LayoutList,
+} from 'lucide-react'
+import { LIFECYCLE_STATUS_ICONS, LifecycleStatusBadge } from '@/lib/lifecycleStatusUi'
+import { Tooltip } from '@/components/ui/tooltip'
+import { LIFECYCLE_FILTER_ALL_TOOLTIP, LIFECYCLE_STATUS_TOOLTIPS } from '@/lib/uxCopy'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
@@ -107,24 +117,33 @@ export function ContractsBacklog({ contracts, onSelectContract, onCreateContract
         {/* Status stats — clickable filters */}
         <div className="mt-4 flex items-center gap-2">
           {([
-            { status: '' as '' | LifecycleStatus, label: 'All', count: contracts.length, cls: 'bg-[#f5f5fa] text-[#33333d] hover:bg-[#d3d3e5]' },
-            { status: 'draft' as LifecycleStatus, label: 'Draft', count: contracts.filter(c => c.info.status === 'draft').length, cls: 'bg-[#ecf6ff] text-[#00699f] hover:bg-[#cfeafd] border border-blue-200' },
-            { status: 'active' as LifecycleStatus, label: 'Active', count: contracts.filter(c => c.info.status === 'active').length, cls: 'bg-[#f0ffec] text-[#047800] hover:bg-[#d3efcd] border border-emerald-200' },
-            { status: 'deprecated' as LifecycleStatus, label: 'Deprecated', count: contracts.filter(c => c.info.status === 'deprecated').length, cls: 'bg-[#fff2ee] text-[#c12c11] hover:bg-[#ffdacf] border border-rose-200' },
-          ] as { status: '' | LifecycleStatus; label: string; count: number; cls: string }[]).map(item => (
-            <button
-              key={item.label}
-              onClick={() => { setLifecycleFilter(item.status); setPage(1) }}
-              className={cn(
-                'flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors',
-                item.cls,
-                lifecycleFilter === item.status && 'ring-2 ring-offset-1 ring-[#0550dc]'
-              )}
-            >
-              {item.label}
-              <span className="font-semibold">{item.count}</span>
-            </button>
-          ))}
+            { status: '' as '' | LifecycleStatus, label: 'All', count: contracts.length, cls: 'bg-[#f5f5fa] text-[#33333d] hover:bg-[#d3d3e5]', icon: LayoutList },
+            { status: 'draft' as LifecycleStatus, label: 'Draft', count: contracts.filter(c => c.info.status === 'draft').length, cls: 'bg-[#ecf6ff] text-[#00699f] hover:bg-[#cfeafd] border border-blue-200', icon: LIFECYCLE_STATUS_ICONS.draft },
+            { status: 'active' as LifecycleStatus, label: 'Active', count: contracts.filter(c => c.info.status === 'active').length, cls: 'bg-[#f0ffec] text-[#047800] hover:bg-[#d3efcd] border border-emerald-200', icon: LIFECYCLE_STATUS_ICONS.active },
+            { status: 'deprecated' as LifecycleStatus, label: 'Deprecated', count: contracts.filter(c => c.info.status === 'deprecated').length, cls: 'bg-[#fff2ee] text-[#c12c11] hover:bg-[#ffdacf] border border-rose-200', icon: LIFECYCLE_STATUS_ICONS.deprecated },
+          ] as { status: '' | LifecycleStatus; label: string; count: number; cls: string; icon: typeof LayoutList }[]).map(item => {
+            const FilterIcon = item.icon
+            const filterTooltip = item.status
+              ? LIFECYCLE_STATUS_TOOLTIPS[item.status]
+              : LIFECYCLE_FILTER_ALL_TOOLTIP
+            return (
+            <Tooltip key={item.label} content={filterTooltip} side="bottom" delayDuration={400}>
+              <button
+                type="button"
+                onClick={() => { setLifecycleFilter(item.status); setPage(1) }}
+                className={cn(
+                  'flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors cursor-help',
+                  item.cls,
+                  lifecycleFilter === item.status && 'ring-2 ring-offset-1 ring-[#0550dc]'
+                )}
+                aria-label={`${item.label} (${item.count}): ${filterTooltip}`}
+              >
+                <FilterIcon className="h-3.5 w-3.5 flex-shrink-0 opacity-90" aria-hidden />
+                {item.label}
+                <span className="font-semibold">{item.count}</span>
+              </button>
+            </Tooltip>
+          )})}
         </div>
 
         {/* Search row */}
@@ -229,8 +248,8 @@ export function ContractsBacklog({ contracts, onSelectContract, onCreateContract
                             )}
                           </div>
                         </td>
-                        <td className="px-4 py-3">
-                          <Badge variant={contract.info.status}>{contract.info.status.charAt(0).toUpperCase() + contract.info.status.slice(1)}</Badge>
+                        <td className="px-4 py-3 align-middle">
+                          <LifecycleStatusBadge status={contract.info.status} />
                         </td>
                         <td className="px-4 py-3">
                           {(() => {

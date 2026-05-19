@@ -1,6 +1,6 @@
 /** Shared enterprise UX copy — Data Contract Builder MVP */
 
-import type { CollaboratorRole } from '@/types/odcs'
+import type { CollaboratorRole, LifecycleStatus } from '@/types/odcs'
 
 export const APP_NAME = 'Data Contract Builder'
 
@@ -271,6 +271,25 @@ export const PUBLISH_REQUIRES_PUBLISHER_CONTRACT =
 
 export const VIEWER_ACCESS_BANNER =
   'You have read-only access in the app. Ask a Publisher or Contributor to change your collaborator role.'
+
+// ─── Lifecycle status (ODCS; badges & filters) ─────────────────────────────
+
+export const LIFECYCLE_FILTER_ALL_TOOLTIP =
+  'Show contracts in any lifecycle status.'
+
+/** Hover help on Proposed / Draft / Active / Deprecated / Retired badges. */
+export const LIFECYCLE_STATUS_TOOLTIPS: Record<LifecycleStatus, string> = {
+  proposed:
+    'After SQL import or a legacy contract before drafting. Import stays editable; other sections unlock after Start drafting.',
+  draft:
+    'Editable work in progress. A Publisher can publish when readiness checks pass.',
+  active:
+    'Published and read-only. Start a new version to edit again without unpublishing.',
+  deprecated:
+    'No longer recommended. Older published versions are marked deprecated in version history.',
+  retired:
+    'Withdrawn from use. Read-only; no further lifecycle actions.',
+}
 
 export const PROPOSED_BANNER_IMPORT_PENDING =
   'Import a SQL schema or start from scratch. Other sections unlock after drafting starts.'

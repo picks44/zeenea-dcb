@@ -47,7 +47,7 @@ function Tooltip({
   return (
     <BaseTooltip.Provider delay={delayDuration}>
       <BaseTooltip.Root>
-        <BaseTooltip.Trigger render={<span />}>
+        <BaseTooltip.Trigger render={<span className="inline-flex items-center" />}>
           {children}
         </BaseTooltip.Trigger>
         <TooltipContent side={side}>{content}</TooltipContent>
