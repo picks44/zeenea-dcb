@@ -112,7 +112,7 @@ export function ContractTopBar({
           {info.title || 'Untitled Contract'}
         </span>
         <LifecycleStatusBadge status={info.status} />
-        <Badge variant="version" className={cn(TOP_BAR_CONTROL, 'items-center px-2.5 py-0 leading-none font-mono')}>
+        <Badge variant="version" className={cn(TOP_BAR_CONTROL, 'items-center rounded-[6px] px-2.5 py-0 leading-none font-mono')}>
           v{info.version}
         </Badge>
       </div>
@@ -140,7 +140,7 @@ export function ContractTopBar({
       <div className="flex-1 min-w-2" />
 
       {!isConsumer && (
-        <>
+        <div className="flex h-8 items-center gap-2 xl:gap-3 flex-shrink-0">
           {showReadinessToggle && onReadinessToggle && (
             <Button
               variant={readinessPanelOpen ? 'secondary' : 'outline'}
@@ -234,7 +234,7 @@ export function ContractTopBar({
                 ) : (
                   <Tooltip content={PUBLISH_REQUIRES_PUBLISHER_CONTRACT} side="bottom" delayDuration={300}>
                     <span>
-                      <Button size="sm" disabled className="h-8 text-xs gap-1.5 pointer-events-none">
+                      <Button size="sm" disabled className={cn(TOP_BAR_BTN, 'pointer-events-none')}>
                         <Upload className="h-3.5 w-3.5" />
                         {gitState === 'never' ? 'Publish' : 'Publish update'}
                       </Button>
@@ -268,7 +268,7 @@ export function ContractTopBar({
               Retire contract
             </Button>
           )}
-        </>
+        </div>
       )}
 
     </div>

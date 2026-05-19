@@ -43,7 +43,7 @@ export function LifecycleStatusBadge({
     <Badge
       variant={status}
       className={cn(
-        'inline-flex h-8 items-center justify-center gap-1.5 px-2.5 py-0 text-xs leading-none cursor-help',
+        'inline-flex h-8 items-center justify-center gap-1.5 rounded-[6px] px-2.5 py-0 text-xs leading-none cursor-help',
         className,
       )}
     >
