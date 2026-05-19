@@ -24,33 +24,48 @@ interface ContractSectionNavProps {
   docCompact?: boolean
 }
 
+function statusCueTooltip(status: SectionGuidanceStatus, missingCount: number): string | null {
+  if (status !== 'incomplete' || missingCount < 1) return null
+  const noun = missingCount === 1 ? 'item' : 'items'
+  return `${missingCount} required ${noun} missing`
+}
+
 function StatusIndicator({
   status,
-  missingCount,
   compact,
 }: {
   status: SectionGuidanceStatus
-  missingCount: number
   compact?: boolean
 }) {
   const iconClass = compact ? 'h-3 w-3' : 'h-4 w-4'
 
   if (status === 'complete') {
-    return <CheckCircle2 className={cn(iconClass, 'text-[#047800] flex-shrink-0')} />
+    return <CheckCircle2 className={cn(iconClass, 'text-[#047800]')} aria-hidden />
   }
   if (status === 'incomplete') {
-    return (
-      <span className="inline-flex items-center gap-0.5 flex-shrink-0">
-        <AlertCircle className={cn(iconClass, 'text-[#b8956a]')} />
-        {missingCount > 1 ? (
-          <span className="text-[9px] font-medium text-[#9898a7] tabular-nums min-w-[0.75rem] text-center">
-            {missingCount}
-          </span>
-        ) : null}
-      </span>
-    )
+    return <AlertCircle className={cn(iconClass, 'text-[#b8956a]')} aria-hidden />
   }
-  return <span className="h-1.5 w-1.5 rounded-full bg-[#d3d3e5] flex-shrink-0" />
+  return <span className="h-1.5 w-1.5 rounded-full bg-[#d3d3e5]" aria-hidden />
+}
+
+/** Fixed-width slot so labels stay aligned whether the cue is dot, check, or warning. */
+function StatusCueSlot({
+  status,
+  compact,
+}: {
+  status: SectionGuidanceStatus
+  compact?: boolean
+}) {
+  return (
+    <span
+      className={cn(
+        'flex items-center justify-center flex-shrink-0',
+        compact ? 'h-3.5 w-3.5' : 'h-4 w-4',
+      )}
+    >
+      <StatusIndicator status={status} compact={compact} />
+    </span>
+  )
 }
 
 function navStatusForSection(
@@ -98,32 +113,39 @@ export function ContractSectionNav({
         {sections.map(({ id, label, icon: Icon }) => {
           const isActive = activeSection === id
           const { status, missingCount } = navStatusForSection(id, guidance, contract)
+          const navLabel = id === 'stakeholders' ? SECTION_GOVERNANCE_CONTACTS : label
+          const rowLabel =
+            status === 'incomplete' && missingCount > 0
+              ? `${navLabel}, ${statusCueTooltip(status, missingCount)}`
+              : navLabel
+
+          const tooltipContent =
+            status === 'incomplete' && missingCount > 0
+              ? `${navLabel} — ${statusCueTooltip(status, missingCount)}`
+              : navLabel
+
           return (
-            <Tooltip
-              key={id}
-              content={id === 'stakeholders' ? SECTION_GOVERNANCE_CONTACTS : label}
-              side="right"
-              delayDuration={400}
-            >
+            <Tooltip key={id} content={tooltipContent} side="right" delayDuration={400}>
               <button
                 onClick={() => onSectionChange(id)}
                 className={cn(
-                  'w-full flex items-center justify-center xl:justify-start rounded text-left transition-colors tracking-[0.2px]',
+                  'w-full flex items-center rounded text-left transition-colors tracking-[0.2px]',
+                  'justify-center gap-1 xl:justify-start xl:gap-2',
                   docCompact
-                    ? 'gap-1.5 px-1 xl:pl-2 xl:pr-2 py-0.5 h-7 text-[13px]'
-                    : 'gap-2 px-1 xl:pl-2 xl:pr-2 py-1 h-8 text-sm',
+                    ? 'px-1 xl:pl-2 xl:pr-1.5 py-0.5 h-7 text-[13px]'
+                    : 'px-1 xl:pl-2 xl:pr-1.5 py-1 h-8 text-sm',
                   isActive && 'bg-[#edf6ff] font-medium text-[#12131f]',
                   !isActive && 'text-[#12131f] hover:bg-[rgba(228,228,240,0.3)]',
                 )}
-                aria-label={label}
+                aria-label={rowLabel}
               >
                 <Icon className={cn('flex-shrink-0 text-[#656574]', docCompact ? 'h-3.5 w-3.5' : 'h-4 w-4')} />
-                <span className="hidden xl:block flex-1 truncate">{label}</span>
-                <span className="hidden xl:block">
-                  <StatusIndicator status={status} missingCount={missingCount} />
+                <span className="hidden xl:block flex-1 min-w-0 truncate">{label}</span>
+                <span className="hidden xl:flex">
+                  <StatusCueSlot status={status} />
                 </span>
                 <span className="xl:hidden">
-                  <StatusIndicator status={status} missingCount={missingCount} compact />
+                  <StatusCueSlot status={status} compact />
                 </span>
               </button>
             </Tooltip>
