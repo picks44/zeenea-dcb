@@ -1,10 +1,10 @@
+import { Shield } from 'lucide-react'
 import { Tooltip as BaseTooltip } from '@base-ui/react/tooltip'
 import { TooltipContent } from '@/components/ui/tooltip'
 import type { ClassificationValue } from '@/lib/p1Constants'
 import { cn } from '@/lib/utils'
 import {
-  classificationActiveColor,
-  classificationShortLabel,
+  classificationIconButtonClass,
   classificationTooltip,
 } from './classificationCycle'
 
@@ -12,20 +12,19 @@ interface ClassificationFlagBadgeProps {
   classification?: ClassificationValue
   onClick?: () => void
   disabled: boolean
-  shape?: 'left' | 'mid' | 'right'
   compact?: boolean
+  className?: string
 }
 
 export function ClassificationFlagBadge({
   classification,
   onClick,
   disabled,
-  shape = 'mid',
   compact,
+  className,
 }: ClassificationFlagBadgeProps) {
-  const active = Boolean(classification)
-  const label = classificationShortLabel(classification)
   const tooltip = classificationTooltip(classification)
+  const hasValue = Boolean(classification)
 
   return (
     <BaseTooltip.Provider delay={600}>
@@ -39,22 +38,22 @@ export function ClassificationFlagBadge({
               aria-label={tooltip}
               title={tooltip}
               className={cn(
-                'font-bold border transition-all select-none min-w-[2rem] text-center',
-                compact ? 'h-5 px-1 text-[10px]' : 'h-7 px-1.5 text-[11px]',
-                shape === 'left' && 'rounded-l-md',
-                shape === 'mid' && 'rounded-none -ml-px',
-                shape === 'right' && 'rounded-r-md -ml-px',
-                active
-                  ? cn(classificationActiveColor(classification), 'relative z-10')
-                  : 'bg-transparent text-neutral-300 border-neutral-200',
-                !disabled && !active && 'hover:text-neutral-400 hover:border-neutral-200 hover:z-10 hover:relative',
-                !disabled && 'cursor-pointer',
+                'inline-flex shrink-0 items-center justify-center rounded-md border transition-all select-none',
+                compact ? 'h-5 w-5' : 'h-7 w-7',
+                className,
+                classificationIconButtonClass(classification, disabled),
+                !disabled && 'cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-100 focus-visible:ring-offset-1',
                 disabled && 'cursor-default',
+                hasValue && !disabled && 'shadow-sm',
               )}
             />
           }
         >
-          {label}
+          <Shield
+            className={cn(compact ? 'h-3 w-3' : 'h-3.5 w-3.5')}
+            strokeWidth={hasValue ? 2.25 : 1.75}
+            aria-hidden
+          />
         </BaseTooltip.Trigger>
         <TooltipContent side="top">{tooltip}</TooltipContent>
       </BaseTooltip.Root>

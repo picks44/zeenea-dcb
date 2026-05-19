@@ -259,7 +259,7 @@ export function TableBlock({
       {!collapsed && (
         <>
           <div className="overflow-x-auto min-w-0">
-          <div className="min-w-[640px]">
+          <div className="min-w-[672px]">
           <div className={cn(
             'flex items-center px-4 border-b border-neutral-200 bg-neutral-25/50',
             denseReadOnly ? 'py-1' : 'py-1.5',
@@ -267,9 +267,8 @@ export function TableBlock({
             <span className="text-[10px] font-semibold uppercase tracking-wide text-neutral-400 w-52 flex-shrink-0">Field</span>
             <span className="text-[10px] font-semibold uppercase tracking-wide text-neutral-400 w-32 flex-shrink-0">Type</span>
             <span className="text-[10px] font-semibold uppercase tracking-wide text-neutral-400 w-32 flex-shrink-0">DB Type</span>
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-neutral-400 w-44 flex-shrink-0">Rules</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-neutral-400 w-56 flex-shrink-0">Rules</span>
             <div className="flex-1" />
-            {!isLocked && <div className="w-6 flex-shrink-0 ml-2" />}
             {!isLocked && <div className="w-6 flex-shrink-0 ml-2" />}
           </div>
 
@@ -380,30 +379,32 @@ export function TableBlock({
                     )}
                   </div>
 
-                  <div className="flex items-start w-44 flex-shrink-0">
-                    <FlagBadge shape="left"  flag="PK"  active={col.isPrimaryKey} onClick={() => updateCol(col.id, { isPrimaryKey: !col.isPrimaryKey })} disabled={isLocked} compact={denseReadOnly} />
-                    <FlagBadge shape="mid"   flag="REQ" active={col.required}     onClick={() => updateCol(col.id, { required: !col.required })}         disabled={isLocked} compact={denseReadOnly} />
-                    <FlagBadge
-                      shape="mid"
-                      flag="PII"
-                      active={col.isPII}
-                      onClick={() => {
-                        const isPII = !col.isPII
-                        updateCol(col.id, {
-                          isPII,
-                          classification: syncClassificationFromPii(isPII, col.classification),
-                        })
-                      }}
-                      disabled={isLocked}
-                      compact={denseReadOnly}
-                    />
-                    <FlagBadge shape="mid"   flag="UQ"  active={col.isUnique}     onClick={() => updateCol(col.id, { isUnique: !col.isUnique })}         disabled={isLocked} compact={denseReadOnly} />
-                    <FlagBadge shape="mid" flag="CDE" active={col.criticalDataElement} onClick={() => updateCol(col.id, { criticalDataElement: !col.criticalDataElement })} disabled={isLocked} compact={denseReadOnly} />
+                  <div className="w-56 flex-shrink-0 flex items-center gap-2 min-w-0 self-center">
+                    <div className="flex shrink-0 items-center">
+                      <FlagBadge shape="left"  flag="PK"  active={col.isPrimaryKey} onClick={() => updateCol(col.id, { isPrimaryKey: !col.isPrimaryKey })} disabled={isLocked} compact={denseReadOnly} />
+                      <FlagBadge shape="mid"   flag="REQ" active={col.required}     onClick={() => updateCol(col.id, { required: !col.required })}         disabled={isLocked} compact={denseReadOnly} />
+                      <FlagBadge
+                        shape="mid"
+                        flag="PII"
+                        active={col.isPII}
+                        onClick={() => {
+                          const isPII = !col.isPII
+                          updateCol(col.id, {
+                            isPII,
+                            classification: syncClassificationFromPii(isPII, col.classification),
+                          })
+                        }}
+                        disabled={isLocked}
+                        compact={denseReadOnly}
+                      />
+                      <FlagBadge shape="mid"   flag="UQ"  active={col.isUnique}     onClick={() => updateCol(col.id, { isUnique: !col.isUnique })}         disabled={isLocked} compact={denseReadOnly} />
+                      <FlagBadge shape="right" flag="CDE" active={col.criticalDataElement} onClick={() => updateCol(col.id, { criticalDataElement: !col.criticalDataElement })} disabled={isLocked} compact={denseReadOnly} />
+                    </div>
                     <ClassificationFlagBadge
-                      shape="right"
                       classification={col.classification}
                       disabled={isLocked}
                       compact={denseReadOnly}
+                      className="ml-2 shrink-0"
                       onClick={() => {
                         const classification = cycleClassification(col.classification)
                         updateCol(col.id, {

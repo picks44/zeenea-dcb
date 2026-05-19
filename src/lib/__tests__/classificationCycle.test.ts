@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  classificationIconButtonClass,
   classificationShortLabel,
   classificationTooltip,
   cycleClassification,
@@ -21,5 +22,13 @@ describe('classificationCycle', () => {
     expect(classificationShortLabel('confidential')).toBe('CONF')
     expect(classificationTooltip('restricted')).toBe('Classification: restricted')
     expect(classificationTooltip(undefined)).toBe('Classification: none')
+  })
+
+  it('maps icon button classes per state', () => {
+    expect(classificationIconButtonClass(undefined, false)).toContain('neutral-300')
+    expect(classificationIconButtonClass('public', false)).toContain('cyan-700')
+    expect(classificationIconButtonClass('restricted', false)).toContain('orange-700')
+    expect(classificationIconButtonClass('confidential', false)).toContain('red-700')
+    expect(classificationIconButtonClass('confidential', true)).toContain('neutral-300')
   })
 })
