@@ -6,7 +6,13 @@ import {
   migrateExamplesField,
   normalizeTags,
 } from '@/lib/odcsSharedMappers'
-import { deriveContractId, stablePropertyId, stableSchemaId } from '@/lib/idDerivation'
+import {
+  deriveContractId,
+  isHybridContractId,
+  isLegacySlugOnlyContractId,
+  stablePropertyId,
+  stableSchemaId,
+} from '@/lib/idDerivation'
 import { generateId } from '@/lib/utils'
 import { migrateGitCommit } from '@/lib/versionHistory'
 import { SEED_CONTRACTS } from './seedContracts'
@@ -138,12 +144,20 @@ function migrateSnapshot(snapshot: DataContractSnapshot): DataContractSnapshot {
   }
 }
 
+function migrateContractId(c: DataContract, title: string): string {
+  const current = c.id?.trim() || ''
+  const expected = deriveContractId(title || 'contract', c.uid)
+  if (!current) return expected
+  if (isLegacySlugOnlyContractId(current, title)) return expected
+  if (!isHybridContractId(current)) return expected
+  if (current !== expected) return expected
+  return current
+}
+
 function migrateContract(c: DataContract): DataContract {
   const info = migrateInfo(c.info)
   const title = info.title?.trim() || ''
-  const id = c.id?.trim() && /^[a-z0-9]+(-[a-z0-9]+)*$/.test(c.id)
-    ? c.id
-    : deriveContractId(title || c.id || 'contract')
+  const id = migrateContractId(c, title)
 
   return {
     ...c,

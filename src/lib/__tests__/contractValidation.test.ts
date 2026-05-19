@@ -37,6 +37,14 @@ describe('validateContract P1', () => {
     expect(result.errors.some(e => e.code === 'quality-ai-unverified')).toBe(true)
   })
 
+  it('rejects legacy slug-only contract id at publish', () => {
+    const c = buildP1FixtureContract()
+    c.id = 'seller-payments-v1'
+    const result = validateContract(c, [c])
+    expect(result.errors.some(e => e.code === 'id-format' || e.code === 'id-derived')).toBe(true)
+    expect(result.canPublish).toBe(false)
+  })
+
   it('rejects duplicate contract id in registry', () => {
     const c = buildP1FixtureContract()
     const other = { ...c, uid: 'other' }

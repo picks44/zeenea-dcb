@@ -27,6 +27,7 @@ import {
   isValidLifecycleStatus,
 } from '@/lib/p1Validation'
 import { applyLifecycleAction, canTransitionStatus } from '@/lib/contractLifecycle'
+import { deriveContractId } from '@/lib/idDerivation'
 
 type P1Row = {
   line: number
@@ -67,7 +68,16 @@ describe('P1 compliance — 54 lines (p1.md)', () => {
     // Schema Reference — Fundamentals (lines 1–13)
     { line: 1, tab: 'Schema Reference', section: 'Fundamentals', path: 'apiVersion', run: () => expect(doc.apiVersion).toBe(ODCS_API_VERSION) },
     { line: 2, tab: 'Schema Reference', section: 'Fundamentals', path: 'kind', run: () => expect(doc.kind).toBe(ODCS_KIND) },
-    { line: 3, tab: 'Schema Reference', section: 'Fundamentals', path: 'id', run: () => expect(doc.id).toBe('seller-payments-v1') },
+    {
+      line: 3,
+      tab: 'Schema Reference',
+      section: 'Fundamentals',
+      path: 'id',
+      run: () => {
+        expect(doc.id).toBe(deriveContractId('Seller Payments v1', 'p1-fixture'))
+        expect(String(doc.id)).toMatch(/-[a-f0-9]{8}$/)
+      },
+    },
     { line: 4, tab: 'Schema Reference', section: 'Fundamentals', path: 'version', run: () => expect(doc.version).toBe('1.1.0') },
     {
       line: 5,

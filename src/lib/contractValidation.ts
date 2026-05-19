@@ -206,7 +206,7 @@ export function validateContract(
   } else if (info.title.trim() && !contractIdMatchesName(contract)) {
     issues.push({
       code: 'id-derived',
-      message: 'Contract ID must match the name (auto-derived slug).',
+      message: 'Contract ID must match the name (auto-derived slug with stable suffix).',
       severity: 'error',
       section: 'fundamentals',
       fieldId: 'contract-id',

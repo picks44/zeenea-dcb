@@ -76,7 +76,7 @@ export function FundamentalsSection({
 
   useEffect(() => {
     if (info.title.trim()) {
-      const derived = deriveContractId(info.title)
+      const derived = deriveContractId(info.title, contract.uid)
       if (derived && derived !== id) onChange({ id: derived })
     }
   }, [info.title])

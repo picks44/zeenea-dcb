@@ -1,5 +1,6 @@
 import type { DataContract } from '@/types/odcs'
 import { ZEENEA_AUTH_DEF_TYPE } from '@/lib/p1Constants'
+import { deriveContractId } from '@/lib/idDerivation'
 
 /** Contract exercising P1 fields for YAML and validation tests. */
 export function buildP1FixtureContract(): DataContract {
@@ -7,7 +8,7 @@ export function buildP1FixtureContract(): DataContract {
   return {
     uid: 'p1-fixture',
     dataContractSpecification: '3.1.0',
-    id: 'seller-payments-v1',
+    id: deriveContractId('Seller Payments v1', 'p1-fixture'),
     info: {
       title: 'Seller Payments v1',
       version: '1.1.0',

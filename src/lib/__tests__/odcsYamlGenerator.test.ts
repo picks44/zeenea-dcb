@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { buildOdcsDocument } from '@/lib/odcsYamlGenerator'
 import { buildP1FixtureContract } from './p1-fixture'
 import { NOT_PRIMARY_KEY_POSITION, ODCS_API_VERSION, ODCS_KIND } from '@/lib/p1Constants'
+import { deriveContractId } from '@/lib/idDerivation'
 
 describe('buildOdcsDocument P1 export', () => {
   const doc = buildOdcsDocument(buildP1FixtureContract())
@@ -9,7 +10,7 @@ describe('buildOdcsDocument P1 export', () => {
   it('exports fundamentals (apiVersion, kind, id, version, status, name, domain, description, tags)', () => {
     expect(doc.apiVersion).toBe(ODCS_API_VERSION)
     expect(doc.kind).toBe(ODCS_KIND)
-    expect(doc.id).toBe('seller-payments-v1')
+    expect(doc.id).toBe(deriveContractId('Seller Payments v1', 'p1-fixture'))
     expect(doc.version).toBe('1.1.0')
     expect(doc.status).toBe('draft')
     expect(doc.name).toBe('Seller Payments v1')

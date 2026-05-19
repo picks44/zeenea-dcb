@@ -171,7 +171,7 @@ export default function App() {
         ...contract.info,
         title: contract.info.title || (tables.length === 1 ? first.quantumName : contract.info.title),
       },
-      id: contract.id || deriveContractId(contract.info.title || first.physicalName),
+      id: contract.id || deriveContractId(contract.info.title || first.physicalName, contract.uid),
       dataset: tables,
     })
     setHasEditedSincePublish(true)

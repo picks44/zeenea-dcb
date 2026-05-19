@@ -1,7 +1,6 @@
 import type { DataContract, QualityRule, SlaProperty, ColumnDefinition, SchemaTable } from '@/types/odcs'
 import type { AuthoritativeDefinition, CustomProperty } from '@/types/odcsShared'
 import {
-  CONTRACT_ID_REGEX,
   CUSTOM_PROPERTY_REGEX,
   FUNDAMENTALS_AUTH_DEF_TYPES,
   LIFECYCLE_STATUSES,
@@ -12,15 +11,15 @@ import {
   ZEENEA_AUTH_DEF_TYPE,
   ZEENEA_ACTIAN_URL_PATTERN,
 } from '@/lib/p1Constants'
-import { deriveContractId } from '@/lib/idDerivation'
+import { deriveContractId, isValidContractId } from '@/lib/idDerivation'
 import { findZeeneaCatalogItemByUrl } from '@/lib/zeeneaCatalog'
 
 export function isValidP1ContractId(id: string): boolean {
-  return CONTRACT_ID_REGEX.test(id.trim())
+  return isValidContractId(id)
 }
 
 export function contractIdMatchesName(contract: DataContract): boolean {
-  const expected = deriveContractId(contract.info.title)
+  const expected = deriveContractId(contract.info.title, contract.uid)
   return contract.id.trim() === expected
 }
 

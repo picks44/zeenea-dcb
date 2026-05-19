@@ -316,7 +316,7 @@ Mapping Fundamentals → export YAML via `buildOdcsDocument` (`odcsYamlGenerator
 |---------------------|---------------------|----------|-------------------|--------------------------|-------------|-------------|
 | `apiVersion` | Système | Non | `v3.1.0` (`ODCS_API_VERSION`) | — | Oui | P1 required |
 | `kind` | Système | Non | `DataContract` (`ODCS_KIND`) | — | Oui | P1 required |
-| `id` | Dérivé du nom | Non (affiché, copiable) | `deriveContractId(title)` à chaque changement de titre | Format ASCII lowercase + hyphens ; unicité locale ; doit matcher le slug du nom | Oui | P1 required |
+| `id` | Dérivé du nom | Non (affiché, copiable) | `deriveContractId(title, uid)` à chaque changement de titre | Format hybride `{slug-du-nom}-{suffixe-8-hex}` : lowercase ASCII, tirets uniquement ; suffixe déterministe depuis `uid` (ou le nom à la création) ; unicité registry ; non éditable | Oui | P1 required |
 | `version` | Système / publish | Non en UI | Bump minor/major à la publish (sauf 1ère publish) | SemVer `x.y.z` | Oui | P1 required |
 | `status` | Système lifecycle | Non | Actions lifecycle | Valeur valide ; pas `proposed` à la publish | Oui | P1 required |
 | `name` | Contract name (`info.title`) | Oui | — | Requis | Oui | P1 |
@@ -649,7 +649,7 @@ Source : `buildP1FixtureContract()` dans `src/lib/__tests__/p1-fixture.ts`, vali
 ```yaml
 kind: DataContract
 apiVersion: v3.1.0
-id: seller-payments-v1
+id: seller-payments-v1-a3f91c2b
 version: 1.1.0
 status: draft
 name: Seller Payments v1
@@ -753,7 +753,7 @@ Lignes de contraintes table traitées par `isTableConstraintLine` sans créer de
 
 Le parser initialise notamment à vide / défaut : `description`, `tags`, `quality`, `authoritativeDefinitions`, `examples`, `items` (sauf si type logique array choisi manuellement après coup), SLA, roles, custom properties, fundamentals (sauf titre suggéré si vide).
 
-`App.tsx` après import : peut préremplir `info.title` (première table ou nom unique) et `id` via `deriveContractId`.
+`App.tsx` après import : peut préremplir `info.title` (première table ou nom unique) et `id` via `deriveContractId(title, uid)`.
 
 ### UI import
 
@@ -788,7 +788,7 @@ Le parser initialise notamment à vide / défaut : `description`, `tags`, `quali
 | Migration | Détail |
 |-----------|--------|
 | Lifecycle status | Normalisation vers les 5 statuts P1 |
-| Contract `id` | Recalcul si format invalide via `deriveContractId` |
+| Contract `id` | Migration des ids slug-only legacy vers `{slug}-{suffixe-8-hex}` via `deriveContractId(title, uid)` |
 | SLA | Suppression champ legacy `property` ; garantie `id` |
 | Custom properties | Garantie `id` |
 | Schema / property ids | `stableSchemaId` / `stablePropertyId` si id absent ou non conforme |
