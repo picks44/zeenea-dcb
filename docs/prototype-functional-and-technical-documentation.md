@@ -342,7 +342,7 @@ Sections rendues dans `ContractSectionNav` :
 2. **Required before publishing** — checklist bloquante ; en-tête de section `{earned} / 70` (poids `READINESS_REQUIRED_WEIGHT`).
 3. **Field quality** — en-tête `{earned} / 25` ; sous-ligne **Documented fields** : `{n} / {total} described` ; si incomplet, `{n} undocumented` (ou lien « without description » si navigation active).
 4. **Recommendations** — avertissements non bloquants (style secondaire), messages user-friendly.
-5. **Suggested improvements** — en-tête `{earned} / 5` ; checklist sans badge brut isolé sur la ligne `field-docs` (le score agrégé reste dans l’en-tête de section).
+5. **Suggested improvements** — en-tête `{earned} / 5` ; checklist : Domain, Business purpose, Governance contacts, Data access, Reference links (cinq axes distincts ; les descriptions de champs relèvent uniquement de **Field quality** `/25`).
 6. **Next steps** — rappels courts si présents.
 
 **Scores affichés (brouillon, non publié) :**
@@ -645,7 +645,7 @@ Copie orientée action dans `src/lib/uxCopy.ts` (`READINESS_*`, helpers de champ
 
 Guidance requise (`buildReadinessGuidanceItems`) : contract name, id, owner, version, schema fields.
 
-Recommandé : domain, purpose, governance contacts, field descriptions, reference links.
+Recommandé : domain, purpose, governance contacts, data access, reference links. Les descriptions de champs ne figurent pas ici (uniquement **Field quality**, poids 25).
 
 ### Règles de blocage (erreurs `validateContract`)
 

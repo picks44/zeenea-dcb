@@ -207,11 +207,6 @@ export function ReadinessPanel({
     [validationErrors],
   )
 
-  const suggestedChecksToShow = useMemo(
-    () => recommendedChecks.filter(item => item.key !== 'field-docs'),
-    [recommendedChecks],
-  )
-
   const isPublishedView =
     contract.info.status === 'active' && !contract.inRevision
 
@@ -430,7 +425,7 @@ export function ReadinessPanel({
             tone="recommended"
           />
           <ul className={listGap}>
-            {suggestedChecksToShow.map(item => (
+            {recommendedChecks.map(item => (
               <CheckRow
                 key={item.key}
                 item={item}

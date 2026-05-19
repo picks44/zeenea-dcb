@@ -151,6 +151,7 @@ export const READINESS_FIELD_CONTRACT_VERSION = 'contract-version'
 export const READINESS_FIELD_CONTRACT_DOMAIN = 'contract-domain'
 export const READINESS_FIELD_CONTRACT_PURPOSE = 'contract-purpose'
 export const READINESS_FIELD_STAKEHOLDERS_ROOT = 'stakeholders-root'
+export const READINESS_FIELD_ACCESS_ROLES_ROOT = 'access-roles-root'
 export const READINESS_FIELD_FUNDAMENTALS_REF_LINKS = 'fundamentals-ref-links'
 export const READINESS_FIELD_SCHEMA_ROOT = 'schema-root'
 
@@ -165,7 +166,7 @@ export const READINESS_HELPER_SCHEMA_FIELDS = 'Add at least one table and field.
 export const READINESS_PANEL_LABEL_DOMAIN = 'Domain'
 export const READINESS_PANEL_LABEL_PURPOSE = 'Business purpose'
 export const READINESS_PANEL_LABEL_CONTACTS = 'Governance contacts'
-export const READINESS_PANEL_LABEL_FIELD_DOCS = 'Field descriptions'
+export const READINESS_PANEL_LABEL_DATA_ACCESS = 'Data access'
 export const READINESS_PANEL_LABEL_REF_LINKS = 'Reference links'
 
 export const READINESS_GUIDANCE_FUNDAMENTALS_BANNER =

@@ -2,7 +2,7 @@ import type { DataContract, SectionId } from '@/types/odcs'
 import { validateContract, type ValidationIssue, type ValidationResult } from '@/lib/contractValidation'
 import { countAssignedStakeholders } from '@/lib/stakeholders'
 import {
-  findFirstUndocumentedField,
+  READINESS_FIELD_ACCESS_ROLES_ROOT,
   READINESS_FIELD_CONTRACT_DOMAIN,
   READINESS_FIELD_CONTRACT_PURPOSE,
   READINESS_FIELD_FUNDAMENTALS_REF_LINKS,
@@ -23,8 +23,8 @@ import {
   READINESS_GUIDANCE_SCHEMA_BANNER,
   READINESS_GUIDANCE_STAKEHOLDERS_BANNER,
   READINESS_PANEL_LABEL_CONTACTS,
+  READINESS_PANEL_LABEL_DATA_ACCESS,
   READINESS_PANEL_LABEL_DOMAIN,
-  READINESS_PANEL_LABEL_FIELD_DOCS,
   READINESS_PANEL_LABEL_PURPOSE,
   READINESS_PANEL_LABEL_REF_LINKS,
 } from '@/lib/uxCopy'
@@ -92,6 +92,13 @@ function hasSchemaContent(contract: DataContract): boolean {
 function hasReferenceLinks(contract: DataContract): boolean {
   const defs = contract.info.descriptionAuthoritativeDefinitions ?? []
   return defs.some(d => d.url.trim() || d.type.trim() || (d.description ?? '').trim())
+}
+
+/** At least one consumer role with name and access level (ODCS data access). */
+export function hasExploitableDataAccessRole(contract: DataContract): boolean {
+  return (contract.roles ?? []).some(
+    r => Boolean(r.role?.trim()) && Boolean(r.access),
+  )
 }
 
 export function computeSectionGuidance(
@@ -169,13 +176,8 @@ export function buildReadinessGuidanceItems(
   const validation = validateContract(contract, allContracts)
   const { info, id } = contract
   const fieldCount = contract.dataset.reduce((acc, t) => acc + t.columns.length, 0)
-  const fieldsWithDesc = contract.dataset.reduce(
-    (acc, t) => acc + t.columns.filter(c => c.description.trim()).length,
-    0,
-  )
   const schemaOk = !validation.errors.some(e => e.section === 'schema') && fieldCount > 0
   const contactCount = countAssignedStakeholders(contract.stakeholders)
-  const firstUndocumented = findFirstUndocumentedField(contract)
 
   const required: ReadinessGuidanceItem[] = [
     {
@@ -251,19 +253,15 @@ export function buildReadinessGuidanceItems(
       fieldId: READINESS_FIELD_STAKEHOLDERS_ROOT,
       badge: contactCount > 0 ? String(contactCount) : undefined,
     },
-  ]
-
-  if (fieldCount > 0 && fieldsWithDesc < fieldCount && firstUndocumented) {
-    recommended.push({
-      key: 'field-docs',
-      label: READINESS_PANEL_LABEL_FIELD_DOCS,
-      ok: false,
+    {
+      key: 'access-roles',
+      label: READINESS_PANEL_LABEL_DATA_ACCESS,
+      ok: hasExploitableDataAccessRole(contract),
       variant: 'recommended',
-      section: 'schema',
-      fieldId: firstUndocumented.fieldId,
-      badge: String(fieldCount - fieldsWithDesc),
-    })
-  }
+      section: 'accessRoles',
+      fieldId: READINESS_FIELD_ACCESS_ROLES_ROOT,
+    },
+  ]
 
   if (!hasReferenceLinks(contract)) {
     recommended.push({
