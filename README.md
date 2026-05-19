@@ -123,15 +123,15 @@ flowchart TB
   NV --> D
 ```
 
-1. **Backlog** — **Create contract** ouvre un écran Import temporaire (aucun contrat enregistré tant que l’utilisateur n’a pas choisi).
-2. **Start from scratch** — Crée un contrat `draft` et ouvre Fundamentals.
-3. **Import SQL** — Parse le DDL, crée un contrat `proposed` avec dataset ; **Start drafting** débloque l’édition des autres sections.
-3. **Fundamentals** — Compléter titre, ID, owner, version, domaine, etc.
-4. **Schéma** — Affiner libellés métier, types logiques, flags (PK, PII, required).
-5. **Stakeholders** — Renseigner les parties prenantes.
-6. **YAML** — Vérifier le rendu ODCS avant publication.
-7. **Push to Git** — Choisir bump **minor** (non breaking) ou **major** (breaking) ; le contrat passe en statut `active` et devient en lecture seule.
-8. **Nouvelle version** — Depuis un contrat actif, démarrer une révision (`inRevision`) pour éditer à nouveau.
+1. **Backlog** — **Create contract** ouvre la vue `create` (écran Import temporaire, breadcrumb *Contracts > Create contract*) : **aucun contrat** n’est créé ni persisté tant que l’utilisateur n’a pas choisi.
+2. **Start from scratch** (vue `create`) — Crée un contrat `draft` et ouvre Fundamentals.
+3. **Import SQL** (vue `create`) — Parse le DDL, crée un contrat `proposed` avec dataset ; **Start drafting** débloque l’édition des autres sections.
+4. **Fundamentals** — Compléter titre, ID, owner, version, domaine, etc.
+5. **Schéma** — Affiner libellés métier, types logiques, flags (PK, PII, required).
+6. **Stakeholders** — Renseigner les parties prenantes.
+7. **YAML** — Vérifier le rendu ODCS avant publication.
+8. **Publish contract** — Choisir bump **minor** (non breaking) ou **major** (breaking) ; le contrat passe en statut `active` et devient en lecture seule (workflow version simulé, pas de dépôt externe réel).
+9. **Nouvelle version** — Depuis un contrat actif, démarrer une révision (`inRevision`) pour éditer à nouveau.
 
 ---
 
@@ -141,7 +141,7 @@ Cinq statuts ODCS P1 (`proposed` → `draft` → `active` → `deprecated` → `
 
 | Statut | Comportement UI |
 |--------|-----------------|
-| `proposed` | Après **Create contract** — import DDL autorisé ; autres sections verrouillées jusqu’à **Start drafting** (ou **Start from scratch** sur Import) |
+| `proposed` | Après **import SQL** (vue `create`) ou contrat **legacy** — import DDL autorisé (`isImportSectionEditable`) ; autres sections verrouillées jusqu’à **Start drafting** ; bannière contextuelle selon `creationSource` et présence de dataset (`getProposedLifecycleBannerMessage`) |
 | `draft` | Édition complète — **Start from scratch** ou après **Start drafting** ; publication si validation OK |
 | `active` | Lecture seule sauf mode révision (`inRevision`) ; bouton « New Version » |
 | `deprecated` | Lecture seule ; bannière d’avertissement (versions historiques après un nouveau publish) |
@@ -154,12 +154,12 @@ Cinq statuts ODCS P1 (`proposed` → `draft` → `active` → `deprecated` → `
 
 La logique de bump est implémentée dans `src/components/PushToGitModal.tsx`.
 
-### Publication (Git simulé)
+### Publication (workflow simulé)
 
-La modale **Push to Git** :
+La modale **Publish contract** (`PushToGitModal`) :
 
 1. Propose le choix du type de version.
-2. Simule les étapes (validation, génération YAML, commit).
+2. Simule les étapes (validation, génération YAML, enregistrement de version).
 3. Ajoute une entrée dans `gitHistory` avec snapshot du contrat.
 4. Marque les versions précédentes comme `deprecated` dans l’historique.
 
@@ -262,6 +262,7 @@ zeenea-dcb/
 | Vue (`AppView`) | Description |
 |-----------------|-------------|
 | `backlog` | Liste des contrats |
+| `create` | Écran temporaire Create contract (`ImportSection` seul, pas de chrome contrat, pas de persistance avant choix utilisateur) |
 | `editor` | Éditeur multi-sections d’un contrat |
 | `components` | Galerie des composants UI |
 
@@ -280,7 +281,7 @@ Le fichier [`design.md`](./design.md) décrit en détail :
 - **Composants** — Tables denses, modales, empty states DDL
 - **Règles UX** — Libellés métier vs termes techniques, verrouillage des contrats actifs
 - **Moteur ODCS** — Mapping DDL, validation avant publish
-- **Workflow Git** — Draft → Publish → New Version
+- **Workflow publication** — Draft → Publish contract → New Version (simulé)
 
 L’implémentation UI suit le **design system Actian** (tokens dans `src/index.css`), avec une inspiration Shadcn/Radix mentionnée dans la spec produit.
 

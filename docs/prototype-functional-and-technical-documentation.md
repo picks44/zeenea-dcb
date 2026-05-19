@@ -41,7 +41,7 @@ Cette documentation décrit le comportement **observé dans le codebase actuel**
 
 ### Objectif général
 
-Le prototype est une **application web SPA** (Single Page Application) qui permet de **créer, éditer et publier des contrats de données** alignés sur l’[Open Data Contract Standard (ODCS) v3.1.0](https://bitol-io.github.io/open-data-contract-standard/v3.1.0/). Le parcours typique observé part d’un script SQL `CREATE TABLE`, remplit un modèle interne, puis produit un **fichier YAML ODCS** affiché en temps réel.
+Le prototype est une **application web SPA** (Single Page Application) qui permet de **créer, éditer et publier des contrats de données** alignés sur l’[Open Data Contract Standard (ODCS) v3.1.0](https://bitol-io.github.io/open-data-contract-standard/v3.1.0/). Le parcours observé commence au backlog (**Create contract** → vue temporaire `create`), puis soit un brouillon **Start from scratch**, soit un import SQL `CREATE TABLE` → contrat `proposed`, édition du modèle interne, et production d’un **fichier YAML ODCS** affiché en temps réel.
 
 ### Rôle du Data Contract Studio / Data Contract Builder
 
@@ -76,7 +76,7 @@ Des champs ODCS **hors P1** ou **hors scope UI** ne sont pas exposés (voir sect
 
 | Capacité | Détail |
 |----------|--------|
-| Backlog | Liste, création (scratch ou import SQL), ouverture de contrats (`ContractsBacklog`, `createContract.ts`, `App.tsx`) |
+| Backlog | Liste ; **Create contract** ouvre la vue `create` (aucun contrat tant que l’utilisateur n’a pas choisi) ; puis scratch → `draft` ou import SQL → `proposed` (`ContractsBacklog`, `createContract.ts`, `App.tsx`) |
 | Import SQL | Coller ou charger un DDL ; parse multi-tables (`ImportSection`, `ddlParser.ts`) |
 | Édition P1 | Fundamentals, schema, contacts, data access, SLA, custom properties |
 | YAML | Onglet YAML temps réel (`YamlView`, `generateODCSYaml`) |
@@ -181,7 +181,7 @@ Actions système (`applyLifecycleAction`) :
 
 | Statut | Description (comportement observé) | Éditable | Actions UI disponibles | Statut suivant possible |
 |--------|-----------------------------------|----------|------------------------|-------------------------|
-| **proposed** | Contrat créé via **Create contract** (étape Import) — import SQL ou revue avant brouillon | Non (sauf section Import SQL) | **Start from scratch** sur Import ; **Start drafting** (toolbar) masqué sur Import initial, visible après import SQL ou hors section Import | `draft` |
+| **proposed** | Après **import SQL** depuis la vue `create`, ou contrat **legacy** (localStorage) avant **Start drafting** — pas créé par le seul clic backlog | Non (sauf section Import SQL via `isImportSectionEditable`) | **Start drafting** (toolbar) ; **Start from scratch** sur Import pour legacy `proposed` vide | `draft` |
 | **draft** | Brouillon éditable — **Start from scratch** ou après **Start drafting** | Oui | **Publish** / **Publish update** (owner, si validation OK) | `active` |
 | **active** | Publié, verrouillé | Non | **New version** (owner, editor) ; **Deprecate** (owner) ; bannière active | `deprecated` ou révision locale |
 | **active** + `inRevision: true` | Révision sur contrat publié | Oui | **Publish update** (owner) ; **Discard changes** (versions) | `active` (après publish) |
@@ -201,6 +201,18 @@ Un seul bouton **Create contract** ouvre la vue `AppView = 'create'` : écran Im
 | Legacy : **Start from scratch** sur contrat `proposed` vide | `applyStartFromScratch` | `draft` | Contrats anciens localStorage |
 
 Le champ `creationSource` est **UI-only** (non exporté YAML). L’entrée nav **Import SQL** est visible tant que le contrat est nouveau (`dataset` vide, `gitHistory` vide) et `creationSource !== 'manual'`.
+
+**Vue `create` vs éditeur :** la vue `create` n’affiche **pas** de bannière lifecycle (pas encore de contrat). Les bannières ci-dessous s’appliquent uniquement en **éditeur** (`AppView = 'editor'`) pour un contrat déjà persisté en statut `proposed`.
+
+### 3.4.1 Bannières lifecycle (`proposed`)
+
+Helper : `getProposedLifecycleBannerMessage` (`src/lib/createContract.ts`), constantes dans `src/lib/uxCopy.ts`. Affichage dans `App.tsx` (bannière sous la top bar, pas sur la vue `create`).
+
+| Contexte (`creationSource`, `dataset`) | Message UI (anglais, observé) |
+|----------------------------------------|-------------------------------|
+| `import` + `dataset` vide | *Import a SQL schema or start from scratch. Other sections unlock after drafting starts.* |
+| `import` + `dataset` non vide | *Review the imported schema, then start drafting to edit the full contract.* |
+| Legacy (pas de `creationSource`, ou autre) | *Start drafting to edit this contract.* |
 
 ### 3.5 Start drafting
 
@@ -326,14 +338,23 @@ Sections rendues dans `ContractSectionNav` :
 
 **Hiérarchie visuelle du panneau** (`ReadinessPanel`, libellés `uxCopy.ts`) :
 
-1. **Details to fix** — erreurs de validation après tentative de publish (prioritaire).
-2. **Required before publishing** — checklist bloquante avec score partiel affiché.
-3. **Field quality** — documentation des champs schema (barre `X / Y described`).
-4. **Recommendations** — avertissements non bloquants (style secondaire).
-5. **Suggested improvements** — checklist recommandée sans compteur redondant.
+1. **Details to fix** — erreurs de validation après tentative de publish (prioritaire) ; libellés via `validationUserMessage` (`validationUserMessages.ts`).
+2. **Required before publishing** — checklist bloquante ; en-tête de section `{earned} / 70` (poids `READINESS_REQUIRED_WEIGHT`).
+3. **Field quality** — en-tête `{earned} / 25` ; sous-ligne **Documented fields** : `{n} / {total} described` ; si incomplet, `{n} undocumented` (ou lien « without description » si navigation active).
+4. **Recommendations** — avertissements non bloquants (style secondaire), messages user-friendly.
+5. **Suggested improvements** — en-tête `{earned} / 5` ; checklist sans badge brut isolé sur la ligne `field-docs` (le score agrégé reste dans l’en-tête de section).
 6. **Next steps** — rappels courts si présents.
 
-En-tête allégé : titre + score numérique (brouillon) ou statut publié (lecture seule), barre de progression discrète, message publish. Wording utilisateur : « personal data » (pas d’acronyme PII visible dans le panneau).
+**Scores affichés (brouillon, non publié) :**
+
+| Zone | Affichage observé |
+|------|-------------------|
+| En-tête panneau (`READINESS_PANEL_TITLE`) | `{healthScore} / 100` |
+| Required before publishing | `{earned} / 70` |
+| Field quality | `{earned} / 25` + barre documentée |
+| Suggested improvements | `{earned} / 5` |
+
+En-tête : barre de progression discrète, message publish. Contrat publié : titre **Contract quality**, pas de fraction `/100` en en-tête. Wording utilisateur : « personal data » (pas d’acronyme PII visible dans le panneau).
 
 ### 4.5 Lien UI → modèle → YAML
 
@@ -647,6 +668,8 @@ Liste des codes erreur observés dans `contractValidation.ts` :
 
 Message publish si non-owner : `PUBLISH_REQUIRES_PUBLISHER` / `PUBLISH_REQUIRES_PUBLISHER_CONTRACT` (`uxCopy.ts`).
 
+**Messages validation user-friendly** (`src/lib/validationUserMessages.ts`) : couche UI qui mappe les `ValidationIssue` techniques (codes `contractValidation.ts`) vers des libellés lisibles. Utilisée dans **ReadinessPanel** (Details to fix, Recommendations), **PushToGitModal** (avertissements), et `publishBlockUserMessage` pour le statut publish (`publicationReadiness.ts`, `App.tsx`). Si aucun mapping dédié n’existe pour un code, le message technique est conservé.
+
 ---
 
 ## 16. YAML export
@@ -801,7 +824,7 @@ Le parser initialise notamment à vide / défaut : `description`, `tags`, `quali
 
 - Animation de progression **simulée** (timeouts 1,4 s / 2,7 s / 5,2 s) — pas liée au temps réel du parseur.
 - Preview : `summarizeDDLImport(parseDDLMulti(ddl))` avant validation.
-- Verrouillage : respecte `isLocked` (pas d’import si contrat verrouillé).
+- **Verrouillage :** en éditeur, `isLocked` bloque l’import pour la plupart des statuts verrouillés ; en statut **`proposed`**, la section Import reste **éditable** via `isImportSectionEditable` (même si `isContractLocked` est vrai pour le reste du contrat). Sur la vue **`create`**, `ImportSection` reçoit `isLocked={false}` (pas encore de contrat).
 
 ### Limites connues
 
@@ -859,17 +882,19 @@ Le parser initialise notamment à vide / défaut : `description`, `tags`, `quali
 
 ### Fichiers de tests (`src/lib/__tests__/`)
 
-| Fichier | Rôle | Nombre d’assertions `it(` observé |
-|---------|------|-----------------------------------|
-| `p1-compliance.test.ts` | 54 lignes P1 + tests transverses | 59 (54 dynamiques + 5) |
-| `contractLifecycle.test.ts` | Transitions, lock, publish status | 7 |
-| `contractValidation.test.ts` | Validation publish, SLA, AI, proposed | 6 |
-| `odcsYamlGenerator.test.ts` | Structure export fixture P1 | 7 |
-| `p1Validation.test.ts` | Helpers unitaires P1 | 6 |
-| `idDerivation.test.ts` | Slugs ids | 2 |
+| Fichier | Rôle | Cas `it(` / `test(` |
+|---------|------|----------------------|
+| `p1-compliance.test.ts` | 54 lignes P1 + tests transverses (dont assertions dynamiques par ligne `p1.md`) | 7 fichiers `describe` + boucles |
+| `createContract.test.ts` | Factories création, `getProposedLifecycleBannerMessage`, `shouldHideStartDraftingInTopBar`, `applyStartFromScratch` | 15 |
+| `contractLifecycle.test.ts` | Transitions, lock, `isImportSectionEditable`, publish status | 8 |
+| `contractValidation.test.ts` | Validation publish, SLA, AI, proposed | 10 |
+| `validationUserMessages.test.ts` | Mapping messages UI depuis `ValidationIssue` | 8 |
+| `odcsYamlGenerator.test.ts` | Structure export fixture P1 | 10 |
+| `p1Validation.test.ts` | Helpers unitaires P1 | 11 |
+| `idDerivation.test.ts` | IDs hybrides contrat / schema / property | 10 |
 | `p1-fixture.ts` | Données fixture (pas un test) | — |
 
-**Total observé :** environ **87** cas `it(` (hors fixture).
+**Total observé :** **157** tests (`npm test`, Vitest) — dont couverture lifecycle/import/bannières `proposed` dans `createContract.test.ts` et `contractLifecycle.test.ts`.
 
 ### Rôle de `p1-compliance.test.ts`
 
@@ -906,10 +931,11 @@ Le parser initialise notamment à vide / défaut : `description`, `tags`, `quali
 
 ### Vues applicatives (`AppView`)
 
-| Vue | Composant |
-|-----|-----------|
+| Vue | Composant / comportement |
+|-----|--------------------------|
 | `backlog` | `ContractsBacklog` |
-| `editor` | Éditeur contrat |
+| `create` | Écran temporaire **Create contract** : `ImportSection` seul, breadcrumb `Contracts > Create contract` (`AppTopBar`) ; pas de `ContractTopBar`, badge lifecycle, YAML ni collaborateurs ; **aucune persistance** tant que l’utilisateur n’a pas choisi Start from scratch ou import SQL |
+| `editor` | Éditeur contrat (sections, readiness, publication) |
 | `components` | `ComponentsPage` |
 
 ### Tableau fichiers / dossiers clés
@@ -1052,7 +1078,7 @@ Cocher lors de toute évolution touchant le contrat ODCS P1.
 - [ ] Mettre à jour `LIFECYCLE_TRANSITIONS` et `applyLifecycleAction`
 - [ ] Mettre à jour handlers `App.tsx` et boutons `ContractTopBar.tsx`
 - [ ] Mettre à jour `src/lib/__tests__/contractLifecycle.test.ts`
-- [ ] Vérifier messages bannières statut dans `App.tsx`
+- [ ] Vérifier `getProposedLifecycleBannerMessage` / constantes `PROPOSED_BANNER_*` et affichage dans `App.tsx`
 
 ### Modification authoritative definitions
 
