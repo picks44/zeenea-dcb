@@ -181,12 +181,14 @@ function Step({ label, state }: { label: string; state: 'pending' | 'active' | '
 
 interface PushToGitModalProps {
   contract: DataContract
+  /** Full list for duplicate-id checks; optional for tests. */
+  allContracts?: DataContract[]
   open: boolean
   onClose: () => void
   onPushed: (result: PushResult) => void
 }
 
-export function PushToGitModal({ contract, open, onClose, onPushed }: PushToGitModalProps) {
+export function PushToGitModal({ contract, allContracts, open, onClose, onPushed }: PushToGitModalProps) {
   const [phase, setPhase] = useState<Phase>({ kind: 'form' })
   const [bumpType, setBumpType] = useState<BumpType>('minor')
   const [description, setDescription] = useState('')
@@ -195,7 +197,9 @@ export function PushToGitModal({ contract, open, onClose, onPushed }: PushToGitM
   const isFirstPublish = contract.gitHistory.length === 0
   const newVersion = isFirstPublish ? contract.info.version : bumpVersion(contract.info.version, bumpType)
   const fieldCount = contract.dataset.reduce((a, t) => a + t.columns.length, 0)
-  const validationWarnings = validateContract(contract).warnings
+  const validation = validateContract(contract, allContracts)
+  const validationWarnings = validation.warnings
+  const canPublishContract = validation.canPublish
 
   useEffect(() => {
     if (!open) return
@@ -220,6 +224,7 @@ export function PushToGitModal({ contract, open, onClose, onPushed }: PushToGitM
   if (!open) return null
 
   const handlePush = async () => {
+    if (!validateContract(contract, allContracts).canPublish) return
     const hash = randomHash()
     const now = new Date().toISOString()
     const title = publishCommitTitle(newVersion, contract.info.title, isFirstPublish)
@@ -404,7 +409,12 @@ export function PushToGitModal({ contract, open, onClose, onPushed }: PushToGitM
               <Button variant="ghost" size="sm" onClick={onClose} className="h-8 text-xs">
                 Cancel
               </Button>
-              <Button size="sm" onClick={handlePush} className="h-8 text-xs gap-1.5 bg-[#12131f] hover:bg-[#2a2a30]">
+              <Button
+                size="sm"
+                onClick={handlePush}
+                disabled={!canPublishContract}
+                className="h-8 text-xs gap-1.5 bg-[#12131f] hover:bg-[#2a2a30] disabled:opacity-50"
+              >
                 <Upload className="h-3.5 w-3.5" />
                 Publish v{newVersion}
               </Button>

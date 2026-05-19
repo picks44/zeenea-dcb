@@ -346,6 +346,8 @@ export default function App() {
 
   const handleGitPush = useCallback((result: PushResult) => {
     if (!contract) return
+    const publishCheck = validateContract(contract, contracts)
+    if (!publishCheck.canPublish || myRole !== 'owner' || !hasEditedSincePublish) return
     const snapshot: DataContractSnapshot = {
       id: contract.id,
       info: {
@@ -368,7 +370,7 @@ export default function App() {
       updatedAt: result.commit.timestamp,
     } : c))
     setHasEditedSincePublish(false)
-  }, [contract])
+  }, [contract, contracts, hasEditedSincePublish, myRole])
 
   return (
     <div className="flex h-screen bg-[#fbfbff] overflow-hidden">
@@ -385,11 +387,13 @@ export default function App() {
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
 
-        <AppTopBar
-          currentView={currentView}
-          contractTitle={contract?.info.title}
-          onBack={handleBack}
-        />
+        {!(contract && currentView === 'editor' && activeSection !== 'import') && (
+          <AppTopBar
+            currentView={currentView}
+            contractTitle={contract?.info.title}
+            onBack={handleBack}
+          />
+        )}
 
         <div className="flex flex-1 min-h-0 overflow-hidden">
           {currentView === 'components' ? (
@@ -431,7 +435,17 @@ export default function App() {
                 />
               )}
 
-              <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+              <div className="flex flex-1 flex-col min-w-0 min-h-0 overflow-hidden">
+
+                {activeSection !== 'import' && (
+                  <AppTopBar
+                    currentView={currentView}
+                    contractTitle={contract.info.title}
+                    onBack={handleBack}
+                  />
+                )}
+
+                <div className="flex flex-1 flex-col min-w-0 min-h-0 overflow-hidden">
 
                 <ContractTopBar
                   contract={contract}
@@ -439,7 +453,10 @@ export default function App() {
                   onTabChange={setActiveTab}
                   canPublish={canPublish}
                   publishBlockReason={publishBlockReason}
-                  onPushToGit={() => setShowPushModal(true)}
+                  onPushToGit={() => {
+                    if (!canPublish) return
+                    setShowPushModal(true)
+                  }}
                   onNewVersion={handleNewVersion}
                   onStartDraft={handleStartDraft}
                   onDeprecate={handleDeprecateContract}
@@ -612,6 +629,7 @@ export default function App() {
                     )}
                   </div>
                 )}
+                </div>
               </div>
 
             </div>
@@ -628,6 +646,7 @@ export default function App() {
               <PushToGitModal
                 key={contract.uid}
                 contract={contract}
+                allContracts={contracts}
                 open={showPushModal}
                 onClose={() => setShowPushModal(false)}
                 onPushed={handleGitPush}

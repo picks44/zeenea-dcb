@@ -38,16 +38,21 @@ function Tooltip({
   content,
   delayDuration = 1000,
   side = 'top',
+  /** Applied to the trigger wrapper (e.g. `w-full` for full-width sidebar rows). */
+  triggerClassName,
 }: {
   children: React.ReactNode
   content: React.ReactNode
   delayDuration?: number
   side?: 'top' | 'bottom' | 'left' | 'right'
+  triggerClassName?: string
 }) {
   return (
     <BaseTooltip.Provider delay={delayDuration}>
       <BaseTooltip.Root>
-        <BaseTooltip.Trigger render={<span className="inline-flex items-center" />}>
+        <BaseTooltip.Trigger
+          render={<span className={cn('inline-flex items-center min-w-0', triggerClassName)} />}
+        >
           {children}
         </BaseTooltip.Trigger>
         <TooltipContent side={side}>{content}</TooltipContent>

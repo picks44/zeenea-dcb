@@ -48,7 +48,7 @@ export function MainSidebar({ currentView, onNavigate, collapsed, onToggleCollap
             ? currentView === 'backlog' || currentView === 'editor' || currentView === 'create'
             : currentView === id
           return (
-            <Tooltip key={id} content={label} side="right" delayDuration={400}>
+            <Tooltip key={id} content={label} side="right" delayDuration={400} triggerClassName="w-full">
               <button
                 onClick={() => onNavigate(id)}
                 className={cn(
@@ -72,7 +72,7 @@ export function MainSidebar({ currentView, onNavigate, collapsed, onToggleCollap
       </nav>
 
       <div className={cn('flex-shrink-0 border-t border-[#e4e4f0] py-2', collapsed ? 'px-1.5' : 'px-4')}>
-        <Tooltip content={toggleLabel} side="right" delayDuration={400}>
+        <Tooltip content={toggleLabel} side="right" delayDuration={400} triggerClassName="w-full">
           <button
             type="button"
             onClick={onToggleCollapsed}

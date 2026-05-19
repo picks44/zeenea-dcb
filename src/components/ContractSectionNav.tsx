@@ -112,8 +112,8 @@ export function ContractSectionNav({
   ]
 
   return (
-    <div className="w-12 xl:w-48 flex-shrink-0 border-r border-[#d3d3e5] bg-white flex flex-col h-full">
-      <div className="flex-1 px-1 xl:px-2 py-3 space-y-0.5">
+    <aside className="w-12 xl:w-48 flex-shrink-0 border-r border-[#d3d3e5] bg-white flex flex-col h-full min-h-0">
+      <nav className="flex-1 min-h-0 overflow-y-auto px-1 xl:px-2 py-3 space-y-0.5">
         {sections.map(({ id, label, icon: Icon }) => {
           const isActive = activeSection === id
           const { status, missingCount } = navStatusForSection(id, guidance, contract)
@@ -129,7 +129,7 @@ export function ContractSectionNav({
               : navLabel
 
           return (
-            <Tooltip key={id} content={tooltipContent} side="right" delayDuration={400}>
+            <Tooltip key={id} content={tooltipContent} side="right" delayDuration={400} triggerClassName="w-full">
               <button
                 onClick={() => onSectionChange(id)}
                 className={cn(
@@ -155,14 +155,15 @@ export function ContractSectionNav({
             </Tooltip>
           )
         })}
-      </div>
+      </nav>
 
       {onDeleteContract && (
-        <div className="px-1 xl:px-2 pb-3 border-t border-[#e4e4f0] pt-2">
-          <Tooltip content="Delete contract" side="right" delayDuration={400}>
+        <div className="flex-shrink-0 border-t border-[#e4e4f0] py-2 px-1 xl:px-2">
+          <Tooltip content="Delete contract" side="right" delayDuration={400} triggerClassName="w-full">
             <button
+              type="button"
               onClick={onDeleteContract}
-              className="w-full flex items-center justify-center xl:justify-start gap-2 xl:pl-2 py-1 h-8 rounded text-sm tracking-[0.2px] text-[#9898a7] hover:text-[#c12c11] hover:bg-[#fff2ee] transition-colors"
+              className="w-full flex h-8 items-center justify-center gap-2 rounded text-sm tracking-[0.2px] text-[#9898a7] transition-colors hover:bg-[#fff2ee] hover:text-[#c12c11] xl:justify-start xl:pl-2"
               aria-label="Delete contract"
             >
               <Trash2 className="h-4 w-4 flex-shrink-0" />
@@ -171,6 +172,6 @@ export function ContractSectionNav({
           </Tooltip>
         </div>
       )}
-    </div>
+    </aside>
   )
 }

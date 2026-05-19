@@ -101,6 +101,7 @@ export function ContractTopBar({
 
   const handlePublishClick = () => {
     readinessNav?.markPublishAttempted()
+    if (!canPublish) return
     onPushToGit()
   }
 
@@ -216,21 +217,26 @@ export function ContractTopBar({
               {/* Publish area — draft / in-revision state */}
               {(info.status === 'draft' || contract.inRevision) && (gitState === 'never' || gitState === 'unpushed') && (
                 isOwner ? (
-                  canPublish ? (
-                    <Button size="sm" onClick={handlePublishClick} className={TOP_BAR_BTN}>
+                  <Tooltip
+                    content={!canPublish && publishBlockReason ? publishBlockReason : undefined}
+                    side="bottom"
+                    delayDuration={300}
+                  >
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={handlePublishClick}
+                      aria-disabled={!canPublish}
+                      className={cn(
+                        TOP_BAR_BTN,
+                        !canPublish &&
+                          'bg-neutral-50 text-neutral-300 border border-neutral-200 shadow-none cursor-not-allowed hover:bg-neutral-50 hover:text-neutral-300',
+                      )}
+                    >
                       <Upload className="h-3.5 w-3.5" />
                       {gitState === 'never' ? 'Publish' : 'Publish update'}
                     </Button>
-                  ) : (
-                    <Tooltip content={publishBlockReason!} side="bottom" delayDuration={300}>
-                      <span className="inline-flex" onClick={handlePublishClick} role="button" tabIndex={0}>
-                        <Button size="sm" disabled className={cn(TOP_BAR_BTN, 'pointer-events-none')}>
-                          <Upload className="h-3.5 w-3.5" />
-                          {gitState === 'never' ? 'Publish' : 'Publish update'}
-                        </Button>
-                      </span>
-                    </Tooltip>
-                  )
+                  </Tooltip>
                 ) : (
                   <Tooltip content={PUBLISH_REQUIRES_PUBLISHER_CONTRACT} side="bottom" delayDuration={300}>
                     <span>
