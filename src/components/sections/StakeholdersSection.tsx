@@ -84,14 +84,13 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked, docCompa
   return (
     <div ref={sectionRootRef} className="max-w-[720px] w-full">
       <div ref={contactsAnchorRef}>
-        <div data-readiness-flash className="rounded -mx-0.5 px-0.5">
-          <GovernanceSectionHeader
-            title={SECTION_GOVERNANCE_CONTACTS}
-            conceptTag={SECTION_CONCEPT_COMMUNICATION}
-            description={<WorkflowMetadataNote pill="not-in-odcs">{STAKEHOLDERS_INTRO}</WorkflowMetadataNote>}
-            compact={docCompact}
-          />
-        </div>
+        <GovernanceSectionHeader
+          title={SECTION_GOVERNANCE_CONTACTS}
+          conceptTag={SECTION_CONCEPT_COMMUNICATION}
+          description={<WorkflowMetadataNote pill="not-in-odcs">{STAKEHOLDERS_INTRO}</WorkflowMetadataNote>}
+          compact={docCompact}
+          flashTitle
+        />
 
       {stakeholders.length === 0 ? (
         <GovernanceEmptyState
