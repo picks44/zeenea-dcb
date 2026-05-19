@@ -1,4 +1,11 @@
-import type { DataContract, QualityRule, SlaProperty, ColumnDefinition, SchemaTable } from '@/types/odcs'
+import type {
+  DataContract,
+  OdcsAccessRole,
+  QualityRule,
+  SlaProperty,
+  ColumnDefinition,
+  SchemaTable,
+} from '@/types/odcs'
 import type { AuthoritativeDefinition, CustomProperty } from '@/types/odcsShared'
 import {
   CUSTOM_PROPERTY_REGEX,
@@ -7,6 +14,7 @@ import {
   QUALITY_DIMENSIONS,
   SLA_DRIVERS,
   SLA_ELEMENT_SEGMENT_REGEX,
+  ROLE_ACCESS_VALUES,
   SLA_PROPERTY_TYPES,
   SLA_UNITS,
   ZEENEA_AUTH_DEF_TYPE,
@@ -98,7 +106,24 @@ export function isValidQualityRuleType(type: string | undefined): boolean {
 }
 
 export function isValidRoleAccess(access: string): boolean {
-  return access === 'read' || access === 'write'
+  return (ROLE_ACCESS_VALUES as readonly string[]).includes(access)
+}
+
+/** True when the user entered any non-placeholder content on a data access role row. */
+export function roleRowHasContent(r: OdcsAccessRole): boolean {
+  return Boolean(
+    r.role?.trim()
+    || r.description?.trim()
+    || r.access === 'write',
+  )
+}
+
+/**
+ * Role rows included in ODCS export / exported diff.
+ * Requires a trimmed role name; partial rows are omitted from YAML preview.
+ */
+export function isRoleRowExportable(r: OdcsAccessRole): boolean {
+  return Boolean(r.role?.trim())
 }
 
 export function isValidLifecycleStatus(status: string): boolean {

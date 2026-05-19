@@ -32,6 +32,7 @@ import {
   isValidQualityDimension,
   isValidQualityRuleType,
   isValidRoleAccess,
+  roleRowHasContent,
   isValidSlaDriver,
   isValidSlaElement,
   isValidSlaPropertyType,
@@ -42,9 +43,9 @@ import {
 } from '@/lib/p1Validation'
 import { canPublishFromStatus } from '@/lib/contractLifecycle'
 
-/** Rows with no user-entered content are ignored for validation and export. */
+/** Rows with no user-entered content are ignored for publish validation. */
 export function isRoleRowEmpty(r: OdcsAccessRole): boolean {
-  return !r.role?.trim() && !r.description?.trim()
+  return !roleRowHasContent(r)
 }
 
 export function isSlaRowEmpty(row: SlaProperty): boolean {

@@ -67,6 +67,15 @@ Nombre de lignes P1 extraites : 41
 | P1 | Roles | No | roles[].access | Type of access provided by the IAM role. |  | read, write |
 | P1 | Roles | No | roles[].description | Description of the IAM role and its permissions. |  | Read-only access to finance tables |
 
+**Roles notes (prototype)**
+
+- `roles` is optional; an empty array or no exportable rows omits the key from YAML.
+- `roles[].role` is required for an exportable row (trimmed); publish validation errors when a row has user content but no role name.
+- `roles[].access` is optional in ODCS; the UI defaults new rows to `read`. Only `read` and `write` are allowed (`ROLE_ACCESS_VALUES`).
+- Placeholder rows (empty role and description, default `read` access) are ignored for publish validation and omitted from YAML preview/export.
+- Partial rows (e.g. description without role) are not exported; publish validation still errors.
+- P2 fields out of MVP UI/export: `roles[].id` (app-only), `firstLevelApprovers`, `secondLevelApprovers`, `roles[].customProperties`.
+
 ## Onglet `Shared Components`
 
 Nombre de lignes P1 extraites : 14

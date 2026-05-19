@@ -1,6 +1,5 @@
 import yaml from 'js-yaml'
-import { isRoleRowEmpty } from './contractValidation'
-import { isSlaRowExportable } from './p1Validation'
+import { isRoleRowExportable, isSlaRowExportable } from './p1Validation'
 import {
   mapAuthoritativeDefinitionsToYaml,
   mapCustomPropertiesToYaml,
@@ -160,11 +159,11 @@ export function buildOdcsDocument(contract: DataContract): Record<string, unknow
     doc.schema = contract.dataset.map(t => mapSchemaTable(t, contract.dataset))
   }
 
-  const roles = (contract.roles ?? []).filter(r => !isRoleRowEmpty(r))
+  const roles = (contract.roles ?? []).filter(isRoleRowExportable)
   if (roles.length > 0) {
     doc.roles = roles.map(r => {
       const entry: Record<string, unknown> = {
-        role: r.role,
+        role: r.role.trim(),
         access: r.access,
       }
       if (r.description?.trim()) entry.description = r.description.trim()

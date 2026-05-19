@@ -141,6 +141,32 @@ describe('buildOdcsDocument P1 export', () => {
     expect(roles[0].access).toBe('write')
   })
 
+  it('omits roles key when no exportable rows', () => {
+    const contract = buildP1FixtureContract()
+    contract.roles = []
+    expect(buildOdcsDocument(contract).roles).toBeUndefined()
+  })
+
+  it('does not export placeholder or partial data access role rows', () => {
+    const contract = buildP1FixtureContract()
+    contract.roles = [
+      { id: 'p', role: '', access: 'read', description: '' },
+      { id: 'd', role: '', access: 'read', description: 'description only' },
+      {
+        id: 'v',
+        role: '  microstrategy_user_opr  ',
+        access: 'read',
+        description: 'Read-only access',
+      },
+    ]
+    const doc = buildOdcsDocument(contract)
+    const roles = doc.roles as Record<string, unknown>[]
+    expect(roles).toHaveLength(1)
+    expect(roles[0].role).toBe('microstrategy_user_opr')
+    expect(roles[0].access).toBe('read')
+    expect(roles[0].description).toBe('Read-only access')
+  })
+
   it('exports array items with object logicalType and nested properties', () => {
     const contract = buildP1FixtureContract()
     const tagsCol = contract.dataset[0].columns.find(c => c.logicalType === 'array')!

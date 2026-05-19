@@ -2,12 +2,14 @@ import { describe, expect, it } from 'vitest'
 import {
   FUNDAMENTALS_AUTH_DEF_TYPES,
   QUALITY_DIMENSIONS,
+  ROLE_ACCESS_VALUES,
   SLA_DRIVERS,
   SLA_PROPERTY_TYPES,
   SLA_UNITS,
 } from '@/lib/p1Constants'
 import {
   isValidFundamentalsAuthDefType,
+  isRoleRowExportable,
   isSlaRowExportable,
   isValidQualityDimension,
   isValidQualityRuleType,
@@ -18,6 +20,7 @@ import {
   isValidSlaUnit,
   isValidCustomPropertyName,
   isValidZeeneaAuthDef,
+  roleRowHasContent,
   slaRowHasContent,
 } from '@/lib/p1Validation'
 
@@ -58,14 +61,31 @@ describe('p1Validation enums', () => {
     expect(isValidFundamentalsAuthDefType('actian')).toBe(false)
   })
 
-  it('accepts role access read and write', () => {
-    expect(isValidRoleAccess('read')).toBe(true)
-    expect(isValidRoleAccess('write')).toBe(true)
+  it.each(ROLE_ACCESS_VALUES)('accepts role access "%s" from p1', access => {
+    expect(isValidRoleAccess(access)).toBe(true)
   })
 
   it('rejects invalid role access values', () => {
     expect(isValidRoleAccess('admin')).toBe(false)
     expect(isValidRoleAccess('')).toBe(false)
+  })
+
+  it('roleRowHasContent and isRoleRowExportable align with SLA row helpers', () => {
+    const placeholder = { id: '1', role: '', access: 'read' as const, description: '' }
+    expect(roleRowHasContent(placeholder)).toBe(false)
+    expect(isRoleRowExportable(placeholder)).toBe(false)
+
+    const descriptionOnly = { id: '2', role: '', access: 'read' as const, description: 'note' }
+    expect(roleRowHasContent(descriptionOnly)).toBe(true)
+    expect(isRoleRowExportable(descriptionOnly)).toBe(false)
+
+    const writeOnly = { id: '3', role: '', access: 'write' as const, description: '' }
+    expect(roleRowHasContent(writeOnly)).toBe(true)
+    expect(isRoleRowExportable(writeOnly)).toBe(false)
+
+    const exportable = { id: '4', role: '  microstrategy_user_opr  ', access: 'read' as const }
+    expect(roleRowHasContent(exportable)).toBe(true)
+    expect(isRoleRowExportable(exportable)).toBe(true)
   })
 
   it('accepts only text quality rule type for P1', () => {

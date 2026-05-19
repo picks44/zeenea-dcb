@@ -262,11 +262,13 @@ Si aucun collaborateur n’est défini, l’utilisateur courant du prototype est
 
 Chaque ligne décrit un rôle IAM consommateur :
 
-- **Role name** (obligatoire si ligne renseignée)
-- **Access** : Read ou Write
+- **Role name** (obligatoire pour une entrée exportable ; trim à l’export)
+- **Access** : Read ou Write (optionnel ODCS ; défaut UI `read` ; seules ces valeurs sont autorisées)
 - **Description** (optionnelle)
 
-Exportées dans le YAML sous `roles`. Ne donnent **pas** accès à l’éditeur du contrat.
+Seules les lignes avec un nom de rôle renseigné sont exportées. Les placeholders vides ou lignes partielles (ex. description sans nom) n’apparaissent pas dans le YAML ; la publication bloque les lignes incomplètes réellement saisies.
+
+Exportées dans le YAML sous `roles` (clé omise si aucune ligne exportable). Ne donnent **pas** accès à l’éditeur du contrat.
 
 ### 4.5 Governance contacts
 

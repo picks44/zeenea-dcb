@@ -193,6 +193,7 @@ Après changement métier visible : mettre à jour **d’abord** la [documentati
 
 - [ ] Golden keys `p1-compliance.test.ts`
 - [ ] Champs exclus (owner, stakeholders, `aiVerified`, etc.)
+- [ ] Data access roles : `roleRowHasContent` (validation) vs `isRoleRowExportable` (YAML/diff) dans `p1Validation.ts`
 - [ ] `npm test`
 
 ### Modification lifecycle

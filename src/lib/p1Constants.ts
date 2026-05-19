@@ -76,6 +76,11 @@ export const SLA_DRIVERS = ['regulatory', 'analytics', 'operational'] as const
 
 export type SlaDriver = (typeof SLA_DRIVERS)[number]
 
+/** ODCS P1 IAM access levels for `roles[].access`. */
+export const ROLE_ACCESS_VALUES = ['read', 'write'] as const
+
+export type RoleAccess = (typeof ROLE_ACCESS_VALUES)[number]
+
 /** ODCS v3.1.0 Data QoS SLA property types (case-sensitive). */
 export const SLA_PROPERTY_TYPES = [
   'latency',

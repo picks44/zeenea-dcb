@@ -1,6 +1,10 @@
 import type { AuthoritativeDefinition, CustomProperty } from './odcsShared'
-import type { OdcsLifecycleStatus, SlaPropertyType } from '@/lib/p1Constants'
-import type { QualityDimension } from '@/lib/p1Constants'
+import type {
+  OdcsLifecycleStatus,
+  QualityDimension,
+  RoleAccess,
+  SlaPropertyType,
+} from '@/lib/p1Constants'
 
 export type { AuthoritativeDefinition, CustomProperty } from './odcsShared'
 
@@ -141,7 +145,7 @@ export interface Stakeholder {
 export interface OdcsAccessRole {
   id: string
   role: string
-  access: 'read' | 'write'
+  access: RoleAccess
   description?: string
 }
 

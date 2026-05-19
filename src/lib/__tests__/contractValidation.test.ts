@@ -51,11 +51,31 @@ describe('validateContract P1', () => {
     expect(result.errors.some(e => e.code === 'sla-element-invalid')).toBe(true)
   })
 
-  it('requires roles[].role when row present', () => {
+  it('requires roles[].role when row has user content', () => {
     const c = buildP1FixtureContract()
     c.roles = [{ id: 'r', role: '  ', access: 'read', description: 'partial row' }]
     const result = validateContract(c, [c])
     expect(result.errors.some(e => e.code === 'role-incomplete')).toBe(true)
+  })
+
+  it('ignores placeholder data access role rows at publish', () => {
+    const c = buildP1FixtureContract()
+    c.roles = [{ id: 'r', role: '', access: 'read', description: '' }]
+    const result = validateContract(c, [c])
+    expect(result.errors.some(e => e.code.startsWith('role-'))).toBe(false)
+  })
+
+  it('accepts role name with surrounding whitespace when trimmed', () => {
+    const c = buildP1FixtureContract()
+    c.roles = [{
+      id: 'r',
+      role: '  microstrategy_user_opr  ',
+      access: 'read',
+      description: '',
+    }]
+    const result = validateContract(c, [c])
+    expect(result.errors.some(e => e.code === 'role-incomplete')).toBe(false)
+    expect(result.canPublish).toBe(true)
   })
 
   it('blocks table quality without AI verification', () => {

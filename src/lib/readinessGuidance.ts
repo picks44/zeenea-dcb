@@ -152,7 +152,7 @@ export function computeSectionGuidance(
         }
       : { status: 'empty', missingCount: 0, bannerMessage: null, bannerVariant: null }
 
-  const accessRoles = (contract.roles?.length ?? 0) > 0
+  const accessRoles = hasExploitableDataAccessRole(contract)
     ? { status: 'complete' as const, missingCount: 0, bannerMessage: null, bannerVariant: null }
     : { status: 'empty' as const, missingCount: 0, bannerMessage: null, bannerVariant: null }
 
