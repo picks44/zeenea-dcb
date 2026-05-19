@@ -4,7 +4,6 @@ import { Badge } from '@/components/ui/badge'
 import { DataContract } from '@/types/odcs'
 import { ReadOnlyField } from '@/components/shared/ReadOnlyField'
 import { InlineCopyButton } from '@/components/shared/InlineCopyButton'
-import { FundamentalsOdcsMetadata } from '@/components/shared/FundamentalsOdcsMetadata'
 import { CONTRACT_OWNER_HELPER, LABEL_CONTRACT_OWNER, LABEL_REFERENCE_LINKS } from '@/lib/uxCopy'
 import { authDefTypeLabel } from '@/components/shared/authDefLabels'
 import { cn } from '@/lib/utils'
@@ -36,32 +35,6 @@ export function FundamentalsReadOnlyView({ contract, compact }: FundamentalsRead
 
   return (
     <div className={cn(compact ? DOC_COMPACT_SPACING.sectionStack : 'space-y-3')}>
-      <FundamentalsOdcsMetadata
-        contract={contract}
-        compact={compact}
-        idControl={(
-          <div>
-            <span className={cn(compact ? DOC_COMPACT_TEXT.label : 'text-xs font-medium text-neutral-600 mb-0.5 block')}>
-              id<span className="text-red-500"> *</span>
-            </span>
-            <div className="flex items-baseline gap-0.5 min-w-0">
-              <p
-                className={cn(
-                  'font-mono truncate min-w-0',
-                  compact ? DOC_COMPACT_TEXT.value : 'text-[13px] text-neutral-600',
-                  !id.trim() && 'text-neutral-300',
-                )}
-              >
-                {id.trim() || '—'}
-              </p>
-              {id.trim() ? (
-                <InlineCopyButton value={id} ariaLabel="Copy contract ID" dense={compact} />
-              ) : null}
-            </div>
-          </div>
-        )}
-      />
-
       <div
         className={cn(
           'grid grid-cols-1 sm:grid-cols-2',
@@ -70,6 +43,35 @@ export function FundamentalsReadOnlyView({ contract, compact }: FundamentalsRead
       >
         <ReadOnlyField label="Contract name" value={info.title} required compact={compact} />
         <ReadOnlyField label="Domain" value={info.domain} compact={compact} />
+
+        <div>
+          <span className={cn(compact ? DOC_COMPACT_TEXT.label : 'text-xs font-medium text-neutral-600 mb-0.5 block')}>
+            ID<span className="text-red-500"> *</span>
+          </span>
+          <div className="flex items-baseline gap-0.5 min-w-0">
+            <p
+              className={cn(
+                'font-mono truncate min-w-0',
+                compact ? DOC_COMPACT_TEXT.value : 'text-[13px] text-neutral-600',
+                !id.trim() && 'text-neutral-300',
+              )}
+            >
+              {id.trim() || '—'}
+            </p>
+            {id.trim() ? (
+              <InlineCopyButton value={id} ariaLabel="Copy contract ID" dense={compact} />
+            ) : null}
+          </div>
+        </div>
+
+        <div>
+          <span className={cn(compact ? DOC_COMPACT_TEXT.label : 'text-xs font-medium text-neutral-600 mb-0.5 block')}>
+            Version
+          </span>
+          <span className={cn('font-mono', compact ? DOC_COMPACT_TEXT.value : 'text-[13px] text-neutral-600')}>
+            v{info.version}
+          </span>
+        </div>
       </div>
 
       <ReadOnlyField label="Business purpose" value={info.description} multiline compact={compact} />

@@ -132,7 +132,6 @@ export function FundamentalsSection({
         <FundamentalsReadOnlyView contract={contract} compact={docCompact} />
       ) : (
       <div className="space-y-4">
-
         <div className="grid grid-cols-2 gap-4">
           <GuidanceField
             fieldId={READINESS_FIELD_CONTRACT_TITLE}
