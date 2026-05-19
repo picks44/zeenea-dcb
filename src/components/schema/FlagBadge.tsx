@@ -2,15 +2,18 @@ import { Tooltip as BaseTooltip } from '@base-ui/react/tooltip'
 import { TooltipContent } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 
-const FLAG_CONFIG: Record<string, { title: string; color: string }> = {
+const FLAG_CONFIG = {
   PK:  { title: 'Primary Key — uniquely identifies each row',        color: 'bg-orange-50 text-orange-700 border-orange-100'  },
   REQ: { title: 'Required — this field cannot be empty',            color: 'bg-red-50 text-red-700 border-red-100'            },
   PII: { title: 'Personal Data — contains private user information', color: 'bg-orange-100 text-orange-700 border-orange-100' },
   UQ:  { title: 'Unique — no two rows can have the same value',     color: 'bg-blue-50 text-blue-700 border-blue-100'         },
-}
+  CDE: { title: 'Critical Data Element — governed as a critical asset', color: 'bg-green-50 text-green-700 border-green-100' },
+} as const
+
+type FlagKey = keyof typeof FLAG_CONFIG
 
 interface FlagBadgeProps {
-  flag: keyof typeof FLAG_CONFIG
+  flag: FlagKey
   active: boolean
   onClick?: () => void
   disabled: boolean
@@ -19,7 +22,9 @@ interface FlagBadgeProps {
 }
 
 export function FlagBadge({ flag, active, onClick, disabled, shape = 'mid', compact }: FlagBadgeProps) {
-  const { title, color } = FLAG_CONFIG[flag]
+  const config = FLAG_CONFIG[flag]
+  if (!config) return null
+  const { title, color } = config
   return (
     <BaseTooltip.Provider delay={600}>
       <BaseTooltip.Root>

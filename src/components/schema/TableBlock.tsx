@@ -4,14 +4,14 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { ColumnDefinition, LogicalType, SchemaTable, TableRelationship, RelationshipType } from '@/types/odcs'
-import type { ClassificationValue } from '@/lib/p1Constants'
-import { CLASSIFICATION_VALUES } from '@/lib/p1Constants'
 import { cn, generateId } from '@/lib/utils'
 import {
   classificationImpliesPii,
   normalizeOdcsName,
   syncClassificationFromPii,
 } from '@/lib/schemaOdcsMapping'
+import { cycleClassification } from '@/components/schema/classificationCycle'
+import { ClassificationFlagBadge } from '@/components/schema/ClassificationFlagBadge'
 import { LOGICAL_TYPES, DB_TYPES_BY_LOGICAL, typeConfig, makeColumn, syncColumnNameFromPhysical } from './constants'
 import { TypePicker } from './TypePicker'
 import { FlagBadge } from './FlagBadge'
@@ -398,31 +398,21 @@ export function TableBlock({
                       compact={denseReadOnly}
                     />
                     <FlagBadge shape="mid"   flag="UQ"  active={col.isUnique}     onClick={() => updateCol(col.id, { isUnique: !col.isUnique })}         disabled={isLocked} compact={denseReadOnly} />
-                    <FlagBadge shape="right" flag="CDE" active={col.criticalDataElement} onClick={() => updateCol(col.id, { criticalDataElement: !col.criticalDataElement })} disabled={isLocked} compact={denseReadOnly} />
+                    <FlagBadge shape="mid" flag="CDE" active={col.criticalDataElement} onClick={() => updateCol(col.id, { criticalDataElement: !col.criticalDataElement })} disabled={isLocked} compact={denseReadOnly} />
+                    <ClassificationFlagBadge
+                      shape="right"
+                      classification={col.classification}
+                      disabled={isLocked}
+                      compact={denseReadOnly}
+                      onClick={() => {
+                        const classification = cycleClassification(col.classification)
+                        updateCol(col.id, {
+                          classification,
+                          isPII: classificationImpliesPii(classification),
+                        })
+                      }}
+                    />
                   </div>
-
-                  {!isLocked && (
-                    <div className="w-24 flex-shrink-0 pr-2">
-                      <Select
-                        value={col.classification ?? 'none'}
-                        onValueChange={v => {
-                          const classification = v === 'none' ? undefined : v as ClassificationValue
-                          updateCol(col.id, {
-                            classification,
-                            isPII: classificationImpliesPii(classification),
-                          })
-                        }}
-                      >
-                        <SelectTrigger className="h-7 text-[10px] w-full"><SelectValue placeholder="Class" /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="none" className="text-xs">—</SelectItem>
-                          {CLASSIFICATION_VALUES.map(c => (
-                            <SelectItem key={c} value={c} className="text-xs capitalize">{c}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
 
                   <div className="flex-1" />
 
