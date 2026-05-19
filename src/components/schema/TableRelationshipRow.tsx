@@ -46,7 +46,7 @@ export function TableRelationshipRow({ rel, sourceTable, onRemove, compact }: Ta
   return (
     <div
       className={cn(
-        'rounded-lg border border-[#d3d3e5] bg-[#fbfbff] shadow-sm',
+        'rounded-lg border border-neutral-200 bg-neutral-25 shadow-sm',
         compact ? 'px-2.5 py-2' : 'px-3 py-2.5',
         onRemove && 'pr-9 relative',
       )}
@@ -55,7 +55,7 @@ export function TableRelationshipRow({ rel, sourceTable, onRemove, compact }: Ta
         <button
           type="button"
           onClick={onRemove}
-          className="absolute top-2.5 right-2 h-6 w-6 flex items-center justify-center rounded text-[#9898a7] hover:text-[#c12c11] hover:bg-[#fff2ee] transition-colors"
+          className="absolute top-2.5 right-2 h-6 w-6 flex items-center justify-center rounded text-neutral-300 hover:text-red-700 hover:bg-red-25 transition-colors"
           aria-label="Remove relationship"
         >
           <X className="h-3.5 w-3.5" />
@@ -63,10 +63,10 @@ export function TableRelationshipRow({ rel, sourceTable, onRemove, compact }: Ta
       )}
 
       <div className={cn('flex items-center gap-2 flex-wrap', compact ? 'mb-1' : 'mb-1.5')}>
-        <span className="text-[10px] font-mono font-semibold text-[#0550dc] bg-[#f0f4ff] border border-[#b8d0fb] px-1.5 py-0.5 rounded tabular-nums">
+        <span className="text-[10px] font-mono font-semibold text-blue-700 bg-blue-25 border border-blue-100 px-1.5 py-0.5 rounded tabular-nums">
           {meta.notation}
         </span>
-        <span className="text-[11px] font-semibold text-[#2a2a30]">{meta.name}</span>
+        <span className="text-[11px] font-semibold text-neutral-700">{meta.name}</span>
         {notPublished && <WorkflowMetadataPill variant="not-published" />}
       </div>
 
@@ -79,14 +79,14 @@ export function TableRelationshipRow({ rel, sourceTable, onRemove, compact }: Ta
           navigateLabel={`Go to table ${lines.targetTable}`}
         />
       ) : (
-        <p className="text-[11px] text-[#656574]">→ {rel.toTable}</p>
+        <p className="text-[11px] text-neutral-400">→ {rel.toTable}</p>
       )}
 
       {legacyBelongs && (
-        <p className="text-[10px] text-[#656574] mt-1.5 leading-snug">{RELATIONSHIP_SINGLE_FK_HINT}</p>
+        <p className="text-[10px] text-neutral-400 mt-1.5 leading-snug">{RELATIONSHIP_SINGLE_FK_HINT}</p>
       )}
       {notPublished && !legacyBelongs && (
-        <p className="text-[10px] text-[#656574] mt-1.5 leading-snug">
+        <p className="text-[10px] text-neutral-400 mt-1.5 leading-snug">
           {composite ? RELATIONSHIP_COMPOSITE_HELPER : RELATIONSHIP_FK_HELPER}
         </p>
       )}

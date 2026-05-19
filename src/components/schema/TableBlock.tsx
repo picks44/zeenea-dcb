@@ -151,21 +151,21 @@ export function TableBlock({
     <div
       ref={setTableRoot}
       data-schema-table={table.physicalName}
-      className="bg-white rounded-xl border border-[#d3d3e5] transition-shadow hover:shadow-sm"
+      className="bg-white rounded-xl border border-neutral-200 transition-shadow hover:shadow-sm"
     >
 
       {/* Table header */}
-      <div className="flex items-center gap-2 px-4 py-2.5 bg-[#fbfbff] border-b border-[#e4e4f0] rounded-t-xl">
-        <button onClick={() => setCollapsed(c => !c)} className="text-[#656574] hover:text-[#33333d] flex-shrink-0 transition-colors">
+      <div className="flex items-center gap-2 px-4 py-2.5 bg-neutral-25 border-b border-neutral-100 rounded-t-xl">
+        <button onClick={() => setCollapsed(c => !c)} className="text-neutral-400 hover:text-neutral-600 flex-shrink-0 transition-colors">
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
         </button>
         {isLocked || !editingTableName ? (
           <div className="flex items-center gap-1.5 group/tname">
-            <span className="text-sm font-semibold text-[#2a2a30]">{table.physicalName}</span>
+            <span className="text-sm font-semibold text-neutral-700">{table.physicalName}</span>
             {!isLocked && (
               <button
                 onClick={() => setEditingTableName(true)}
-                className="opacity-0 group-hover/tname:opacity-100 text-[#9898a7] hover:text-[#0550dc] transition-opacity flex-shrink-0"
+                className="opacity-0 group-hover/tname:opacity-100 text-neutral-300 hover:text-blue-700 transition-opacity flex-shrink-0"
               >
                 <Pencil className="h-3 w-3" />
               </button>
@@ -182,15 +182,15 @@ export function TableBlock({
             className="h-7 text-sm font-semibold w-44 flex-shrink-0"
           />
         )}
-        <span className="text-[11px] text-[#656574]">{table.columns.length} field{table.columns.length !== 1 ? 's' : ''}</span>
+        <span className="text-[11px] text-neutral-400">{table.columns.length} field{table.columns.length !== 1 ? 's' : ''}</span>
         {relHeaderSummary && <RelationshipHeaderSummaryBadge summary={relHeaderSummary} />}
         {piiCount > 0 && (
-          <span className="text-[10px] font-medium px-1.5 py-0.5 rounded border bg-[#fff2ee] text-[#c12c11] border-rose-100 flex-shrink-0">
+          <span className="text-[10px] font-medium px-1.5 py-0.5 rounded border bg-red-25 text-red-700 border-red-100 flex-shrink-0">
             {piiCount} PII
           </span>
         )}
         {unknownCount > 0 && (
-          <span className="text-[10px] text-[#d27b00] flex items-center gap-0.5 flex-shrink-0">
+          <span className="text-[10px] text-orange-700 flex items-center gap-0.5 flex-shrink-0">
             <AlertTriangle className="h-3 w-3" />{unknownCount} unknown
           </span>
         )}
@@ -214,7 +214,7 @@ export function TableBlock({
           </Select>
         )}
         {!isLocked && (
-          <button onClick={() => onDeleteTable(tableIndex)} className="h-6 w-6 flex items-center justify-center text-[#9898a7] hover:text-[#c12c11] hover:bg-[#fff2ee] rounded transition-colors flex-shrink-0">
+          <button onClick={() => onDeleteTable(tableIndex)} className="h-6 w-6 flex items-center justify-center text-neutral-300 hover:text-red-700 hover:bg-red-25 rounded transition-colors flex-shrink-0">
             <Trash2 className="h-3.5 w-3.5" />
           </button>
         )}
@@ -222,10 +222,10 @@ export function TableBlock({
 
       {/* Table description */}
       {!collapsed && (
-        <div className="px-10 py-1.5 bg-[#fbfbff]/60 border-b border-[#e4e4f0]">
+        <div className="px-10 py-1.5 bg-neutral-25/60 border-b border-neutral-100">
           {isLocked
-            ? (table.description ? <p className="text-xs text-[#3f3f4a] italic">{table.description}</p> : null)
-            : <Input value={table.description} onChange={e => onTableChange(tableIndex, { ...table, description: e.target.value })} placeholder="What does this table contain? (optional)" className="h-7 text-xs w-full text-[#33333d]" />
+            ? (table.description ? <p className="text-xs text-neutral-500 italic">{table.description}</p> : null)
+            : <Input value={table.description} onChange={e => onTableChange(tableIndex, { ...table, description: e.target.value })} placeholder="What does this table contain? (optional)" className="h-7 text-xs w-full text-neutral-600" />
           }
         </div>
       )}
@@ -236,13 +236,13 @@ export function TableBlock({
           <div className="overflow-x-auto min-w-0">
           <div className="min-w-[640px]">
           <div className={cn(
-            'flex items-center px-4 border-b border-[#d3d3e5] bg-[#fbfbff]/50',
+            'flex items-center px-4 border-b border-neutral-200 bg-neutral-25/50',
             denseReadOnly ? 'py-1' : 'py-1.5',
           )}>
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] w-52 flex-shrink-0">Field</span>
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] w-32 flex-shrink-0">Type</span>
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] w-32 flex-shrink-0">DB Type</span>
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] w-44 flex-shrink-0">Rules</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-neutral-400 w-52 flex-shrink-0">Field</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-neutral-400 w-32 flex-shrink-0">Type</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-neutral-400 w-32 flex-shrink-0">DB Type</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-neutral-400 w-44 flex-shrink-0">Rules</span>
             <div className="flex-1" />
             {!isLocked && <div className="w-6 flex-shrink-0 ml-2" />}
             {!isLocked && <div className="w-6 flex-shrink-0 ml-2" />}
@@ -250,7 +250,7 @@ export function TableBlock({
 
           <div className="divide-y divide-zinc-100">
             {table.columns.length === 0 && (
-              <div className="px-4 py-6 text-center text-[#656574] text-xs italic">
+              <div className="px-4 py-6 text-center text-neutral-400 text-xs italic">
                 No fields yet — click "+ Add field" below
               </div>
             )}
@@ -271,16 +271,16 @@ export function TableBlock({
                   className={cn(
                     'flex px-4 transition-colors group rounded-md',
                     hasFk ? 'items-start' : 'items-center',
-                    denseReadOnly ? 'py-2' : 'py-2 hover:bg-[#f5f5fa]/50',
+                    denseReadOnly ? 'py-2' : 'py-2 hover:bg-neutral-50/50',
                   )}
                 >
                   <div className="w-52 flex-shrink-0 pr-3 min-w-0">
                     {isLocked ? (
                       <div>
-                        <span className={cn('font-semibold text-[#2a2a30]', denseReadOnly ? 'text-[11px]' : 'text-xs')}>{col.physicalName}</span>
+                        <span className={cn('font-semibold text-neutral-700', denseReadOnly ? 'text-[11px]' : 'text-xs')}>{col.physicalName}</span>
                         <div className={cn(
                           'truncate',
-                          denseReadOnly ? 'text-[9px] leading-tight text-[#9898a7] mt-0' : 'text-[10px] text-[#656574] mt-0.5',
+                          denseReadOnly ? 'text-[9px] leading-tight text-neutral-300 mt-0' : 'text-[10px] text-neutral-400 mt-0.5',
                         )}>{col.logicalName || deriveLogicalName(col.physicalName)}</div>
                         <ColumnFkIndicator foreignKey={col.foreignKey} compact={denseReadOnly} />
                       </div>
@@ -291,10 +291,10 @@ export function TableBlock({
                           <Input autoFocus value={col.logicalName !== '' ? col.logicalName : deriveLogicalName(col.physicalName)} onChange={e => updateCol(col.id, { logicalName: e.target.value })} onBlur={() => setEditingLogicalId(null)} onKeyDown={e => { if (e.key === 'Enter' || e.key === 'Escape') setEditingLogicalId(null) }} placeholder="Display name" className="h-5 text-[10px] w-full" />
                         ) : (
                           <div className="flex items-center gap-1 group/label min-w-0">
-                            <span className={cn('text-[10px] leading-tight truncate', col.logicalName ? 'text-[#3f3f4a]' : 'text-[#9898a7] italic')}>
+                            <span className={cn('text-[10px] leading-tight truncate', col.logicalName ? 'text-neutral-500' : 'text-neutral-300 italic')}>
                               {col.logicalName || deriveLogicalName(col.physicalName) || 'Display name'}
                             </span>
-                            <button onClick={() => setEditingLogicalId(col.id)} className="opacity-0 group-hover/label:opacity-100 text-[#9898a7] hover:text-[#0550dc] transition-opacity flex-shrink-0">
+                            <button onClick={() => setEditingLogicalId(col.id)} className="opacity-0 group-hover/label:opacity-100 text-neutral-300 hover:text-blue-700 transition-opacity flex-shrink-0">
                               <Pencil className="h-2.5 w-2.5" />
                             </button>
                           </div>
@@ -319,14 +319,14 @@ export function TableBlock({
                             <SelectItem key={opt.value} value={opt.value} className="text-xs">
                               <div className="flex items-center gap-2.5">
                                 <span className={cn('inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded border', opt.color)}><OptIcon className="h-2.5 w-2.5" />{opt.pmLabel}</span>
-                                <span className="text-[#656574] text-[10px]">{opt.hint}</span>
+                                <span className="text-neutral-400 text-[10px]">{opt.hint}</span>
                               </div>
                             </SelectItem>
                           )})}
                         </SelectContent>
                       </Select>
                     ) : (
-                      <button onClick={() => setEditingType(col.id)} title={`${tc.techLabel} — click to change`} className={cn('inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded border transition-all hover:shadow-sm', tc.color, col.isUnknownType && 'ring-1 ring-rose-400')}>
+                      <button onClick={() => setEditingType(col.id)} title={`${tc.techLabel} — click to change`} className={cn('inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded border transition-all hover:shadow-sm', tc.color, col.isUnknownType && 'ring-1 ring-red-100')}>
                         <Icon className="h-2.5 w-2.5" />{tc.pmLabel}{col.isUnknownType && <AlertTriangle className="h-2.5 w-2.5 ml-0.5" />}
                       </button>
                     )}
@@ -335,7 +335,7 @@ export function TableBlock({
                   <div className={cn('w-32 flex-shrink-0 pr-3', hasFk && 'pt-0.5')}>
                     {isLocked ? (
                       <span className={cn(
-                        'font-mono text-[#3f3f4a] bg-[#f5f5fa] rounded',
+                        'font-mono text-neutral-500 bg-neutral-50 rounded',
                         denseReadOnly ? 'text-[10px] px-1 py-0' : 'text-[11px] px-1.5 py-0.5',
                       )}>{col.physicalType}</span>
                     ) : (
@@ -369,7 +369,7 @@ export function TableBlock({
                   </button>
 
                   {!isLocked && (
-                    <button onClick={() => deleteCol(col.id)} className={cn('h-6 w-6 ml-2 rounded flex items-center justify-center text-[#d3d3e5] group-hover:text-[#656574] hover:!text-[#c12c11] hover:bg-[#fff2ee] transition-all flex-shrink-0', hasFk && 'mt-0.5')}>
+                    <button onClick={() => deleteCol(col.id)} className={cn('h-6 w-6 ml-2 rounded flex items-center justify-center text-neutral-200 group-hover:text-neutral-400 hover:!text-red-700 hover:bg-red-25 transition-all flex-shrink-0', hasFk && 'mt-0.5')}>
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
                   )}
@@ -381,8 +381,8 @@ export function TableBlock({
           </div>
 
           {!isLocked && (
-            <div className={cn('px-4 py-2.5 border-t border-[#e4e4f0] bg-[#fbfbff]/40 relative', !showRelSection && 'rounded-b-xl')}>
-              <button onClick={() => setShowTypePicker(v => !v)} className="flex items-center gap-1.5 text-xs text-[#656574] hover:text-[#0550dc] font-medium transition-colors">
+            <div className={cn('px-4 py-2.5 border-t border-neutral-100 bg-neutral-25/40 relative', !showRelSection && 'rounded-b-xl')}>
+              <button onClick={() => setShowTypePicker(v => !v)} className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-blue-700 font-medium transition-colors">
                 <Plus className="h-3.5 w-3.5" />
                 Add field
               </button>
@@ -394,9 +394,9 @@ export function TableBlock({
 
       {/* Table relationships */}
       {showRelSection && (
-        <div className="border-t border-[#e4e4f0] bg-[#f5f5fa]/40 px-4 py-3 rounded-b-xl">
-          <p className="text-xs font-semibold text-[#33333d] mb-1">Table relationships</p>
-          <p className="text-[10px] text-[#656574] mb-2.5 leading-snug">
+        <div className="border-t border-neutral-100 bg-neutral-50/40 px-4 py-3 rounded-b-xl">
+          <p className="text-xs font-semibold text-neutral-600 mb-1">Table relationships</p>
+          <p className="text-[10px] text-neutral-400 mb-2.5 leading-snug">
             {TABLE_RELATIONSHIPS_INTRO}
           </p>
 
@@ -413,7 +413,7 @@ export function TableBlock({
               ))}
             </div>
           ) : (
-            <p className="text-[11px] text-[#9898a7] mb-2.5">{TABLE_RELATIONSHIPS_EMPTY}</p>
+            <p className="text-[11px] text-neutral-300 mb-2.5">{TABLE_RELATIONSHIPS_EMPTY}</p>
           )}
 
           {/* Add form */}
@@ -485,7 +485,7 @@ export function TableBlock({
 
                 {editingRel.toTable && editingRel.type === 'composite_foreign_key' && table.columns.length > 0 && (
                   <div className="mb-4 space-y-3">
-                    <p className="text-[10px] text-[#d27b00] leading-snug">{RELATIONSHIP_COMPOSITE_HELPER}</p>
+                    <p className="text-[10px] text-orange-700 leading-snug">{RELATIONSHIP_COMPOSITE_HELPER}</p>
                     <div>
                       <p className="text-xs font-medium text-neutral-500 mb-1.5">Source columns ({table.physicalName})</p>
                       <div className="flex flex-wrap gap-1">
@@ -590,7 +590,7 @@ export function TableBlock({
                   fromColumns: [],
                   toColumns: [],
                 })}
-                className="flex items-center gap-1.5 text-xs text-[#656574] hover:text-[#0550dc] font-medium transition-colors"
+                className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-blue-700 font-medium transition-colors"
               >
                 <Plus className="h-3.5 w-3.5" />
                 Add relationship

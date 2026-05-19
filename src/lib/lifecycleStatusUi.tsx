@@ -1,11 +1,3 @@
-import type { LucideIcon } from 'lucide-react'
-import {
-  Archive,
-  AlertTriangle,
-  CheckCircle2,
-  CircleDashed,
-  FilePen,
-} from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Tooltip } from '@/components/ui/tooltip'
 import type { LifecycleStatus } from '@/types/odcs'
@@ -18,14 +10,6 @@ export const LIFECYCLE_STATUS_LABELS: Record<LifecycleStatus, string> = {
   active: 'Active',
   deprecated: 'Deprecated',
   retired: 'Retired',
-}
-
-export const LIFECYCLE_STATUS_ICONS: Record<LifecycleStatus, LucideIcon> = {
-  proposed: CircleDashed,
-  draft: FilePen,
-  active: CheckCircle2,
-  deprecated: AlertTriangle,
-  retired: Archive,
 }
 
 export function LifecycleStatusBadge({

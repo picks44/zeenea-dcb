@@ -121,13 +121,13 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center gap-3 px-5 py-4 border-b border-[#e4e4f0] rounded-t-2xl">
+        <div className="flex items-center gap-3 px-5 py-4 border-b border-neutral-100 rounded-t-2xl">
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-[#12131f]">{COLLABORATORS_MODAL_TITLE}</p>
-            <p className="text-[11px] text-[#656574] mt-0.5 leading-snug">
+            <p className="text-sm font-semibold text-neutral-900">{COLLABORATORS_MODAL_TITLE}</p>
+            <p className="text-[11px] text-neutral-400 mt-0.5 leading-snug">
               {COLLABORATORS_INTRO}
             </p>
-            <p className="text-xs text-[#656574] truncate mt-0.5">{contract.info.title || 'Untitled Contract'}</p>
+            <p className="text-xs text-neutral-400 truncate mt-0.5">{contract.info.title || 'Untitled Contract'}</p>
           </div>
           <Button variant="ghost" size="icon-sm" onClick={onClose} className="flex-shrink-0">
             <X className="h-4 w-4" />
@@ -135,15 +135,15 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
         </div>
 
         {/* Invite row — Publishers can manage collaborators */}
-        {canManageMembers && <div className="px-5 py-4 border-b border-[#f0f0f7]">
+        {canManageMembers && <div className="px-5 py-4 border-b border-neutral-100">
           <div className="flex gap-2">
 
             {/* Search / chip input */}
             <div className="flex-1 min-w-0 relative">
               {selected ? (
-                <div className="flex items-center gap-2 h-9 px-2.5 rounded-lg border border-neutral-200 bg-[#f5f5fa]">
+                <div className="flex items-center gap-2 h-9 px-2.5 rounded-lg border border-neutral-200 bg-neutral-50">
                   <Avatar name={selected.name} size="sm" className="h-5 w-5 text-[9px]" />
-                  <span className="text-xs font-medium text-[#12131f] truncate flex-1">{selected.name}</span>
+                  <span className="text-xs font-medium text-neutral-900 truncate flex-1">{selected.name}</span>
                   <button onClick={() => { setSelected(null); setQuery(''); setTimeout(() => inputRef.current?.focus(), 0) }} className="text-neutral-400 hover:text-neutral-600 flex-shrink-0">
                     <X className="h-3 w-3" />
                   </button>
@@ -159,7 +159,7 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
                       onFocus={() => setDropdownOpen(true)}
                       onKeyDown={e => { if (e.key === 'Escape') setDropdownOpen(false) }}
                       placeholder="Name or email…"
-                      className="h-9 w-full rounded-lg border border-neutral-200 bg-white pl-8 pr-3 text-sm text-[#12131f] placeholder:text-neutral-400 focus:outline-none focus:border-2 focus:border-blue-700 transition-colors"
+                      className="h-9 w-full rounded-lg border border-neutral-200 bg-white pl-8 pr-3 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-2 focus:border-blue-700 transition-colors"
                     />
                   </div>
 
@@ -170,12 +170,12 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
                           key={u.id}
                           onMouseDown={e => e.preventDefault()}
                           onClick={() => handleSelect(u)}
-                          className="flex items-center gap-2.5 w-full px-3 py-2.5 text-left hover:bg-[#f5f5fa] transition-colors"
+                          className="flex items-center gap-2.5 w-full px-3 py-2.5 text-left hover:bg-neutral-50 transition-colors"
                         >
                           <Avatar name={u.name} size="sm" className="h-7 w-7 text-[10px]" />
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-medium text-[#12131f]">{u.name}</p>
-                            <p className="text-[10px] text-[#9898a7]">{u.email}</p>
+                            <p className="text-xs font-medium text-neutral-900">{u.name}</p>
+                            <p className="text-[10px] text-neutral-300">{u.email}</p>
                           </div>
                         </button>
                       ))}
@@ -183,14 +183,14 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
                         <button
                           onMouseDown={e => e.preventDefault()}
                           onClick={handleSelectEmail}
-                          className="flex items-center gap-2.5 w-full px-3 py-2.5 text-left hover:bg-[#f5f5fa] transition-colors border-t border-[#f0f0f7]"
+                          className="flex items-center gap-2.5 w-full px-3 py-2.5 text-left hover:bg-neutral-50 transition-colors border-t border-neutral-100"
                         >
                           <div className="h-7 w-7 rounded-full bg-neutral-100 flex items-center justify-center flex-shrink-0">
                             <Search className="h-3.5 w-3.5 text-neutral-400" />
                           </div>
                           <div>
-                            <p className="text-xs font-semibold text-[#12131f]">Invite by email</p>
-                            <p className="text-[10px] text-[#9898a7]">{query}</p>
+                            <p className="text-xs font-semibold text-neutral-900">Invite by email</p>
+                            <p className="text-[10px] text-neutral-300">{query}</p>
                           </div>
                         </button>
                       )}
@@ -227,32 +227,32 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
         <div className="overflow-y-auto max-h-64 rounded-b-2xl">
           {collaborators.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-2 py-10 text-center px-6">
-              <p className="text-sm text-[#656574] font-medium">{COLLABORATORS_EMPTY_TITLE}</p>
-              <p className="text-xs text-[#9898a7]">{COLLABORATORS_EMPTY_BODY}</p>
+              <p className="text-sm text-neutral-400 font-medium">{COLLABORATORS_EMPTY_TITLE}</p>
+              <p className="text-xs text-neutral-300">{COLLABORATORS_EMPTY_BODY}</p>
             </div>
           ) : (
-            <div className="divide-y divide-[#f5f5fa]">
+            <div className="divide-y divide-neutral-50">
               {collaborators.map(c => {
                 const isSelfPublisher = c.email.toLowerCase() === CURRENT_USER.email.toLowerCase() && c.role === 'owner'
                 return (
-                <div key={c.id} className="flex items-center gap-3 px-5 py-3 hover:bg-[#fbfbff] transition-colors">
+                <div key={c.id} className="flex items-center gap-3 px-5 py-3 hover:bg-neutral-25 transition-colors">
                   <Avatar name={c.name} size="md" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-[#12131f] truncate">{c.name}</p>
-                    <p className="text-[11px] text-[#9898a7] truncate">{c.email}</p>
+                    <p className="text-xs font-semibold text-neutral-900 truncate">{c.name}</p>
+                    <p className="text-[11px] text-neutral-300 truncate">{c.email}</p>
                   </div>
                   {canManageMembers ? (
                     <>
                       {isSelfPublisher ? (
                         <span
-                          className="h-7 text-[11px] w-20 flex items-center px-2 bg-[#f5f5fa] rounded text-[#9898a7] flex-shrink-0 cursor-not-allowed"
+                          className="h-7 text-[11px] w-20 flex items-center px-2 bg-neutral-50 rounded text-neutral-300 flex-shrink-0 cursor-not-allowed"
                           title={CANNOT_REMOVE_OWN_PUBLISHER_ROLE}
                         >
                           {COLLABORATOR_ROLE_LABELS.owner}
                         </span>
                       ) : (
                         <Select value={c.role} onValueChange={v => handleRoleChange(c.id, v as CollaboratorRole)}>
-                          <SelectTrigger className="h-7 text-[11px] w-20 border-transparent bg-[#f5f5fa] hover:bg-[#eeeef7] flex-shrink-0 px-2">
+                          <SelectTrigger className="h-7 text-[11px] w-20 border-transparent bg-neutral-50 hover:bg-neutral-100 flex-shrink-0 px-2">
                             <SelectValue>
                               {(v: string) => COLLABORATOR_ROLE_OPTIONS.find(r => r.value === v)?.label ?? v}
                             </SelectValue>
@@ -269,14 +269,14 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
                       {!isSelfPublisher && (
                         <button
                           onClick={() => handleRemove(c.id)}
-                          className="h-6 w-6 rounded flex items-center justify-center text-[#c4c4d4] hover:text-[#c12c11] hover:bg-[#fff2ee] transition-colors flex-shrink-0"
+                          className="h-6 w-6 rounded flex items-center justify-center text-neutral-200 hover:text-red-700 hover:bg-red-25 transition-colors flex-shrink-0"
                         >
                           <X className="h-3.5 w-3.5" />
                         </button>
                       )}
                     </>
                   ) : (
-                    <span className="text-[11px] text-[#9898a7] flex-shrink-0">
+                    <span className="text-[11px] text-neutral-300 flex-shrink-0">
                       {COLLABORATOR_ROLE_LABELS[c.role] ?? c.role}
                     </span>
                   )}

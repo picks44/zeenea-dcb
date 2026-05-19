@@ -42,10 +42,12 @@ export function GovernanceEmptyState({
         className="gap-3"
       />
       {!isLocked && onCta ? (
-        <Button size="sm" variant="outline" onClick={onCta} className="gap-1.5 -mt-1">
-          <Plus className="h-3.5 w-3.5" aria-hidden />
-          {ctaLabel}
-        </Button>
+        <div className="mt-4 flex justify-center">
+          <Button size="sm" variant="outline" onClick={onCta} className="gap-1.5">
+            <Plus className="h-3.5 w-3.5" aria-hidden />
+            {ctaLabel}
+          </Button>
+        </div>
       ) : null}
     </div>
   )
