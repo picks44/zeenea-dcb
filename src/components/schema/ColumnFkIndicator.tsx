@@ -12,7 +12,7 @@ interface ColumnFkIndicatorProps {
 const tokenClass = (compact?: boolean) =>
   cn(
     'inline-flex items-center gap-1 max-w-full min-w-0',
-    'rounded border border-[#b8d0fb] bg-[#f0f4ff]',
+    'rounded border border-blue-100 bg-blue-25',
     'px-1 py-px font-mono leading-tight',
     compact ? 'text-[9px] mt-0.5' : 'text-[10px] mt-0.5',
   )
@@ -29,10 +29,10 @@ export function ColumnFkIndicator({ foreignKey, compact, className }: ColumnFkIn
 
   const content = (
     <>
-      <span className="flex-shrink-0 font-sans font-semibold uppercase tracking-wide text-[#0550dc] text-[8px]">
+      <span className="flex-shrink-0 font-sans font-semibold uppercase tracking-wide text-blue-700 text-[8px]">
         FK
       </span>
-      <span className="truncate text-[#2a2a30]">{target}</span>
+      <span className="truncate text-neutral-700">{target}</span>
     </>
   )
 
@@ -45,8 +45,8 @@ export function ColumnFkIndicator({ foreignKey, compact, className }: ColumnFkIn
         className={cn(
           tokenClass(compact),
           'cursor-pointer transition-colors',
-          'hover:bg-[#e8f0ff] hover:border-[#0550dc]/50',
-          'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#0550dc]',
+          'hover:bg-blue-50 hover:border-blue-700/50',
+          'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-700',
           className,
         )}
       >

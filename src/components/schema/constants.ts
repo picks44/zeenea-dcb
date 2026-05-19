@@ -15,16 +15,19 @@ export type TypeConfig = {
   iconColor: string
 }
 
+// Logical-type chroma is schema-specific and uses Actian token families.
+// string → cyan, numeric → blue, boolean → green, date/time → orange,
+// structures → neutral, unknown → red.
 export const LOGICAL_TYPES: TypeConfig[] = [
-  { value: 'string',    pmLabel: 'Text',         techLabel: 'string',    hint: 'Names, emails, sentences', icon: Type,        color: 'bg-[#cfeafd] text-[#00699f] border-sky-200',            iconBg: 'bg-[#cfeafd]',   iconColor: 'text-sky-600'      },
-  { value: 'integer',   pmLabel: 'Whole number', techLabel: 'integer',   hint: '1, 42, -7',                icon: Hash,        color: 'bg-[#d0e8fd] text-[#0550dc] border-violet-200',         iconBg: 'bg-violet-100',  iconColor: 'text-[#0550dc]'    },
-  { value: 'number',    pmLabel: 'Decimal',      techLabel: 'number',    hint: '3.14, 19.99, ratio',       icon: Percent,     color: 'bg-purple-100 text-purple-700 border-purple-200',       iconBg: 'bg-purple-100',  iconColor: 'text-purple-600'   },
-  { value: 'boolean',   pmLabel: 'Yes / No',     techLabel: 'boolean',   hint: 'True or false',            icon: ToggleLeft,  color: 'bg-[#d3efcd] text-[#047800] border-emerald-200',        iconBg: 'bg-[#d3efcd]',   iconColor: 'text-[#047800]'    },
-  { value: 'date',      pmLabel: 'Date',         techLabel: 'date',      hint: '2024-01-15',               icon: Calendar,    color: 'bg-orange-100 text-orange-700 border-orange-200',       iconBg: 'bg-orange-100',  iconColor: 'text-orange-600'   },
-  { value: 'timestamp', pmLabel: 'Date & time',  techLabel: 'timestamp', hint: '2024-01-15 14:30',         icon: Clock,       color: 'bg-[#ffebce] text-[#d27b00] border-[#ffd599]',          iconBg: 'bg-[#ffebce]',   iconColor: 'text-[#d27b00]'    },
-  { value: 'array',     pmLabel: 'List',         techLabel: 'array',     hint: 'Multiple values',          icon: List,        color: 'bg-[#f5f5fa] text-[#33333d] border-[#d3d3e5]',          iconBg: 'bg-[#f5f5fa]',   iconColor: 'text-[#3f3f4a]'    },
-  { value: 'object',    pmLabel: 'Record',       techLabel: 'object',    hint: 'Nested structure',         icon: Code2,       color: 'bg-[#f5f5fa] text-[#33333d] border-[#d3d3e5]',          iconBg: 'bg-[#f5f5fa]',   iconColor: 'text-[#3f3f4a]'    },
-  { value: 'unknown',   pmLabel: 'Unknown',      techLabel: 'unknown',   hint: 'Not recognized',           icon: HelpCircle,  color: 'bg-[#ffdacf] text-[#c12c11] border-rose-200',           iconBg: 'bg-[#fff2ee]',   iconColor: 'text-rose-400'     },
+  { value: 'string',    pmLabel: 'Text',         techLabel: 'string',    hint: 'Names, emails, sentences', icon: Type,        color: 'bg-blue-50 text-cyan-700 border-cyan-100',          iconBg: 'bg-blue-50',    iconColor: 'text-cyan-700'   },
+  { value: 'integer',   pmLabel: 'Whole number', techLabel: 'integer',   hint: '1, 42, -7',                icon: Hash,        color: 'bg-blue-50 text-blue-700 border-blue-100',          iconBg: 'bg-blue-50',    iconColor: 'text-blue-700'   },
+  { value: 'number',    pmLabel: 'Decimal',      techLabel: 'number',    hint: '3.14, 19.99, ratio',       icon: Percent,     color: 'bg-blue-100 text-blue-800 border-blue-100',       iconBg: 'bg-blue-100',   iconColor: 'text-blue-800'   },
+  { value: 'boolean',   pmLabel: 'Yes / No',     techLabel: 'boolean',   hint: 'True or false',            icon: ToggleLeft,  color: 'bg-green-50 text-green-700 border-green-100',     iconBg: 'bg-green-50',   iconColor: 'text-green-700'  },
+  { value: 'date',      pmLabel: 'Date',         techLabel: 'date',      hint: '2024-01-15',               icon: Calendar,    color: 'bg-orange-50 text-orange-700 border-orange-100',  iconBg: 'bg-orange-50',  iconColor: 'text-orange-700' },
+  { value: 'timestamp', pmLabel: 'Date & time',  techLabel: 'timestamp', hint: '2024-01-15 14:30',         icon: Clock,       color: 'bg-orange-50 text-orange-700 border-orange-100',  iconBg: 'bg-orange-50',  iconColor: 'text-orange-700' },
+  { value: 'array',     pmLabel: 'List',         techLabel: 'array',     hint: 'Multiple values',          icon: List,        color: 'bg-neutral-50 text-neutral-600 border-neutral-200', iconBg: 'bg-neutral-50', iconColor: 'text-neutral-500' },
+  { value: 'object',    pmLabel: 'Record',       techLabel: 'object',    hint: 'Nested structure',         icon: Code2,       color: 'bg-neutral-50 text-neutral-600 border-neutral-200', iconBg: 'bg-neutral-50', iconColor: 'text-neutral-500' },
+  { value: 'unknown',   pmLabel: 'Unknown',      techLabel: 'unknown',   hint: 'Not recognized',           icon: HelpCircle,  color: 'bg-red-25 text-red-700 border-red-100',             iconBg: 'bg-red-25',     iconColor: 'text-red-700'    },
 ]
 
 export const DB_TYPES_BY_LOGICAL: Record<LogicalType, string[]> = {

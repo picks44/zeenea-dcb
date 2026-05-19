@@ -23,10 +23,10 @@ export function RelationshipDocLines({
       className={cn('font-mono leading-relaxed', compact ? 'space-y-0.5' : 'space-y-1')}
       aria-label={navigateLabel}
     >
-      <p className={cn(textSize, 'text-[#2a2a30] truncate')} title={source}>
+      <p className={cn(textSize, 'text-neutral-700 truncate')} title={source}>
         {source}
       </p>
-      <p className={cn('text-[#9898a7] select-none', compact ? 'text-[8px]' : 'text-[9px]')} aria-hidden>
+      <p className={cn('text-neutral-300 select-none', compact ? 'text-[8px]' : 'text-[9px]')} aria-hidden>
         →
       </p>
       {onNavigate ? (
@@ -36,17 +36,17 @@ export function RelationshipDocLines({
           title={navigateLabel ?? `Go to ${target}`}
           className={cn(
             textSize,
-            'block max-w-full truncate text-left text-[#2a2a30]',
+            'block max-w-full truncate text-left text-neutral-700',
             'rounded px-0.5 -mx-0.5',
             'cursor-pointer',
-            'hover:text-[#0550dc] hover:bg-[#f0f4ff]/80',
-            'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#0550dc]',
+            'hover:text-blue-700 hover:bg-blue-25/80',
+            'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-700',
           )}
         >
           {target}
         </button>
       ) : (
-        <p className={cn(textSize, 'text-[#2a2a30] truncate')} title={target}>
+        <p className={cn(textSize, 'text-neutral-700 truncate')} title={target}>
           {target}
         </p>
       )}

@@ -8,8 +8,8 @@ interface RelationshipHeaderSummaryProps {
 
 export function RelationshipHeaderSummaryBadge({ summary }: RelationshipHeaderSummaryProps) {
   const badge = (
-    <span className="inline-flex items-center gap-1 text-[11px] text-[#656574] flex-shrink-0">
-      <Link2 className="h-3 w-3 text-[#9898a7] flex-shrink-0" aria-hidden />
+    <span className="inline-flex items-center gap-1 text-[11px] text-neutral-400 flex-shrink-0">
+      <Link2 className="h-3 w-3 text-neutral-300 flex-shrink-0" aria-hidden />
       <span>{summary.label}</span>
     </span>
   )

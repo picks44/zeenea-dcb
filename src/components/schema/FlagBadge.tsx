@@ -35,8 +35,8 @@ export function FlagBadge({ flag, active, onClick, disabled, shape = 'mid', comp
                 shape === 'left'  && 'rounded-l-md',
                 shape === 'mid'   && 'rounded-none -ml-px',
                 shape === 'right' && 'rounded-r-md -ml-px',
-                active ? cn(color, 'relative z-10') : 'bg-transparent text-[#9898a7] border-[#d3d3e5]',
-                !disabled && !active && 'hover:text-[#656574] hover:border-[#d3d3e5] hover:z-10 hover:relative',
+                active ? cn(color, 'relative z-10') : 'bg-transparent text-neutral-300 border-neutral-200',
+                !disabled && !active && 'hover:text-neutral-400 hover:border-neutral-200 hover:z-10 hover:relative',
                 !disabled && 'cursor-pointer',
                 disabled && 'cursor-default'
               )}
