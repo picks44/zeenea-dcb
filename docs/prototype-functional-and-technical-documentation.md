@@ -649,7 +649,7 @@ Source : `buildP1FixtureContract()` dans `src/lib/__tests__/p1-fixture.ts`, vali
 ```yaml
 kind: DataContract
 apiVersion: v3.1.0
-id: seller-payments-v1-a3f91c2b
+id: seller-payments-v1-6987f902
 version: 1.1.0
 status: draft
 name: Seller Payments v1

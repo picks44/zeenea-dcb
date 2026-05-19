@@ -330,3 +330,5 @@ ISC (voir `package.json`). Contacter l’équipe propriétaire du dépôt pour l
 
 - [Open Data Contract Standard v3.1.0](https://bitol-io.github.io/open-data-contract-standard/v3.1.0/)
 - [Spécification design du projet](./design.md)
+- [Documentation prototype (fonctionnel & technique)](./docs/prototype-functional-and-technical-documentation.md)
+- [Priorités P1 ODCS](./p1.md)
