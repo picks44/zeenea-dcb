@@ -1,23 +1,20 @@
 import { useEffect, useRef, useState } from 'react'
 import { Copy, Check, ChevronDown, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { DataContract, LifecycleStatus } from '@/types/odcs'
+import { DataContract } from '@/types/odcs'
 import { TagsEditor } from '@/components/shared/TagsEditor'
 import { AuthoritativeDefinitionsEditor } from '@/components/shared/AuthoritativeDefinitionsEditor'
 import { cn } from '@/lib/utils'
 import { deriveContractId } from '@/lib/idDerivation'
 import { filterAuthoritativeDefinitionsForSave } from '@/lib/odcsSharedMappers'
 import { ContractSectionHeader } from '@/components/shared/ContractSectionHeader'
-import { WorkflowMetadataPill } from '@/components/shared/WorkflowMetadataPill'
 import { FundamentalsReadOnlyView } from '@/components/shared/FundamentalsReadOnlyView'
 import {
   CONTRACT_OWNER_HELPER,
   FUNDAMENTALS_INTRO,
   LABEL_CONTRACT_OWNER,
-  SECTION_CONCEPT_ACCOUNTABILITY,
   LABEL_REFERENCE_LINKS,
   NAV_FUNDAMENTALS,
   READINESS_FIELD_CONTRACT_ID,
@@ -47,14 +44,6 @@ interface FundamentalsSectionProps {
   isOwner: boolean
   isPublishedView?: boolean
   docCompact?: boolean
-}
-
-const STATUS_LABELS: Record<LifecycleStatus, string> = {
-  proposed: 'Proposed',
-  draft: 'Draft',
-  active: 'Active',
-  deprecated: 'Deprecated',
-  retired: 'Retired',
 }
 
 export function FundamentalsSection({
@@ -134,7 +123,6 @@ export function FundamentalsSection({
       className={isLocked && isPublishedView ? 'max-w-3xl w-full' : 'max-w-[560px] w-full'}
     >
       <ContractSectionHeader
-        conceptTag={SECTION_CONCEPT_ACCOUNTABILITY}
         title={NAV_FUNDAMENTALS}
         description={FUNDAMENTALS_INTRO}
         compact={docCompact && isLocked}
@@ -199,25 +187,17 @@ export function FundamentalsSection({
           </p>
         </GuidanceField>
 
-        <div className="grid grid-cols-2 gap-4">
-          <GuidanceField
-            fieldId={READINESS_FIELD_CONTRACT_VERSION}
-            label="Version"
-            required
-            isMissing={!semver.test(info.version)}
-            missingHelper={READINESS_HELPER_CONTRACT_VERSION}
-          >
-            <div data-readiness-control className="font-mono text-sm bg-[#f5f5fa] border border-[#d3d3e5] rounded-md px-3 h-9 flex items-center text-[#33333d]">
-              v{info.version}
-            </div>
-          </GuidanceField>
-          <div>
-            <label className={labelClass}>Status</label>
-            <div className="h-9 flex items-center">
-              <Badge variant={info.status}>{STATUS_LABELS[info.status]}</Badge>
-            </div>
+        <GuidanceField
+          fieldId={READINESS_FIELD_CONTRACT_VERSION}
+          label="Version"
+          required
+          isMissing={!semver.test(info.version)}
+          missingHelper={READINESS_HELPER_CONTRACT_VERSION}
+        >
+          <div data-readiness-control className="font-mono text-sm bg-[#f5f5fa] border border-[#d3d3e5] rounded-md px-3 h-9 flex items-center text-[#33333d]">
+            v{info.version}
           </div>
-        </div>
+        </GuidanceField>
 
         <GuidanceField
           fieldId={READINESS_FIELD_CONTRACT_PURPOSE}
@@ -301,9 +281,8 @@ export function FundamentalsSection({
             disabled={ownerFieldLocked}
             className={ownerInputClass}
           />
-          <p className="text-[11px] text-[#656574] mt-1 leading-snug flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
-            {!info.owner.trim() ? null : <span>{CONTRACT_OWNER_HELPER}</span>}
-            <WorkflowMetadataPill variant="not-in-odcs" />
+          <p className="text-[11px] text-[#656574] mt-1 leading-snug">
+            {CONTRACT_OWNER_HELPER}
           </p>
         </GuidanceField>
 

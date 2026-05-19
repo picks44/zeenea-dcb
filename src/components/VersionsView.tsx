@@ -66,7 +66,6 @@ export function VersionsView({
 
       <ContractSectionHeader
         title="Version history"
-        metadataVariant="application-lifecycle"
         metadataNote={
           gitHistory.length === 0
             ? VERSION_HISTORY_INTRO_EMPTY

@@ -1,22 +1,13 @@
 import { useState } from 'react'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import { DataContract, LifecycleStatus } from '@/types/odcs'
+import { DataContract } from '@/types/odcs'
 import { ReadOnlyField } from '@/components/shared/ReadOnlyField'
 import { InlineCopyButton } from '@/components/shared/InlineCopyButton'
-import { WorkflowMetadataPill } from '@/components/shared/WorkflowMetadataPill'
 import { CONTRACT_OWNER_HELPER, LABEL_CONTRACT_OWNER, LABEL_REFERENCE_LINKS } from '@/lib/uxCopy'
 import { authDefTypeLabel } from '@/components/shared/authDefLabels'
 import { cn } from '@/lib/utils'
 import { docShellClass, DOC_COMPACT_SPACING, DOC_COMPACT_TEXT } from '@/components/shared/docViewTokens'
-
-const STATUS_LABELS: Record<LifecycleStatus, string> = {
-  proposed: 'Proposed',
-  draft: 'Draft',
-  active: 'Active',
-  deprecated: 'Deprecated',
-  retired: 'Retired',
-}
 
 function authTypeLabel(type: string): string {
   return authDefTypeLabel(type)
@@ -75,19 +66,11 @@ export function FundamentalsReadOnlyView({ contract, compact }: FundamentalsRead
 
         <div>
           <span className={cn(compact ? DOC_COMPACT_TEXT.label : 'text-xs font-medium text-[#33333d] mb-0.5 block')}>
-            Version & status
+            Version
           </span>
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span className={cn('font-mono', compact ? DOC_COMPACT_TEXT.value : 'text-[13px] text-[#33333d]')}>
-              v{info.version}
-            </span>
-            <Badge
-              variant={info.status}
-              className={compact ? 'px-1.5 py-0 text-[10px] leading-4' : undefined}
-            >
-              {STATUS_LABELS[info.status]}
-            </Badge>
-          </div>
+          <span className={cn('font-mono', compact ? DOC_COMPACT_TEXT.value : 'text-[13px] text-[#33333d]')}>
+            v{info.version}
+          </span>
         </div>
       </div>
 
@@ -145,10 +128,7 @@ export function FundamentalsReadOnlyView({ contract, compact }: FundamentalsRead
         <span className={cn(compact ? DOC_COMPACT_TEXT.label : 'text-xs font-medium text-[#33333d] mb-0.5 block')}>
           {LABEL_CONTRACT_OWNER}<span className="text-red-500"> *</span>
         </span>
-        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
-          <span className={cn(compact ? DOC_COMPACT_TEXT.value : 'text-sm text-[#33333d]')}>{ownerName}</span>
-          <WorkflowMetadataPill variant="not-in-odcs" />
-        </div>
+        <span className={cn(compact ? DOC_COMPACT_TEXT.value : 'text-sm text-[#33333d]')}>{ownerName}</span>
         <p className={cn('mt-0.5', compact ? DOC_COMPACT_TEXT.muted : 'text-[11px] text-[#656574] leading-snug')}>
           {CONTRACT_OWNER_HELPER}
         </p>

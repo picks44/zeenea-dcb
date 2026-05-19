@@ -5,8 +5,6 @@ import { GovernanceEmptyState } from '@/components/shared/GovernanceEmptyState'
 import { filterCustomPropertiesForSave } from '@/lib/odcsSharedMappers'
 import type { CustomProperty } from '@/types/odcsShared'
 import { generateId } from '@/lib/utils'
-import { SECTION_CONCEPT_DATA_CONTRACT } from '@/lib/uxCopy'
-
 interface CustomPropertiesSectionProps {
   customProperties: CustomProperty[]
   onChange: (props: CustomProperty[]) => void
@@ -26,7 +24,6 @@ export function CustomPropertiesSection({
     <div className="max-w-[560px] w-full">
       <ContractSectionHeader
         title="Custom properties"
-        conceptTag={SECTION_CONCEPT_DATA_CONTRACT}
         description="Extend the contract with camelCase properties and values (ODCS customProperties)."
         compact={docCompact && isLocked}
       />

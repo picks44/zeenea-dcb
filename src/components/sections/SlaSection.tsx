@@ -13,7 +13,6 @@ import {
 } from '@/components/shared/GovernanceSectionHeader'
 import { cn } from '@/lib/utils'
 import {
-  SECTION_CONCEPT_SERVICE_LEVELS,
   SLA_EMPTY_BODY,
   SLA_EMPTY_CTA,
   SLA_EMPTY_TITLE,
@@ -62,7 +61,6 @@ export function SlaSection({ slaProperties, onChange, isLocked, isPublishedView,
     <div className="max-w-[840px] w-full">
       <ContractSectionHeader
         title="Service levels"
-        conceptTag={SECTION_CONCEPT_SERVICE_LEVELS}
         description="Define SLA commitments: value (required), unit, element (Object.Property), driver, and description."
         compact={docCompact && isLocked}
       />

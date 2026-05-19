@@ -79,17 +79,17 @@ export const EXPORT_COVERAGE = {
     'Managed in the app only: contract owner, governance contacts, collaborators, and version history.',
 } as const
 
-// ─── Section concept tags (light visual differentiation) ─────────────────────
+// ─── Section concept tags (deprecated — not shown in UI; titles + descriptions carry semantics) ─
 
-/** Accountability — Fundamentals / contract owner */
+/** @deprecated Not rendered in section headers */
 export const SECTION_CONCEPT_ACCOUNTABILITY = 'Accountability'
-/** Application access — Collaborators modal & top bar */
+/** @deprecated Not rendered in ShareModal header */
 export const SECTION_CONCEPT_APPLICATION_ACCESS = 'Application access'
-/** Communication — Governance contacts */
+/** @deprecated Not rendered in section headers */
 export const SECTION_CONCEPT_COMMUNICATION = 'Communication & support'
-/** Data contract — Data access roles (ODCS consumer roles) */
+/** @deprecated Not rendered in section headers */
 export const SECTION_CONCEPT_DATA_CONTRACT = 'Data contract'
-/** Service levels — SLA section */
+/** @deprecated Not rendered in section headers */
 export const SECTION_CONCEPT_SERVICE_LEVELS = 'Service commitment'
 
 // ─── Fundamentals ────────────────────────────────────────────────────────────
@@ -98,12 +98,12 @@ export const FUNDAMENTALS_INTRO =
   'Core contract identity and business accountability. Who can edit in the app is managed in Collaborators — separate from the contract owner below.'
 
 export const CONTRACT_OWNER_HELPER =
-  'Business owner accountable for this contract and publication approval. This is not an app login role — use Collaborators to grant editing access.'
+  'Business owner accountable for publication. Stored in the app only — not included in the exported contract file. Use Collaborators for editing access in the app.'
 
 // ─── Governance contacts (workflow metadata; not in ODCS YAML) ───────────────
 
 export const STAKEHOLDERS_INTRO =
-  'Operational or business contacts for this contract — stewardship, analytics, support, compliance, and similar roles. These are people to reach out to, not app permissions.'
+  'Operational or business contacts for this contract — stewardship, analytics, support, compliance, and similar roles. These are people to reach out to, not app permissions. Contacts are managed in the app only and are not included in the exported contract file.'
 
 export const STAKEHOLDERS_EMPTY_TITLE = 'No governance contacts yet'
 export const STAKEHOLDERS_EMPTY_BODY =
@@ -192,11 +192,12 @@ export const SLA_EMPTY_BODY =
   'Define latency, retention, and availability commitments for this contract.'
 export const SLA_EMPTY_CTA = 'Add service level'
 
-export const VERSION_HISTORY_INTRO_EMPTY = 'Track published versions of this contract.'
+export const VERSION_HISTORY_INTRO_EMPTY =
+  'Track published versions of this contract in the app. Version history is not included in the exported contract file.'
 
 export function versionHistoryIntroCount(count: number): string {
   const noun = count === 1 ? 'version' : 'versions'
-  return `${count} published ${noun} on record.`
+  return `${count} published ${noun} on record in the app (not included in the exported contract file).`
 }
 
 // ─── Publish flow (simulated version history — no external Git) ───────────────
@@ -232,7 +233,7 @@ export const VERSIONS_CHANGES_NOT_PUBLISHED = 'Changes not yet published'
 
 export const COLLABORATORS_MODAL_TITLE = 'Collaborators'
 export const COLLABORATORS_INTRO =
-  `People who can view or edit this contract in ${APP_NAME}. This controls application access only — not the business contract owner or governance contacts.`
+  `People who can view or edit this contract in ${APP_NAME}. Stored in the app only — not included in the exported contract file. Separate from the contract owner and governance contacts.`
 export const COLLABORATORS_EMPTY_TITLE = 'No collaborators yet'
 export const COLLABORATORS_EMPTY_BODY =
   'Invite colleagues who should work on this contract in the application.'

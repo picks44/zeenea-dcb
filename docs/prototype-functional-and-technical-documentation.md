@@ -136,7 +136,7 @@ Définis dans `src/types/odcs.ts` : `owner` | `editor` | `viewer`.
 |--------|--------|
 | Modèle | `Stakeholder` : name, role, email, team, notes |
 | UI | Section **Governance contacts** (`StakeholdersSection`) |
-| Export ODCS YAML | **Non exporté** — pill UI « App only » sur le contract owner (`WorkflowMetadataPill`) |
+| Export ODCS YAML | **Non exporté** — mentionné dans l’intro de section (`STAKEHOLDERS_INTRO`) |
 | Readiness | Recommandé si champs PII sans contact assigné (warning `pii-stakeholders`) |
 
 ### 2.4 Synthèse des impacts lecture seule
@@ -267,6 +267,8 @@ Texte produit explicite dans `EXPORT_COVERAGE` (`src/lib/uxCopy.ts`) :
 
 - **Exported contract file :** identity, description, schema, tags, quality rules, reference links, data access roles, service levels.
 - **Managed in the app only :** contract owner, governance contacts, collaborators, version history.
+
+**Densité UI (headers / pills) :** les *concept tags* abstraits (Accountability, Application access, etc.) ne sont plus affichés dans les en-têtes de section ni dans la modale Collaborators. Le périmètre export / app-only est porté par les **descriptions** de section, les **helpers** de champ (ex. contract owner) et la vue **YAML** (`EXPORT_COVERAGE`). Les pills `WorkflowMetadataPill` (« App only », « Not in exported contract ») restent disponibles mais sont utilisées avec parcimonie — au plus un signal par section ou modale, sans doublon pill + texte identique. Le statut de cycle de vie n’est affiché que dans la barre supérieure (pas dans Fundamentals).
 
 ### 4.2 Navigation éditeur
 
@@ -634,9 +636,9 @@ Vérifiés par test golden dans `p1-compliance.test.ts` :
 | Élément | Raison |
 |---------|--------|
 | `dataProduct` | Absent — test `expect(doc.dataProduct).toBeUndefined()` |
-| `stakeholders` | App only (non exporté) |
-| `collaborators` | App only (non exporté) |
-| `owner` | App only (non exporté) |
+| `stakeholders` | Non exporté — texte dans l’intro Governance contacts |
+| `collaborators` | Non exporté — texte dans la modale Collaborators |
+| `owner` | Non exporté — helper sous Contract owner (Fundamentals) |
 | `gitHistory`, `openPR`, `inRevision`, `uid` | Application |
 | `logicalName`, `quantumName`, `isPII`, `isUnique`, `tableType` | Modèle UI interne |
 | `aiVerified` sur quality | Non mappé dans `mapQualityRulesToYaml` |

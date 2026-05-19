@@ -5,7 +5,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DataContract, Collaborator, CollaboratorRole } from '@/types/odcs'
 import { cn } from '@/lib/utils'
 import { CURRENT_USER } from '@/lib/currentUser'
-import { WorkflowMetadataPill } from '@/components/shared/WorkflowMetadataPill'
 import {
   CANNOT_REMOVE_OWN_PUBLISHER_ROLE,
   COLLABORATOR_ROLE_LABELS,
@@ -15,7 +14,6 @@ import {
   COLLABORATORS_EMPTY_TITLE,
   COLLABORATORS_INTRO,
   COLLABORATORS_MODAL_TITLE,
-  SECTION_CONCEPT_APPLICATION_ACCESS,
 } from '@/lib/uxCopy'
 
 interface MockUser { id: string; name: string; email: string }
@@ -141,13 +139,9 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
         {/* Header */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-[#e4e4f0] rounded-t-2xl">
           <div className="flex-1 min-w-0">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#9898a7]">
-              {SECTION_CONCEPT_APPLICATION_ACCESS}
-            </p>
             <p className="text-sm font-semibold text-[#12131f]">{COLLABORATORS_MODAL_TITLE}</p>
             <p className="text-[11px] text-[#656574] mt-0.5 leading-snug">
-              {COLLABORATORS_INTRO}{' '}
-              <WorkflowMetadataPill variant="workflow-only" />
+              {COLLABORATORS_INTRO}
             </p>
             <p className="text-xs text-[#656574] truncate mt-0.5">{contract.info.title || 'Untitled Contract'}</p>
           </div>

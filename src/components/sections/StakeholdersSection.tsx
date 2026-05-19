@@ -20,7 +20,6 @@ import {
   STAKEHOLDERS_EMPTY_BODY,
   STAKEHOLDERS_EMPTY_CTA,
   STAKEHOLDERS_EMPTY_TITLE,
-  SECTION_CONCEPT_COMMUNICATION,
   STAKEHOLDERS_INTRO,
 } from '@/lib/uxCopy'
 import { READINESS_FIELD_STAKEHOLDERS_ROOT } from '@/lib/uxCopy'
@@ -85,9 +84,7 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked, docCompa
       <div ref={contactsAnchorRef}>
         <ContractSectionHeader
           title={SECTION_GOVERNANCE_CONTACTS}
-          conceptTag={SECTION_CONCEPT_COMMUNICATION}
           description={STAKEHOLDERS_INTRO}
-          metadataVariant="not-in-odcs"
           compact={docCompact && isLocked}
           flashTitle
         />

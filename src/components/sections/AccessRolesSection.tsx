@@ -24,7 +24,6 @@ import {
   DATA_ACCESS_EMPTY_TITLE,
   DATA_ACCESS_ADD_ROLE_CTA,
   DATA_ACCESS_ROLES_INTRO,
-  SECTION_CONCEPT_DATA_CONTRACT,
 } from '@/lib/uxCopy'
 
 interface AccessRolesSectionProps {
@@ -75,7 +74,6 @@ export function AccessRolesSection({ roles, onChange, isLocked, docCompact }: Ac
     <div className="max-w-[720px] w-full">
       <ContractSectionHeader
         title="Data access roles"
-        conceptTag={SECTION_CONCEPT_DATA_CONTRACT}
         description={DATA_ACCESS_ROLES_INTRO}
         compact={docCompact && isLocked}
       />
