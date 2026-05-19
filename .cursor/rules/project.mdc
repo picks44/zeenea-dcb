@@ -44,8 +44,10 @@ Current prototype characteristics:
 | `src/lib/storage.ts` | `loadContracts` / `saveContracts` and migrations |
 | `src/lib/idDerivation.ts` | Contract/table/property stable ID helpers |
 | `src/App.tsx` | Global state, views, lifecycle orchestration, permissions |
-| `docs/prototype-functional-and-technical-documentation.md` | Functional and technical documentation |
-| `README.md` | Project overview and local usage |
+| `docs/product-documentation.md` | Product and functional documentation (source of truth) |
+| `docs/technical-notes.md` | Developer technical notes |
+| `docs/odcs-p1-reference.md` | ODCS P1 field reference (54 lines) |
+| `README.md` | Project portal and quick start |
 
 ## Contract creation flow
 
@@ -179,7 +181,9 @@ Important:
 
 Keep these files aligned with product/runtime changes:
 
-- `docs/prototype-functional-and-technical-documentation.md`
+- `docs/product-documentation.md` (product / functional source of truth)
+- `docs/technical-notes.md` (developer implementation notes)
+- `docs/odcs-p1-reference.md` (P1 field reference)
 - `README.md`
 
 Do not document assumptions as facts. If behavior is mock/simulated, state it explicitly.
