@@ -495,7 +495,7 @@ Le bouton « Verify with AI (mock) » dans `QualityRulesEditor.tsx` définit `ai
 |----------|------------|-----------------|------------|
 | Fundamentals — description | `fundamentals` | `privacyStatement`, `termsAndConditions`, `licenseAgreement` | `isValidFundamentalsAuthDefType` |
 | Table / colonne schema | `zeenea` | `actian` uniquement (`ZEENEA_AUTH_DEF_TYPE`) | URL dans catalogue mock **ou** regex `ZEENEA_ACTIAN_URL_PATTERN` |
-| Shared générique | `shared` (défaut composant) | `SHARED_AUTH_DEF_TYPES` dans constantes | **Non exposé** dans une section UI observée |
+| Shared générique (ODCS) | `shared` (défaut du composant réutilisable) | `SHARED_AUTH_DEF_TYPES` dans `p1Constants.ts` (`businessDefinition`, `transformationImplementation`, `videoTutorial`, `tutorial`, `implementation`) | **Non routé dans l’UI actuelle** — constantes de référence ODCS alignées sur `p1.md` ; le prototype P1 utilise uniquement `fundamentals` (3 types) et `zeenea` (`actian`) selon le contexte. Ce n’est pas un défaut utilisateur : aucun écran n’instancie `variant="shared"` tant que le périmètre produit ne l’exige pas. |
 
 ### Catalogue mock Zeenea
 

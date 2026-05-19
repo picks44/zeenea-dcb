@@ -51,4 +51,46 @@ describe('validateContract P1', () => {
     expect(result.canPublish).toBe(false)
     expect(result.errors.some(e => e.code === 'status-proposed')).toBe(true)
   })
+
+  it('rejects corrupted role access outside read|write', () => {
+    const c = buildP1FixtureContract()
+    c.roles = [{
+      id: 'r',
+      role: 'analytics_user',
+      access: 'admin' as 'read',
+      description: '',
+    }]
+    const result = validateContract(c, [c])
+    expect(result.errors.some(e => e.code === 'role-access-invalid')).toBe(true)
+    expect(result.canPublish).toBe(false)
+  })
+
+  it('rejects quality rule with non-text type on table', () => {
+    const c = buildP1FixtureContract()
+    const table = c.dataset[0]
+    table.quality = [{
+      id: 'q',
+      type: 'sql' as 'text',
+      description: 'Must not publish',
+      dimension: 'accuracy',
+      aiVerified: true,
+    }]
+    const result = validateContract(c, [c])
+    expect(result.errors.some(e => e.code === 'quality-type-invalid')).toBe(true)
+    expect(result.canPublish).toBe(false)
+  })
+
+  it('rejects quality rule with library type on column', () => {
+    const c = buildP1FixtureContract()
+    const col = c.dataset[0].columns[0]
+    col.quality = [{
+      id: 'q2',
+      type: 'library' as 'text',
+      description: 'Library rule not allowed in P1',
+      dimension: 'completeness',
+    }]
+    const result = validateContract(c, [c])
+    expect(result.errors.some(e => e.code === 'quality-type-invalid')).toBe(true)
+    expect(result.canPublish).toBe(false)
+  })
 })

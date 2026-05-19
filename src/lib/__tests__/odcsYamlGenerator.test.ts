@@ -81,4 +81,94 @@ describe('buildOdcsDocument P1 export', () => {
     expect(q.severity).toBe('high')
     expect(q.businessImpact).toBe('Reporting failure')
   })
+
+  it('exports roles with write access', () => {
+    const contract = buildP1FixtureContract()
+    contract.roles = [{
+      id: 'r-write',
+      role: 'bq_unica_user_opr',
+      access: 'write',
+      description: 'Write access to finance tables',
+    }]
+    const roles = buildOdcsDocument(contract).roles as Record<string, unknown>[]
+    expect(roles[0].access).toBe('write')
+  })
+
+  it('exports array items with object logicalType and nested properties', () => {
+    const contract = buildP1FixtureContract()
+    const tagsCol = contract.dataset[0].columns.find(c => c.logicalType === 'array')!
+    tagsCol.items = {
+      logicalType: 'object',
+      properties: [{
+        id: 'item_field_a',
+        physicalName: 'field_a',
+        logicalName: 'field_a',
+        physicalType: 'VARCHAR',
+        logicalType: 'string',
+        required: false,
+        isPrimaryKey: false,
+        isPII: false,
+        isUnique: false,
+        description: '',
+        examples: [],
+        qualityRule: '',
+        isUnknownType: false,
+      }],
+    }
+    const schema = buildOdcsDocument(contract).schema as Record<string, unknown>[]
+    const orders = schema.find(s => s.id === 'tbl-orders') as Record<string, unknown>
+    const props = orders.properties as Record<string, unknown>[]
+    const arrayCol = props.find(p => p.logicalType === 'array')!
+    const items = arrayCol.items as Record<string, unknown>
+    expect(items.logicalType).toBe('object')
+    const nested = items.properties as Record<string, unknown>[]
+    expect(nested).toHaveLength(1)
+    expect(nested[0].physicalName).toBe('field_a')
+  })
+
+  it('exports composite primaryKeyPosition 1 and 2', () => {
+    const contract = buildP1FixtureContract()
+    const table = contract.dataset[0]
+    table.columns.push({
+      id: 'tbl_orders_region_prop',
+      physicalName: 'REGION_CD',
+      logicalName: 'Region Cd',
+      physicalType: 'VARCHAR(2)',
+      logicalType: 'string',
+      required: true,
+      isPrimaryKey: true,
+      isPII: false,
+      isUnique: false,
+      description: 'Second PK column',
+      examples: [],
+      qualityRule: '',
+      isUnknownType: false,
+    })
+    const schema = buildOdcsDocument(contract).schema as Record<string, unknown>[]
+    const orders = schema.find(s => s.id === 'tbl-orders') as Record<string, unknown>
+    const props = orders.properties as Record<string, unknown>[]
+    const pk1 = props.find(p => p.id === 'tbl_orders_txn_ref_dt_prop')!
+    const pk2 = props.find(p => p.id === 'tbl_orders_region_prop')!
+    const nonPk = props.find(p => p.id === 'tbl_orders_tags_prop')!
+    expect(pk1.primaryKeyPosition).toBe(1)
+    expect(pk2.primaryKeyPosition).toBe(2)
+    expect(nonPk.primaryKeyPosition).toBe(NOT_PRIMARY_KEY_POSITION)
+  })
+
+  it.each([
+    'privacyStatement',
+    'termsAndConditions',
+    'licenseAgreement',
+  ] as const)('exports fundamentals authoritativeDefinitions type %s', type => {
+    const contract = buildP1FixtureContract()
+    contract.info.descriptionAuthoritativeDefinitions = [{
+      id: `ad-${type}`,
+      url: `https://example.com/${type}`,
+      type,
+      description: `Ref ${type}`,
+    }]
+    const desc = buildOdcsDocument(contract).description as Record<string, unknown>
+    const defs = desc.authoritativeDefinitions as Record<string, unknown>[]
+    expect(defs[0].type).toBe(type)
+  })
 })

@@ -30,6 +30,8 @@ import {
   isValidLifecycleStatus,
   isValidP1ContractId,
   isValidQualityDimension,
+  isValidQualityRuleType,
+  isValidRoleAccess,
   isValidSlaDriver,
   isValidSlaElement,
   isValidSlaUnit,
@@ -127,6 +129,14 @@ function validateQualityRules(
 ): void {
   for (const q of rules ?? []) {
     if (isQualityRuleContentEmpty(q)) continue
+    if (!isValidQualityRuleType(q.type)) {
+      issues.push({
+        code: 'quality-type-invalid',
+        message: `Quality rule on ${context} must use type "text" (P1 MVP).`,
+        severity: 'error',
+        section: 'schema',
+      })
+    }
     if (!q.description?.trim()) {
       issues.push({
         code: 'quality-empty',
@@ -448,6 +458,13 @@ export function validateContract(
       issues.push({
         code: 'role-access',
         message: 'Each data access role needs an access level.',
+        severity: 'error',
+        section: 'accessRoles',
+      })
+    } else if (!isValidRoleAccess(r.access)) {
+      issues.push({
+        code: 'role-access-invalid',
+        message: 'Data access role access must be read or write.',
         severity: 'error',
         section: 'accessRoles',
       })

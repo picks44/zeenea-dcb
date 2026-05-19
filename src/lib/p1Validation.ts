@@ -88,6 +88,15 @@ export function isValidQualityDimension(dimension: string): boolean {
   return (QUALITY_DIMENSIONS as readonly string[]).includes(dimension.trim())
 }
 
+/** P1 MVP: only natural-language text rules are allowed at publish time. */
+export function isValidQualityRuleType(type: string | undefined): boolean {
+  return type === 'text'
+}
+
+export function isValidRoleAccess(access: string): boolean {
+  return access === 'read' || access === 'write'
+}
+
 export function isValidLifecycleStatus(status: string): boolean {
   return (LIFECYCLE_STATUSES as readonly string[]).includes(status)
 }
