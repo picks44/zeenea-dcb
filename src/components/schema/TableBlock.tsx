@@ -18,7 +18,6 @@ import {
   TABLE_RELATIONSHIPS_INTRO,
 } from '@/lib/uxCopy'
 import { countTableRelationships, formatRelationshipHeaderSummary } from '@/lib/schemaRelationshipUx'
-import { isColumnForeignKeyComplete } from '@/lib/relationshipExport'
 import { hasFieldMetadata, hasTableMetadata, schemaMetadataButtonClass } from '@/lib/schemaMetadataPresence'
 import { ColumnFkIndicator } from '@/components/schema/ColumnFkIndicator'
 import { TableRelationshipRow } from '@/components/schema/TableRelationshipRow'
@@ -258,7 +257,6 @@ export function TableBlock({
               const tc = typeConfig(col.logicalType)
               const Icon = tc.icon
               const compatibleDbTypes = DB_TYPES_BY_LOGICAL[col.logicalType] ?? ['VARCHAR']
-              const hasFk = isColumnForeignKeyComplete(col.foreignKey)
               const hasMetadata = hasFieldMetadata(col)
               return (
                 <SchemaColumnReadinessAnchor
@@ -269,8 +267,7 @@ export function TableBlock({
                   registerColumn={registerColumn}
                   columnName={col.physicalName}
                   className={cn(
-                    'flex px-4 transition-colors group rounded-md',
-                    hasFk ? 'items-start' : 'items-center',
+                    'flex items-start px-4 transition-colors group rounded-md',
                     denseReadOnly ? 'py-2' : 'py-2 hover:bg-neutral-50/50',
                   )}
                 >
@@ -304,7 +301,7 @@ export function TableBlock({
                     )}
                   </div>
 
-                  <div className={cn('w-32 flex-shrink-0 pr-3', hasFk && 'pt-0.5')}>
+                  <div className="w-32 flex-shrink-0 pr-3">
                     {isLocked ? (
                       <span className={cn(
                         'inline-flex items-center gap-0.5 font-semibold rounded border',
@@ -332,7 +329,7 @@ export function TableBlock({
                     )}
                   </div>
 
-                  <div className={cn('w-32 flex-shrink-0 pr-3', hasFk && 'pt-0.5')}>
+                  <div className="w-32 flex-shrink-0 pr-3">
                     {isLocked ? (
                       <span className={cn(
                         'font-mono text-neutral-500 bg-neutral-50 rounded',
@@ -346,7 +343,7 @@ export function TableBlock({
                     )}
                   </div>
 
-                  <div className={cn('flex items-center w-44 flex-shrink-0', hasFk && 'pt-0.5')}>
+                  <div className="flex items-start w-44 flex-shrink-0">
                     <FlagBadge shape="left"  flag="PK"  active={col.isPrimaryKey} onClick={() => updateCol(col.id, { isPrimaryKey: !col.isPrimaryKey })} disabled={isLocked} compact={denseReadOnly} />
                     <FlagBadge shape="mid"   flag="REQ" active={col.required}     onClick={() => updateCol(col.id, { required: !col.required })}         disabled={isLocked} compact={denseReadOnly} />
                     <FlagBadge shape="mid"   flag="PII" active={col.isPII}        onClick={() => updateCol(col.id, { isPII: !col.isPII })}               disabled={isLocked} compact={denseReadOnly} />
@@ -362,14 +359,14 @@ export function TableBlock({
                     aria-label="Field properties"
                     className={schemaMetadataButtonClass(hasMetadata, {
                       inFieldRow: true,
-                      className: cn('ml-2 relative', hasFk && 'mt-0.5'),
+                      className: 'ml-2 relative',
                     })}
                   >
                     <SlidersHorizontal className="h-3.5 w-3.5" />
                   </button>
 
                   {!isLocked && (
-                    <button onClick={() => deleteCol(col.id)} className={cn('h-6 w-6 ml-2 rounded flex items-center justify-center text-neutral-200 group-hover:text-neutral-400 hover:!text-red-700 hover:bg-red-25 transition-all flex-shrink-0', hasFk && 'mt-0.5')}>
+                    <button onClick={() => deleteCol(col.id)} className="h-6 w-6 ml-2 rounded flex items-center justify-center text-neutral-200 group-hover:text-neutral-400 hover:!text-red-700 hover:bg-red-25 transition-all flex-shrink-0">
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
                   )}
