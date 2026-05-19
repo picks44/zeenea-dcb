@@ -36,11 +36,18 @@ interface AuthoritativeDefinitionsEditorProps {
   variant?: AuthoritativeDefinitionsVariant
 }
 
-function emptyRow(variant: AuthoritativeDefinitionsVariant): AuthoritativeDefinition {
+export function createEmptyAuthoritativeDefinition(
+  variant: AuthoritativeDefinitionsVariant,
+): AuthoritativeDefinition {
   return {
     id: generateId(),
     url: '',
-    type: variant === 'zeenea' ? ZEENEA_AUTH_DEF_TYPE : '',
+    type:
+      variant === 'zeenea'
+        ? ZEENEA_AUTH_DEF_TYPE
+        : variant === 'fundamentals'
+          ? FUNDAMENTALS_AUTH_DEF_TYPES[0]
+          : '',
     description: '',
   }
 }
@@ -203,7 +210,7 @@ export function AuthoritativeDefinitionsEditor({
     onChange(definitions.map(r => (r.id === id ? { ...r, ...patch } : r)))
   }
 
-  const add = () => onChange([...definitions, emptyRow(variant)])
+  const add = () => onChange([...definitions, createEmptyAuthoritativeDefinition(variant)])
 
   const remove = (id: string) => onChange(definitions.filter(r => r.id !== id))
 
