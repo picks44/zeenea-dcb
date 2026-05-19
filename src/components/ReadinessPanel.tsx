@@ -1,7 +1,10 @@
 import { useMemo } from 'react'
 import { Check, CheckCircle2, AlertCircle, AlertTriangle, ArrowRight, X } from 'lucide-react'
 import { CollaboratorRole, DataContract } from '@/types/odcs'
-import { computePublicationReadiness } from '@/lib/publicationReadiness'
+import {
+  computePublicationReadiness,
+  getSupplementalValidationErrors,
+} from '@/lib/publicationReadiness'
 import { cn } from '@/lib/utils'
 import {
   CONTRACT_QUALITY_PANEL_TITLE,
@@ -199,6 +202,16 @@ export function ReadinessPanel({
     validationWarnings,
   } = readiness
 
+  const supplementalValidationErrors = useMemo(
+    () => getSupplementalValidationErrors(validationErrors),
+    [validationErrors],
+  )
+
+  const suggestedChecksToShow = useMemo(
+    () => recommendedChecks.filter(item => item.key !== 'field-docs'),
+    [recommendedChecks],
+  )
+
   const isPublishedView =
     contract.info.status === 'active' && !contract.inRevision
 
@@ -368,13 +381,13 @@ export function ReadinessPanel({
           ) : null}
         </div>
 
-        {publishAttempted && validationErrors.length >= 1 && (
+        {publishAttempted && supplementalValidationErrors.length > 0 && (
           <div className={sectionPad}>
             <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-2">
               {READINESS_VALIDATION_DETAILS_TITLE}
             </p>
             <ul className="space-y-1">
-              {validationErrors.slice(0, 6).map((e, i) => (
+              {supplementalValidationErrors.slice(0, 6).map((e, i) => (
                 <li key={`${e.code}-${i}`}>
                   {nav?.enabled ? (
                     <button
@@ -417,10 +430,10 @@ export function ReadinessPanel({
             tone="recommended"
           />
           <ul className={listGap}>
-            {recommendedChecks.map(item => (
+            {suggestedChecksToShow.map(item => (
               <CheckRow
                 key={item.key}
-                item={item.key === 'field-docs' ? { ...item, badge: undefined } : item}
+                item={item}
                 onNavigate={nav?.enabled ? handleNavigateItem : undefined}
               />
             ))}

@@ -66,6 +66,14 @@ function publishReadinessMessage(
   return { ready: true, message: PUBLICATION_READY_REQUIRED_COMPLETE }
 }
 
+/** Errors for "Details to fix" — excludes the first error (already shown in the panel header). */
+export function getSupplementalValidationErrors(
+  validationErrors: ValidationIssue[],
+): ValidationIssue[] {
+  if (validationErrors.length <= 1) return []
+  return validationErrors.slice(1)
+}
+
 export function computePublicationReadiness(
   contract: DataContract,
   myRole: CollaboratorRole,

@@ -387,13 +387,11 @@ export default function App() {
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
 
-        {!(contract && currentView === 'editor' && activeSection !== 'import') && (
-          <AppTopBar
-            currentView={currentView}
-            contractTitle={contract?.info.title}
-            onBack={handleBack}
-          />
-        )}
+        <AppTopBar
+          currentView={currentView}
+          contractTitle={contract?.info.title}
+          onBack={handleBack}
+        />
 
         <div className="flex flex-1 min-h-0 overflow-hidden">
           {currentView === 'components' ? (
@@ -436,16 +434,6 @@ export default function App() {
               )}
 
               <div className="flex flex-1 flex-col min-w-0 min-h-0 overflow-hidden">
-
-                {activeSection !== 'import' && (
-                  <AppTopBar
-                    currentView={currentView}
-                    contractTitle={contract.info.title}
-                    onBack={handleBack}
-                  />
-                )}
-
-                <div className="flex flex-1 flex-col min-w-0 min-h-0 overflow-hidden">
 
                 <ContractTopBar
                   contract={contract}
@@ -629,7 +617,6 @@ export default function App() {
                     )}
                   </div>
                 )}
-                </div>
               </div>
 
             </div>
