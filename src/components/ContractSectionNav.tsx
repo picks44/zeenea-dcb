@@ -40,12 +40,12 @@ function StatusIndicator({
   const iconClass = compact ? 'h-3 w-3' : 'h-4 w-4'
 
   if (status === 'complete') {
-    return <CheckCircle2 className={cn(iconClass, 'text-[#047800]')} aria-hidden />
+    return <CheckCircle2 className={cn(iconClass, 'text-green-700')} aria-hidden />
   }
   if (status === 'incomplete') {
-    return <AlertCircle className={cn(iconClass, 'text-[#b8956a]')} aria-hidden />
+    return <AlertCircle className={cn(iconClass, 'text-orange-700')} aria-hidden />
   }
-  return <span className="h-1.5 w-1.5 rounded-full bg-[#d3d3e5]" aria-hidden />
+  return <span className="h-1.5 w-1.5 rounded-full bg-neutral-200" aria-hidden />
 }
 
 /** Fixed-width slot so labels stay aligned whether the cue is dot, check, or warning. */
@@ -112,7 +112,7 @@ export function ContractSectionNav({
   ]
 
   return (
-    <aside className="w-12 xl:w-48 flex-shrink-0 border-r border-[#d3d3e5] bg-white flex flex-col h-full min-h-0">
+    <aside className="w-12 xl:w-48 flex-shrink-0 border-r border-neutral-200 bg-white flex flex-col h-full min-h-0">
       <nav className="flex-1 min-h-0 overflow-y-auto px-1 xl:px-2 py-3 space-y-0.5">
         {sections.map(({ id, label, icon: Icon }) => {
           const isActive = activeSection === id
@@ -138,12 +138,12 @@ export function ContractSectionNav({
                   docCompact
                     ? 'px-1 xl:pl-2 xl:pr-1.5 py-0.5 h-7 text-[13px]'
                     : 'px-1 xl:pl-2 xl:pr-1.5 py-1 h-8 text-sm',
-                  isActive && 'bg-[#edf6ff] font-medium text-[#12131f]',
-                  !isActive && 'text-[#12131f] hover:bg-[rgba(228,228,240,0.3)]',
+                  isActive && 'bg-blue-25 font-medium text-neutral-900',
+                  !isActive && 'text-neutral-900 hover:bg-neutral-100/30',
                 )}
                 aria-label={rowLabel}
               >
-                <Icon className={cn('flex-shrink-0 text-[#656574]', docCompact ? 'h-3.5 w-3.5' : 'h-4 w-4')} />
+                <Icon className={cn('flex-shrink-0 text-neutral-400', docCompact ? 'h-3.5 w-3.5' : 'h-4 w-4')} />
                 <span className="hidden xl:block flex-1 min-w-0 truncate">{label}</span>
                 <span className="hidden xl:flex">
                   <StatusCueSlot status={status} />
@@ -158,12 +158,12 @@ export function ContractSectionNav({
       </nav>
 
       {onDeleteContract && (
-        <div className="flex-shrink-0 border-t border-[#e4e4f0] py-2 px-1 xl:px-2">
+        <div className="flex-shrink-0 border-t border-neutral-100 py-2 px-1 xl:px-2">
           <Tooltip content="Delete contract" side="right" delayDuration={400} triggerClassName="w-full">
             <button
               type="button"
               onClick={onDeleteContract}
-              className="w-full flex h-8 items-center justify-center gap-2 rounded text-sm tracking-[0.2px] text-[#9898a7] transition-colors hover:bg-[#fff2ee] hover:text-[#c12c11] xl:justify-start xl:pl-2"
+              className="w-full flex h-8 items-center justify-center gap-2 rounded text-sm tracking-[0.2px] text-neutral-300 transition-colors hover:bg-red-25 hover:text-red-700 xl:justify-start xl:pl-2"
               aria-label="Delete contract"
             >
               <Trash2 className="h-4 w-4 flex-shrink-0" />

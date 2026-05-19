@@ -58,27 +58,27 @@ const BUMP_CONFIG = {
     label: 'Update',
     desc: 'New fields added, nothing removed — existing consumers unaffected',
     icon: Plus,
-    selectedBorder: 'border-blue-300',
+    selectedBorder: 'border-cyan-100',
     selectedBg: 'from-blue-50/80 to-white',
-    ring: 'ring-[#99cde8]',
-    iconBg: 'bg-[#cfeafd]',
-    iconColor: 'text-[#00699f]',
-    labelColor: 'text-[#00699f]',
-    versionColor: 'text-[#003d5c]',
-    descColor: 'text-[#00699f]/80',
+    ring: 'ring-cyan-100',
+    iconBg: 'bg-blue-50',
+    iconColor: 'text-cyan-700',
+    labelColor: 'text-cyan-700',
+    versionColor: 'text-blue-800',
+    descColor: 'text-cyan-700/80',
   },
   major: {
     label: 'Breaking',
     desc: 'Fields removed or renamed — consumers will need to update',
     icon: Zap,
-    selectedBorder: 'border-rose-300',
-    selectedBg: 'from-rose-50/80 to-white',
-    ring: 'ring-[#ffb09b]',
-    iconBg: 'bg-[#ffdacf]',
-    iconColor: 'text-[#c12c11]',
-    labelColor: 'text-[#c12c11]',
-    versionColor: 'text-[#8b1a09]',
-    descColor: 'text-[#c12c11]/80',
+    selectedBorder: 'border-red-100',
+    selectedBg: 'from-red-25/80 to-white',
+    ring: 'ring-red-100',
+    iconBg: 'bg-red-50',
+    iconColor: 'text-red-700',
+    labelColor: 'text-red-700',
+    versionColor: 'text-red-800',
+    descColor: 'text-red-700/80',
   },
 } as const
 
@@ -105,12 +105,12 @@ function BumpCard({
         'flex-1 flex flex-col items-center gap-2 rounded-xl border-2 px-3 py-4 transition-all text-center relative overflow-hidden',
         selected
           ? `${cfg.selectedBorder} bg-gradient-to-b ${cfg.selectedBg} ring-2 ${cfg.ring} ring-offset-1`
-          : 'border-[#d3d3e5] bg-white hover:border-[#d3d3e5] hover:bg-[#f5f5fa]/70',
+          : 'border-neutral-200 bg-white hover:border-neutral-200 hover:bg-neutral-50/70',
       )}
     >
       <div className={cn(
         'h-8 w-8 rounded-lg flex items-center justify-center transition-colors',
-        selected ? cn(cfg.iconBg, cfg.iconColor) : 'bg-[#f5f5fa] text-[#656574]'
+        selected ? cn(cfg.iconBg, cfg.iconColor) : 'bg-neutral-50 text-neutral-400'
       )}>
         <Icon className="h-4 w-4" />
       </div>
@@ -118,22 +118,22 @@ function BumpCard({
       <div className="space-y-0.5">
         <p className={cn(
           'text-[10px] font-bold uppercase tracking-widest',
-          selected ? cfg.labelColor : 'text-[#656574]'
+          selected ? cfg.labelColor : 'text-neutral-400'
         )}>
           {cfg.label}
         </p>
         <p className={cn(
           'font-mono font-bold transition-all',
-          selected ? cn('text-base', cfg.versionColor) : 'text-sm text-[#656574]'
+          selected ? cn('text-base', cfg.versionColor) : 'text-sm text-neutral-400'
         )}>
           {next}
         </p>
-        <p className="font-mono text-[10px] text-[#9898a7] line-through">{current}</p>
+        <p className="font-mono text-[10px] text-neutral-300 line-through">{current}</p>
       </div>
 
       <p className={cn(
         'text-[10px] leading-snug',
-        selected ? cfg.descColor : 'text-[#656574]'
+        selected ? cfg.descColor : 'text-neutral-400'
       )}>
         {cfg.desc}
       </p>
@@ -157,19 +157,19 @@ function Step({ label, state }: { label: string; state: 'pending' | 'active' | '
     <div className="flex items-center gap-3">
       <div className={cn(
         'h-5 w-5 rounded-full flex items-center justify-center flex-shrink-0 transition-all',
-        state === 'done'    && 'bg-[#d3efcd]',
-        state === 'active'  && 'bg-[#d0e8fd]',
-        state === 'pending' && 'bg-[#f5f5fa]',
+        state === 'done'    && 'bg-green-50',
+        state === 'active'  && 'bg-blue-50',
+        state === 'pending' && 'bg-neutral-50',
       )}>
-        {state === 'done'    && <Check className="h-3 w-3 text-[#047800]" />}
-        {state === 'active'  && <Loader2 className="h-3 w-3 text-[#0550dc] animate-spin" />}
-        {state === 'pending' && <span className="h-1.5 w-1.5 rounded-full bg-[#d3d3e5]" />}
+        {state === 'done'    && <Check className="h-3 w-3 text-green-700" />}
+        {state === 'active'  && <Loader2 className="h-3 w-3 text-blue-700 animate-spin" />}
+        {state === 'pending' && <span className="h-1.5 w-1.5 rounded-full bg-neutral-200" />}
       </div>
       <span className={cn(
         'text-xs',
-        state === 'done'    && 'text-[#656574] line-through',
-        state === 'active'  && 'text-[#2a2a30] font-medium',
-        state === 'pending' && 'text-[#656574]',
+        state === 'done'    && 'text-neutral-400 line-through',
+        state === 'active'  && 'text-neutral-700 font-medium',
+        state === 'pending' && 'text-neutral-400',
       )}>
         {label}
       </span>
@@ -261,16 +261,16 @@ export function PushToGitModal({ contract, allContracts, open, onClose, onPushed
       <div className="bg-white rounded-2xl shadow-2xl w-[440px] max-h-[90vh] overflow-y-auto">
 
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[#e4e4f0]">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-100">
           <div className="flex items-center gap-2.5">
-            <div className="h-8 w-8 rounded-xl bg-[#12131f] flex items-center justify-center">
+            <div className="h-8 w-8 rounded-xl bg-neutral-900 flex items-center justify-center">
               <BookOpen className="h-4 w-4 text-white" />
             </div>
             <div>
-              <p className="font-semibold text-[#12131f] text-sm leading-tight">
+              <p className="font-semibold text-neutral-900 text-sm leading-tight">
                 {isFirstPublish ? 'Publish first version' : 'Publish new version'}
               </p>
-              <p className="text-[11px] text-[#656574] leading-tight">{PUBLISH_MODAL_SUBTITLE}</p>
+              <p className="text-[11px] text-neutral-400 leading-tight">{PUBLISH_MODAL_SUBTITLE}</p>
             </div>
           </div>
           <Button variant="ghost" size="icon-sm" onClick={onClose}>
@@ -284,25 +284,25 @@ export function PushToGitModal({ contract, allContracts, open, onClose, onPushed
           {phase.kind === 'form' && (
             <>
               {/* Contract summary */}
-              <div className="flex items-center gap-3 bg-[#fbfbff] rounded-lg px-3 py-2.5 border border-[#e4e4f0]">
+              <div className="flex items-center gap-3 bg-neutral-25 rounded-lg px-3 py-2.5 border border-neutral-100">
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold text-[#33333d] truncate">
+                  <p className="text-xs font-semibold text-neutral-600 truncate">
                     {contract.info.title || 'Untitled Contract'}
                   </p>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-[10px] font-mono text-[#656574]">v{contract.info.version}</span>
+                    <span className="text-[10px] font-mono text-neutral-400">v{contract.info.version}</span>
                     {fieldCount > 0 && (
-                      <span className="text-[10px] text-[#656574]">{fieldCount} field{fieldCount > 1 ? 's' : ''}</span>
+                      <span className="text-[10px] text-neutral-400">{fieldCount} field{fieldCount > 1 ? 's' : ''}</span>
                     )}
                   </div>
                 </div>
               </div>
 
               {validationWarnings.length > 0 && (
-                <div className="bg-[#fff8ec] border border-[#ffd599] rounded-lg px-3 py-2.5 space-y-1">
-                  <p className="text-[11px] font-semibold text-[#d27b00]">Recommendations</p>
+                <div className="bg-orange-25 border border-orange-100 rounded-lg px-3 py-2.5 space-y-1">
+                  <p className="text-[11px] font-semibold text-orange-700">Recommendations</p>
                   {validationWarnings.map(w => (
-                    <p key={w.code} className="text-[11px] text-[#3f3f4a] leading-snug">
+                    <p key={w.code} className="text-[11px] text-neutral-500 leading-snug">
                       {validationUserMessage(w)}
                     </p>
                   ))}
@@ -311,7 +311,7 @@ export function PushToGitModal({ contract, allContracts, open, onClose, onPushed
 
               {/* Description */}
               <div>
-                <label className="block text-[11px] font-semibold uppercase tracking-wide text-[#656574] mb-1.5">
+                <label className="block text-[11px] font-semibold uppercase tracking-wide text-neutral-400 mb-1.5">
                   What changed?
                 </label>
                 <textarea
@@ -322,25 +322,25 @@ export function PushToGitModal({ contract, allContracts, open, onClose, onPushed
                     ? 'e.g. Initial version with user and order tables'
                     : 'e.g. Added billing_date field, updated PII flags'}
                   rows={3}
-                  className="w-full resize-none rounded-lg border border-[#d3d3e5] bg-white px-3 py-2 text-sm text-[#12131f] placeholder:text-[#9898a7] focus:outline-none focus:border-2 focus:border-blue-700 transition-colors leading-snug"
+                  className="w-full resize-none rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-300 focus:outline-none focus:border-2 focus:border-blue-700 transition-colors leading-snug"
                 />
               </div>
 
               {/* First publish: no bump selection */}
               {isFirstPublish ? (
-                <div className="bg-[#f0ffec] border border-[#b8dfb5] rounded-xl px-4 py-3.5 text-center">
-                  <p className="text-sm font-semibold text-emerald-800">
+                <div className="bg-green-25 border border-green-100 rounded-xl px-4 py-3.5 text-center">
+                  <p className="text-sm font-semibold text-green-800">
                     Will be published as{' '}
-                    <span className="font-mono bg-[#d3efcd] px-1.5 py-0.5 rounded">v{newVersion}</span>
+                    <span className="font-mono bg-green-50 px-1.5 py-0.5 rounded">v{newVersion}</span>
                   </p>
-                  <p className="text-[11px] text-[#047800] mt-1">
+                  <p className="text-[11px] text-green-700 mt-1">
                     This is the first version — it will become active immediately.
                   </p>
                 </div>
               ) : (
                 /* Revision: choose Minor or Major */
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-[#656574] mb-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-neutral-400 mb-3">
                     What type of change is this?
                   </p>
                   <div className="flex gap-2">
@@ -380,21 +380,21 @@ export function PushToGitModal({ contract, allContracts, open, onClose, onPushed
                 <Step label={publishStepUpdatingVersion(phase.result.newVersion)} state="done" />
                 <Step label={PUBLISH_STEP_VERSION_SAVED} state="done" />
               </div>
-              <div className="bg-[#f0ffec] border border-[#b8dfb5] rounded-xl px-4 py-3 flex items-center gap-3">
-                <Check className="h-4 w-4 text-[#047800] flex-shrink-0" />
+              <div className="bg-green-25 border border-green-100 rounded-xl px-4 py-3 flex items-center gap-3">
+                <Check className="h-4 w-4 text-green-700 flex-shrink-0" />
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold text-[#047800]">
+                  <p className="text-xs font-semibold text-green-700">
                     Published as{' '}
-                    <span className="font-mono bg-[#d3efcd] px-1.5 py-0.5 rounded">
+                    <span className="font-mono bg-green-50 px-1.5 py-0.5 rounded">
                       v{phase.result.newVersion}
                     </span>
                   </p>
-                  <p className="text-[11px] text-[#3f3f4a] mt-0.5 truncate">
+                  <p className="text-[11px] text-neutral-500 mt-0.5 truncate">
                     {phase.result.commit.title}
                   </p>
                 </div>
               </div>
-              <p className="text-[11px] text-[#656574] flex items-center gap-1.5">
+              <p className="text-[11px] text-neutral-400 flex items-center gap-1.5">
                 <AlertCircle className="h-3 w-3" />
                 {PUBLISH_EXTERNAL_SYNC_NOTE}
               </p>
@@ -403,7 +403,7 @@ export function PushToGitModal({ contract, allContracts, open, onClose, onPushed
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-5 py-3 border-t border-[#e4e4f0] bg-[#fbfbff]/80">
+        <div className="flex items-center justify-between px-5 py-3 border-t border-neutral-100 bg-neutral-25/80">
           {phase.kind === 'form' && (
             <>
               <Button variant="ghost" size="sm" onClick={onClose} className="h-8 text-xs">
@@ -413,7 +413,7 @@ export function PushToGitModal({ contract, allContracts, open, onClose, onPushed
                 size="sm"
                 onClick={handlePush}
                 disabled={!canPublishContract}
-                className="h-8 text-xs gap-1.5 bg-[#12131f] hover:bg-[#2a2a30] disabled:opacity-50"
+                className="h-8 text-xs gap-1.5 bg-neutral-900 hover:bg-neutral-700 disabled:opacity-50"
               >
                 <Upload className="h-3.5 w-3.5" />
                 Publish v{newVersion}
@@ -423,7 +423,7 @@ export function PushToGitModal({ contract, allContracts, open, onClose, onPushed
 
           {phase.kind === 'loading' && (
             <div className="flex-1 flex justify-center">
-              <span className="text-xs text-[#656574]">Please wait…</span>
+              <span className="text-xs text-neutral-400">Please wait…</span>
             </div>
           )}
 

@@ -45,15 +45,15 @@ export function FundamentalsReadOnlyView({ contract, compact }: FundamentalsRead
         <ReadOnlyField label="Domain" value={info.domain} compact={compact} />
 
         <div>
-          <span className={cn(compact ? DOC_COMPACT_TEXT.label : 'text-xs font-medium text-[#33333d] mb-0.5 block')}>
+          <span className={cn(compact ? DOC_COMPACT_TEXT.label : 'text-xs font-medium text-neutral-600 mb-0.5 block')}>
             ID<span className="text-red-500"> *</span>
           </span>
           <div className="flex items-baseline gap-0.5 min-w-0">
             <p
               className={cn(
                 'font-mono truncate min-w-0',
-                compact ? DOC_COMPACT_TEXT.value : 'text-[13px] text-[#33333d]',
-                !id.trim() && 'text-[#9898a7]',
+                compact ? DOC_COMPACT_TEXT.value : 'text-[13px] text-neutral-600',
+                !id.trim() && 'text-neutral-300',
               )}
             >
               {id.trim() || '—'}
@@ -65,10 +65,10 @@ export function FundamentalsReadOnlyView({ contract, compact }: FundamentalsRead
         </div>
 
         <div>
-          <span className={cn(compact ? DOC_COMPACT_TEXT.label : 'text-xs font-medium text-[#33333d] mb-0.5 block')}>
+          <span className={cn(compact ? DOC_COMPACT_TEXT.label : 'text-xs font-medium text-neutral-600 mb-0.5 block')}>
             Version
           </span>
-          <span className={cn('font-mono', compact ? DOC_COMPACT_TEXT.value : 'text-[13px] text-[#33333d]')}>
+          <span className={cn('font-mono', compact ? DOC_COMPACT_TEXT.value : 'text-[13px] text-neutral-600')}>
             v{info.version}
           </span>
         </div>
@@ -80,21 +80,21 @@ export function FundamentalsReadOnlyView({ contract, compact }: FundamentalsRead
         <button
           type="button"
           className={cn(
-            'w-full flex items-center gap-1.5 text-left text-xs font-medium text-[#33333d]',
-            compact ? 'px-3 py-1.5 bg-transparent' : 'px-3 py-2 bg-[#fbfbff]/60',
+            'w-full flex items-center gap-1.5 text-left text-xs font-medium text-neutral-600',
+            compact ? 'px-3 py-1.5 bg-transparent' : 'px-3 py-2 bg-neutral-25/60',
           )}
           onClick={() => setAdditionalOpen(o => !o)}
         >
           {additionalOpen ? <ChevronDown className="h-3 w-3 flex-shrink-0" /> : <ChevronRight className="h-3 w-3 flex-shrink-0" />}
           <span className="flex-1 min-w-0">Additional context</span>
           {!hasAdditionalContext && !additionalOpen ? (
-            <span className={cn('font-normal truncate', compact ? DOC_COMPACT_TEXT.muted : 'text-[10px] text-[#9898a7]')}>
+            <span className={cn('font-normal truncate', compact ? DOC_COMPACT_TEXT.muted : 'text-[10px] text-neutral-300')}>
               None provided
             </span>
           ) : null}
         </button>
         {additionalOpen && hasAdditionalContext && (
-          <div className={cn('px-3 border-t border-[#e4e4f0]', compact ? 'py-1.5 space-y-1.5' : 'py-2 space-y-2')}>
+          <div className={cn('px-3 border-t border-neutral-100', compact ? 'py-1.5 space-y-1.5' : 'py-2 space-y-2')}>
             {usage ? <ReadOnlyField label="Usage" value={usage} multiline compact /> : null}
             {limitations ? <ReadOnlyField label="Limitations" value={limitations} multiline compact /> : null}
             {authDefs.length > 0 ? (
@@ -103,12 +103,12 @@ export function FundamentalsReadOnlyView({ contract, compact }: FundamentalsRead
                 <ul className="space-y-1">
                   {authDefs.map(def => (
                     <li key={def.id} className="text-[11px] leading-snug">
-                      <p className="font-mono text-[#33333d] break-all">{def.url || '—'}</p>
+                      <p className="font-mono text-neutral-600 break-all">{def.url || '—'}</p>
                       {def.type ? (
                         <p className={DOC_COMPACT_TEXT.muted}>{authTypeLabel(def.type)}</p>
                       ) : null}
                       {def.description?.trim() ? (
-                        <p className="text-[#656574]">{def.description}</p>
+                        <p className="text-neutral-400">{def.description}</p>
                       ) : null}
                     </li>
                   ))}
@@ -125,21 +125,21 @@ export function FundamentalsReadOnlyView({ contract, compact }: FundamentalsRead
       </div>
 
       <div>
-        <span className={cn(compact ? DOC_COMPACT_TEXT.label : 'text-xs font-medium text-[#33333d] mb-0.5 block')}>
+        <span className={cn(compact ? DOC_COMPACT_TEXT.label : 'text-xs font-medium text-neutral-600 mb-0.5 block')}>
           {LABEL_CONTRACT_OWNER}<span className="text-red-500"> *</span>
         </span>
-        <span className={cn(compact ? DOC_COMPACT_TEXT.value : 'text-sm text-[#33333d]')}>{ownerName}</span>
-        <p className={cn('mt-0.5', compact ? DOC_COMPACT_TEXT.muted : 'text-[11px] text-[#656574] leading-snug')}>
+        <span className={cn(compact ? DOC_COMPACT_TEXT.value : 'text-sm text-neutral-600')}>{ownerName}</span>
+        <p className={cn('mt-0.5', compact ? DOC_COMPACT_TEXT.muted : 'text-[11px] text-neutral-400 leading-snug')}>
           {CONTRACT_OWNER_HELPER}
         </p>
       </div>
 
       <div>
-        <span className={cn(compact ? DOC_COMPACT_TEXT.label : 'text-xs font-medium text-[#33333d] mb-0.5 block')}>
+        <span className={cn(compact ? DOC_COMPACT_TEXT.label : 'text-xs font-medium text-neutral-600 mb-0.5 block')}>
           Tags
         </span>
         {tags.length === 0 ? (
-          <p className={cn(compact ? DOC_COMPACT_TEXT.muted : 'text-[13px] text-[#9898a7]')}>—</p>
+          <p className={cn(compact ? DOC_COMPACT_TEXT.muted : 'text-[13px] text-neutral-300')}>—</p>
         ) : (
           <div className="flex flex-wrap gap-0.5">
             {tags.map(tag => (

@@ -113,9 +113,9 @@ export function FundamentalsSection({
   }, [nav?.focusedFieldId])
 
   const ownerFieldLocked = isLocked || !isOwner
-  const labelClass = 'text-xs font-medium text-[#33333d] mb-1 block'
-  const inputClass = cn(isLocked && 'bg-[#fbfbff] text-[#3f3f4a] cursor-not-allowed')
-  const ownerInputClass = cn(ownerFieldLocked && 'bg-[#fbfbff] text-[#3f3f4a] cursor-not-allowed')
+  const labelClass = 'text-xs font-medium text-neutral-600 mb-1 block'
+  const inputClass = cn(isLocked && 'bg-neutral-25 text-neutral-500 cursor-not-allowed')
+  const ownerInputClass = cn(ownerFieldLocked && 'bg-neutral-25 text-neutral-500 cursor-not-allowed')
 
   return (
     <div
@@ -174,7 +174,7 @@ export function FundamentalsSection({
           <div className="flex gap-2">
             <div
               data-readiness-control
-              className="font-mono text-sm flex-1 bg-[#f5f5fa] border border-[#d3d3e5] rounded-md px-3 h-9 flex items-center text-[#33333d]"
+              className="font-mono text-sm flex-1 bg-neutral-50 border border-neutral-200 rounded-md px-3 h-9 flex items-center text-neutral-600"
             >
               {id || '—'}
             </div>
@@ -182,7 +182,7 @@ export function FundamentalsSection({
               {copied ? <Check className="h-3.5 w-3.5 text-green-700" /> : <Copy className="h-3.5 w-3.5" />}
             </Button>
           </div>
-          <p className="text-[11px] text-[#656574] mt-1">
+          <p className="text-[11px] text-neutral-400 mt-1">
             Derived from the contract name (lowercase ASCII, no special characters).
           </p>
         </GuidanceField>
@@ -194,7 +194,7 @@ export function FundamentalsSection({
           isMissing={!semver.test(info.version)}
           missingHelper={READINESS_HELPER_CONTRACT_VERSION}
         >
-          <div data-readiness-control className="font-mono text-sm bg-[#f5f5fa] border border-[#d3d3e5] rounded-md px-3 h-9 flex items-center text-[#33333d]">
+          <div data-readiness-control className="font-mono text-sm bg-neutral-50 border border-neutral-200 rounded-md px-3 h-9 flex items-center text-neutral-600">
             v{info.version}
           </div>
         </GuidanceField>
@@ -214,17 +214,17 @@ export function FundamentalsSection({
           />
         </GuidanceField>
 
-        <div className="border border-[#e4e4f0] rounded-lg overflow-hidden">
+        <div className="border border-neutral-100 rounded-lg overflow-hidden">
           <button
             type="button"
-            className="w-full flex items-center gap-2 px-3 py-2.5 text-left text-xs font-medium text-[#33333d] bg-[#fbfbff] hover:bg-[#f5f5fa] transition-colors"
+            className="w-full flex items-center gap-2 px-3 py-2.5 text-left text-xs font-medium text-neutral-600 bg-neutral-25 hover:bg-neutral-50 transition-colors"
             onClick={() => setAdditionalOpen(o => !o)}
           >
             {additionalOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
             Additional context
           </button>
           {additionalOpen && (
-            <div className="px-3 py-3 space-y-3 border-t border-[#e4e4f0]">
+            <div className="px-3 py-3 space-y-3 border-t border-neutral-100">
               <div>
                 <label className={labelClass}>Usage</label>
                 <Textarea
@@ -281,7 +281,7 @@ export function FundamentalsSection({
             disabled={ownerFieldLocked}
             className={ownerInputClass}
           />
-          <p className="text-[11px] text-[#656574] mt-1 leading-snug">
+          <p className="text-[11px] text-neutral-400 mt-1 leading-snug">
             {CONTRACT_OWNER_HELPER}
           </p>
         </GuidanceField>
