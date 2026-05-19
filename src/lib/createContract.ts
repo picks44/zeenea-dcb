@@ -1,5 +1,6 @@
 import { applyLifecycleAction } from '@/lib/contractLifecycle'
-import type { ContractCreationSource, DataContract, LifecycleStatus, SectionId } from '@/types/odcs'
+import { deriveContractId } from '@/lib/idDerivation'
+import type { ContractCreationSource, DataContract, LifecycleStatus, SchemaTable, SectionId } from '@/types/odcs'
 
 export type ContractCreationMode = ContractCreationSource
 
@@ -32,6 +33,22 @@ export function createContract(mode: ContractCreationMode): DataContract {
     creationSource: mode,
     createdAt: now,
     updatedAt: now,
+  }
+}
+
+/** After SQL parse in the pre-contract flow — creates proposed contract with dataset. */
+export function createContractWithImportedSchema(tables: SchemaTable[]): DataContract {
+  if (tables.length === 0) {
+    throw new Error('createContractWithImportedSchema requires at least one table')
+  }
+  const c = createContract('import')
+  const first = tables[0]
+  const title = tables.length === 1 ? first.quantumName : ''
+  return {
+    ...c,
+    info: { ...c.info, title: c.info.title || title },
+    id: deriveContractId(title || first.physicalName, c.uid),
+    dataset: tables,
   }
 }
 

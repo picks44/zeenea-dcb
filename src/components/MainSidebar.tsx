@@ -45,7 +45,7 @@ export function MainSidebar({ currentView, onNavigate, collapsed, onToggleCollap
       <nav className={cn('flex-1 py-4 space-y-1', collapsed ? 'px-1.5' : 'px-4')}>
         {NAV_ITEMS.map(({ id, label, icon: Icon }) => {
           const isActive = id === 'backlog'
-            ? currentView === 'backlog' || currentView === 'editor'
+            ? currentView === 'backlog' || currentView === 'editor' || currentView === 'create'
             : currentView === id
           return (
             <Tooltip key={id} content={label} side="right" delayDuration={400}>

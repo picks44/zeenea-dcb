@@ -223,6 +223,6 @@ export interface DataContract {
   updatedAt: string
 }
 
-export type AppView = 'backlog' | 'editor' | 'components'
+export type AppView = 'backlog' | 'create' | 'editor' | 'components'
 
 export type EditorTab = 'form' | 'yaml'

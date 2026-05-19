@@ -190,16 +190,17 @@ Actions système (`applyLifecycleAction`) :
 
 ### 3.4 Création de contrat (backlog)
 
-Un seul bouton **Create contract** dans `ContractsBacklog` :
+Un seul bouton **Create contract** ouvre la vue `AppView = 'create'` : écran Import **sans** contrat en state/localStorage (pas de `ContractTopBar`, pas de badge lifecycle).
 
-| Étape | Factory / handler | Statut | Section | `creationSource` |
-|-------|-------------------|--------|---------|------------------|
-| Clic backlog | `createContract('import')` | `proposed` | Import SQL | `import` |
-| **Start from scratch** (Import) | `applyStartFromScratch` | `draft` | Fundamentals | `manual` |
-| Import SQL réussi | `handleDDLParsed` | `proposed` (inchangé) | Fundamentals (lecture seule) | `import` |
-| **Start drafting** (toolbar) | `handleStartDraft` | `draft` | — | inchangé |
+| Étape | Factory / handler | Statut | Persistance |
+|-------|-------------------|--------|-------------|
+| Clic backlog | `setCurrentView('create')` uniquement | — | Aucun contrat créé |
+| **Start from scratch** (écran create) | `createContract('manual')` | `draft` | Ajout state + localStorage |
+| Import SQL (écran create) | `createContractWithImportedSchema(tables)` | `proposed` + dataset | Ajout state + localStorage |
+| **Start drafting** (contrat `proposed` existant) | `handleStartDraft` | `draft` | — |
+| Legacy : **Start from scratch** sur contrat `proposed` vide | `applyStartFromScratch` | `draft` | Contrats anciens localStorage |
 
-Le champ `creationSource` est **UI-only** (non exporté YAML). L’entrée nav **Import SQL** est visible tant que le contrat est nouveau (`dataset` vide, `gitHistory` vide) et `creationSource !== 'manual'`. Après **Start from scratch**, l’entrée Import disparaît. Les contrats legacy sans `creationSource` conservent l’entrée Import si nouveau.
+Le champ `creationSource` est **UI-only** (non exporté YAML). L’entrée nav **Import SQL** est visible tant que le contrat est nouveau (`dataset` vide, `gitHistory` vide) et `creationSource !== 'manual'`.
 
 ### 3.5 Start drafting
 

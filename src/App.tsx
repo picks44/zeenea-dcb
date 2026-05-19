@@ -31,6 +31,7 @@ import { applyLifecycleAction, isContractLocked, isImportSectionEditable } from 
 import {
   applyStartFromScratch,
   createContract,
+  createContractWithImportedSchema,
   shouldHideStartDraftingInTopBar,
 } from './lib/createContract'
 import type { PushResult } from './components/PushToGitModal'
@@ -138,9 +139,22 @@ export default function App() {
   }
 
   const handleCreateContract = () => {
-    openNewContract(createContract('import'), 'import')
+    setSelectedId(null)
+    setCurrentView('create')
   }
 
+  const handleCreationStartFromScratch = () => {
+    openNewContract(createContract('manual'), 'fundamentals')
+  }
+
+  const handleCreationDDLParsed = useCallback((tables: SchemaTable[]) => {
+    if (tables.length === 0) return
+    const c = createContractWithImportedSchema(tables)
+    openNewContract(c, 'fundamentals')
+    setHasEditedSincePublish(true)
+  }, [])
+
+  /** Legacy: proposed contract created before pre-contract flow (empty import onboarding). */
   const handleStartFromScratch = useCallback(() => {
     if (!contract || isViewer || contract.info.status !== 'proposed') return
     updateContract(applyStartFromScratch(contract))
@@ -386,6 +400,16 @@ export default function App() {
               onSelectContract={handleSelectContract}
               onCreateContract={handleCreateContract}
             />
+          ) : currentView === 'create' ? (
+            <div className="flex-1 overflow-y-auto min-w-0 bg-[#fbfbff]">
+              <div className="px-4 lg:px-6 xl:px-8 py-6 max-w-4xl mx-auto w-full">
+                <ImportSection
+                  onParsed={(tables) => handleCreationDDLParsed(tables)}
+                  onStartFromScratch={handleCreationStartFromScratch}
+                  isLocked={false}
+                />
+              </div>
+            </div>
           ) : contract ? (
             <>
             <ReadinessNavigationProvider

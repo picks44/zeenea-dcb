@@ -108,11 +108,12 @@ Modifier ce fichier pour tester les rôles et le partage sous un autre profil.
 ```mermaid
 flowchart TB
   A[Backlog Create contract]
-  A --> I[Import SQL proposed]
-  I --> C[Import DDL]
-  I --> S[Start from scratch]
+  A --> W[Écran create sans contrat]
+  W --> C[Import DDL]
+  W --> S[Start from scratch]
   S --> D[Fundamentals draft]
-  C --> SD[Start drafting]
+  C --> P[Contrat proposed créé]
+  P --> SD[Start drafting]
   SD --> D
   D --> E[Schéma]
   E --> F[Stakeholders]
@@ -122,8 +123,9 @@ flowchart TB
   NV --> D
 ```
 
-1. **Backlog** — **Create contract** ouvre l’étape Import (`proposed`) : coller du SQL, ou **Start from scratch** pour passer directement en `draft` éditable.
-2. **Import SQL** — Coller ou charger un `CREATE TABLE` ; le parseur remplit le dataset ; **Start drafting** débloque l’édition des autres sections.
+1. **Backlog** — **Create contract** ouvre un écran Import temporaire (aucun contrat enregistré tant que l’utilisateur n’a pas choisi).
+2. **Start from scratch** — Crée un contrat `draft` et ouvre Fundamentals.
+3. **Import SQL** — Parse le DDL, crée un contrat `proposed` avec dataset ; **Start drafting** débloque l’édition des autres sections.
 3. **Fundamentals** — Compléter titre, ID, owner, version, domaine, etc.
 4. **Schéma** — Affiner libellés métier, types logiques, flags (PK, PII, required).
 5. **Stakeholders** — Renseigner les parties prenantes.

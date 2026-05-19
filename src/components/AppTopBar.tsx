@@ -12,6 +12,8 @@ export function AppTopBar({ currentView, contractTitle, onBack }: AppTopBarProps
   const items: BreadcrumbItem[] =
     currentView === 'editor'
       ? [{ label: 'Contracts', onClick: onBack }, { label: contractTitle || 'Untitled Contract' }]
+      : currentView === 'create'
+      ? [{ label: 'Contracts', onClick: onBack }, { label: 'Create contract' }]
       : currentView === 'components'
       ? [{ label: 'Components' }]
       : [{ label: 'Contracts' }]

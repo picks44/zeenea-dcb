@@ -2,9 +2,11 @@ import { describe, it, expect } from 'vitest'
 import {
   applyStartFromScratch,
   createContract,
+  createContractWithImportedSchema,
   getInitialLifecycleStatus,
   shouldHideStartDraftingInTopBar,
 } from '@/lib/createContract'
+import type { SchemaTable } from '@/types/odcs'
 
 describe('getInitialLifecycleStatus', () => {
   it('returns draft for manual creation', () => {
@@ -30,6 +32,44 @@ describe('createContract', () => {
     expect(c.info.status).toBe('proposed')
     expect(c.creationSource).toBe('import')
     expect(c.dataset).toEqual([])
+  })
+})
+
+const sampleTables: SchemaTable[] = [{
+  id: 't1',
+  physicalName: 'orders',
+  quantumName: 'Orders',
+  tableType: 'table',
+  description: '',
+  columns: [{
+    id: 'c1',
+    physicalName: 'id',
+    logicalName: 'Id',
+    physicalType: 'BIGINT',
+    logicalType: 'integer',
+    required: true,
+    isPrimaryKey: true,
+    isPII: false,
+    isUnique: false,
+    description: '',
+    examples: [],
+    qualityRule: '',
+    isUnknownType: false,
+  }],
+}]
+
+describe('createContractWithImportedSchema', () => {
+  it('creates proposed import contract with dataset and derived id', () => {
+    const c = createContractWithImportedSchema(sampleTables)
+    expect(c.info.status).toBe('proposed')
+    expect(c.creationSource).toBe('import')
+    expect(c.dataset).toHaveLength(1)
+    expect(c.info.title).toBe('Orders')
+    expect(c.id).toContain('orders')
+  })
+
+  it('throws when tables array is empty', () => {
+    expect(() => createContractWithImportedSchema([])).toThrow()
   })
 })
 
