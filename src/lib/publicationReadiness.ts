@@ -2,7 +2,12 @@ import type { CollaboratorRole, DataContract } from '@/types/odcs'
 import { validateContract, type ValidationIssue, type ValidationResult } from '@/lib/contractValidation'
 import { buildReadinessGuidanceItems, type ReadinessGuidanceItem } from '@/lib/readinessGuidance'
 import { countAssignedStakeholders } from '@/lib/stakeholders'
-import { PUBLISH_REQUIRES_PUBLISHER, PUBLICATION_READY_REQUIRED_COMPLETE } from '@/lib/uxCopy'
+import { publishBlockUserMessage } from '@/lib/validationUserMessages'
+import {
+  NO_CHANGES_TO_PUBLISH,
+  PUBLISH_REQUIRES_PUBLISHER,
+  PUBLICATION_READY_REQUIRED_COMPLETE,
+} from '@/lib/uxCopy'
 
 export const READINESS_REQUIRED_WEIGHT = 70
 export const READINESS_DOC_WEIGHT = 25
@@ -49,14 +54,14 @@ function publishReadinessMessage(
   if (!validation.canPublish) {
     return {
       ready: false,
-      message: validation.publishBlockReason ?? 'Complete required fields to publish.',
+      message: publishBlockUserMessage(validation) ?? 'Complete required fields to publish.',
     }
   }
   if (myRole !== 'owner') {
     return { ready: false, message: PUBLISH_REQUIRES_PUBLISHER }
   }
   if (!hasEditedSincePublish) {
-    return { ready: false, message: 'No unpublished changes since last publish.' }
+    return { ready: false, message: NO_CHANGES_TO_PUBLISH }
   }
   return { ready: true, message: PUBLICATION_READY_REQUIRED_COMPLETE }
 }

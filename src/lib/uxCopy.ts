@@ -138,7 +138,11 @@ export const READINESS_NEXT_STEPS_TITLE = 'Suggested next steps'
 export const READINESS_VALIDATION_DETAILS_TITLE = 'Details to fix'
 
 export const READINESS_SCORE_TOOLTIP =
-  'Weighted score: required publication metadata (largest), field documentation, then optional governance items'
+  'Score reflects required fields, documentation, and recommended items.'
+
+export const READINESS_RECOMMENDATIONS_SECTION_TITLE = 'Recommendations'
+
+export const NO_CHANGES_TO_PUBLISH = 'No changes to publish since the last version.'
 
 // Readiness navigation — field anchors (data attributes / registration ids)
 export const READINESS_FIELD_CONTRACT_TITLE = 'contract-title'

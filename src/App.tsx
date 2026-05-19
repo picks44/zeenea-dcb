@@ -32,7 +32,12 @@ import type { PushResult } from './components/PushToGitModal'
 import { loadContracts, saveContracts } from './lib/storage'
 import { validateContract } from './lib/contractValidation'
 import { CURRENT_USER } from './lib/currentUser'
-import { PUBLISH_REQUIRES_PUBLISHER_CONTRACT, VIEWER_ACCESS_BANNER } from './lib/uxCopy'
+import { publishBlockUserMessage } from './lib/validationUserMessages'
+import {
+  NO_CHANGES_TO_PUBLISH,
+  PUBLISH_REQUIRES_PUBLISHER_CONTRACT,
+  VIEWER_ACCESS_BANNER,
+} from './lib/uxCopy'
 import { useMediaQuery } from './hooks/useMediaQuery'
 import { useNavCollapsed } from './hooks/useNavCollapsed'
 import { MEDIA_QUERIES } from './lib/layoutBreakpoints'
@@ -122,8 +127,8 @@ export default function App() {
 
   const publishBlockReason = !contract ? null
     : myRole !== 'owner' ? PUBLISH_REQUIRES_PUBLISHER_CONTRACT
-    : !hasEditedSincePublish ? 'No changes since last publish.'
-    : validation?.publishBlockReason ?? null
+    : !hasEditedSincePublish ? NO_CHANGES_TO_PUBLISH
+    : validation ? publishBlockUserMessage(validation) : null
 
   const updateContract = useCallback((updated: DataContract) => {
     setContracts(prev =>

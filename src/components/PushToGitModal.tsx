@@ -6,6 +6,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { DataContract, GitCommit } from '@/types/odcs'
 import { validateContract } from '@/lib/contractValidation'
+import { validationUserMessage } from '@/lib/validationUserMessages'
 import { buildPublishChangelog, summarizeExportChangesSince } from '@/lib/exportedContractDiff'
 import { publishCommitTitle } from '@/lib/versionHistory'
 import { cn } from '@/lib/utils'
@@ -287,7 +288,9 @@ export function PushToGitModal({ contract, open, onClose, onPushed }: PushToGitM
                 <div className="bg-[#fff8ec] border border-[#ffd599] rounded-lg px-3 py-2.5 space-y-1">
                   <p className="text-[11px] font-semibold text-[#d27b00]">Recommendations</p>
                   {validationWarnings.map(w => (
-                    <p key={w.code} className="text-[11px] text-[#3f3f4a] leading-snug">{w.message}</p>
+                    <p key={w.code} className="text-[11px] text-[#3f3f4a] leading-snug">
+                      {validationUserMessage(w)}
+                    </p>
                   ))}
                 </div>
               )}

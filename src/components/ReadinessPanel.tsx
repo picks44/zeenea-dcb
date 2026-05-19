@@ -13,11 +13,13 @@ import {
   READINESS_IMPROVE_SECTION_TITLE,
   READINESS_NEXT_STEPS_TITLE,
   READINESS_PANEL_TITLE,
+  READINESS_RECOMMENDATIONS_SECTION_TITLE,
   READINESS_REQUIRED_SECTION_TITLE,
   READINESS_SCORE_TOOLTIP,
   READINESS_VALIDATION_DETAILS_TITLE,
   START_NEW_VERSION_QUALITY_NOTE,
 } from '@/lib/uxCopy'
+import { validationUserMessage } from '@/lib/validationUserMessages'
 import { findFirstUndocumentedField } from '@/lib/readinessAnchors'
 import type { ReadinessGuidanceItem } from '@/lib/readinessGuidance'
 import {
@@ -390,10 +392,10 @@ export function ReadinessPanel({
                       onClick={() => navigateToValidationIssue(nav.navigateTo, e)}
                       className="w-full text-left text-[11px] text-[#8a5c00] leading-snug hover:underline cursor-pointer"
                     >
-                      {e.message}
+                      {validationUserMessage(e)}
                     </button>
                   ) : (
-                    <span className="text-[11px] text-[#8a5c00] leading-snug">{e.message}</span>
+                    <span className="text-[11px] text-[#8a5c00] leading-snug">{validationUserMessage(e)}</span>
                   )}
                 </li>
               ))}
@@ -403,12 +405,14 @@ export function ReadinessPanel({
 
         {validationWarnings.length > 0 && (
           <div className={sectionPad}>
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-2">Warnings</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-2">
+              {READINESS_RECOMMENDATIONS_SECTION_TITLE}
+            </p>
             <ul className="space-y-1">
               {validationWarnings.slice(0, 6).map((w, i) => (
                 <li key={`${w.code}-${i}`} className="text-[11px] text-[#656574] leading-snug flex items-start gap-1.5">
                   <AlertTriangle className="h-3 w-3 flex-shrink-0 mt-0.5" />
-                  <span>{w.message}</span>
+                  <span>{validationUserMessage(w)}</span>
                 </li>
               ))}
             </ul>
