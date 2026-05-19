@@ -130,7 +130,7 @@ Le prototype n’utilise pas un UUID ODCS pur pour `id`. Format attendu :
 - **slug** : dérivé du nom du contrat (`info.title` → export YAML `name`) — lowercase, ASCII, sans caractères spéciaux (accents retirés).
 - **suffixe 8 hex** : stable, dérivé du `uid` du contrat (ou du nom si seed absent) via `contractIdSuffix` / `deriveContractId` (`src/lib/idDerivation.ts`).
 - **Unicité** : `isDuplicateContractId` dans `validateContract` à la publication (registre `localStorage`).
-- **UI** : bloc read-only « ODCS metadata » dans Fundamentals ; l’`id` n’est pas éditable librement.
+- **UI** : `id` et `version` affichés en lecture seule dans Fundamentals ; `status` dans la barre supérieure ; `apiVersion` / `kind` uniquement dans l’export YAML (onglet YAML).
 
 `name` (ODCS) est optionnel dans la spec P1 mais **requis côté produit** pour publier (`contractValidation` code `title`) — la validation n’a pas été assouplie dans ce prototype.
 

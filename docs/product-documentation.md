@@ -517,12 +517,10 @@ Tant que le contrat est **proposed**, l’utilisateur peut coller un nouveau scr
 
 ### 8.1 Fundamentals
 
-Un bloc **ODCS metadata** (lecture seule) affiche dans Fundamentals les champs système exportés : `apiVersion`, `kind`, `status`, `id`, `version`.
-
 | Élément | Éditable | Export YAML | Notes |
 |---------|----------|-------------|-------|
-| apiVersion | Non (système) | `apiVersion` | Toujours `v3.1.0` |
-| kind | Non (système) | `kind` | Toujours `DataContract` |
+| apiVersion | Non (système) | `apiVersion` | Toujours `v3.1.0` ; visible dans l’onglet YAML, pas dans le formulaire Fundamentals |
+| kind | Non (système) | `kind` | Toujours `DataContract` ; visible dans l’onglet YAML |
 | Contract name | Oui | `name` | Optionnel ODCS ; **requis côté produit pour publier** |
 | Contract identifier | Affiché (dérivé du nom) | `id` | Format MVP : `{slug}-{8hex}` — slug lowercase ASCII dérivé du nom, suffixe stable basé sur le `uid` du contrat (pas un UUID pur) ; unicité vérifiée dans le registre local à la publication |
 | Version | Affichée (système) | `version` | SemVer ; bump à la publication (sauf 1ère fois) |
