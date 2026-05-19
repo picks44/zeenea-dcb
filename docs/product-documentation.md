@@ -571,15 +571,20 @@ Les tables référencées doivent exister dans le même contrat pour un export c
 
 ### 8.7 Service levels (SLA)
 
-| Champ | Obligatoire si ligne présente |
-|-------|------------------------------|
-| Property (type SLA) | Oui |
-| Value | Oui |
-| Unit, element, driver, description | Optionnels (valeurs contrôlées pour unit et driver) |
+| Champ | Priorité | Obligatoire si ligne présente |
+|-------|----------|------------------------------|
+| `slaProperties` (conteneur) | P0 | Non |
+| Property (type SLA) | P0 | Oui |
+| Value | P1 | Oui |
+| Unit, element, driver, description | P1 | Optionnels (valeurs contrôlées pour unit et driver) |
+
+Le conteneur `slaProperties` reste optionnel. **Property** et **value** sont obligatoires uniquement pour une entrée non vide. L’export YAML n’inclut que les lignes complètes (`property` + `value` trimé) ; les lignes partielles restent en brouillon jusqu’à correction ou suppression.
 
 Types **property** autorisés (ODCS v3.1.0) : `latency`, `retention`, `frequency`, `availability`, `throughput`, `errorRate`, `generalAvailability`, `endOfSupport`, `endOfLife`, `timeOfAvailability`, `timeToDetect`, `timeToNotify`, `timeToRepair`.
 
 Format **element** : `Table.field`, plusieurs champs séparés par des virgules.
+
+Champs P2 hors MVP : `id` (interne app), `valueExt`, `scheduler`, `schedule`.
 
 ### 8.8 Version history
 

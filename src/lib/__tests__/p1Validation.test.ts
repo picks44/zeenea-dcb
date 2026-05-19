@@ -2,11 +2,13 @@ import { describe, expect, it } from 'vitest'
 import {
   FUNDAMENTALS_AUTH_DEF_TYPES,
   QUALITY_DIMENSIONS,
+  SLA_DRIVERS,
   SLA_PROPERTY_TYPES,
   SLA_UNITS,
 } from '@/lib/p1Constants'
 import {
   isValidFundamentalsAuthDefType,
+  isSlaRowExportable,
   isValidQualityDimension,
   isValidQualityRuleType,
   isValidRoleAccess,
@@ -16,6 +18,7 @@ import {
   isValidSlaUnit,
   isValidCustomPropertyName,
   isValidZeeneaAuthDef,
+  slaRowHasContent,
 } from '@/lib/p1Validation'
 
 describe('p1Validation enums', () => {
@@ -76,9 +79,16 @@ describe('p1Validation enums', () => {
     expect(isValidQualityRuleType(undefined)).toBe(false)
   })
 
-  it('accepts SLA drivers from p1', () => {
-    expect(isValidSlaDriver('regulatory')).toBe(true)
-    expect(isValidSlaDriver('operational')).toBe(true)
+  it.each(SLA_DRIVERS)('accepts SLA driver "%s" from p1', driver => {
+    expect(isValidSlaDriver(driver)).toBe(true)
+  })
+
+  it('isSlaRowExportable requires property and trimmed value', () => {
+    expect(isSlaRowExportable({ id: '1', value: '', property: 'latency' })).toBe(false)
+    expect(isSlaRowExportable({ id: '1', value: '4', property: undefined })).toBe(false)
+    expect(isSlaRowExportable({ id: '1', value: '  4  ', property: 'latency' })).toBe(true)
+    expect(slaRowHasContent({ id: '1', value: '4', unit: 'h' })).toBe(true)
+    expect(isSlaRowExportable({ id: '1', value: '4', unit: 'h' })).toBe(false)
   })
 
   it('validates element Object.Property with commas', () => {

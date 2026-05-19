@@ -48,12 +48,20 @@ Nombre de lignes P1 extraites : 41
 | P1 | Schema | No | schema[].properties[].relationships | Foreign key relationships to other properties. The from field is implicit at property level. |  | type: foreignKey, to: /schema/orders/properties/id |
 | P1 | Schema | No | schema[].properties[].tags | Tags for categorizing the property. |  | → tags[] |
 | P1 | Schema | No | schema[].properties[].authoritativeDefinitions | Links to authoritative sources for the property. | Only supports links to items managed in Zeenea (type: actian) | → authoritativeDefinitions[] |
-| P1 | SLA | Yes | slaProperties[].property | Specific SLA property type (Data QoS). | ODCS v3.1.0 strict | latency, retention, frequency, availability, throughput, errorRate, generalAvailability, endOfSupport, endOfLife, timeOfAvailability, timeToDetect, timeToNotify, timeToRepair |
-| P1 | SLA | Yes | slaProperties[].value | The agreed SLA value. |  | 4, 2022-05-12T09:30:10-08:00, 09:00-08:00 |
+| P0 | SLA | No | slaProperties | Array of SLA entries (Data QoS). | Container optional; export omits key when no exportable rows | → slaProperties[] |
+| P0 | SLA | Yes* | slaProperties[].property | Specific SLA property type (Data QoS). | *Required per non-empty row; ODCS v3.1.0 strict; required for export | latency, retention, frequency, availability, throughput, errorRate, generalAvailability, endOfSupport, endOfLife, timeOfAvailability, timeToDetect, timeToNotify, timeToRepair |
+| P1 | SLA | Yes* | slaProperties[].value | The agreed SLA value. | *Required per non-empty row; trimmed on export; free text in MVP (no format validation by type) | 4, 2022-05-12T09:30:10-08:00, 09:00-08:00 |
 | P1 | SLA | No | slaProperties[].unit | Unit for the SLA value (ISO standard). |  | d / day / days, y / yr / years, h / hr / hours |
 | P1 | SLA | No | slaProperties[].element | Element path to apply the SLA on, using Object.Property notation. Comma-separate multiples. |  | tab1.txn_ref_dt |
 | P1 | SLA | No | slaProperties[].driver | Importance driver for the SLA. |  | regulatory, analytics, operational |
 | P1 | SLA | No | slaProperties[].description | Human-readable description of the SLA entry. |  | GA at 12.5.22 |
+
+**SLA notes (prototype)**
+
+- `slaProperties` is optional; an empty array or no exportable rows omits the key from YAML.
+- `property` and `value` are required only when the row has any user content (publish validation) and for ODCS export (`property` + trimmed `value`).
+- Partial rows (content without both `property` and `value`) are not exported to YAML preview.
+- P2 fields out of MVP UI/export: `slaProperties[].id` (app-only), `valueExt`, `scheduler`, `schedule`.
 | P1 | Roles | No | roles | Array of IAM roles that a consumer may need to access the dataset. |  | — |
 | P1 | Roles | Yes | roles[].role | Name of the IAM role providing access. |  | microstrategy_user_opr, bq_unica_user_opr |
 | P1 | Roles | No | roles[].access | Type of access provided by the IAM role. |  | read, write |

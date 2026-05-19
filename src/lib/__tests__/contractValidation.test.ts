@@ -30,6 +30,27 @@ describe('validateContract P1', () => {
     expect(result.errors.some(e => e.code === 'sla-property-invalid')).toBe(true)
   })
 
+  it('rejects invalid sla unit when row present', () => {
+    const c = buildP1FixtureContract()
+    c.slaProperties = [{ id: 'x', property: 'latency', value: '4', unit: 'weeks' }]
+    const result = validateContract(c, [c])
+    expect(result.errors.some(e => e.code === 'sla-unit-invalid')).toBe(true)
+  })
+
+  it('rejects invalid sla driver when row present', () => {
+    const c = buildP1FixtureContract()
+    c.slaProperties = [{ id: 'x', property: 'latency', value: '4', driver: 'marketing' }]
+    const result = validateContract(c, [c])
+    expect(result.errors.some(e => e.code === 'sla-driver-invalid')).toBe(true)
+  })
+
+  it('rejects invalid sla element when row present', () => {
+    const c = buildP1FixtureContract()
+    c.slaProperties = [{ id: 'x', property: 'latency', value: '4', element: 'invalid' }]
+    const result = validateContract(c, [c])
+    expect(result.errors.some(e => e.code === 'sla-element-invalid')).toBe(true)
+  })
+
   it('requires roles[].role when row present', () => {
     const c = buildP1FixtureContract()
     c.roles = [{ id: 'r', role: '  ', access: 'read', description: 'partial row' }]

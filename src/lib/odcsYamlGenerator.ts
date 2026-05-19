@@ -1,5 +1,6 @@
 import yaml from 'js-yaml'
-import { isRoleRowEmpty, isSlaRowEmpty } from './contractValidation'
+import { isRoleRowEmpty } from './contractValidation'
+import { isSlaRowExportable } from './p1Validation'
 import {
   mapAuthoritativeDefinitionsToYaml,
   mapCustomPropertiesToYaml,
@@ -171,12 +172,12 @@ export function buildOdcsDocument(contract: DataContract): Record<string, unknow
     })
   }
 
-  const sla = (contract.slaProperties ?? []).filter(s => !isSlaRowEmpty(s))
+  const sla = (contract.slaProperties ?? []).filter(isSlaRowExportable)
   if (sla.length > 0) {
     doc.slaProperties = sla.map(s => {
       const entry: Record<string, unknown> = {
-        property: s.property,
-        value: s.value,
+        property: s.property!.trim(),
+        value: s.value.trim(),
       }
       if (s.unit?.trim()) entry.unit = s.unit.trim()
       if (s.element?.trim()) entry.element = s.element.trim()

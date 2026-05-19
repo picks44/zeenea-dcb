@@ -67,6 +67,50 @@ describe('buildOdcsDocument P1 export', () => {
     expect(Object.keys(sla[0])[1]).toBe('value')
   })
 
+  it('trims sla value on export', () => {
+    const contract = buildP1FixtureContract()
+    contract.slaProperties = [{
+      id: 'sla1',
+      property: 'latency',
+      value: '  4  ',
+      unit: 'h',
+    }]
+    const sla = buildOdcsDocument(contract).slaProperties as Record<string, unknown>[]
+    expect(sla).toHaveLength(1)
+    expect(sla[0].value).toBe('4')
+  })
+
+  it('omits slaProperties when all rows are empty', () => {
+    const contract = buildP1FixtureContract()
+    contract.slaProperties = [{
+      id: 'empty',
+      value: '',
+      unit: '',
+      element: '',
+      driver: '',
+      description: '',
+    }]
+    const exported = buildOdcsDocument(contract)
+    expect(exported.slaProperties).toBeUndefined()
+  })
+
+  it('omits incomplete sla rows from export (property + value required)', () => {
+    const contract = buildP1FixtureContract()
+    contract.slaProperties = [
+      { id: 'partial', value: '4', unit: 'h' },
+      {
+        id: 'complete',
+        property: 'retention',
+        value: '30',
+        unit: 'd',
+      },
+    ]
+    const sla = buildOdcsDocument(contract).slaProperties as Record<string, unknown>[] | undefined
+    expect(sla).toHaveLength(1)
+    expect(sla![0].property).toBe('retention')
+    expect(sla![0].value).toBe('30')
+  })
+
   it('exports roles', () => {
     const roles = doc.roles as Record<string, unknown>[]
     expect(roles[0].role).toBe('microstrategy_user_opr')

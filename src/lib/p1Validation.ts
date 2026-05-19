@@ -130,6 +130,15 @@ export function slaRowHasContent(row: SlaProperty): boolean {
   )
 }
 
+/**
+ * SLA rows included in ODCS export / exported diff.
+ * Aligns with publish completeness: both property and value required (trimmed).
+ * Rows with partial content are omitted from export preview (publish validation still errors).
+ */
+export function isSlaRowExportable(row: SlaProperty): boolean {
+  return Boolean(row.property?.trim() && row.value?.trim())
+}
+
 export function customPropertyRowHasContent(row: CustomProperty): boolean {
   return Boolean(row.property?.trim() || row.value?.trim() || row.description?.trim())
 }

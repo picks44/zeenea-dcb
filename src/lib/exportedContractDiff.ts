@@ -15,6 +15,7 @@ import {
   diffExportedQualityRules,
   diffExportedRelationships,
 } from './metadataExportDiff'
+import { slaRowHasContent } from './p1Validation'
 import { DataContract, DataContractSnapshot, OdcsAccessRole, SlaProperty } from '../types/odcs'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -321,8 +322,8 @@ export function compareExportedSnapshots(
   const rightRoles = (right.roles ?? []).filter(r => r.role.trim())
   const roles = diffByKey(leftRoles, rightRoles, roleKey)
 
-  const leftSla = (left.slaProperties ?? []).filter(s => s.value.trim())
-  const rightSla = (right.slaProperties ?? []).filter(s => s.value.trim())
+  const leftSla = (left.slaProperties ?? []).filter(slaRowHasContent)
+  const rightSla = (right.slaProperties ?? []).filter(slaRowHasContent)
   const sla = diffByKey(leftSla, rightSla, slaKey)
 
   const qualityDiff = diffExportedQualityRules(leftDoc, rightDoc)
