@@ -3,17 +3,19 @@ import { Upload, AlertCircle, Sparkles, Table2, Columns3, KeyRound, Asterisk, Ch
 import { Button } from '@/components/ui/button'
 import { parseDDLMulti, summarizeDDLImport } from '@/lib/ddlParser'
 import { SchemaTable } from '@/types/odcs'
-import { cn, generateId } from '@/lib/utils'
+import { cn } from '@/lib/utils'
+import { IMPORT_SECTION_INTRO, IMPORT_START_FROM_SCRATCH } from '@/lib/uxCopy'
 import demoExampleDdl from '../../../demo.sql?raw'
 
 interface ImportSectionProps {
   onParsed: (tables: SchemaTable[], ddl: string) => void
+  onStartFromScratch: () => void
   isLocked: boolean
 }
 
 const IMPORT_STEPS = ['Parsing schema', 'Mapping fields', 'Applying types']
 
-export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
+export function ImportSection({ onParsed, onStartFromScratch, isLocked }: ImportSectionProps) {
   const [ddl, setDdl]               = useState('')
   const [error, setError]           = useState<string | null>(null)
   const [isDragOver, setIsDragOver] = useState(false)
@@ -128,16 +130,6 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
     )
   }
 
-  const handleSkip = () =>
-    onParsed([{
-      id: generateId(),
-      physicalName: 'my_table',
-      quantumName: 'My Table',
-      tableType: 'table',
-      description: '',
-      columns: [],
-    }], '')
-
   const loadExample = () => {
     setDdl(demoExampleDdl.trim())
     setError(null)
@@ -181,7 +173,7 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
         <div className="px-6 pt-6 pb-5">
           <h1 className="text-base font-semibold text-[#12131f] mb-1">Import from SQL</h1>
           <p className="text-[#656574] text-xs leading-relaxed">
-            Paste one or more <code className="bg-[#f5f5fa] px-1.5 py-0.5 rounded font-mono text-[11px] text-[#3f3f4a]">CREATE TABLE</code> statements to generate the contract schema (multi-table supported). Skip to define tables manually.
+            {IMPORT_SECTION_INTRO}
           </p>
         </div>
 
@@ -305,8 +297,13 @@ export function ImportSection({ onParsed, isLocked }: ImportSectionProps) {
             <Sparkles className="h-4 w-4" />
             Import fields
           </Button>
-          <Button variant="ghost" onClick={handleSkip} className="text-[#656574]">
-            Skip
+          <Button
+            variant="ghost"
+            onClick={onStartFromScratch}
+            disabled={isLocked}
+            className="text-[#656574]"
+          >
+            {IMPORT_START_FROM_SCRATCH}
           </Button>
         </div>
 

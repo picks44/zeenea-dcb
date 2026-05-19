@@ -76,7 +76,7 @@ Des champs ODCS **hors P1** ou **hors scope UI** ne sont pas exposés (voir sect
 
 | Capacité | Détail |
 |----------|--------|
-| Backlog | Liste, création, ouverture de contrats (`ContractsBacklog`, `App.tsx`) |
+| Backlog | Liste, création (scratch ou import SQL), ouverture de contrats (`ContractsBacklog`, `createContract.ts`, `App.tsx`) |
 | Import SQL | Coller ou charger un DDL ; parse multi-tables (`ImportSection`, `ddlParser.ts`) |
 | Édition P1 | Fundamentals, schema, contacts, data access, SLA, custom properties |
 | YAML | Onglet YAML temps réel (`YamlView`, `generateODCSYaml`) |
@@ -137,7 +137,7 @@ Définis dans `src/types/odcs.ts` : `owner` | `editor` | `viewer`.
 | Modèle | `Stakeholder` : name, role, email, team, notes |
 | UI | Section **Governance contacts** (`StakeholdersSection`) |
 | Export ODCS YAML | **Non exporté** — mentionné dans l’intro de section (`STAKEHOLDERS_INTRO`) |
-| Readiness | Recommandé si champs PII sans contact assigné (warning `pii-stakeholders`) |
+| Readiness | Recommandé si champs personal data sans contact assigné (warning `pii-stakeholders`) |
 
 ### 2.4 Synthèse des impacts lecture seule
 
@@ -181,21 +181,34 @@ Actions système (`applyLifecycleAction`) :
 
 | Statut | Description (comportement observé) | Éditable | Actions UI disponibles | Statut suivant possible |
 |--------|-----------------------------------|----------|------------------------|-------------------------|
-| **proposed** | Contrat nouvellement créé (`makeContract` dans `App.tsx`) | Non | **Start drafting** (owner, editor) ; bannière read-only | `draft` |
-| **draft** | Brouillon éditable | Oui | **Publish** / **Publish update** (owner, si validation OK) | `active` |
+| **proposed** | Contrat créé via **Create contract** (étape Import) — import SQL ou revue avant brouillon | Non (sauf section Import SQL) | **Start from scratch** sur Import ; **Start drafting** (toolbar) masqué sur Import initial, visible après import SQL ou hors section Import | `draft` |
+| **draft** | Brouillon éditable — **Start from scratch** ou après **Start drafting** | Oui | **Publish** / **Publish update** (owner, si validation OK) | `active` |
 | **active** | Publié, verrouillé | Non | **New version** (owner, editor) ; **Deprecate** (owner) ; bannière active | `deprecated` ou révision locale |
 | **active** + `inRevision: true` | Révision sur contrat publié | Oui | **Publish update** (owner) ; **Discard changes** (versions) | `active` (après publish) |
 | **deprecated** | Plus recommandé | Non | **Retire contract** (owner) ; bannière warning | `retired` |
 | **retired** | Retiré | Non | Aucune action lifecycle dans la toolbar | — |
 
-### 3.4 Start drafting
+### 3.4 Création de contrat (backlog)
+
+Un seul bouton **Create contract** dans `ContractsBacklog` :
+
+| Étape | Factory / handler | Statut | Section | `creationSource` |
+|-------|-------------------|--------|---------|------------------|
+| Clic backlog | `createContract('import')` | `proposed` | Import SQL | `import` |
+| **Start from scratch** (Import) | `applyStartFromScratch` | `draft` | Fundamentals | `manual` |
+| Import SQL réussi | `handleDDLParsed` | `proposed` (inchangé) | Fundamentals (lecture seule) | `import` |
+| **Start drafting** (toolbar) | `handleStartDraft` | `draft` | — | inchangé |
+
+Le champ `creationSource` est **UI-only** (non exporté YAML). L’entrée nav **Import SQL** est visible tant que le contrat est nouveau (`dataset` vide, `gitHistory` vide) et `creationSource !== 'manual'`. Après **Start from scratch**, l’entrée Import disparaît. Les contrats legacy sans `creationSource` conservent l’entrée Import si nouveau.
+
+### 3.5 Start drafting
 
 - Handler : `handleStartDraft` dans `App.tsx`.
 - Condition : `contract.info.status === 'proposed'`.
 - Effet : `status` passe à `draft` via `applyLifecycleAction(..., 'start_draft')`.
-- UI : bouton dans `ContractTopBar` pour owner et editor.
+- UI : bouton dans `ContractTopBar` pour owner et editor — **masqué** sur la section Import initiale quand `creationSource === 'import'` (`shouldHideStartDraftingInTopBar`) ; **visible** après import SQL (navigation vers Fundamentals), hors section Import, ou pour les contrats legacy `proposed` sans `creationSource`. **Non affiché** pour les contrats en `draft`.
 
-### 3.5 Publication
+### 3.6 Publication
 
 **Conditions cumulatives** (`App.tsx`, `validateContract`, `publicationReadiness.ts`) :
 
@@ -216,14 +229,14 @@ Actions système (`applyLifecycleAction`) :
 
 **Publications suivantes :** bump **minor** ou **major** uniquement dans l’UI (`BUMP_CONFIG` : `minor`, `major`). La fonction `bumpVersion` supporte aussi `patch` mais **aucune carte bump patch n’est exposée** dans la modale.
 
-### 3.6 Dépréciation et retrait
+### 3.7 Dépréciation et retrait
 
 | Action | Depuis | Confirm dialog | Handler |
 |--------|--------|----------------|---------|
 | Deprecate | `active` (pas en `inRevision`) | Oui | `handleDeprecateContract` |
 | Retire | `deprecated` | Oui | `handleRetireContract` |
 
-### 3.7 Verrouillage UI et `isContractLocked`
+### 3.8 Verrouillage UI et `isContractLocked`
 
 ```text
 isContractLocked(status, inRevision, isViewer) =
@@ -237,9 +250,11 @@ isContractLocked(status, inRevision, isViewer) =
 - `active` → true seulement si `inRevision`
 - `deprecated`, `retired` → false
 
-Les handlers d'édition du contenu ODCS (fundamentals, schema, stakeholders, roles, SLA, custom properties, import DDL) vérifient `isContractLocked`. La gestion des collaborateurs via `handleCollaboratorsChange` ne passe pas par ce garde-fou.
+Les handlers d'édition du contenu ODCS (fundamentals, schema, stakeholders, roles, SLA, custom properties) vérifient `isContractLocked`. La gestion des collaborateurs via `handleCollaboratorsChange` ne passe pas par ce garde-fou.
 
-### 3.8 Validations lifecycle associées
+**Exception Import SQL** : `isImportSectionEditable(status, isViewer)` retourne `true` en statut `proposed` (parcours import). `ImportSection` et `handleDDLParsed` utilisent cette règle pour permettre le paste/upload DDL avant **Start drafting**.
+
+### 3.9 Validations lifecycle associées
 
 | Code | Message (publication) |
 |------|------------------------|
@@ -270,11 +285,22 @@ Texte produit explicite dans `EXPORT_COVERAGE` (`src/lib/uxCopy.ts`) :
 
 **Densité UI (headers / pills) :** les *concept tags* abstraits (Accountability, Application access, etc.) ne sont plus affichés dans les en-têtes de section ni dans la modale Collaborators. Le périmètre export / app-only est porté par les **descriptions** de section, les **helpers** de champ (ex. contract owner) et la vue **YAML** (`EXPORT_COVERAGE`). Les pills `WorkflowMetadataPill` (« App only », « Not in exported contract ») restent disponibles mais sont utilisées avec parcimonie — au plus un signal par section ou modale, sans doublon pill + texte identique. Le statut de cycle de vie n’est affiché que dans la barre supérieure (pas dans Fundamentals).
 
+**Content system (intros & guidance) :**
+
+| Priorité | Où | Rôle |
+|----------|-----|------|
+| Export scope (détail) | Vue YAML (`EXPORT_COVERAGE`) | Référence complète export vs app |
+| Publication | `ReadinessPanel` | Score, blocage publish, **Details to fix**, checklist |
+| Section | Intro `ContractSectionHeader` (≤ 2 phrases, ~160 car.) | Utilité immédiate, sans jargon ODCS |
+| Champ | Helpers conditionnels (`GuidanceField`, ex. contract owner) | Export / app-only au plus près du champ |
+
+Intros de section raccourcies (Fundamentals, Data access, Governance contacts, Versions, Custom, SLA) : pas de répétition des messages export déjà dans YAML ou helpers.
+
 ### 4.2 Navigation éditeur
 
 Sections rendues dans `ContractSectionNav` :
 
-1. Import SQL *(uniquement si contrat nouveau : `dataset` vide et `gitHistory` vide)*
+1. Import SQL *(contrat nouveau : `dataset` vide et `gitHistory` vide — masqué si `creationSource === 'manual'`)*
 2. Fundamentals
 3. Schema
 4. Governance contacts (`stakeholders`)
@@ -296,6 +322,17 @@ Sections rendues dans `ContractSectionNav` :
 
 - Affiché si : contrat ouvert, onglet Form, section ≠ `import` et ≠ `versions`.
 - Layout : panneau épinglé (breakpoint `panelPinned`) ou overlay avec bouton toggle.
+
+**Hiérarchie visuelle du panneau** (`ReadinessPanel`, libellés `uxCopy.ts`) :
+
+1. **Details to fix** — erreurs de validation après tentative de publish (prioritaire).
+2. **Required before publishing** — checklist bloquante avec score partiel affiché.
+3. **Field quality** — documentation des champs schema (barre `X / Y described`).
+4. **Recommendations** — avertissements non bloquants (style secondaire).
+5. **Suggested improvements** — checklist recommandée sans compteur redondant.
+6. **Next steps** — rappels courts si présents.
+
+En-tête allégé : titre + score numérique (brouillon) ou statut publié (lecture seule), barre de progression discrète, message publish. Wording utilisateur : « personal data » (pas d’acronyme PII visible dans le panneau).
 
 ### 4.5 Lien UI → modèle → YAML
 
@@ -573,6 +610,8 @@ roles:
 ## 15. Publication readiness / validation
 
 ### Panneau Readiness
+
+Copie orientée action dans `src/lib/uxCopy.ts` (`READINESS_*`, helpers de champ). Le panneau reste la **source centrale** pour savoir si l’on peut publier ; les intros de section ne dupliquent pas cette logique.
 
 `computePublicationReadiness` (`publicationReadiness.ts`) combine :
 

@@ -99,7 +99,7 @@ export function ContractsBacklog({ contracts, onSelectContract, onCreateContract
           <div className="flex items-center gap-3">
             <Button onClick={onCreateContract} className="gap-1.5 flex-shrink-0">
               <Plus className="h-4 w-4" />
-              Create Contract
+              Create contract
             </Button>
           </div>
         </div>

@@ -200,6 +200,9 @@ export interface GitPR {
   status: 'open' | 'merged'
 }
 
+/** How the contract was created — UI-only, not exported to ODCS YAML. */
+export type ContractCreationSource = 'manual' | 'import'
+
 export interface DataContract {
   uid: string
   dataContractSpecification: '3.1.0'
@@ -214,6 +217,8 @@ export interface DataContract {
   gitHistory: GitCommit[]
   openPR: GitPR | null
   inRevision?: boolean
+  /** UI-only: distinguishes scratch vs import onboarding (not in YAML export). */
+  creationSource?: ContractCreationSource
   createdAt: string
   updatedAt: string
 }

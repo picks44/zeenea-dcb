@@ -16,6 +16,7 @@ import {
   SLA_EMPTY_BODY,
   SLA_EMPTY_CTA,
   SLA_EMPTY_TITLE,
+  SLA_SECTION_INTRO,
 } from '@/lib/uxCopy'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { SlaProperty } from '@/types/odcs'
@@ -61,7 +62,7 @@ export function SlaSection({ slaProperties, onChange, isLocked, isPublishedView,
     <div className="max-w-[840px] w-full">
       <ContractSectionHeader
         title="Service levels"
-        description="Define SLA commitments: value (required), unit, element (Object.Property), driver, and description."
+        description={SLA_SECTION_INTRO}
         compact={docCompact && isLocked}
       />
 

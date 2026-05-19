@@ -5,6 +5,7 @@ import {
   canTransitionStatus,
   isContractEditableStatus,
   isContractLocked,
+  isImportSectionEditable,
   LIFECYCLE_TRANSITIONS,
 } from '@/lib/contractLifecycle'
 import { LIFECYCLE_STATUSES } from '@/lib/p1Constants'
@@ -60,5 +61,12 @@ describe('contractLifecycle P1', () => {
     expect(isContractLocked('draft', false, true)).toBe(true)
     expect(isContractLocked('active', false, false)).toBe(true)
     expect(isContractLocked('active', true, false)).toBe(false)
+  })
+
+  it('isImportSectionEditable allows import only in proposed for non-viewers', () => {
+    expect(isImportSectionEditable('proposed', false)).toBe(true)
+    expect(isImportSectionEditable('proposed', true)).toBe(false)
+    expect(isImportSectionEditable('draft', false)).toBe(false)
+    expect(isImportSectionEditable('active', false)).toBe(false)
   })
 })

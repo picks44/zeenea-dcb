@@ -95,15 +95,15 @@ export const SECTION_CONCEPT_SERVICE_LEVELS = 'Service commitment'
 // ─── Fundamentals ────────────────────────────────────────────────────────────
 
 export const FUNDAMENTALS_INTRO =
-  'Core contract identity and business accountability. Who can edit in the app is managed in Collaborators — separate from the contract owner below.'
+  'Contract name, ID, version, and business purpose. The contract owner is accountable for publication.'
 
 export const CONTRACT_OWNER_HELPER =
-  'Business owner accountable for publication. Stored in the app only — not included in the exported contract file. Use Collaborators for editing access in the app.'
+  'Accountable for publication. App-only — not in the exported file. Use Collaborators for edit access.'
 
 // ─── Governance contacts (workflow metadata; not in ODCS YAML) ───────────────
 
 export const STAKEHOLDERS_INTRO =
-  'Operational or business contacts for this contract — stewardship, analytics, support, compliance, and similar roles. These are people to reach out to, not app permissions. Contacts are managed in the app only and are not included in the exported contract file.'
+  'Operational contacts for stewardship, support, or compliance. App-only — not in the exported contract file.'
 
 export const STAKEHOLDERS_EMPTY_TITLE = 'No governance contacts yet'
 export const STAKEHOLDERS_EMPTY_BODY =
@@ -115,11 +115,10 @@ export const STAKEHOLDERS_EMPTY_CTA = 'Add contact'
 export const HEALTH_GOVERNANCE_OWNER_CHECK = 'Business contract owner defined'
 export const HEALTH_GOVERNANCE_CONTACTS_CHECK = 'Governance contacts listed'
 
-export const PUBLICATION_READY_REQUIRED_COMPLETE =
-  'Publication requirements complete'
+export const PUBLICATION_READY_REQUIRED_COMPLETE = 'Ready to publish'
 
 export const PUBLICATION_READY_TOOLTIP =
-  'All required publication metadata is defined.'
+  'Required publication fields are complete.'
 
 export const CONTRACT_QUALITY_PANEL_TITLE = 'Contract quality'
 
@@ -128,17 +127,17 @@ export const PUBLISHED_READ_ONLY_STATUS = 'Published — read-only'
 export const PUBLISHED_REQUIRED_SECTION_TITLE = 'Publication requirements'
 
 export const START_NEW_VERSION_QUALITY_NOTE =
-  'Start a new version to improve contract quality.'
+  'Start a new version to edit and improve quality.'
 
 export const READINESS_PANEL_TITLE = 'Publication readiness'
 export const READINESS_REQUIRED_SECTION_TITLE = 'Required before publishing'
-export const READINESS_IMPROVE_SECTION_TITLE = 'Improve your contract'
+export const READINESS_IMPROVE_SECTION_TITLE = 'Suggested improvements'
 export const READINESS_FIELD_QUALITY_TITLE = 'Field quality'
-export const READINESS_NEXT_STEPS_TITLE = 'Suggested next steps'
+export const READINESS_NEXT_STEPS_TITLE = 'Next steps'
 export const READINESS_VALIDATION_DETAILS_TITLE = 'Details to fix'
 
 export const READINESS_SCORE_TOOLTIP =
-  'Score reflects required fields, documentation, and recommended items.'
+  'Based on required fields, documentation, and suggestions.'
 
 export const READINESS_RECOMMENDATIONS_SECTION_TITLE = 'Recommendations'
 
@@ -156,10 +155,10 @@ export const READINESS_FIELD_FUNDAMENTALS_REF_LINKS = 'fundamentals-ref-links'
 export const READINESS_FIELD_SCHEMA_ROOT = 'schema-root'
 
 /** Shown in form only after publish attempt or guided navigation (level 2–3). */
-export const READINESS_HELPER_CONTRACT_NAME = 'Needed to publish this contract.'
-export const READINESS_HELPER_CONTRACT_ID = 'Needed for export identity.'
-export const READINESS_HELPER_CONTRACT_OWNER = 'Business owner required before publishing.'
-export const READINESS_HELPER_CONTRACT_VERSION = 'Use SemVer, e.g. 1.0.0.'
+export const READINESS_HELPER_CONTRACT_NAME = 'Required to publish.'
+export const READINESS_HELPER_CONTRACT_ID = 'Required in the exported file.'
+export const READINESS_HELPER_CONTRACT_OWNER = 'Required before publishing.'
+export const READINESS_HELPER_CONTRACT_VERSION = 'SemVer, e.g. 1.0.0.'
 export const READINESS_HELPER_SCHEMA_FIELDS = 'Add at least one table and field.'
 
 /** Short labels for readiness panel rows (no multiline helpers in panel). */
@@ -174,10 +173,9 @@ export const READINESS_GUIDANCE_FUNDAMENTALS_BANNER =
 export const READINESS_GUIDANCE_SCHEMA_BANNER =
   'Define at least one table and field before you can publish.'
 export const READINESS_GUIDANCE_STAKEHOLDERS_BANNER =
-  'List operational contacts teams can reach — especially helpful when personal data fields are present.'
+  'Add contacts teams can reach — helpful when personal data fields are present.'
 
-export const DOCUMENTED_FIELDS_TOOLTIP =
-  'Percentage of schema fields with business descriptions'
+export const DOCUMENTED_FIELDS_TOOLTIP = 'Schema fields with a business description'
 
 // ─── Data access & service levels ────────────────────────────────────────────
 
@@ -193,11 +191,11 @@ export const SLA_EMPTY_BODY =
 export const SLA_EMPTY_CTA = 'Add service level'
 
 export const VERSION_HISTORY_INTRO_EMPTY =
-  'Track published versions of this contract in the app. Version history is not included in the exported contract file.'
+  'Published versions stored in the app only — not in the exported file.'
 
 export function versionHistoryIntroCount(count: number): string {
   const noun = count === 1 ? 'version' : 'versions'
-  return `${count} published ${noun} on record in the app (not included in the exported contract file).`
+  return `${count} published ${noun} in the app.`
 }
 
 // ─── Publish flow (simulated version history — no external Git) ───────────────
@@ -274,11 +272,25 @@ export const PUBLISH_REQUIRES_PUBLISHER_CONTRACT =
 export const VIEWER_ACCESS_BANNER =
   'You have read-only access in the app. Ask a Publisher or Contributor to change your collaborator role.'
 
+export const PROPOSED_STATUS_BANNER =
+  'Import a SQL schema or start from scratch on the Import step. Other sections unlock after you start drafting.'
+
+export const IMPORT_SECTION_INTRO =
+  'Paste one or more CREATE TABLE statements to generate the contract schema, or start from scratch to define everything manually.'
+
+export const IMPORT_START_FROM_SCRATCH = 'Start from scratch'
+
 export const CANNOT_REMOVE_OWN_PUBLISHER_ROLE =
   'You cannot remove your own Publisher role.'
 
 export const DATA_ACCESS_ROLES_INTRO =
-  'Define consumer access roles described in this data contract (who may read or write contract data in your ecosystem). Application editing and publishing permissions are managed in Collaborators — they do not grant platform or app access.'
+  'Consumer roles in the exported contract (read/write on contract data). Not app permissions — use Collaborators for that.'
+
+export const CUSTOM_PROPERTIES_INTRO =
+  'Optional name-value fields included in the exported contract.'
+
+export const SLA_SECTION_INTRO =
+  'Latency, retention, and availability commitments included in the export.'
 
 /** @deprecated Use COLLABORATORS_INTRO */
 export const MEMBERS_DISCLAIMER = COLLABORATORS_INTRO

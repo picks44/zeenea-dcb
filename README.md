@@ -106,20 +106,24 @@ Modifier ce fichier pour tester les rôles et le partage sous un autre profil.
 ## Parcours utilisateur
 
 ```mermaid
-flowchart LR
-  A[Backlog] --> B[Nouveau contrat]
-  B --> C[Import DDL]
-  C --> D[Fundamentals]
+flowchart TB
+  A[Backlog Create contract]
+  A --> I[Import SQL proposed]
+  I --> C[Import DDL]
+  I --> S[Start from scratch]
+  S --> D[Fundamentals draft]
+  C --> SD[Start drafting]
+  SD --> D
   D --> E[Schéma]
   E --> F[Stakeholders]
-  F --> G[Push to Git]
-  G --> H[Contrat Active]
-  H --> I[Nouvelle version]
-  I --> D
+  F --> G[Publish]
+  G --> H[Active]
+  H --> NV[Nouvelle version]
+  NV --> D
 ```
 
-1. **Backlog** — Créer un contrat ou ouvrir un existant.
-2. **Import SQL** — Coller un `CREATE TABLE` ; le parseur remplit le dataset et propose un ID slugifié.
+1. **Backlog** — **Create contract** ouvre l’étape Import (`proposed`) : coller du SQL, ou **Start from scratch** pour passer directement en `draft` éditable.
+2. **Import SQL** — Coller ou charger un `CREATE TABLE` ; le parseur remplit le dataset ; **Start drafting** débloque l’édition des autres sections.
 3. **Fundamentals** — Compléter titre, ID, owner, version, domaine, etc.
 4. **Schéma** — Affiner libellés métier, types logiques, flags (PK, PII, required).
 5. **Stakeholders** — Renseigner les parties prenantes.
@@ -131,13 +135,15 @@ flowchart LR
 
 ## Cycle de vie des contrats
 
-Trois statuts ODCS, reflétés dans l’UI par des badges et des règles d’édition :
+Cinq statuts ODCS P1 (`proposed` → `draft` → `active` → `deprecated` → `retired`), reflétés dans l’UI par des badges et des règles d’édition :
 
 | Statut | Comportement UI |
 |--------|-----------------|
-| `draft` | Édition complète ; publication possible si champs obligatoires remplis et modifications depuis le dernier publish |
+| `proposed` | Après **Create contract** — import DDL autorisé ; autres sections verrouillées jusqu’à **Start drafting** (ou **Start from scratch** sur Import) |
+| `draft` | Édition complète — **Start from scratch** ou après **Start drafting** ; publication si validation OK |
 | `active` | Lecture seule sauf mode révision (`inRevision`) ; bouton « New Version » |
 | `deprecated` | Lecture seule ; bannière d’avertissement (versions historiques après un nouveau publish) |
+| `retired` | Lecture seule ; contrat retiré |
 
 ### Versionnement (SemVer)
 

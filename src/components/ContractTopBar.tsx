@@ -33,6 +33,8 @@ interface ContractTopBarProps {
   readinessToggleLabel?: string
   readinessPanelOpen?: boolean
   onReadinessToggle?: () => void
+  /** Hide while on initial Import step for new import-sourced contracts. */
+  hideStartDrafting?: boolean
 }
 
 const STATUS_LABELS: Record<LifecycleStatus, string> = {
@@ -72,6 +74,7 @@ export function ContractTopBar({
   readinessToggleLabel,
   readinessPanelOpen,
   onReadinessToggle,
+  hideStartDrafting = false,
 }: ContractTopBarProps) {
   const { info, gitHistory, openPR } = contract
 
@@ -176,7 +179,7 @@ export function ContractTopBar({
           {info.status !== 'deprecated' && info.status !== 'retired' && (
             <div className="flex items-center gap-2 flex-shrink-0">
 
-              {(isOwner || isContributor) && info.status === 'proposed' && (
+              {(isOwner || isContributor) && info.status === 'proposed' && !hideStartDrafting && (
                 <Button variant="secondary" size="sm" onClick={onStartDraft}>
                   Start drafting
                 </Button>

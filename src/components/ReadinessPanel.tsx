@@ -6,7 +6,6 @@ import { cn } from '@/lib/utils'
 import {
   CONTRACT_QUALITY_PANEL_TITLE,
   DOCUMENTED_FIELDS_TOOLTIP,
-  PUBLICATION_READY_TOOLTIP,
   PUBLISHED_READ_ONLY_STATUS,
   PUBLISHED_REQUIRED_SECTION_TITLE,
   READINESS_FIELD_QUALITY_TITLE,
@@ -26,8 +25,6 @@ import {
   navigateToValidationIssue,
   useReadinessNavigation,
 } from '@/components/readiness/ReadinessNavigationContext'
-import { Tooltip } from '@/components/ui/tooltip'
-
 interface ReadinessPanelProps {
   contract: DataContract
   contracts: DataContract[]
@@ -44,11 +41,13 @@ function SectionHeaderWithScore({
   earned,
   max,
   tone = 'default',
+  showFraction = true,
 }: {
   title: string
   earned: number
   max: number
   tone?: 'required' | 'recommended' | 'default'
+  showFraction?: boolean
 }) {
   return (
     <div className="flex items-baseline justify-between gap-2 mb-1.5">
@@ -56,15 +55,17 @@ function SectionHeaderWithScore({
         className={cn(
           'text-[10px] font-semibold uppercase tracking-wide',
           tone === 'required' && 'text-[#55556a]',
-          tone === 'recommended' && 'text-[#9898a7] font-medium',
-          tone === 'default' && 'text-[#656574]',
+          tone === 'recommended' && 'text-[#9898a7] font-medium normal-case tracking-normal',
+          tone === 'default' && 'text-[#656574] font-medium normal-case tracking-normal',
         )}
       >
         {title}
       </span>
-      <span className="text-[10px] font-medium tabular-nums text-[#9898a7] flex-shrink-0 leading-none">
-        {earned} / {max}
-      </span>
+      {showFraction ? (
+        <span className="text-[10px] font-medium tabular-nums text-[#9898a7] flex-shrink-0 leading-none">
+          {earned} / {max}
+        </span>
+      ) : null}
     </div>
   )
 }
@@ -201,11 +202,6 @@ export function ReadinessPanel({
   const isPublishedView =
     contract.info.status === 'active' && !contract.inRevision
 
-  const scoreColor =
-    healthScore >= 90 ? 'text-[#047800] bg-[#f0ffec] border-emerald-200' :
-    healthScore >= 60 ? 'text-[#0550dc] bg-[#edf6ff] border-[#b8d0fb]' :
-    'text-[#33333d] bg-[#f5f5fa] border-[#d3d3e5]'
-
   const barColor =
     healthScore >= 90 ? 'bg-[#3dab3b]' :
     healthScore >= 60 ? 'bg-[#0550dc]' :
@@ -227,20 +223,19 @@ export function ReadinessPanel({
     >
 
       <div className={cn(sectionPad, 'border-b flex-shrink-0', panelBorder)}>
-        <div className={cn('flex items-center justify-between gap-2', publishedDense ? 'mb-1.5' : 'mb-2.5')}>
+        <div className={cn('flex items-center justify-between gap-2', publishedDense ? 'mb-1' : 'mb-1.5')}>
           <span className="text-xs font-semibold text-[#33333d] min-w-0 truncate">
             {isPublishedView ? CONTRACT_QUALITY_PANEL_TITLE : READINESS_PANEL_TITLE}
           </span>
           <div className="flex items-center gap-1 flex-shrink-0">
-            <Tooltip content={READINESS_SCORE_TOOLTIP} side="left" delayDuration={400}>
-              <span className={cn(
-                'font-bold px-2 py-0.5 rounded-full border cursor-default',
-                isPublishedView ? 'text-[10px]' : 'text-[11px]',
-                scoreColor,
-              )}>
-                {healthScore}/100
+            {!isPublishedView ? (
+              <span
+                className="text-[11px] font-semibold tabular-nums text-[#656574] cursor-default"
+                title={READINESS_SCORE_TOOLTIP}
+              >
+                {healthScore}
               </span>
-            </Tooltip>
+            ) : null}
             {layout === 'overlay' && onClose ? (
               <button
                 type="button"
@@ -270,14 +265,9 @@ export function ReadinessPanel({
               </span>
             </>
           ) : publishStatus.ready ? (
-            <>
-              <CheckCircle2 className="h-3 w-3 text-[#047800] flex-shrink-0" />
-              <Tooltip content={PUBLICATION_READY_TOOLTIP} side="bottom" delayDuration={400}>
-                <span className="text-[11px] text-[#047800] font-medium leading-snug cursor-default">
-                  {publishStatus.message}
-                </span>
-              </Tooltip>
-            </>
+            <span className="text-[11px] text-[#047800] font-medium leading-snug">
+              {publishStatus.message}
+            </span>
           ) : (
             <>
               <AlertCircle
@@ -322,11 +312,9 @@ export function ReadinessPanel({
         </div>
 
         <div className={sectionPad}>
-          <SectionHeaderWithScore
-            title={READINESS_FIELD_QUALITY_TITLE}
-            earned={scoreContributions.documentation.earned}
-            max={scoreContributions.documentation.max}
-          />
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-1.5">
+            {READINESS_FIELD_QUALITY_TITLE}
+          </p>
 
           {fieldCount > 0 ? (
             <>
@@ -337,27 +325,28 @@ export function ReadinessPanel({
                   'text-[10px] font-medium tabular-nums text-right leading-snug',
                   descCoverage === 1 ? 'text-[#047800]' : descCoverage >= 0.5 ? 'text-[#656574]' : 'text-[#9898a7]',
                 )}>
-                  {fieldsWithDesc} of {fieldCount} documented
+                  {fieldsWithDesc} / {fieldCount} described
                 </span>
               </div>
-              <Tooltip content={DOCUMENTED_FIELDS_TOOLTIP} side="top" delayDuration={400}>
-                <div className="h-1.5 rounded-full bg-[#f5f5fa] overflow-hidden cursor-default">
-                  <div
-                    className={cn(
-                      'h-full rounded-full transition-all',
-                      descCoverage === 1 ? 'bg-[#3dab3b]' : 'bg-[#7aacf8]',
-                    )}
-                    style={{ width: `${Math.round(descCoverage * 100)}%` }}
-                  />
-                </div>
-              </Tooltip>
+              <div
+                className="h-1.5 rounded-full bg-[#f5f5fa] overflow-hidden"
+                title={DOCUMENTED_FIELDS_TOOLTIP}
+              >
+                <div
+                  className={cn(
+                    'h-full rounded-full transition-all',
+                    descCoverage === 1 ? 'bg-[#3dab3b]' : 'bg-[#7aacf8]',
+                  )}
+                  style={{ width: `${Math.round(descCoverage * 100)}%` }}
+                />
+              </div>
               {fieldsWithDesc < fieldCount && nav?.enabled && firstUndocumented ? (
                 <button
                   type="button"
                   onClick={handleDocumentFieldsClick}
                   className="text-[10px] text-[#656574] mt-1 leading-snug hover:text-[#0550dc] hover:underline text-left"
                 >
-                  {fieldCount - fieldsWithDesc} undocumented — go to field
+                  {fieldCount - fieldsWithDesc} without description — open field
                 </button>
               ) : fieldsWithDesc < fieldCount ? (
                 <p className="text-[10px] text-[#9898a7] mt-1 leading-snug">
@@ -367,12 +356,9 @@ export function ReadinessPanel({
             </div>
 
               {piiCount > 0 && (
-                <div className="mt-2.5 flex items-center gap-2 rounded-lg px-2.5 py-2 border border-[#e4e4f0] bg-[#fbfbff]">
-                  <AlertTriangle className="h-3 w-3 text-[#9898a7] flex-shrink-0" />
-                  <span className="text-[11px] text-[#656574] leading-snug">
-                    <strong>{piiCount}</strong> personal data field{piiCount > 1 ? 's' : ''} (PII) on this contract
-                  </span>
-                </div>
+                <p className="text-[11px] text-[#656574] mt-2 leading-snug">
+                  <strong>{piiCount}</strong> personal data field{piiCount > 1 ? 's' : ''} flagged
+                </p>
               )}
             </>
           ) : null}
@@ -405,7 +391,7 @@ export function ReadinessPanel({
 
         {validationWarnings.length > 0 && (
           <div className={sectionPad}>
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-2">
+            <p className="text-[10px] font-medium text-[#9898a7] mb-1.5">
               {READINESS_RECOMMENDATIONS_SECTION_TITLE}
             </p>
             <ul className="space-y-1">
@@ -425,6 +411,7 @@ export function ReadinessPanel({
             earned={scoreContributions.recommended.earned}
             max={scoreContributions.recommended.max}
             tone="recommended"
+            showFraction={false}
           />
           <ul className={listGap}>
             {recommendedChecks.map(item => (
@@ -448,7 +435,7 @@ export function ReadinessPanel({
           </div>
         ) : nextSteps.length > 0 ? (
           <div className={cn(sectionPad, 'bg-[#fbfbff]/60')}>
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#656574] mb-2">
+            <p className="text-[10px] font-medium text-[#9898a7] mb-1.5">
               {READINESS_NEXT_STEPS_TITLE}
             </p>
             <ul className="space-y-2">

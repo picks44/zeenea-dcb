@@ -97,8 +97,11 @@ export function ContractSectionNav({
   const nav = useReadinessNavigation()
   const guidance = nav?.sectionGuidance ?? {}
 
+  const showImportNav =
+    isNew && contract.creationSource !== 'manual'
+
   const sections: { id: SectionId; label: string; icon: typeof FileText }[] = [
-    ...(isNew ? [{ id: 'import' as SectionId, label: NAV_IMPORT_SQL, icon: Upload }] : []),
+    ...(showImportNav ? [{ id: 'import' as SectionId, label: NAV_IMPORT_SQL, icon: Upload }] : []),
     { id: 'fundamentals', label: NAV_FUNDAMENTALS, icon: FileText },
     { id: 'schema',       label: NAV_SCHEMA,       icon: Database },
     { id: 'stakeholders', label: NAV_GOVERNANCE_CONTACTS, icon: Users },

@@ -27,7 +27,12 @@ import { DataContract, DataContractSnapshot, SectionId, SchemaTable, AppView, Ed
 import type { CustomProperty } from './types/odcsShared'
 import { CustomPropertiesSection } from './components/sections/CustomPropertiesSection'
 import { deriveContractId } from './lib/idDerivation'
-import { applyLifecycleAction, isContractLocked } from './lib/contractLifecycle'
+import { applyLifecycleAction, isContractLocked, isImportSectionEditable } from './lib/contractLifecycle'
+import {
+  applyStartFromScratch,
+  createContract,
+  shouldHideStartDraftingInTopBar,
+} from './lib/createContract'
 import type { PushResult } from './components/PushToGitModal'
 import { loadContracts, saveContracts } from './lib/storage'
 import { validateContract } from './lib/contractValidation'
@@ -37,38 +42,12 @@ import {
   NO_CHANGES_TO_PUBLISH,
   PUBLISH_REQUIRES_PUBLISHER_CONTRACT,
   VIEWER_ACCESS_BANNER,
+  PROPOSED_STATUS_BANNER,
 } from './lib/uxCopy'
 import { useMediaQuery } from './hooks/useMediaQuery'
 import { useNavCollapsed } from './hooks/useNavCollapsed'
 import { MEDIA_QUERIES } from './lib/layoutBreakpoints'
 import { cn } from './lib/utils'
-
-function makeContract(): DataContract {
-  const now = new Date().toISOString()
-  return {
-    uid: crypto.randomUUID(),
-    dataContractSpecification: '3.1.0',
-    id: '',
-    info: {
-      title: '',
-      version: '1.0.0',
-      domain: '',
-      owner: '',
-      description: '',
-      status: 'proposed',
-      tags: [],
-    },
-    dataset: [],
-    stakeholders: [],
-    roles: [],
-    slaProperties: [],
-    customProperties: [],
-    gitHistory: [],
-    openPR: null,
-    createdAt: now,
-    updatedAt: now,
-  }
-}
 
 function getMyRole(contract: DataContract | null): CollaboratorRole {
   if (!contract?.collaborators?.length) return 'owner'
@@ -100,9 +79,14 @@ export default function App() {
 
   const contract = selectedId ? contracts.find(c => c.uid === selectedId) ?? null : null
   const myRole = getMyRole(contract)
+  const isViewer = myRole === 'viewer'
   const isLocked = contract
-    ? isContractLocked(contract.info.status, contract.inRevision, myRole === 'viewer')
+    ? isContractLocked(contract.info.status, contract.inRevision, isViewer)
     : false
+  const isImportLocked = contract
+    ? !isImportSectionEditable(contract.info.status, isViewer)
+      && isContractLocked(contract.info.status, contract.inRevision, isViewer)
+    : true
 
   const isPublishedView = contract
     ? contract.info.status === 'active' && !contract.inRevision
@@ -122,6 +106,14 @@ export default function App() {
     && contract.info.status !== 'retired',
   )
 
+  const hideStartDrafting = contract
+    ? shouldHideStartDraftingInTopBar(
+        contract.info.status,
+        contract.creationSource,
+        activeSection,
+      )
+    : false
+
   const validation = contract ? validateContract(contract, contracts) : null
   const canPublish = !!validation?.canPublish && hasEditedSincePublish && myRole === 'owner'
 
@@ -136,15 +128,25 @@ export default function App() {
     )
   }, [])
 
-  const handleCreate = () => {
-    const c = makeContract()
+  const openNewContract = (c: DataContract, section: SectionId) => {
     setContracts(prev => [c, ...prev])
     setSelectedId(c.uid)
     setCurrentView('editor')
-    setActiveSection('import' as SectionId)
+    setActiveSection(section)
     setActiveTab('form')
     setHasEditedSincePublish(false)
   }
+
+  const handleCreateContract = () => {
+    openNewContract(createContract('import'), 'import')
+  }
+
+  const handleStartFromScratch = useCallback(() => {
+    if (!contract || isViewer || contract.info.status !== 'proposed') return
+    updateContract(applyStartFromScratch(contract))
+    setActiveSection('fundamentals')
+    setHasEditedSincePublish(false)
+  }, [contract, isViewer, updateContract])
 
   const handleSelectContract = (uid: string) => {
     setSelectedId(uid)
@@ -168,7 +170,10 @@ export default function App() {
 
   const handleDDLParsed = useCallback((tables: SchemaTable[], _ddl: string) => {
     if (!contract || tables.length === 0) return
-    if (isContractLocked(contract.info.status, contract.inRevision, myRole === 'viewer')) return
+    const canImport =
+      isImportSectionEditable(contract.info.status, isViewer)
+      || !isContractLocked(contract.info.status, contract.inRevision, isViewer)
+    if (!canImport) return
     const first = tables[0]
     updateContract({
       ...contract,
@@ -181,7 +186,7 @@ export default function App() {
     })
     setHasEditedSincePublish(true)
     setActiveSection('fundamentals')
-  }, [contract, updateContract, myRole])
+  }, [contract, updateContract, isViewer])
 
   const handleFundamentalsChange = useCallback(
     (updates: Partial<DataContract['info']> & { id?: string }) => {
@@ -379,7 +384,7 @@ export default function App() {
             <ContractsBacklog
               contracts={contracts}
               onSelectContract={handleSelectContract}
-              onCreateContract={handleCreate}
+              onCreateContract={handleCreateContract}
             />
           ) : contract ? (
             <>
@@ -422,6 +427,7 @@ export default function App() {
                   readinessToggleLabel={readinessToggleLabel}
                   readinessPanelOpen={readinessOpen}
                   onReadinessToggle={() => setReadinessOpen(o => !o)}
+                  hideStartDrafting={hideStartDrafting}
                 />
 
                 {contract.info.status === 'proposed' && (
@@ -431,7 +437,7 @@ export default function App() {
                   )}>
                     <Lock className="h-3.5 w-3.5 text-neutral-600 flex-shrink-0" />
                     <p className="text-neutral-700 text-xs font-medium">
-                      This contract is <strong>Proposed</strong> and read-only. Use <strong>Start drafting</strong> in the toolbar to edit.
+                      {PROPOSED_STATUS_BANNER}
                     </p>
                   </div>
                 )}
@@ -498,7 +504,11 @@ export default function App() {
                         )}
                       >
                       {activeSection === 'import' ? (
-                        <ImportSection onParsed={handleDDLParsed} isLocked={isLocked} />
+                        <ImportSection
+                          onParsed={handleDDLParsed}
+                          onStartFromScratch={handleStartFromScratch}
+                          isLocked={isImportLocked}
+                        />
                       ) : activeSection === 'fundamentals' ? (
                         <FundamentalsSection
                           contract={contract}

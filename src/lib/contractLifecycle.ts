@@ -53,3 +53,9 @@ export function isContractLocked(
   if (isViewer) return true
   return !isContractEditableStatus(status, inRevision)
 }
+
+/** Import SQL section stays editable in proposed (review before Start drafting). */
+export function isImportSectionEditable(status: LifecycleStatus, isViewer: boolean): boolean {
+  if (isViewer) return false
+  return status === 'proposed'
+}
