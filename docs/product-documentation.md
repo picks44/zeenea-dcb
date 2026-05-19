@@ -206,16 +206,16 @@ Le panneau **Publication readiness** est visible sur l’onglet Form (sauf secti
 
 | Dans le fichier YAML exporté | Géré uniquement dans l’application |
 |------------------------------|-----------------------------------|
-| Identité, description, tags | Contract owner |
-| Schéma (`schema`), qualité, reference links schéma | Governance contacts |
-| Rôles d’accès données (`roles`) | Collaborators |
-| SLA (`slaProperties`) | Historique des versions |
-| Propriétés personnalisées (`customProperties`) | État de révision (`inRevision`), brouillon working copy |
+| Identité (`id`, `version`, `status`, `name`, `domain`, `description`, `tags`) | Contract owner |
+| Schéma (`schema`) : tables/colonnes, `businessName`, `classification`, `primaryKey` / `unique` / `criticalDataElement`, relations exportables, qualité, reference links | Governance contacts (operational) |
+| Rôles d’accès données (`roles`) | Collaborators (Publisher / Contributor / Reader) |
+| SLA (`slaProperties`) | Historique des versions dans l’app |
+| Propriétés personnalisées (`customProperties`) | `creationSource`, `inRevision`, working copy, état AI mock (`aiVerified`) sur règles qualité table, flag **personal data** brut (`isPII`) |
 
 Texte affiché dans l’onglet YAML :
 
-- *Exported contract file: identity, description, schema, tags, quality rules, reference links, data access roles, service levels, and custom properties.*
-- *Managed in the app only: contract owner, operational governance contacts, collaborators, and version history.*
+- *Exported contract file: identity, description, schema (including business names, classification, keys, relationships), tags, quality rules, reference links, data access roles, service levels, and custom properties.*
+- *Managed in the app only: contract owner, operational governance contacts, collaborators, version history, and revision state.*
 
 ### 3.4 Données de démonstration
 
@@ -635,7 +635,7 @@ Les **descriptions de champs** comptent uniquement dans **Field quality**, pas d
 
 Affiché lorsque l’application n’a enregistré **aucune modification** depuis la dernière publication (par exemple juste après **New version**, avant toute édition). Incite à modifier le contrat ou à abandonner la révision inutile.
 
-**Publication avec YAML inchangé (Option B) :** si l’utilisateur a modifié uniquement des champs **app-only versionnés** (contract owner, governance contacts), la publication reste possible : le snapshot et le numéro de version avancent, le YAML exportable peut être identique au précédent, mais le **changelog** et le résumé **Versions** indiquent explicitement les changements de gouvernance (ex. *Updated contract owner*, *Updated governance contacts*). Les **collaborateurs** ne sont pas versionnés dans le snapshot publish et ne déclenchent pas de nouvelle version. Aucune publication n’est autorisée sans changement réel (export ou gouvernance snapshotée).
+**Publication avec YAML export inchangé :** si l’utilisateur a modifié uniquement des champs **app-only versionnés** (contract owner, governance contacts), la publication reste possible : le snapshot et le numéro de version avancent, le YAML exportable peut être identique au précédent, mais le **changelog** et le résumé **Versions** indiquent explicitement les changements de gouvernance (ex. *Updated contract owner*, *Updated governance contacts*). Les **collaborateurs** ne sont pas versionnés dans le snapshot publish et ne déclenchent pas de nouvelle version. Aucune publication n’est autorisée sans changement réel (export ou gouvernance snapshotée).
 
 ### 9.6 Catalogue des blocages publication (par thème)
 
@@ -731,7 +731,7 @@ Pendant une révision, les modifications forment une **working copy**. **Discard
 
 ### 10.5 Comparaison entre versions
 
-La comparaison porte sur le **contenu exportable** (différences sur le contrat tel qu’il apparaîtrait dans le YAML), pas sur les champs app-only.
+La modale **Compare** (Form / YAML) porte uniquement sur le **contenu exportable** — différences telles qu’elles apparaîtraient dans le fichier YAML ODCS. Les changements **app-only** (contract owner, governance contacts) ne s’y affichent pas : ils apparaissent dans le résumé **Working copy**, le changelog de publication et l’historique **Versions**. Deux snapshots peuvent être « identiques » dans Compare tout en ayant divergé sur la gouvernance entre deux publications.
 
 ### 10.6 Convention de nom de fichier
 
@@ -757,7 +757,9 @@ Toujours présents ou générés si renseignés :
 
 ### 11.3 Champs non exportés (rappel)
 
-**Toujours hors YAML :** contract owner, operational governance contacts (section Governance contacts), collaborateurs, historique des versions dans l’app, flag **personal data** brut (`isPII`), état de vérification AI mock sur les règles qualité table, `dataProduct`.
+**Toujours hors YAML :** contract owner, operational governance contacts (section Governance contacts), collaborateurs, historique des versions dans l’app, `creationSource`, `inRevision`, flag **personal data** brut (`isPII`), état de vérification AI mock (`aiVerified` sur règles qualité table), `dataProduct`.
+
+Ces champs app-only peuvent toutefois être **snapshotés** à la publication et apparaître dans le changelog lorsqu’ils changent (owner, governance contacts).
 
 **Libellés UI vs clés ODCS :** **Entity name** et **Business label** ne sont pas des clés YAML ; les valeurs saisies (`quantumName`, `logicalName`) sont exportées sous `businessName` (table ou propriété) **uniquement lorsqu’elles sont renseignées**.
 
@@ -982,17 +984,29 @@ Légende : ✓ autorisé, ✗ interdit, (✓) si conditions.
 - *When* l’utilisateur consulte readiness
 - *Then* avertissement non bloquant sur les contacts
 
-**S11 — Compare versions**
+**S11 — Compare versions (export uniquement)**
 
 - *Given* un contrat active avec révision et working copy
 - *When* l’utilisateur ouvre Compare sur une version publiée
-- *Then* différences exportables affichées
+- *Then* différences **exportables** affichées (Form ou YAML) ; pas de lignes owner / governance contacts
+
+**S11b — Compare identique malgré gouvernance**
+
+- *Given* deux publications consécutives dont le YAML exportable est identique mais le contract owner a changé
+- *When* l’utilisateur compare ces deux versions dans la modale Compare
+- *Then* message d’identité exportée ; le changelog de la publication précédente mentionne *Updated contract owner*
 
 **S12 — YAML exclut owner**
 
 - *Given* un contrat avec contract owner renseigné
 - *When* l’utilisateur ouvre l’onglet YAML
 - *Then* le champ owner absent du YAML ; rappel app-only visible
+
+**S13 — Publish avec customProperties**
+
+- *Given* un contrat active en révision
+- *When* le Publisher ajoute ou modifie une custom property puis publie
+- *Then* publication autorisée ; `customProperties` présent dans le YAML ; changelog mentionne la mise à jour ; Compare reflète la différence
 
 ### 15.3 Jeu de données de test
 
@@ -1020,6 +1034,11 @@ Utiliser les contrats seed (**Customer Orders**, **Product Catalog**, **User Ana
 - *Publication readiness* / *Contract quality*
 - *Required before publishing* / *Field quality* / *Suggested improvements*
 - *Ready to publish* (lorsque le bloc requis est complet)
+
+### Compare
+
+- *Shows exported contract content only. Contract owner and governance contact changes appear in Versions and the publish changelog.*
+- *These exported versions are identical* / *No differences in the exported contract between the selected versions. Governance-only changes are not shown here.*
 
 ### Accès
 

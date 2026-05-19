@@ -175,7 +175,7 @@ IDs stables (`id` table/colonne) et pointers FK `/schema/{id}/properties/{proper
 | `ddlParser.schemaOdcs.test.ts` | Import DDL → champs ODCS |
 | `relationshipExport.rename.test.ts` | FK stable après rename |
 
-**Total observé :** ~157 tests.
+**Total observé :** ~242 tests (19 fichiers).
 
 **Limites :** pas de tests composants React ni e2e navigateur dans `__tests__/`.
 
@@ -217,8 +217,10 @@ Après changement métier visible : mettre à jour **d’abord** la [documentati
 ### Modification export YAML
 
 - [ ] Golden keys `p1-compliance.test.ts`
-- [ ] Champs exclus YAML (owner, stakeholders, `aiVerified`, etc.) — owner/contacts comparés via `governanceSnapshotDiff.ts` pour publish/changelog
-- [ ] Publish gate : `hasAnyChangeSinceLastPublish` (export + gouvernance), pas le seul flag UI `hasEditedSincePublish`
+- [ ] Champs exclus YAML : owner, governance contacts (`stakeholders`), collaborateurs, `creationSource`, `inRevision`, `isPII`, `aiVerified`, historique app — owner/contacts via `governanceSnapshotDiff.ts` pour publish/changelog
+- [ ] Champs exportés schema : `businessName`, `classification`, `primaryKey`, `unique`, `criticalDataElement`, `customProperties`, relations exportables — couverts par `exportedContractDiff.ts` / compare
+- [ ] Publish gate : `hasAnyChangeSinceLastPublish` (export + gouvernance), pas le seul flag UI `hasEditedSincePublish` ; changelog jamais vide si `hasAnyChange`
+- [ ] Modale Compare : `compareExportedSnapshots` uniquement (pas de diff gouvernance)
 - [ ] Data access roles : `roleRowHasContent` (validation) vs `isRoleRowExportable` (YAML/diff) dans `p1Validation.ts`
 - [ ] `npm test`
 

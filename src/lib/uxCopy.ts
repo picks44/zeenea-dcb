@@ -74,9 +74,9 @@ export const WORKFLOW_PILL_TITLES: Record<WorkflowMetadataPillVariant, string> =
 
 export const EXPORT_COVERAGE = {
   includedInYaml:
-    'Exported contract file: identity, description, schema, tags, quality rules, reference links, data access roles, service levels, and custom properties.',
+    'Exported contract file: identity, description, schema (including business names, classification, keys, relationships), tags, quality rules, reference links, data access roles, service levels, and custom properties.',
   excludedFromYaml:
-    'Managed in the app only: contract owner, operational governance contacts, collaborators, and version history.',
+    'Managed in the app only: contract owner, operational governance contacts, collaborators, version history, and revision state.',
 } as const
 
 // ─── Section concept tags (deprecated — not shown in UI; titles + descriptions carry semantics) ─
@@ -227,6 +227,27 @@ export function topBarPublishedTooltip(version: string): string {
 export const VERSIONS_WORKING_COPY_LABEL = 'Working copy'
 
 export const VERSIONS_CHANGES_NOT_PUBLISHED = 'Changes not yet published'
+
+export const VERSIONS_NO_CHANGES_SINCE_LAST = 'No changes since last version'
+
+export const VERSIONS_REVISION_OPEN_NO_CHANGES =
+  'Revision open — no changes since last version'
+
+// ─── Compare versions (exported contract only) ───────────────────────────────
+
+export const COMPARE_MODAL_TITLE = 'Compare'
+
+export const COMPARE_EXPORT_ONLY_NOTE =
+  'Shows exported contract content only. Contract owner and governance contact changes appear in Versions and the publish changelog.'
+
+export const COMPARE_IDENTICAL_TITLE = 'These exported versions are identical'
+
+export const COMPARE_IDENTICAL_BODY =
+  'No differences in the exported contract between the selected versions. Governance-only changes are not shown here.'
+
+export const COMPARE_SELECT_TWO_VERSIONS = 'Select two different versions to compare'
+
+export const COMPARE_NOT_ENOUGH_VERSIONS = 'Not enough versions to compare yet.'
 
 // ─── Collaborators (application access; not in ODCS YAML) ───────────────────
 

@@ -7,6 +7,8 @@ import { ContractSectionHeader } from '@/components/shared/ContractSectionHeader
 import {
   VERSION_HISTORY_INTRO_EMPTY,
   VERSIONS_CHANGES_NOT_PUBLISHED,
+  VERSIONS_NO_CHANGES_SINCE_LAST,
+  VERSIONS_REVISION_OPEN_NO_CHANGES,
   VERSIONS_WORKING_COPY_LABEL,
   versionHistoryIntroCount,
 } from '@/lib/uxCopy'
@@ -121,8 +123,8 @@ export function VersionsView({
                             {summaryLines.length > 0
                               ? summaryLines.join(' · ')
                               : contract.inRevision
-                                ? 'Revision open — no changes since last version'
-                                : 'No changes since last version'}
+                                ? VERSIONS_REVISION_OPEN_NO_CHANGES
+                                : VERSIONS_NO_CHANGES_SINCE_LAST}
                           </p>
                         ) : (
                           <p className="text-[11px] text-neutral-300 mt-1">{VERSIONS_CHANGES_NOT_PUBLISHED}</p>

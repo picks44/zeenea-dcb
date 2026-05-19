@@ -8,6 +8,14 @@ import { snapshotToYaml } from '@/lib/odcsYamlGenerator'
 import { compareExportedSnapshots, contractToComparisonSnapshot, type FormDiffRow } from '@/lib/exportedContractDiff'
 import { hasWorkingCopyDraft } from '@/lib/contractVersionDiff'
 import { getCommitTitle } from '@/lib/versionHistory'
+import {
+  COMPARE_EXPORT_ONLY_NOTE,
+  COMPARE_IDENTICAL_BODY,
+  COMPARE_IDENTICAL_TITLE,
+  COMPARE_MODAL_TITLE,
+  COMPARE_NOT_ENOUGH_VERSIONS,
+  COMPARE_SELECT_TWO_VERSIONS,
+} from '@/lib/uxCopy'
 
 function contractToSnapshot(c: DataContract): DataContractSnapshot {
   return contractToComparisonSnapshot(c)
@@ -163,10 +171,8 @@ function IdenticalVersionsView() {
       <div className="h-10 w-10 rounded-full bg-[#f5f5fa] flex items-center justify-center">
         <GitBranch className="h-5 w-5 text-[#9898a7]" />
       </div>
-      <p className="text-sm text-[#656574] font-medium">These versions are identical</p>
-      <p className="text-xs text-[#9898a7] max-w-sm">
-        No differences in the contract definition between the selected versions.
-      </p>
+      <p className="text-sm text-[#656574] font-medium">{COMPARE_IDENTICAL_TITLE}</p>
+      <p className="text-xs text-[#9898a7] max-w-sm">{COMPARE_IDENTICAL_BODY}</p>
     </div>
   )
 }
@@ -326,7 +332,7 @@ export function VersionCompareModal({ contract, initialHash, open, onClose }: Ve
             <div className="h-7 w-7 rounded-lg bg-[#12131f] flex items-center justify-center">
               <GitBranch className="h-3.5 w-3.5 text-white" />
             </div>
-            <span className="font-semibold text-sm text-[#12131f]">Compare</span>
+            <span className="font-semibold text-sm text-[#12131f]">{COMPARE_MODAL_TITLE}</span>
           </div>
 
           {/* Left version select */}
@@ -410,6 +416,10 @@ export function VersionCompareModal({ contract, initialHash, open, onClose }: Ve
           </Button>
         </div>
 
+        <p className="px-5 py-1.5 text-[10px] text-[#656574] leading-snug border-b border-[#e4e4f0] bg-[#fbfbff] flex-shrink-0">
+          {COMPARE_EXPORT_ONLY_NOTE}
+        </p>
+
         {/* ── YAML column subheader ── */}
         {mode === 'yaml' && !sameSource && (
           <div className="flex flex-shrink-0 border-b border-[#30363d] bg-[#161b22]">
@@ -428,11 +438,11 @@ export function VersionCompareModal({ contract, initialHash, open, onClose }: Ve
         {/* ── Body ── */}
         {sameSource ? (
           <div className="flex-1 flex flex-col items-center justify-center gap-3">
-            <p className="text-sm text-[#656574] font-medium">Select two different versions to compare</p>
+            <p className="text-sm text-[#656574] font-medium">{COMPARE_SELECT_TWO_VERSIONS}</p>
           </div>
         ) : !leftSource || !rightSource ? (
           <div className="flex-1 flex flex-col items-center justify-center gap-3">
-            <p className="text-sm text-[#656574]">Not enough versions to compare yet.</p>
+            <p className="text-sm text-[#656574]">{COMPARE_NOT_ENOUGH_VERSIONS}</p>
           </div>
         ) : exportDiff?.identical ? (
           <IdenticalVersionsView />
