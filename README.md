@@ -11,7 +11,7 @@ Application web pour **créer, éditer et publier des contrats de données** con
 | Document | Public | Contenu |
 |----------|--------|---------|
 | **[Documentation produit](./docs/product-documentation.md)** | PM, QA, designer, client, dev | Vision, workflows, lifecycle, rôles, readiness, YAML, limitations — **source de vérité fonctionnelle** |
-| [Référence ODCS P1](./docs/odcs-p1-reference.md) | Data / conformité | 54 champs prioritaires ODCS v3.1.0 |
+| [Référence ODCS P1](./docs/odcs-p1-reference.md) | Data / conformité | 55 champs prioritaires ODCS v3.1.0 |
 | [Notes techniques](./docs/technical-notes.md) | Développeurs | Stack, persistance, tests, checklist maintien |
 
 ---

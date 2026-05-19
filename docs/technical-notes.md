@@ -143,9 +143,9 @@ Source unique : `src/lib/schemaOdcsMapping.ts` (résolution) + `src/lib/odcsYaml
 | `schema[].name` | `SchemaTable.name` | Sync auto depuis `physicalName` à l’édition ; migration : `normalizeOdcsName(physicalName)` |
 | `schema[].physicalName` | `physicalName` | Inchangé |
 | `schema[].physicalType` | `physicalType` (miroir `tableType`) | `table` \| `view` \| `topic` \| `file` |
-| `schema[].businessName` | `quantumName` | App-only label ; export si renseigné |
+| `schema[].businessName` | `quantumName` | Libellé UI **Entity name** ; exporté sous `businessName` si renseigné |
 | `properties[].name` | `ColumnDefinition.name` | Sync auto depuis `physicalName` |
-| `properties[].businessName` | `logicalName` | Export si renseigné |
+| `properties[].businessName` | `logicalName` | Libellé UI **Business label** ; exporté sous `businessName` si renseigné |
 | `properties[].primaryKey` | `isPrimaryKey` | Export si `true` (omit-if-false) |
 | `properties[].unique` | `isUnique` | Export si `true` |
 | `properties[].classification` | `classification` (+ sync `isPII`) | Export si `restricted` ou `confidential` ; `isPII` non exporté |
@@ -194,6 +194,7 @@ Référence normative : [odcs-p1-reference.md](./odcs-p1-reference.md).
 | Lifecycle | `contractLifecycle.ts`, handlers `App.tsx` |
 | Import DDL | `ddlParser.ts` |
 | Readiness | `publicationReadiness.ts`, `readinessGuidance.ts` |
+| Diff / versioning publish | `contractVersionDiff.ts`, `exportedContractDiff.ts`, `governanceSnapshotDiff.ts` |
 | Libellés UI | `uxCopy.ts` |
 | Doc produit | `docs/product-documentation.md` |
 
@@ -216,7 +217,8 @@ Après changement métier visible : mettre à jour **d’abord** la [documentati
 ### Modification export YAML
 
 - [ ] Golden keys `p1-compliance.test.ts`
-- [ ] Champs exclus (owner, stakeholders, `aiVerified`, etc.)
+- [ ] Champs exclus YAML (owner, stakeholders, `aiVerified`, etc.) — owner/contacts comparés via `governanceSnapshotDiff.ts` pour publish/changelog
+- [ ] Publish gate : `hasAnyChangeSinceLastPublish` (export + gouvernance), pas le seul flag UI `hasEditedSincePublish`
 - [ ] Data access roles : `roleRowHasContent` (validation) vs `isRoleRowExportable` (YAML/diff) dans `p1Validation.ts`
 - [ ] `npm test`
 

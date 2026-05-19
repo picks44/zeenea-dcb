@@ -39,6 +39,7 @@ import type { PushResult } from './components/PushToGitModal'
 import { loadContracts, saveContracts } from './lib/storage'
 import { validateContract } from './lib/contractValidation'
 import { CURRENT_USER } from './lib/currentUser'
+import { hasAnyChangeSinceLastPublish } from './lib/contractVersionDiff'
 import { publishBlockUserMessage } from './lib/validationUserMessages'
 import {
   NO_CHANGES_TO_PUBLISH,
@@ -64,7 +65,6 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<EditorTab>('form')
   const [showPushModal, setShowPushModal] = useState(false)
   const [compareHash, setCompareHash] = useState<string | null>(null)
-  const [hasEditedSincePublish, setHasEditedSincePublish] = useState(false)
   const [confirmConfig, setConfirmConfig] = useState<ConfirmConfig | null>(null)
   const [showShareModal, setShowShareModal] = useState(false)
   const [readinessOpen, setReadinessOpen] = useState(false)
@@ -116,11 +116,12 @@ export default function App() {
     : false
 
   const validation = contract ? validateContract(contract, contracts) : null
-  const canPublish = !!validation?.canPublish && hasEditedSincePublish && myRole === 'owner'
+  const hasPublishableChanges = contract ? hasAnyChangeSinceLastPublish(contract) : false
+  const canPublish = !!validation?.canPublish && hasPublishableChanges && myRole === 'owner'
 
   const publishBlockReason = !contract ? null
     : myRole !== 'owner' ? PUBLISH_REQUIRES_PUBLISHER_CONTRACT
-    : !hasEditedSincePublish ? NO_CHANGES_TO_PUBLISH
+    : !hasPublishableChanges ? NO_CHANGES_TO_PUBLISH
     : validation ? publishBlockUserMessage(validation) : null
 
   const updateContract = useCallback((updated: DataContract) => {
@@ -135,7 +136,6 @@ export default function App() {
     setCurrentView('editor')
     setActiveSection(section)
     setActiveTab('form')
-    setHasEditedSincePublish(false)
   }
 
   const handleCreateContract = () => {
@@ -151,7 +151,6 @@ export default function App() {
     if (tables.length === 0) return
     const c = createContractWithImportedSchema(tables)
     openNewContract(c, 'fundamentals')
-    setHasEditedSincePublish(true)
   }, [])
 
   /** Legacy: proposed contract created before pre-contract flow (empty import onboarding). */
@@ -159,7 +158,6 @@ export default function App() {
     if (!contract || isViewer || contract.info.status !== 'proposed') return
     updateContract(applyStartFromScratch(contract))
     setActiveSection('fundamentals')
-    setHasEditedSincePublish(false)
   }, [contract, isViewer, updateContract])
 
   const handleSelectContract = (uid: string) => {
@@ -167,14 +165,6 @@ export default function App() {
     setCurrentView('editor')
     setActiveSection('fundamentals')
     setActiveTab('form')
-    const c = contracts.find(c => c.uid === uid)
-    if (c) {
-      const lastCommit = c.gitHistory[c.gitHistory.length - 1]
-      const hasEdits = !lastCommit
-        ? c.updatedAt !== c.createdAt
-        : new Date(c.updatedAt) > new Date(lastCommit.timestamp)
-      setHasEditedSincePublish(hasEdits)
-    }
   }
 
   const handleBack = () => {
@@ -198,7 +188,6 @@ export default function App() {
       id: contract.id || deriveContractId(contract.info.title || first.physicalName, contract.uid),
       dataset: tables,
     })
-    setHasEditedSincePublish(true)
     setActiveSection('fundamentals')
   }, [contract, updateContract, isViewer])
 
@@ -212,42 +201,36 @@ export default function App() {
         id: id !== undefined ? id : contract.id,
         info: { ...contract.info, ...infoUpdates },
       })
-      setHasEditedSincePublish(true)
     }, [contract, updateContract, myRole])
 
   const handleSchemaChange = useCallback((tables: SchemaTable[]) => {
     if (!contract) return
     if (isContractLocked(contract.info.status, contract.inRevision, myRole === 'viewer')) return
     updateContract({ ...contract, dataset: tables })
-    setHasEditedSincePublish(true)
   }, [contract, updateContract, myRole])
 
   const handleStakeholdersChange = useCallback((stakeholders: DataContract['stakeholders']) => {
     if (!contract) return
     if (isContractLocked(contract.info.status, contract.inRevision, myRole === 'viewer')) return
     updateContract({ ...contract, stakeholders })
-    setHasEditedSincePublish(true)
   }, [contract, updateContract, myRole])
 
   const handleRolesChange = useCallback((roles: OdcsAccessRole[]) => {
     if (!contract) return
     if (isContractLocked(contract.info.status, contract.inRevision, myRole === 'viewer')) return
     updateContract({ ...contract, roles })
-    setHasEditedSincePublish(true)
   }, [contract, updateContract, myRole])
 
   const handleSlaChange = useCallback((slaProperties: SlaProperty[]) => {
     if (!contract) return
     if (isContractLocked(contract.info.status, contract.inRevision, myRole === 'viewer')) return
     updateContract({ ...contract, slaProperties })
-    setHasEditedSincePublish(true)
   }, [contract, updateContract, myRole])
 
   const handleCustomPropertiesChange = useCallback((customProperties: CustomProperty[]) => {
     if (!contract) return
     if (isContractLocked(contract.info.status, contract.inRevision, myRole === 'viewer')) return
     updateContract({ ...contract, customProperties })
-    setHasEditedSincePublish(true)
   }, [contract, updateContract, myRole])
 
   const handleDeleteContract = () => {
@@ -268,7 +251,6 @@ export default function App() {
   const handleNewVersion = useCallback(() => {
     if (!contract) return
     updateContract({ ...contract, inRevision: true })
-    setHasEditedSincePublish(false)
   }, [contract, updateContract])
 
   const handleStartDraft = useCallback(() => {
@@ -277,7 +259,6 @@ export default function App() {
       ...contract,
       info: { ...contract.info, status: applyLifecycleAction(contract.info.status, 'start_draft') },
     })
-    setHasEditedSincePublish(true)
   }, [contract, updateContract])
 
   const handleDeprecateContract = useCallback(() => {
@@ -339,7 +320,6 @@ export default function App() {
           customProperties: [...(snap.customProperties ?? [])],
           inRevision: false,
         })
-        setHasEditedSincePublish(false)
       },
     })
   }, [contract, updateContract])
@@ -347,7 +327,7 @@ export default function App() {
   const handleGitPush = useCallback((result: PushResult) => {
     if (!contract) return
     const publishCheck = validateContract(contract, contracts)
-    if (!publishCheck.canPublish || myRole !== 'owner' || !hasEditedSincePublish) return
+    if (!publishCheck.canPublish || myRole !== 'owner' || !hasAnyChangeSinceLastPublish(contract)) return
     const snapshot: DataContractSnapshot = {
       id: contract.id,
       info: {
@@ -369,8 +349,7 @@ export default function App() {
       inRevision: false,
       updatedAt: result.commit.timestamp,
     } : c))
-    setHasEditedSincePublish(false)
-  }, [contract, contracts, hasEditedSincePublish, myRole])
+  }, [contract, contracts, myRole])
 
   return (
     <div className="flex h-screen bg-[#fbfbff] overflow-hidden">
@@ -590,7 +569,7 @@ export default function App() {
                         contract={contract}
                         contracts={contracts}
                         myRole={myRole}
-                        hasEditedSincePublish={hasEditedSincePublish}
+                        hasPublishableChanges={hasPublishableChanges}
                         layout="pinned"
                         docCompact={docCompact}
                       />
@@ -607,7 +586,7 @@ export default function App() {
                           contract={contract}
                           contracts={contracts}
                           myRole={myRole}
-                          hasEditedSincePublish={hasEditedSincePublish}
+                          hasPublishableChanges={hasPublishableChanges}
                           layout="overlay"
                           onClose={() => setReadinessOpen(false)}
                           docCompact={docCompact}

@@ -5,12 +5,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DataContract, DataContractSnapshot } from '@/types/odcs'
 import { cn, timeAgo } from '@/lib/utils'
 import { snapshotToYaml } from '@/lib/odcsYamlGenerator'
-import {
-  compareExportedSnapshots,
-  contractToComparisonSnapshot,
-  hasWorkingCopyDraft,
-  type FormDiffRow,
-} from '@/lib/exportedContractDiff'
+import { compareExportedSnapshots, contractToComparisonSnapshot, type FormDiffRow } from '@/lib/exportedContractDiff'
+import { hasWorkingCopyDraft } from '@/lib/contractVersionDiff'
 import { getCommitTitle } from '@/lib/versionHistory'
 
 function contractToSnapshot(c: DataContract): DataContractSnapshot {

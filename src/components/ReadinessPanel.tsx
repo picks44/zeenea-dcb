@@ -32,7 +32,7 @@ interface ReadinessPanelProps {
   contract: DataContract
   contracts: DataContract[]
   myRole: CollaboratorRole
-  hasEditedSincePublish: boolean
+  hasPublishableChanges: boolean
   /** Pinned in layout (xl+) or floating overlay (lg and below). */
   layout?: 'pinned' | 'overlay'
   onClose?: () => void
@@ -163,14 +163,14 @@ export function ReadinessPanel({
   contract,
   contracts,
   myRole,
-  hasEditedSincePublish,
+  hasPublishableChanges,
   layout = 'pinned',
   onClose,
   docCompact,
 }: ReadinessPanelProps) {
   const readiness = useMemo(
-    () => computePublicationReadiness(contract, myRole, hasEditedSincePublish, contracts),
-    [contract, contracts, myRole, hasEditedSincePublish],
+    () => computePublicationReadiness(contract, myRole, hasPublishableChanges, contracts),
+    [contract, contracts, myRole, hasPublishableChanges],
   )
 
   const nav = useReadinessNavigation()

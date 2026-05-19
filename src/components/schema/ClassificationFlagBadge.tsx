@@ -42,9 +42,10 @@ export function ClassificationFlagBadge({
                 compact ? 'h-5 w-5' : 'h-7 w-7',
                 className,
                 classificationIconButtonClass(classification, disabled),
+                !disabled && !hasValue && 'border-dashed',
                 !disabled && 'cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-100 focus-visible:ring-offset-1',
-                disabled && 'cursor-default',
-                hasValue && !disabled && 'shadow-sm',
+                !disabled && hasValue && 'hover:shadow-sm',
+                disabled && 'cursor-default opacity-90',
               )}
             />
           }

@@ -259,17 +259,17 @@ export function TableBlock({
       {!collapsed && (
         <>
           <div className="overflow-x-auto min-w-0">
-          <div className="min-w-[672px]">
+          <div className="min-w-[740px]">
           <div className={cn(
             'flex items-center px-4 border-b border-neutral-200 bg-neutral-25/50',
-            denseReadOnly ? 'py-1' : 'py-1.5',
+            denseReadOnly ? 'py-1' : 'py-2',
           )}>
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-neutral-400 w-52 flex-shrink-0">Field</span>
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-neutral-400 w-32 flex-shrink-0">Type</span>
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-neutral-400 w-32 flex-shrink-0">DB Type</span>
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-neutral-400 w-56 flex-shrink-0">Rules</span>
-            <div className="flex-1" />
-            {!isLocked && <div className="w-6 flex-shrink-0 ml-2" />}
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-neutral-400 w-52 flex-shrink-0 pr-3">Field</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-neutral-400 w-32 flex-shrink-0 pr-3">Type</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-neutral-400 w-32 flex-shrink-0 pr-3">DB Type</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-neutral-400 w-60 flex-shrink-0">Rules</span>
+            <div className="flex-1 min-w-2" />
+            <span className={cn('flex-shrink-0', isLocked ? 'w-8' : 'w-16')} aria-hidden />
           </div>
 
           <div className="divide-y divide-neutral-100">
@@ -293,7 +293,7 @@ export function TableBlock({
                   columnName={col.physicalName}
                   className={cn(
                     'flex items-start px-4 transition-colors group rounded-md',
-                    denseReadOnly ? 'py-2' : 'py-2 hover:bg-neutral-50/50',
+                    denseReadOnly ? 'py-2' : 'py-2.5 hover:bg-neutral-50/50',
                   )}
                 >
                   <div className="w-52 flex-shrink-0 pr-3 min-w-0">
@@ -337,7 +337,7 @@ export function TableBlock({
                     )}
                   </div>
 
-                  <div className="w-32 flex-shrink-0 pr-3">
+                  <div className="w-32 flex-shrink-0 pr-3 self-start">
                     {isLocked ? (
                       <span className={cn(
                         'inline-flex items-center gap-0.5 font-semibold rounded border',
@@ -365,10 +365,10 @@ export function TableBlock({
                     )}
                   </div>
 
-                  <div className="w-32 flex-shrink-0 pr-3">
+                  <div className="w-32 flex-shrink-0 pr-3 self-start">
                     {isLocked ? (
                       <span className={cn(
-                        'font-mono text-neutral-500 bg-neutral-50 rounded',
+                        'inline-flex font-mono text-neutral-500 bg-neutral-50 rounded',
                         denseReadOnly ? 'text-[10px] px-1 py-0' : 'text-[11px] px-1.5 py-0.5',
                       )}>{col.physicalType}</span>
                     ) : (
@@ -379,8 +379,8 @@ export function TableBlock({
                     )}
                   </div>
 
-                  <div className="w-56 flex-shrink-0 flex items-center gap-2 min-w-0 self-center">
-                    <div className="flex shrink-0 items-center">
+                  <div className="w-60 flex-shrink-0 flex items-start gap-1.5 min-w-0 self-start">
+                    <div className="inline-flex shrink-0 items-stretch" role="group" aria-label="Field rules">
                       <FlagBadge shape="left"  flag="PK"  active={col.isPrimaryKey} onClick={() => updateCol(col.id, { isPrimaryKey: !col.isPrimaryKey })} disabled={isLocked} compact={denseReadOnly} />
                       <FlagBadge shape="mid"   flag="REQ" active={col.required}     onClick={() => updateCol(col.id, { required: !col.required })}         disabled={isLocked} compact={denseReadOnly} />
                       <FlagBadge
@@ -404,7 +404,6 @@ export function TableBlock({
                       classification={col.classification}
                       disabled={isLocked}
                       compact={denseReadOnly}
-                      className="ml-2 shrink-0"
                       onClick={() => {
                         const classification = cycleClassification(col.classification)
                         updateCol(col.id, {
@@ -415,8 +414,9 @@ export function TableBlock({
                     />
                   </div>
 
-                  <div className="flex-1" />
+                  <div className="flex-1 min-w-2" />
 
+                  <div className={cn('flex shrink-0 items-center self-start', isLocked ? 'w-8 justify-end' : 'w-16 justify-end gap-0')}>
                   <button
                     type="button"
                     onClick={() => setAdvancedColId(col.id)}
@@ -424,7 +424,7 @@ export function TableBlock({
                     aria-label="Field properties"
                     className={schemaMetadataButtonClass(hasMetadata, {
                       inFieldRow: true,
-                      className: 'ml-2 relative',
+                      className: 'relative',
                     })}
                   >
                     <SlidersHorizontal className="h-3.5 w-3.5" />
@@ -435,6 +435,7 @@ export function TableBlock({
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
                   )}
+                  </div>
                 </SchemaColumnReadinessAnchor>
               )
             })}

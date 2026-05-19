@@ -16,7 +16,7 @@ import {
   PUBLISH_STEP_VERSION_SAVED,
   publishStepUpdatingVersion,
 } from '@/lib/uxCopy'
-import { buildPublishChangelog, summarizeExportChangesSince } from '@/lib/exportedContractDiff'
+import { buildPublishChangelog, summarizeChangesSince } from '@/lib/contractVersionDiff'
 import { publishCommitTitle } from '@/lib/versionHistory'
 import { cn } from '@/lib/utils'
 
@@ -212,7 +212,7 @@ export function PushToGitModal({ contract, allContracts, open, onClose, onPushed
       const lastCommit = contract.gitHistory[contract.gitHistory.length - 1]
       if (lastCommit?.snapshot) {
         initialDescription = buildPublishChangelog(
-          summarizeExportChangesSince(contract, lastCommit.snapshot),
+          summarizeChangesSince(contract, lastCommit.snapshot),
         )
       }
     }

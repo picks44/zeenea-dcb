@@ -10,7 +10,11 @@ import {
   VERSIONS_WORKING_COPY_LABEL,
   versionHistoryIntroCount,
 } from '@/lib/uxCopy'
-import { hasWorkingCopyDraft, summarizeExportChangesSince } from '@/lib/exportedContractDiff'
+import {
+  buildWorkingCopySummaryLines,
+  hasWorkingCopyDraft,
+  summarizeChangesSince,
+} from '@/lib/contractVersionDiff'
 import { getCommitChangelog, getCommitTitle, parseChangelogLines } from '@/lib/versionHistory'
 
 interface VersionsViewProps {
@@ -91,9 +95,12 @@ export function VersionsView({
 
             {/* Draft / working copy card */}
             {hasDraftRow && (() => {
-              const exportDiff = canCompareCurrent
-                ? summarizeExportChangesSince(contract, lastCommit!.snapshot!)
+              const versionComparison = canCompareCurrent
+                ? summarizeChangesSince(contract, lastCommit!.snapshot!)
                 : null
+              const summaryLines = versionComparison
+                ? buildWorkingCopySummaryLines(versionComparison)
+                : []
               const isLast = commits.length === 0
               return (
                 <div className="group flex gap-3">
@@ -109,11 +116,13 @@ export function VersionsView({
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-sm font-semibold text-neutral-900">{VERSIONS_WORKING_COPY_LABEL}</span>
                         </div>
-                        {exportDiff ? (
+                        {versionComparison ? (
                           <p className="text-[11px] text-neutral-500 mt-1.5 leading-snug">
-                            {exportDiff.identical
-                              ? 'No changes since last version'
-                              : exportDiff.summaryLines.join(' · ')}
+                            {summaryLines.length > 0
+                              ? summaryLines.join(' · ')
+                              : contract.inRevision
+                                ? 'Revision open — no changes since last version'
+                                : 'No changes since last version'}
                           </p>
                         ) : (
                           <p className="text-[11px] text-neutral-300 mt-1">{VERSIONS_CHANGES_NOT_PUBLISHED}</p>

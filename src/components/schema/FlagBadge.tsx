@@ -35,15 +35,15 @@ export function FlagBadge({ flag, active, onClick, disabled, shape = 'mid', comp
               onClick={disabled ? undefined : onClick}
               disabled={disabled}
               className={cn(
-                'font-bold border transition-all select-none',
-                compact ? 'h-5 px-1.5 text-[10px]' : 'h-7 px-2.5 text-[11px]',
+                'inline-flex items-center justify-center font-bold border leading-none transition-all select-none',
+                compact ? 'h-5 min-w-[1.625rem] px-1 text-[10px]' : 'h-7 min-w-[2rem] px-1.5 text-[11px]',
                 shape === 'left'  && 'rounded-l-md',
                 shape === 'mid'   && 'rounded-none -ml-px',
                 shape === 'right' && 'rounded-r-md -ml-px',
                 active ? cn(color, 'relative z-10') : 'bg-transparent text-neutral-300 border-neutral-200',
-                !disabled && !active && 'hover:text-neutral-400 hover:border-neutral-200 hover:z-10 hover:relative',
-                !disabled && 'cursor-pointer',
-                disabled && 'cursor-default'
+                !disabled && !active && 'hover:text-neutral-400 hover:border-neutral-300 hover:z-10 hover:relative',
+                !disabled && 'cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-100 focus-visible:ring-offset-1 focus-visible:z-20',
+                disabled && 'cursor-default opacity-90'
               )}
             />
           }

@@ -44,8 +44,14 @@ export interface ExportedContractDiff {
   identical: boolean
   summaryLines: string[]
   schema: ArrayChangeCount
+  schemaTables: { changed: boolean }
+  customProperties: ArrayChangeCount
+  roles: ArrayChangeCount
+  sla: ArrayChangeCount
   formSections: FormDiffSection[]
 }
+
+const PUBLISH_SYSTEM_DOC_KEYS = ['version', 'status'] as const
 
 // ─── Export payloads ──────────────────────────────────────────────────────────
 
@@ -62,6 +68,20 @@ export function exportedSnapshotsEqual(
   right: DataContractSnapshot,
 ): boolean {
   return JSON.stringify(exportDocumentFromSnapshot(left)) === JSON.stringify(exportDocumentFromSnapshot(right))
+}
+
+/** Compare export payloads ignoring version/status (publication system fields). */
+export function exportDocumentsEqualIgnoringPublishFields(
+  left: DataContractSnapshot,
+  right: DataContractSnapshot,
+): boolean {
+  const leftDoc = exportDocumentFromSnapshot(left)
+  const rightDoc = exportDocumentFromSnapshot(right)
+  const normalizedLeft = { ...leftDoc }
+  for (const key of PUBLISH_SYSTEM_DOC_KEYS) {
+    normalizedLeft[key] = rightDoc[key]
+  }
+  return JSON.stringify(normalizedLeft) === JSON.stringify(rightDoc)
 }
 
 // ─── Diff helpers ─────────────────────────────────────────────────────────────
@@ -90,6 +110,41 @@ function diffByKey<T>(
     if (!rightMap.has(key)) removed++
   }
   return { added, removed, updated }
+}
+
+function tableStableKey(table: Record<string, unknown>): string {
+  return String(table.id ?? table.name ?? table.physicalName ?? '')
+}
+
+function stripTableProperties(table: Record<string, unknown>): Record<string, unknown> {
+  const { properties: _properties, ...rest } = table
+  return rest
+}
+
+function schemaTableMetadataChanged(
+  leftSchema: unknown[] | undefined,
+  rightSchema: unknown[] | undefined,
+): boolean {
+  const leftTables = new Map(
+    (leftSchema ?? [])
+      .filter((t): t is Record<string, unknown> => Boolean(t) && typeof t === 'object')
+      .map(t => [tableStableKey(t), stripTableProperties(t)]),
+  )
+  const rightTables = new Map(
+    (rightSchema ?? [])
+      .filter((t): t is Record<string, unknown> => Boolean(t) && typeof t === 'object')
+      .map(t => [tableStableKey(t), stripTableProperties(t)]),
+  )
+
+  for (const [key, rightTable] of rightTables) {
+    const leftTable = leftTables.get(key)
+    if (!leftTable) return true
+    if (JSON.stringify(leftTable) !== JSON.stringify(rightTable)) return true
+  }
+  for (const key of leftTables.keys()) {
+    if (!rightTables.has(key)) return true
+  }
+  return false
 }
 
 function flattenSchemaProperties(
@@ -128,6 +183,15 @@ function schemaDiff(
     if (!right.has(key)) removed++
   }
   return { added, removed, updated }
+}
+
+function customPropertiesDiff(
+  leftDoc: Record<string, unknown>,
+  rightDoc: Record<string, unknown>,
+): ArrayChangeCount {
+  const left = (leftDoc.customProperties ?? []) as Record<string, unknown>[]
+  const right = (rightDoc.customProperties ?? []) as Record<string, unknown>[]
+  return diffByKey(left, right, cp => String(cp.property ?? '').trim())
 }
 
 function tagsKey(tags: unknown): string {
@@ -188,13 +252,44 @@ function buildSchemaFormRows(
   return rows
 }
 
+function buildCustomPropertyFormRows(
+  leftDoc: Record<string, unknown>,
+  rightDoc: Record<string, unknown>,
+): FormDiffRow[] {
+  const left = (leftDoc.customProperties ?? []) as Record<string, unknown>[]
+  const right = (rightDoc.customProperties ?? []) as Record<string, unknown>[]
+  const leftMap = new Map(left.map(cp => [String(cp.property ?? '').trim(), cp]))
+  const rightMap = new Map(right.map(cp => [String(cp.property ?? '').trim(), cp]))
+  const rows: FormDiffRow[] = []
+
+  for (const [key, r] of rightMap) {
+    if (!key) continue
+    const l = leftMap.get(key)
+    if (!l) {
+      rows.push({ kind: 'added', label: key, left: '', right: String(r.value ?? '') })
+    } else if (JSON.stringify(l) !== JSON.stringify(r)) {
+      rows.push({
+        kind: 'modified',
+        label: key,
+        left: String(l.value ?? ''),
+        right: String(r.value ?? ''),
+      })
+    }
+  }
+  for (const [key, l] of leftMap) {
+    if (!key || rightMap.has(key)) continue
+    rows.push({ kind: 'removed', label: key, left: String(l.value ?? ''), right: '' })
+  }
+  return rows
+}
+
 function buildRoleFormRows(left: OdcsAccessRole[], right: OdcsAccessRole[]): FormDiffRow[] {
   const rows: FormDiffRow[] = []
   const leftMap = new Map(left.map(r => [roleKey(r), r]))
   const rightMap = new Map(right.map(r => [roleKey(r), r]))
 
-  for (const [key, r] of rightMap) {
-    if (!leftMap.has(key)) {
+  for (const [, r] of rightMap) {
+    if (!leftMap.has(roleKey(r))) {
       rows.push({
         kind: 'added',
         label: r.role,
@@ -202,7 +297,7 @@ function buildRoleFormRows(left: OdcsAccessRole[], right: OdcsAccessRole[]): For
         right: `${r.access}${r.description ? ` — ${r.description}` : ''}`,
       })
     } else {
-      const l = leftMap.get(key)!
+      const l = leftMap.get(roleKey(r))!
       if (JSON.stringify(l) !== JSON.stringify(r)) {
         rows.push({
           kind: 'modified',
@@ -214,8 +309,8 @@ function buildRoleFormRows(left: OdcsAccessRole[], right: OdcsAccessRole[]): For
       }
     }
   }
-  for (const [key, l] of leftMap) {
-    if (!rightMap.has(key)) {
+  for (const [, l] of leftMap) {
+    if (!rightMap.has(roleKey(l))) {
       rows.push({
         kind: 'removed',
         label: l.role,
@@ -232,11 +327,11 @@ function buildSlaFormRows(left: SlaProperty[], right: SlaProperty[]): FormDiffRo
   const leftMap = new Map(left.map(s => [slaKey(s), s]))
   const rightMap = new Map(right.map(s => [slaKey(s), s]))
 
-  for (const [key, r] of rightMap) {
-    if (!leftMap.has(key)) {
+  for (const [, r] of rightMap) {
+    if (!leftMap.has(slaKey(r))) {
       rows.push({ kind: 'added', label: slaLabel(r), left: '', right: String(r.value) })
     } else {
-      const l = leftMap.get(key)!
+      const l = leftMap.get(slaKey(r))!
       if (JSON.stringify(l) !== JSON.stringify(r)) {
         rows.push({
           kind: 'modified',
@@ -247,8 +342,8 @@ function buildSlaFormRows(left: SlaProperty[], right: SlaProperty[]): FormDiffRo
       }
     }
   }
-  for (const [key, l] of leftMap) {
-    if (!rightMap.has(key)) {
+  for (const [, l] of leftMap) {
+    if (!rightMap.has(slaKey(l))) {
       rows.push({ kind: 'removed', label: slaLabel(l), left: String(l.value), right: '' })
     }
   }
@@ -257,6 +352,8 @@ function buildSlaFormRows(left: SlaProperty[], right: SlaProperty[]): FormDiffRo
 
 function buildSummaryLines(parts: {
   schema: ArrayChangeCount
+  schemaTablesChanged: boolean
+  customProperties: ArrayChangeCount
   roles: ArrayChangeCount
   sla: ArrayChangeCount
   quality: ArrayChangeCount
@@ -266,11 +363,24 @@ function buildSummaryLines(parts: {
   metadataChanged: boolean
 }): string[] {
   const lines: string[] = []
-  const { schema, roles, sla, quality, authLinks, relationships } = parts
+  const { schema, customProperties, roles, sla, quality, authLinks, relationships } = parts
 
   if (schema.added) lines.push(`${countLabel(schema.added, 'field', 'fields')} added`)
   if (schema.removed) lines.push(`${countLabel(schema.removed, 'field', 'fields')} removed`)
   if (schema.updated) lines.push(`${countLabel(schema.updated, 'field', 'fields')} updated`)
+  if (parts.schemaTablesChanged && !schema.added && !schema.removed && !schema.updated) {
+    lines.push('Schema metadata updated')
+  }
+
+  if (customProperties.added) {
+    lines.push(`${countLabel(customProperties.added, 'custom property', 'custom properties')} added`)
+  }
+  if (customProperties.removed) {
+    lines.push(`${countLabel(customProperties.removed, 'custom property', 'custom properties')} removed`)
+  }
+  if (customProperties.updated) {
+    lines.push(`${countLabel(customProperties.updated, 'custom property', 'custom properties')} updated`)
+  }
 
   if (quality.added) lines.push(`${countLabel(quality.added, 'quality rule', 'quality rules')} added`)
   if (quality.removed) lines.push(`${countLabel(quality.removed, 'quality rule', 'quality rules')} removed`)
@@ -309,14 +419,30 @@ export function compareExportedSnapshots(
   const rightDoc = exportDocumentFromSnapshot(right)
   const identical = JSON.stringify(leftDoc) === JSON.stringify(rightDoc)
 
+  const emptyCounts = { added: 0, removed: 0, updated: 0 }
+
   if (identical) {
-    return { identical: true, summaryLines: [], schema: { added: 0, removed: 0, updated: 0 }, formSections: [] }
+    return {
+      identical: true,
+      summaryLines: [],
+      schema: emptyCounts,
+      schemaTables: { changed: false },
+      customProperties: emptyCounts,
+      roles: emptyCounts,
+      sla: emptyCounts,
+      formSections: [],
+    }
   }
 
   const schema = schemaDiff(
     leftDoc.schema as unknown[] | undefined,
     rightDoc.schema as unknown[] | undefined,
   )
+  const schemaTablesChanged = schemaTableMetadataChanged(
+    leftDoc.schema as unknown[] | undefined,
+    rightDoc.schema as unknown[] | undefined,
+  )
+  const customProperties = customPropertiesDiff(leftDoc, rightDoc)
 
   const leftRoles = (left.roles ?? []).filter(isRoleRowExportable)
   const rightRoles = (right.roles ?? []).filter(isRoleRowExportable)
@@ -334,13 +460,15 @@ export function compareExportedSnapshots(
   const rightDesc = (rightDoc.description ?? {}) as Record<string, unknown>
   const descriptionChanged = JSON.stringify(leftDesc) !== JSON.stringify(rightDesc)
 
-  const metadataKeys = ['id', 'version', 'status', 'name', 'dataProduct', 'domain', 'tags'] as const
+  const metadataKeys = ['id', 'name', 'dataProduct', 'domain', 'tags'] as const
   const metadataChanged = metadataKeys.some(
     key => JSON.stringify(leftDoc[key]) !== JSON.stringify(rightDoc[key]),
   )
 
   const summaryLines = buildSummaryLines({
     schema,
+    schemaTablesChanged,
+    customProperties,
     roles,
     sla,
     quality: qualityDiff.counts,
@@ -353,15 +481,13 @@ export function compareExportedSnapshots(
   const formSections: FormDiffSection[] = []
 
   const metadataRows: FormDiffRow[] = []
-  const infoFields: { key: keyof DataContractSnapshot['info'] | 'id'; label: string; exported: boolean }[] = [
-    { key: 'id', label: 'Contract ID', exported: true },
-    { key: 'title', label: 'Title', exported: true },
-    { key: 'version', label: 'Version', exported: true },
-    { key: 'status', label: 'Status', exported: true },
-    { key: 'domain', label: 'Domain', exported: true },
-    { key: 'description', label: 'Purpose', exported: true },
-    { key: 'descriptionUsage', label: 'Usage', exported: true },
-    { key: 'descriptionLimitations', label: 'Limitations', exported: true },
+  const infoFields: { key: keyof DataContractSnapshot['info'] | 'id'; label: string }[] = [
+    { key: 'id', label: 'Contract ID' },
+    { key: 'title', label: 'Title' },
+    { key: 'domain', label: 'Domain' },
+    { key: 'description', label: 'Purpose' },
+    { key: 'descriptionUsage', label: 'Usage' },
+    { key: 'descriptionLimitations', label: 'Limitations' },
   ]
 
   for (const { key, label } of infoFields) {
@@ -392,6 +518,11 @@ export function compareExportedSnapshots(
   const schemaRows = buildSchemaFormRows(leftDoc, rightDoc)
   if (schemaRows.length > 0) {
     formSections.push({ id: 'schema', title: NAV_SCHEMA, rows: schemaRows })
+  }
+
+  const customPropertyRows = buildCustomPropertyFormRows(leftDoc, rightDoc)
+  if (customPropertyRows.length > 0) {
+    formSections.push({ id: 'customProperties', title: 'Custom properties', rows: customPropertyRows })
   }
 
   const roleRows = buildRoleFormRows(leftRoles, rightRoles)
@@ -430,7 +561,16 @@ export function compareExportedSnapshots(
     })
   }
 
-  return { identical, summaryLines, schema, formSections }
+  return {
+    identical,
+    summaryLines,
+    schema,
+    schemaTables: { changed: schemaTablesChanged },
+    customProperties,
+    roles,
+    sla,
+    formSections,
+  }
 }
 
 export function contractToComparisonSnapshot(contract: DataContract): DataContractSnapshot {
@@ -441,6 +581,7 @@ export function contractToComparisonSnapshot(contract: DataContract): DataContra
     stakeholders: [...contract.stakeholders],
     roles: [...(contract.roles ?? [])],
     slaProperties: [...(contract.slaProperties ?? [])],
+    customProperties: [...(contract.customProperties ?? [])],
   }
 }
 
@@ -452,22 +593,7 @@ export function summarizeExportChangesSince(
   return compareExportedSnapshots(previous, contractToComparisonSnapshot(current))
 }
 
-/**
- * Whether the contract has a working copy distinct from the last publish.
- * Active + read-only contracts with no export diff do NOT count as a draft.
- */
-export function hasWorkingCopyDraft(contract: DataContract): boolean {
-  if (contract.info.status === 'draft') return true
-  if (contract.inRevision) return true
-
-  const lastCommit = contract.gitHistory[contract.gitHistory.length - 1]
-  if (!lastCommit?.snapshot) return false
-  if (new Date(contract.updatedAt) <= new Date(lastCommit.timestamp)) return false
-
-  return !summarizeExportChangesSince(contract, lastCommit.snapshot).identical
-}
-
-const NO_CONTRACT_CHANGES = 'No contract changes'
+const CHANGELOG_SKIP_METADATA_LABELS = new Set(['Version', 'Status'])
 
 function changelogLineForRow(sectionId: string, row: FormDiffRow): string {
   switch (sectionId) {
@@ -478,12 +604,18 @@ function changelogLineForRow(sectionId: string, row: FormDiffRow): string {
     case 'sla':
       if (row.kind === 'added') return `Added ${row.label} ${CHANGELOG_SERVICE_LEVEL}`
       if (row.kind === 'removed') return `Removed ${row.label} ${CHANGELOG_SERVICE_LEVEL}`
-      if (row.left && row.right) return `Updated ${row.label} ${CHANGELOG_SERVICE_LEVEL} from ${row.left} to ${row.right}`
+      if (row.left && row.right) {
+        return `Updated ${row.label} ${CHANGELOG_SERVICE_LEVEL} from ${row.left} to ${row.right}`
+      }
       return `Updated ${row.label} ${CHANGELOG_SERVICE_LEVEL}`
     case 'schema':
       if (row.kind === 'added') return `Added ${row.label} field`
       if (row.kind === 'removed') return `Removed ${row.label} field`
       return `Updated ${row.label} field`
+    case 'customProperties':
+      if (row.kind === 'added') return `Added custom property ${row.label}`
+      if (row.kind === 'removed') return `Removed custom property ${row.label}`
+      return `Updated custom property ${row.label}`
     case 'quality': {
       const target = row.label.includes('.') ? `on ${row.label}` : `to ${row.label}`
       if (row.kind === 'added') return `Added quality rule ${target}${row.right ? ` (${row.right})` : ''}`
@@ -513,12 +645,13 @@ function changelogLineForRow(sectionId: string, row: FormDiffRow): string {
       }
       return `Updated relationship on ${row.label}`
     case 'metadata':
+      if (CHANGELOG_SKIP_METADATA_LABELS.has(row.label)) return ''
       if (row.label === 'Purpose') return 'Updated contract purpose description'
       if (row.label === 'Usage') return 'Updated contract usage description'
       if (row.label === 'Limitations') return 'Updated contract limitations description'
       if (row.label === 'Tags') return 'Updated contract tags'
       if (row.label === 'Domain') return `Updated domain to ${row.right}`
-      if (row.label === 'Title') return `Updated contract title`
+      if (row.label === 'Title') return 'Updated contract title'
       if (row.label === 'Contract ID') return 'Updated contract ID'
       return `Updated ${row.label.toLowerCase()}`
     default:
@@ -526,17 +659,17 @@ function changelogLineForRow(sectionId: string, row: FormDiffRow): string {
   }
 }
 
-/** Human-readable multiline changelog for publish (export-aware, deterministic). */
-export function buildPublishChangelog(diff: ExportedContractDiff): string {
-  if (diff.identical) return NO_CONTRACT_CHANGES
+/** Detailed export changelog lines (excludes version/status noise). */
+export function buildPublishChangelogFromExportDiff(diff: ExportedContractDiff): string[] {
+  if (diff.identical) return []
 
   const lines: string[] = []
   for (const section of diff.formSections) {
     for (const row of section.rows) {
-      lines.push(changelogLineForRow(section.id, row))
+      const line = changelogLineForRow(section.id, row)
+      if (line) lines.push(line)
     }
   }
 
-  if (lines.length === 0) return NO_CONTRACT_CHANGES
-  return lines.join('\n')
+  return lines
 }

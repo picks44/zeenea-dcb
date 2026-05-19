@@ -49,7 +49,7 @@ export interface PublicationReadiness {
 function publishReadinessMessage(
   validation: ValidationResult,
   myRole: CollaboratorRole,
-  hasEditedSincePublish: boolean,
+  hasPublishableChanges: boolean,
 ): { ready: boolean; message: string } {
   if (!validation.canPublish) {
     return {
@@ -60,7 +60,7 @@ function publishReadinessMessage(
   if (myRole !== 'owner') {
     return { ready: false, message: PUBLISH_REQUIRES_PUBLISHER }
   }
-  if (!hasEditedSincePublish) {
+  if (!hasPublishableChanges) {
     return { ready: false, message: NO_CHANGES_TO_PUBLISH }
   }
   return { ready: true, message: PUBLICATION_READY_REQUIRED_COMPLETE }
@@ -77,7 +77,7 @@ export function getSupplementalValidationErrors(
 export function computePublicationReadiness(
   contract: DataContract,
   myRole: CollaboratorRole,
-  hasEditedSincePublish: boolean,
+  hasPublishableChanges: boolean,
   allContracts?: DataContract[],
 ): PublicationReadiness {
   const { dataset } = contract
@@ -99,7 +99,7 @@ export function computePublicationReadiness(
 
   const doneRequired = requiredChecks.filter(c => c.ok).length
   const doneRecommended = recommendedChecks.filter(c => c.ok).length
-  const publishStatus = publishReadinessMessage(validation, myRole, hasEditedSincePublish)
+  const publishStatus = publishReadinessMessage(validation, myRole, hasPublishableChanges)
   const descCoverage = fieldCount > 0 ? fieldsWithDesc / fieldCount : 0
 
   const requiredScore = (doneRequired / requiredChecks.length) * READINESS_REQUIRED_WEIGHT

@@ -82,7 +82,7 @@ Toute mention de « publication » ou « Git » dans l’interface désigne un *
 
 - Le contrat exporté respecte **ODCS v3.1.0** (`apiVersion: v3.1.0`, `kind: DataContract`).
 - L’application couvre les **55 propriétés P1** listées dans [l’annexe référence](./odcs-p1-reference.md).
-- Le **fichier YAML** est la livraison destinée au dépôt Git ; l’application conserve en plus des informations **non exportées** (owner, contacts, collaborateurs, historique).
+- Le **fichier YAML** est la livraison destinée au dépôt Git ; l’application conserve en plus des informations **non exportées** (owner, operational governance contacts, collaborateurs, historique).
 
 ### 1.5 Comment lire ce document
 
@@ -108,8 +108,8 @@ Le **fichier YAML exporté** est un sous-ensemble normalisé pour l’écosystè
 
 - **Table** : entité physique (ex. `orders`) avec nom technique, description, tags, règles qualité table.
 - **Colonne (field)** : propriété avec format technique, type logique, nullabilité, clé primaire, relations, données personnelles.
-- **Entity name** : libellé lisible dérivé du nom technique (surtout après import SQL).
-- **Business label** (`logicalName`) : libellé métier d’une colonne ; exporté en YAML sous `properties[].businessName`.
+- **Entity name** (`quantumName`) : libellé lisible d’une table en UI ; exporté en YAML sous `schema[].businessName` lorsqu’il est renseigné.
+- **Business label** (`logicalName`) : libellé métier d’une colonne en UI ; exporté en YAML sous `properties[].businessName` lorsqu’il est renseigné.
 - **ODCS name** : identifiant logique normalisé (`name`), distinct du nom physique (`physicalName`) ; synchronisé automatiquement depuis le nom de champ édité en UI.
 - **Classification** : sensibilité ODCS (`public` / `restricted` / `confidential`) exportée ; le flag **personal data** (PII) reste applicatif et se synchronise avec `confidential`.
 
@@ -156,8 +156,8 @@ Les colonnes peuvent être marquées **personal data**. Si des champs sensibles 
 | **Data Contract Builder** | Nom du produit (interface et dépôt) |
 | **Contract name** | Titre métier ; devient `name` dans le YAML |
 | **Contract identifier** | Identifiant stable du contrat (dérivé du nom) |
-| **Entity name** | Nom lisible d’une table |
-| **Business label** | Libellé métier d’une colonne |
+| **Entity name** | Libellé table en UI (`quantumName`) → `schema[].businessName` si renseigné |
+| **Business label** | Libellé colonne en UI (`logicalName`) → `properties[].businessName` si renseigné |
 | **Technical format** | Type physique en base (ex. `VARCHAR`) |
 | **Governance contacts** | Section « Contacts » — parties prenantes opérationnelles |
 | **Contract owner** | Responsable métier dans Fundamentals |
@@ -214,8 +214,8 @@ Le panneau **Publication readiness** est visible sur l’onglet Form (sauf secti
 
 Texte affiché dans l’onglet YAML :
 
-- *Exported contract file: identity, description, schema, tags, quality rules, reference links, data access roles, and service levels.*
-- *Managed in the app only: contract owner, governance contacts, collaborators, and version history.*
+- *Exported contract file: identity, description, schema, tags, quality rules, reference links, data access roles, service levels, and custom properties.*
+- *Managed in the app only: contract owner, operational governance contacts, collaborators, and version history.*
 
 ### 3.4 Données de démonstration
 
@@ -274,10 +274,10 @@ Exportées dans le YAML sous `roles` (clé omise si aucune ligne exportable). Ne
 
 ### 4.5 Governance contacts
 
-Section **Governance contacts** (libellé navigation court : **Contacts**) :
+Section **Governance contacts** (libellé navigation court : **Contacts**) — **operational governance contacts**, distincts du contract owner et des collaborateurs applicatifs :
 
 - Nom, rôle, email, équipe, notes
-- **Non exportés** dans le YAML
+- **App-only** — non exportés dans le fichier YAML ODCS
 - Recommandés pour la readiness et en présence de champs **personal data**
 
 ### 4.6 Comportement lecture seule
@@ -420,7 +420,7 @@ Parcours type :
 - Statut **draft**, ou **active** avec révision en cours
 - Rôle **Publisher**
 - Aucune erreur bloquante de validation
-- Au moins une modification depuis la dernière publication (*No changes to publish* sinon)
+- Au moins une modification enregistrée depuis la dernière publication (exportée ou app-only ; *No changes to publish* si aucune édition depuis **New version** — voir [9.5](#95-message-no-changes-to-publish-since-the-last-version))
 - Pour un contrat importé : avoir effectué **Start drafting** avant la première publication
 
 **Déroulé :**
@@ -539,7 +539,8 @@ Tant que le contrat est **proposed**, l’utilisateur peut coller un nouveau scr
 
 - Tables et colonnes : noms techniques, descriptions, types logiques, nullabilité, PK, exemples, tags.
 - **Personal data** : flag interne ; avertissement readiness si contacts absents.
-- **Entity name** : aide à la lecture ; non exporté.
+- **Entity name** : libellé UI (`quantumName`) ; exporté sous `schema[].businessName` si renseigné (sinon absent du YAML).
+- **Business label** : libellé UI (`logicalName`) ; exporté sous `properties[].businessName` si renseigné (sinon absent du YAML).
 - Au moins **une table et une colonne** requises pour publier.
 
 ### 8.3 Relations et clés étrangères
@@ -627,12 +628,14 @@ Les **descriptions de champs** comptent uniquement dans **Field quality**, pas d
 1. Validation sans erreur bloquante
 2. Statut **draft** ou **active** en révision
 3. Rôle **Publisher**
-4. Modifications depuis la dernière publication
+4. Au moins une modification enregistrée depuis la dernière publication (contenu exportable **ou** gouvernance app-only — voir [9.5](#95-message-no-changes-to-publish-since-the-last-version))
 5. Contrat non en **proposed** (Start drafting requis)
 
 ### 9.5 Message « No changes to publish since the last version »
 
-Affiché lorsque le contenu est identique au dernier snapshot publié : inciter à modifier le contrat ou à abandonner la révision inutile.
+Affiché lorsque l’application n’a enregistré **aucune modification** depuis la dernière publication (par exemple juste après **New version**, avant toute édition). Incite à modifier le contrat ou à abandonner la révision inutile.
+
+**Publication avec YAML inchangé (Option B) :** si l’utilisateur a modifié uniquement des champs **app-only versionnés** (contract owner, governance contacts), la publication reste possible : le snapshot et le numéro de version avancent, le YAML exportable peut être identique au précédent, mais le **changelog** et le résumé **Versions** indiquent explicitement les changements de gouvernance (ex. *Updated contract owner*, *Updated governance contacts*). Les **collaborateurs** ne sont pas versionnés dans le snapshot publish et ne déclenchent pas de nouvelle version. Aucune publication n’est autorisée sans changement réel (export ou gouvernance snapshotée).
 
 ### 9.6 Catalogue des blocages publication (par thème)
 
@@ -720,6 +723,8 @@ Le choix est proposé à chaque **publication après la première** (pas à l’
 - Snapshot enregistré dans l’historique
 - Message : *External repository sync is not connected in this prototype*
 
+Les publications déclenchées après des changements **app-only versionnés** (owner, governance contacts) suivent les mêmes règles de version et d’historique. Le diff de comparaison **Form/YAML** reste centré sur le contenu exportable ; le changelog publish et le résumé working copy combinent **changements exportés** et **changements de gouvernance**. Les champs `version` / `status` du YAML ne génèrent pas de bruit dans le changelog métier (effets système de publication).
+
 ### 10.4 Working copy et discard changes
 
 Pendant une révision, les modifications forment une **working copy**. **Discard changes** restaure le dernier snapshot publié et annule la révision.
@@ -752,7 +757,9 @@ Toujours présents ou générés si renseignés :
 
 ### 11.3 Champs non exportés (rappel)
 
-Contract owner, governance contacts, collaborateurs, historique, libellés UI internes (business label, entity name, flags personal data bruts), état de vérification AI, `dataProduct`.
+**Toujours hors YAML :** contract owner, operational governance contacts (section Governance contacts), collaborateurs, historique des versions dans l’app, flag **personal data** brut (`isPII`), état de vérification AI mock sur les règles qualité table, `dataProduct`.
+
+**Libellés UI vs clés ODCS :** **Entity name** et **Business label** ne sont pas des clés YAML ; les valeurs saisies (`quantumName`, `logicalName`) sont exportées sous `businessName` (table ou propriété) **uniquement lorsqu’elles sont renseignées**.
 
 ### 11.4 Exemple YAML commenté (extrait)
 
@@ -856,12 +863,12 @@ Non engagées — direction possible :
 
 L’interface privilégie des libellés compréhensibles :
 
-| Terme technique | Libellé UI |
-|-----------------|------------|
-| logicalName | Business label |
-| physicalType | Technical format |
-| quantumName | Entity name |
-| authoritativeDefinitions | Reference links |
+| Terme technique / ODCS | Libellé UI | Export YAML (si renseigné) |
+|------------------------|------------|---------------------------|
+| `properties[].businessName` | Business label (`logicalName`) | Oui |
+| `schema[].businessName` | Entity name (`quantumName`) | Oui |
+| `physicalType` | Technical format | Oui (schéma) |
+| `authoritativeDefinitions` | Reference links | Oui |
 
 ### 14.2 Densité et structure
 
@@ -929,9 +936,15 @@ Légende : ✓ autorisé, ✗ interdit, (✓) si conditions.
 
 **S4 — Publish sans changements**
 
-- *Given* un contrat active en révision sans modification
+- *Given* un contrat active en révision sans aucune modification depuis **New version**
 - *When* le Publisher ouvre Publish
 - *Then* action bloquée ; message *No changes to publish since the last version*
+
+**S4b — Publish avec gouvernance app-only**
+
+- *Given* un contrat active en révision dont le YAML exportable est identique au dernier snapshot
+- *When* le Publisher modifie uniquement le contract owner ou un governance contact puis publie
+- *Then* publication autorisée ; snapshot et version mis à jour ; changelog indique les changements de gouvernance ; YAML inchangé
 
 **S5 — Contributor ne publie pas**
 

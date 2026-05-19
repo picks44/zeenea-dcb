@@ -61,6 +61,7 @@ export interface ColumnDefinition {
   /** ODCS logical property name (normalized, distinct from physicalName). */
   name: string
   physicalName: string
+  /** App-only column display label; exported as ODCS businessName when set. */
   logicalName: string
   physicalType: string
   logicalType: LogicalType

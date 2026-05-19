@@ -74,9 +74,9 @@ export const WORKFLOW_PILL_TITLES: Record<WorkflowMetadataPillVariant, string> =
 
 export const EXPORT_COVERAGE = {
   includedInYaml:
-    'Exported contract file: identity, description, schema, tags, quality rules, reference links, data access roles, and service levels.',
+    'Exported contract file: identity, description, schema, tags, quality rules, reference links, data access roles, service levels, and custom properties.',
   excludedFromYaml:
-    'Managed in the app only: contract owner, governance contacts, collaborators, and version history.',
+    'Managed in the app only: contract owner, operational governance contacts, collaborators, and version history.',
 } as const
 
 // ─── Section concept tags (deprecated — not shown in UI; titles + descriptions carry semantics) ─
