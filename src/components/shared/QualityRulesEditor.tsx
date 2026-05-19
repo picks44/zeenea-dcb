@@ -18,7 +18,7 @@ import {
 } from '@/components/shared/qualityRuleUx'
 
 const MAX_RULES = 3
-const DEFAULT_HELPER = `${QUALITY_RULES_HELPER} Type is text only (P1). Table-level rules require AI verification before publish.`
+const DEFAULT_HELPER = `${QUALITY_RULES_HELPER} Rules use text format only. Table-level rules require verification before publish.`
 
 interface QualityRulesEditorProps {
   rules: QualityRule[]
@@ -26,7 +26,7 @@ interface QualityRulesEditorProps {
   disabled?: boolean
   helperText?: string
   compact?: boolean
-  /** When true, show AI verify control (table-level quality P1). */
+  /** When true, show AI verify control (table-level quality rules). */
   showAiVerification?: boolean
 }
 
@@ -121,7 +121,7 @@ function QualityRuleEditRow({
             className="h-8 text-xs"
           />
         </div>
-        <p className="text-[10px] text-[#656574]">Type: <span className="font-mono">text</span> (P1 only)</p>
+        <p className="text-[10px] text-[#656574]">Type: <span className="font-mono">text</span> (supported format)</p>
         {showAiVerification && (
           <div className="flex items-center gap-2">
             {rule.aiVerified ? (

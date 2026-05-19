@@ -51,27 +51,32 @@ export type WorkflowMetadataPillVariant =
   | 'application-lifecycle'
   | 'not-published'
 
-export const WORKFLOW_PILL_NOT_IN_ODCS = 'Not in ODCS YAML'
-export const WORKFLOW_PILL_WORKFLOW_ONLY = 'Workflow-only'
-export const WORKFLOW_PILL_APPLICATION_LIFECYCLE = 'Application lifecycle'
-export const WORKFLOW_PILL_NOT_PUBLISHED = 'Not published'
+export const WORKFLOW_PILL_APP_ONLY = 'App only'
+export const WORKFLOW_PILL_NOT_IN_EXPORTED_CONTRACT = 'Not in exported contract'
+
+const WORKFLOW_PILL_APP_ONLY_TOOLTIP =
+  'This information is managed in the app and is not included in the exported contract file.'
+
+export const WORKFLOW_PILL_LABELS: Record<WorkflowMetadataPillVariant, string> = {
+  'not-in-odcs': WORKFLOW_PILL_APP_ONLY,
+  'workflow-only': WORKFLOW_PILL_APP_ONLY,
+  'application-lifecycle': WORKFLOW_PILL_APP_ONLY,
+  'not-published': WORKFLOW_PILL_NOT_IN_EXPORTED_CONTRACT,
+}
 
 export const WORKFLOW_PILL_TITLES: Record<WorkflowMetadataPillVariant, string> = {
-  'not-in-odcs':
-    'Stored in the application for governance. Intentionally excluded from the ODCS YAML export.',
-  'workflow-only':
-    'Used for collaboration, permissions, and contract lifecycle in the application. Not part of the ODCS contract.',
-  'application-lifecycle':
-    'Version history and publish workflow metadata. Not included in the ODCS YAML payload.',
+  'not-in-odcs': WORKFLOW_PILL_APP_ONLY_TOOLTIP,
+  'workflow-only': WORKFLOW_PILL_APP_ONLY_TOOLTIP,
+  'application-lifecycle': WORKFLOW_PILL_APP_ONLY_TOOLTIP,
   'not-published':
-    'Visible while editing. Excluded from the published ODCS YAML output until requirements are met.',
+    'This relationship is shown in the app but is not included in the exported contract file.',
 }
 
 export const EXPORT_COVERAGE = {
   includedInYaml:
-    'Published in ODCS YAML: identity, description, schema, tags, quality rules, reference links, data access roles, and service levels.',
+    'Exported contract file: identity, description, schema, tags, quality rules, reference links, data access roles, and service levels.',
   excludedFromYaml:
-    'Excluded from ODCS YAML: contract owner, governance contacts, collaborators, and version history.',
+    'Managed in the app only: contract owner, governance contacts, collaborators, and version history.',
 } as const
 
 // ─── Section concept tags (light visual differentiation) ─────────────────────

@@ -67,10 +67,10 @@ function typeOptions(variant: AuthoritativeDefinitionsVariant): { value: string;
 
 function helperForVariant(variant: AuthoritativeDefinitionsVariant): string {
   if (variant === 'fundamentals') {
-    return 'Privacy statement, Terms and Conditions, or License Agreement (P1).'
+    return 'Privacy statement, Terms and Conditions, or License Agreement.'
   }
   if (variant === 'zeenea') {
-    return 'Only Zeenea catalog links with type actian (P1). Pick from catalog or paste a validated URL.'
+    return 'Only Zeenea catalog links with type actian. Pick from catalog or paste a validated URL.'
   }
   return AUTH_LINKS_HELPER
 }

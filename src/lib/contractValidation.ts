@@ -132,7 +132,7 @@ function validateQualityRules(
     if (!isValidQualityRuleType(q.type)) {
       issues.push({
         code: 'quality-type-invalid',
-        message: `Quality rule on ${context} must use type "text" (P1 MVP).`,
+        message: `Quality rule on ${context} must use type "text".`,
         severity: 'error',
         section: 'schema',
       })

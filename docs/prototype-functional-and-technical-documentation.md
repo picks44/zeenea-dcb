@@ -136,7 +136,7 @@ Définis dans `src/types/odcs.ts` : `owner` | `editor` | `viewer`.
 |--------|--------|
 | Modèle | `Stakeholder` : name, role, email, team, notes |
 | UI | Section **Governance contacts** (`StakeholdersSection`) |
-| Export ODCS YAML | **Non exporté** — pill UI « Not in ODCS YAML » sur le contract owner (`WorkflowMetadataPill`) |
+| Export ODCS YAML | **Non exporté** — pill UI « App only » sur le contract owner (`WorkflowMetadataPill`) |
 | Readiness | Recommandé si champs PII sans contact assigné (warning `pii-stakeholders`) |
 
 ### 2.4 Synthèse des impacts lecture seule
@@ -265,8 +265,8 @@ Les handlers d'édition du contenu ODCS (fundamentals, schema, stakeholders, rol
 
 Texte produit explicite dans `EXPORT_COVERAGE` (`src/lib/uxCopy.ts`) :
 
-- **Inclus :** identity, description, schema, tags, quality rules, reference links, data access roles, service levels.
-- **Exclus :** contract owner, governance contacts, collaborators, version history.
+- **Exported contract file :** identity, description, schema, tags, quality rules, reference links, data access roles, service levels.
+- **Managed in the app only :** contract owner, governance contacts, collaborators, version history.
 
 ### 4.2 Navigation éditeur
 
@@ -634,9 +634,9 @@ Vérifiés par test golden dans `p1-compliance.test.ts` :
 | Élément | Raison |
 |---------|--------|
 | `dataProduct` | Absent — test `expect(doc.dataProduct).toBeUndefined()` |
-| `stakeholders` | Workflow-only |
-| `collaborators` | Workflow-only |
-| `owner` | Workflow-only |
+| `stakeholders` | App only (non exporté) |
+| `collaborators` | App only (non exporté) |
+| `owner` | App only (non exporté) |
 | `gitHistory`, `openPR`, `inRevision`, `uid` | Application |
 | `logicalName`, `quantumName`, `isPII`, `isUnique`, `tableType` | Modèle UI interne |
 | `aiVerified` sur quality | Non mappé dans `mapQualityRulesToYaml` |

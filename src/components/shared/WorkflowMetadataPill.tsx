@@ -2,22 +2,12 @@ import type { ReactNode } from 'react'
 import { Info } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
-  WORKFLOW_PILL_APPLICATION_LIFECYCLE,
-  WORKFLOW_PILL_NOT_IN_ODCS,
-  WORKFLOW_PILL_NOT_PUBLISHED,
+  WORKFLOW_PILL_LABELS,
   WORKFLOW_PILL_TITLES,
-  WORKFLOW_PILL_WORKFLOW_ONLY,
   type WorkflowMetadataPillVariant,
 } from '@/lib/uxCopy'
 
 export type { WorkflowMetadataPillVariant }
-
-const PILL_LABELS: Record<WorkflowMetadataPillVariant, string> = {
-  'workflow-only': WORKFLOW_PILL_WORKFLOW_ONLY,
-  'not-in-odcs': WORKFLOW_PILL_NOT_IN_ODCS,
-  'application-lifecycle': WORKFLOW_PILL_APPLICATION_LIFECYCLE,
-  'not-published': WORKFLOW_PILL_NOT_PUBLISHED,
-}
 
 const PILL_STYLES: Record<WorkflowMetadataPillVariant, string> = {
   'not-in-odcs':
@@ -38,7 +28,7 @@ export interface WorkflowMetadataPillProps {
 }
 
 export function WorkflowMetadataPill({ variant, label, className }: WorkflowMetadataPillProps) {
-  const text = label ?? PILL_LABELS[variant]
+  const text = label ?? WORKFLOW_PILL_LABELS[variant]
 
   return (
     <span
