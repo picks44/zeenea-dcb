@@ -6,7 +6,12 @@ import { GovernanceDocList } from '@/components/shared/GovernanceDocList'
 import { GovernanceEmptyState } from '@/components/shared/GovernanceEmptyState'
 import { filterCustomPropertiesForSave } from '@/lib/odcsSharedMappers'
 import type { CustomProperty } from '@/types/odcsShared'
-import { generateId } from '@/lib/utils'
+import {
+  GOVERNANCE_EMPTY_SECTION_WIDTH_CLASS,
+  GOVERNANCE_SECTION_WIDTH_FULL_CLASS,
+  GOVERNANCE_SECTION_WIDTH_NARROW_CLASS,
+} from '@/lib/governanceLayout'
+import { generateId, cn } from '@/lib/utils'
 import {
   CUSTOM_PROPERTIES_EMPTY_BODY,
   CUSTOM_PROPERTIES_EMPTY_CTA,
@@ -28,9 +33,15 @@ export function CustomPropertiesSection({
   docCompact,
 }: CustomPropertiesSectionProps) {
   const rows = customProperties ?? []
+  const isEmpty = rows.length === 0
 
   return (
-    <div className="max-w-[560px] w-full">
+    <div
+      className={cn(
+        GOVERNANCE_SECTION_WIDTH_FULL_CLASS,
+        isEmpty ? GOVERNANCE_EMPTY_SECTION_WIDTH_CLASS : GOVERNANCE_SECTION_WIDTH_NARROW_CLASS,
+      )}
+    >
       <ContractSectionHeader
         title="Custom properties"
         description={CUSTOM_PROPERTIES_INTRO}

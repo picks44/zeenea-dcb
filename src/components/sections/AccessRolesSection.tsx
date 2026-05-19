@@ -25,6 +25,10 @@ import {
   DATA_ACCESS_ADD_ROLE_CTA,
   DATA_ACCESS_ROLES_INTRO,
 } from '@/lib/uxCopy'
+import {
+  GOVERNANCE_SECTION_WIDTH_FULL_CLASS,
+  GOVERNANCE_SECTION_WIDTH_STANDARD_CLASS,
+} from '@/lib/governanceLayout'
 import { shouldUseCompactReadOnly } from '@/lib/governanceReadOnlyLayout'
 
 interface AccessRolesSectionProps {
@@ -72,7 +76,7 @@ export function AccessRolesSection({ roles, onChange, isLocked, docCompact }: Ac
   const hideHeader = isLocked && roles.length === 1
 
   return (
-    <div className="max-w-[720px] w-full">
+    <div className={cn(GOVERNANCE_SECTION_WIDTH_STANDARD_CLASS, GOVERNANCE_SECTION_WIDTH_FULL_CLASS)}>
       <ContractSectionHeader
         title="Data access roles"
         description={DATA_ACCESS_ROLES_INTRO}

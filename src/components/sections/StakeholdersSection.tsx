@@ -25,6 +25,10 @@ import {
 } from '@/lib/uxCopy'
 import { READINESS_FIELD_STAKEHOLDERS_ROOT } from '@/lib/uxCopy'
 import { useReadinessField, useSectionGuidanceRoot } from '@/components/readiness/ReadinessNavigationContext'
+import {
+  GOVERNANCE_SECTION_WIDTH_FULL_CLASS,
+  GOVERNANCE_SECTION_WIDTH_STANDARD_CLASS,
+} from '@/lib/governanceLayout'
 
 interface StakeholdersSectionProps {
   stakeholders: Stakeholder[]
@@ -75,7 +79,10 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked, docCompa
   const remove = (id: string) => onChange(stakeholders.filter(s => s.id !== id))
 
   return (
-    <div ref={sectionRootRef} className="max-w-[720px] w-full">
+    <div
+      ref={sectionRootRef}
+      className={cn(GOVERNANCE_SECTION_WIDTH_STANDARD_CLASS, GOVERNANCE_SECTION_WIDTH_FULL_CLASS)}
+    >
       <div ref={contactsAnchorRef}>
         <ContractSectionHeader
           title={SECTION_GOVERNANCE_CONTACTS}

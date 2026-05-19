@@ -22,6 +22,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { SlaProperty, SlaPropertyType } from '@/types/odcs'
 import { generateId } from '@/lib/utils'
 import { SLA_DRIVERS, SLA_PROPERTY_LABELS, SLA_PROPERTY_TYPES, SLA_UNITS } from '@/lib/p1Constants'
+import {
+  GOVERNANCE_EMPTY_SECTION_WIDTH_CLASS,
+  GOVERNANCE_SECTION_WIDTH_FULL_CLASS,
+  GOVERNANCE_SECTION_WIDTH_WIDE_CLASS,
+} from '@/lib/governanceLayout'
 import { shouldUseCompactReadOnly } from '@/lib/governanceReadOnlyLayout'
 
 const SLA_CELL = 'px-2 py-1.5 align-middle'
@@ -67,9 +72,15 @@ export function SlaSection({ slaProperties, onChange, isLocked, docCompact }: Sl
   const remove = (id: string) => onChange(slaProperties.filter(s => s.id !== id))
 
   const useCompactLayout = shouldUseCompactReadOnly(isLocked, slaProperties.length)
+  const isEmpty = slaProperties.length === 0
 
   return (
-    <div className="max-w-[840px] w-full">
+    <div
+      className={cn(
+        GOVERNANCE_SECTION_WIDTH_FULL_CLASS,
+        isEmpty ? GOVERNANCE_EMPTY_SECTION_WIDTH_CLASS : GOVERNANCE_SECTION_WIDTH_WIDE_CLASS,
+      )}
+    >
       <ContractSectionHeader
         title="Service levels"
         description={SLA_SECTION_INTRO}
