@@ -1,0 +1,111 @@
+---
+description: UI Kit source of truth and compliance rules
+globs:
+  - "src/**/*.tsx"
+  - "src/**/*.ts"
+  - "src/**/*.css"
+alwaysApply: true
+---
+
+# UI Kit source of truth
+
+The UI Kit is the visual source of truth for this project.
+
+The source of truth is composed of:
+1. `src/pages/ComponentsPage.tsx` as the reference showcase.
+2. `src/components/ui/*` as the primitive implementation layer.
+3. `src/index.css` theme tokens as the color / typography / radius foundation.
+
+Application screens must conform to the UI Kit. The UI Kit must not be silently changed to match ad hoc screen changes.
+
+## Protected files
+
+Do not modify these files unless the user explicitly asks for a UI Kit change:
+
+- `src/pages/ComponentsPage.tsx`
+- `src/components/ui/*`
+- `src/index.css` theme tokens
+
+If one of these files appears inconsistent with the app, stop and report the gap before editing.
+
+## ComponentsPage policy
+
+- Treat `src/pages/ComponentsPage.tsx` as a protected reference, not as a living mirror of the app.
+- Do not update ComponentsPage simply because the app has diverged.
+- If ComponentsPage changed unexpectedly, identify the commit and propose a targeted revert.
+- The app should converge back to ComponentsPage and `ui/*`, not the other way around.
+
+## UI compliance rules
+
+Before changing UI, check:
+
+1. Is there an existing primitive in `src/components/ui/*`?
+2. Is the visual pattern shown in `src/pages/ComponentsPage.tsx`?
+3. Is there already a shared pattern in `src/components/shared/*`?
+4. Would the change create a local visual fork?
+
+Prefer existing UI primitives over local markup.
+
+Do not introduce one-off styles for:
+
+- badges
+- chips
+- pills
+- buttons
+- tabs
+- inputs
+- tables
+- cards
+- empty states
+- avatars
+- section headers
+
+## Forbidden without explicit approval
+
+- modifying `ComponentsPage.tsx`
+- changing variants or base styles in `src/components/ui/*`
+- changing global theme tokens in `src/index.css`
+- creating a new design-system layer
+- adding local badge / chip / pill styles
+- using arbitrary hex colors in product UI
+- replacing UI primitives with custom markup
+- adapting the UI Kit to match a local screen change
+
+## If a local UI diverges from the kit
+
+First determine whether the divergence is caused by:
+
+- a corrupted / modified UI Kit file,
+- a local screen implementation bypassing the kit,
+- a missing primitive or missing documented variant,
+- a product pattern that is intentionally outside the primitive kit.
+
+Then recommend one of:
+
+- revert the UI Kit file,
+- migrate the app back to existing primitives,
+- request explicit approval for a UI Kit evolution,
+- document the pattern as intentionally out of kit.
+
+## Audit requirements
+
+When auditing UI compliance, report:
+
+- UI Kit files modified since the reference commit,
+- app components diverging from ComponentsPage,
+- local forks of primitives,
+- hardcoded colors and arbitrary spacing,
+- rogue variants,
+- duplicated avatar / badge / tab / empty-state patterns,
+- whether the fix should revert the kit or update the app.
+
+## Implementation rules
+
+When fixing UI compliance:
+
+- keep changes incremental,
+- prefer app-side fixes over kit changes,
+- do not touch business logic,
+- do not touch lifecycle, validation, YAML export, publish flow, or data models,
+- do not refactor large containers unless the divergence is structural,
+- run `npm test` and `npm run build` after changes.

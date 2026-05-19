@@ -1,45 +1,196 @@
 ---
-description: Data Contract Builder — contexte projet, ODCS, architecture
+description: Data Contract Builder — project context, ODCS, architecture, business rules
 alwaysApply: true
 ---
 
 # Data Contract Builder (Zeenea DCB)
 
-SPA React pour créer des contrats de données **ODCS v3.1.0** (YAML Bitol). MVP : persistance `localStorage`, Git simulé, pas de backend.
+SPA React prototype for creating and managing data contracts aligned with **ODCS v3.1.0**.
+
+Current prototype characteristics:
+
+- Frontend-only React application.
+- Persistence through `localStorage` (`data-contracts-v1`).
+- Simulated publication / version history; no external repository sync is connected.
+- No backend, no real authentication, no real Zeenea API.
+- UI Kit source-of-truth rules are defined separately in `.cursor/rules/ui-kit-source-of-truth.mdc`.
+- React/UI implementation conventions are defined separately in `.cursor/rules/react-ui.mdc`.
 
 ## Stack
 
-- React 19 + TypeScript strict + Vite 8
-- Tailwind CSS 4 — tokens Actian dans `src/index.css` (ne pas introduire de palette ad hoc)
-- Composants UI maison dans `src/components/ui/` (Base UI) — réutiliser avant d’en créer
-- Alias `@/` → `src/`
+- React 19 + TypeScript strict + Vite 8.
+- Tailwind CSS 4.
+- Actian theme tokens in `src/index.css`.
+- UI primitives in `src/components/ui/`.
+- Product/shared patterns in `src/components/shared/`.
+- Alias `@/` → `src/`.
 
-## Structure
+## Key source files
 
-| Chemin | Rôle |
-|--------|------|
-| `src/types/odcs.ts` | Source de vérité des types métier |
-| `src/lib/ddlParser.ts` | SQL `CREATE TABLE` → `SchemaTable` |
-| `src/lib/odcsYamlGenerator.ts` | `DataContract` → YAML ODCS |
-| `src/lib/storage.ts` | `loadContracts` / `saveContracts` (clé `data-contracts-v1`) |
-| `src/App.tsx` | État global, lifecycle, permissions |
-| `design.md` | Spec produit & UX — consulter avant changements UI/métier |
+| Path | Role |
+|------|------|
+| `src/types/odcs.ts` | Business model source of truth |
+| `src/lib/createContract.ts` | Contract creation modes and creation helpers |
+| `src/lib/contractLifecycle.ts` | Lifecycle transitions and lock helpers |
+| `src/lib/p1Constants.ts` | P1 constants, enums and fixed values |
+| `src/lib/p1Validation.ts` | Low-level P1 validators |
+| `src/lib/contractValidation.ts` | Publish validation rules |
+| `src/lib/publicationReadiness.ts` | Readiness score and publish status aggregation |
+| `src/lib/readinessGuidance.ts` | Readiness checklist items and navigation metadata |
+| `src/lib/validationUserMessages.ts` | User-facing validation message mapper |
+| `src/lib/ddlParser.ts` | SQL `CREATE TABLE` → `SchemaTable[]` |
+| `src/lib/odcsYamlGenerator.ts` | `DataContract` → ODCS YAML document |
+| `src/lib/relationshipExport.ts` | Relationship / foreign key YAML export |
+| `src/lib/storage.ts` | `loadContracts` / `saveContracts` and migrations |
+| `src/lib/idDerivation.ts` | Contract/table/property stable ID helpers |
+| `src/App.tsx` | Global state, views, lifecycle orchestration, permissions |
+| `docs/prototype-functional-and-technical-documentation.md` | Functional and technical documentation |
+| `README.md` | Project overview and local usage |
 
-## Règles métier
+## Contract creation flow
 
-- **Lifecycle** : `draft` → `active` → `deprecated`. Contrat `active` = lecture seule sauf `inRevision`.
-- **Publish** : owner uniquement ; champs requis (title, id, owner, version SemVer `x.y.z`) ; bump major/minor dans `PushToGitModal`.
-- **DDL** : types inconnus → `logicalType: 'string'` + `isUnknownType: true`.
-- **Labels UI** : termes métier (Business Label, Technical Format, Entity Name), pas les clés ODCS brutes.
-- **YAML** : toute évolution du modèle doit passer par `odcsYamlGenerator.ts` et rester alignée ODCS 3.1.0.
+Backlog has a single **Create contract** entry point.
 
-## Conventions code
+- Clicking **Create contract** opens `AppView = 'create'`.
+- No `DataContract` is created at that point.
+- No contract is persisted to `localStorage` until the user chooses a path.
+- The create view displays the import / scratch step without contract chrome.
 
-- Modifications ciblées ; pas de refactor hors scope.
-- Pas de backend/API réelle sans demande explicite.
-- `CURRENT_USER` dans `src/lib/currentUser.ts` est un stub prototype.
-- Sections ODCS non implémentées (`terms`, `sla`, …) : ne pas exposer dans l’UI sans spec.
+Creation paths:
 
-## Référence
+| User action | Result |
+|-------------|--------|
+| Start from scratch | Create `DataContract` with `status: 'draft'`, `creationSource: 'manual'`, open Fundamentals |
+| Import SQL | Parse SQL, create `DataContract` with `status: 'proposed'`, `creationSource: 'import'`, inject dataset, open Fundamentals |
 
-README et `design.md` pour le détail fonctionnel.
+## Lifecycle rules
+
+Current lifecycle statuses:
+
+```text
+proposed → draft → active → deprecated → retired
+```
+
+Rules:
+
+- `proposed` is read-only except for the import step when import is still applicable.
+- `draft` is editable.
+- `active` is read-only unless `inRevision` is true.
+- `deprecated` is read-only.
+- `retired` is read-only.
+- Viewer role is always read-only.
+- `Start drafting` moves a `proposed` contract to `draft`.
+- Publish can only happen from a publishable draft / revision state and remains owner-only.
+
+Do not bypass lifecycle helpers. Use:
+
+- `isContractLocked`
+- `isContractEditableStatus`
+- `isImportSectionEditable`
+- `applyLifecycleAction`
+- `canPublishFromStatus`
+
+## Publish and readiness
+
+- Publish is simulated in the prototype.
+- External repository sync is not connected.
+- Publish validation lives in `contractValidation.ts`.
+- Readiness scoring lives in `publicationReadiness.ts` and `readinessGuidance.ts`.
+- User-facing validation copy is mapped in `validationUserMessages.ts`.
+- Do not change score weights or validation logic without explicit request.
+
+Current readiness model:
+
+| Section | Weight |
+|---------|--------|
+| Required before publishing | 70 |
+| Field quality | 25 |
+| Suggested improvements | 5 |
+
+Suggested improvements should remain distinct from Field quality. Field descriptions belong to Field quality, not Suggested improvements.
+
+## ID rules
+
+Contract IDs use a hybrid P1 format:
+
+```text
+{slug-derived-from-name}-{8-hex-suffix}
+```
+
+Rules:
+
+- Slug is derived from the contract name.
+- Lowercase ASCII.
+- No special characters except hyphens.
+- 8-hex suffix is stable, based on `uid` when available.
+- ID must remain unique in the local registry.
+- Do not reintroduce slug-only contract IDs.
+
+Table and property IDs must remain stable and should use the existing ID helpers.
+
+## ODCS / YAML rules
+
+- YAML export must remain aligned with ODCS v3.1.0 and the P1 reference implemented in the codebase.
+- `apiVersion` and `kind` are fixed by the generator.
+- `creationSource`, collaborators, app-only governance state, UI state and lifecycle helpers must not be exported unless explicitly required.
+- `slaProperties[].property` must not be reintroduced.
+- `dataProduct` must not be reintroduced to the current export.
+- Relationships and foreign keys must go through `relationshipExport.ts`.
+- Any model change must update:
+  - types,
+  - validation,
+  - YAML generator,
+  - storage migration when needed,
+  - tests,
+  - documentation.
+
+## DDL import rules
+
+- DDL import is a prototype parser for SQL `CREATE TABLE` statements.
+- Unknown SQL types fall back to `logicalType: 'string'` and `isUnknownType: true`.
+- DDL import should generate stable schema/property IDs.
+- DDL import must not bypass lock/lifecycle rules.
+
+## UI Kit and design system rules
+
+The UI Kit is protected by `.cursor/rules/ui-kit-source-of-truth.mdc`.
+
+Important:
+
+- Do not modify `ComponentsPage.tsx` to match app divergence.
+- Do not change `src/components/ui/*` or theme tokens unless explicitly approved.
+- App screens should converge back to the UI Kit source of truth.
+- Prefer UI primitives and shared patterns before creating local UI.
+- Do not use arbitrary hex colors in product UI without explicit approval.
+
+## Code conventions
+
+- Keep changes targeted and scoped.
+- Do not refactor unrelated areas.
+- Do not introduce a backend/API unless explicitly requested.
+- `CURRENT_USER` in `src/lib/currentUser.ts` is a prototype stub.
+- Use aliases: `@/components/...`, `@/lib/...`, `@/types/...`.
+- Use `lucide-react` for icons.
+- Respect `isLocked` on every editable field.
+- Destructive flows must use `ConfirmDialog`.
+- User feedback should go through `useToast`.
+
+## Documentation
+
+Keep these files aligned with product/runtime changes:
+
+- `docs/prototype-functional-and-technical-documentation.md`
+- `README.md`
+
+Do not document assumptions as facts. If behavior is mock/simulated, state it explicitly.
+
+## Tests and validation
+
+After implementation changes, run:
+
+```bash
+npm test
+npm run build
+```
+
+When changing types, validation, YAML, lifecycle, creation flow or readiness, add or update targeted tests.

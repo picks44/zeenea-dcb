@@ -33,3 +33,70 @@ alwaysApply: false
 
 - Préférer `@/components/...`, `@/lib/...`, `@/types/...`.
 - Icônes : `lucide-react` uniquement.
+
+---
+description: React and UI implementation conventions for this project
+globs: "**/*.{tsx,ts}"
+alwaysApply: false
+---
+
+# React & UI implementation rules
+
+This rule defines React and UI implementation conventions.
+
+The visual source of truth is defined in:
+`.cursor/rules/ui-kit-source-of-truth.mdc`
+
+Do not use this rule as a design-system override.
+
+## Components
+
+- Use functional React components.
+- Prefer composition over local forks.
+- Reuse primitives from `src/components/ui/*` before creating custom markup.
+- Reuse shared product patterns from `src/components/shared/*` when available.
+- Type business props from `src/types/odcs.ts`; do not duplicate business types.
+- Use hooks for reusable logic.
+
+## Business constraints
+
+- Respect `isLocked` on every editable field.
+- Published, deprecated, retired, and otherwise locked contracts must stay read-only.
+- Users with the `viewer` role must never edit contract content.
+- Destructive actions must use `ConfirmDialog`.
+- User feedback must go through `useToast`.
+
+## Styling
+
+- Use Tailwind classes.
+- Prefer theme tokens from `src/index.css` (`neutral-*`, `blue-*`, `green-*`, `red-*`, `orange-*`, etc.).
+- Avoid arbitrary hex colors in product UI unless explicitly approved.
+- Avoid local badge, chip, pill, button, tab, input, table, avatar, or empty-state forks.
+- Keep schema and governance tables dense and compact, but do not hardcode layout values that conflict with the UI Kit.
+- Do not use this rule to define lifecycle colors, badge sizing, or component variants; follow the UI Kit source-of-truth rule instead.
+
+## Imports
+
+- Prefer aliases: `@/components/...`, `@/lib/...`, `@/types/...`.
+- Use `lucide-react` for icons.
+
+## Before creating custom UI
+
+Check, in order:
+
+1. `src/components/ui/*`
+2. `src/components/shared/*`
+3. `src/pages/ComponentsPage.tsx`
+
+If a pattern already exists, reuse it instead of recreating it.
+If a pattern appears missing from the UI Kit, report the gap before adding a new local implementation.
+
+## Example — locking editable fields
+
+```tsx
+// Correct: editable fields respect isLocked.
+<Input value={col.logicalName} disabled={isLocked} onChange={...} />
+
+// Incorrect: a published or viewer-locked contract can still be edited.
+<Input value={col.logicalName} onChange={...} />
+```
