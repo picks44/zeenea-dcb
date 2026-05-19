@@ -1,15 +1,16 @@
-import { Plus, Trash2, Users } from 'lucide-react'
+import { Users } from 'lucide-react'
 import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { Stakeholder } from '@/types/odcs'
 import { generateId, cn } from '@/lib/utils'
 import { GovernanceDocList } from '@/components/shared/GovernanceDocList'
 import { StakeholderDocRow } from '@/components/shared/StakeholderDocRow'
+import { GovernanceDeleteButton } from '@/components/shared/GovernanceDeleteButton'
 import { GovernanceEmptyState } from '@/components/shared/GovernanceEmptyState'
+import { GovernanceTableFooter } from '@/components/shared/GovernanceTableFooter'
 import { ContractSectionHeader } from '@/components/shared/ContractSectionHeader'
 import {
-  governanceTableFooterActionClass,
-  governanceTableFooterClass,
   governanceTableHeadClass,
   governanceTableHeadRowClass,
   governanceTableRowClass,
@@ -47,12 +48,6 @@ const STAKEHOLDER_GRID =
   'grid grid-cols-[minmax(0,1fr)_minmax(128px,auto)_minmax(0,1.05fr)_minmax(0,1fr)_32px] gap-x-3 gap-y-0 items-center'
 
 const INPUT_CLASS = 'h-8 text-xs'
-const SELECT_CLASS = cn(
-  INPUT_CLASS,
-  'w-full rounded border border-[#d3d3e5] bg-white px-2',
-  'hover:border-[#9898a7] focus-visible:outline-none focus-visible:border-2 focus-visible:border-[#0550dc]',
-  'disabled:bg-[#fbfbff] disabled:text-[#3f3f4a] disabled:cursor-not-allowed',
-)
 
 function makeStakeholder(): Stakeholder {
   return {
@@ -114,7 +109,7 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked, docCompa
             <span />
           </div>
 
-          <div className="divide-y divide-[#e4e4f0]">
+          <div className="divide-y divide-neutral-100">
             {stakeholders.map(s => (
               <div key={s.id} className={cn(STAKEHOLDER_GRID, governanceTableRowClass)}>
                 <Input
@@ -123,16 +118,19 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked, docCompa
                   placeholder="Full name"
                   className={INPUT_CLASS}
                 />
-                <select
+                <Select
                   value={s.role}
-                  onChange={e => update(s.id, { role: e.target.value })}
-                  className={SELECT_CLASS}
-                  aria-label="Governance role"
+                  onValueChange={v => v && update(s.id, { role: v })}
                 >
-                  {GOVERNANCE_ROLES.map(r => (
-                    <option key={r} value={r}>{r}</option>
-                  ))}
-                </select>
+                  <SelectTrigger className={cn(INPUT_CLASS, 'w-full')} aria-label="Governance role">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {GOVERNANCE_ROLES.map(r => (
+                      <SelectItem key={r} value={r} className="text-xs">{r}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <div className="min-w-0 grid grid-cols-2 gap-1">
                   <Input
                     value={s.email}
@@ -155,28 +153,18 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked, docCompa
                   rows={1}
                   className="text-xs min-h-[32px] resize-none py-1.5"
                 />
-                <button
-                  type="button"
+                <GovernanceDeleteButton
                   onClick={() => remove(s.id)}
-                  className="h-7 w-7 flex items-center justify-center text-[#9898a7] hover:text-[#c12c11] hover:bg-[#fff2ee] rounded transition-colors"
                   aria-label={`Remove ${s.name.trim() || 'contact'}`}
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
+                />
               </div>
             ))}
           </div>
 
-          <div className={governanceTableFooterClass}>
-            <button
-              type="button"
-              onClick={() => onChange([...stakeholders, makeStakeholder()])}
-              className={governanceTableFooterActionClass}
-            >
-              <Plus className="h-3.5 w-3.5" />
-              {STAKEHOLDERS_EMPTY_CTA}
-            </button>
-          </div>
+          <GovernanceTableFooter
+            label={STAKEHOLDERS_EMPTY_CTA}
+            onAdd={() => onChange([...stakeholders, makeStakeholder()])}
+          />
         </div>
       )}
       </div>

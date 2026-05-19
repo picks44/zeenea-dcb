@@ -1,12 +1,12 @@
-import { Plus, Trash2, Clock } from 'lucide-react'
+import { Clock } from 'lucide-react'
 import { Input } from '@/components/ui/input'
+import { GovernanceDeleteButton } from '@/components/shared/GovernanceDeleteButton'
 import { GovernanceEmptyState } from '@/components/shared/GovernanceEmptyState'
+import { GovernanceTableFooter } from '@/components/shared/GovernanceTableFooter'
 import { GovernanceReadOnlyCell } from '@/components/shared/GovernanceReadOnlyCell'
 import { SlaCompactList } from '@/components/shared/SlaCompactList'
 import { ContractSectionHeader } from '@/components/shared/ContractSectionHeader'
 import {
-  governanceTableFooterActionClass,
-  governanceTableFooterClass,
   governanceTableHeadClass,
   governanceTableHeadRowClass,
   governanceTableShellClass,
@@ -22,6 +22,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { SlaProperty, SlaPropertyType } from '@/types/odcs'
 import { generateId } from '@/lib/utils'
 import { SLA_DRIVERS, SLA_PROPERTY_LABELS, SLA_PROPERTY_TYPES, SLA_UNITS } from '@/lib/p1Constants'
+import { shouldUseCompactReadOnly } from '@/lib/governanceReadOnlyLayout'
 
 const SLA_CELL = 'px-2 py-1.5 align-middle'
 const SLA_INPUT = 'h-8 text-xs w-full'
@@ -30,7 +31,6 @@ interface SlaSectionProps {
   slaProperties: SlaProperty[]
   onChange: (sla: SlaProperty[]) => void
   isLocked: boolean
-  isPublishedView?: boolean
   docCompact?: boolean
 }
 
@@ -60,11 +60,13 @@ function SlaReadOnlyRow({ row }: { row: SlaProperty }) {
   )
 }
 
-export function SlaSection({ slaProperties, onChange, isLocked, isPublishedView, docCompact }: SlaSectionProps) {
+export function SlaSection({ slaProperties, onChange, isLocked, docCompact }: SlaSectionProps) {
   const update = (id: string, patch: Partial<SlaProperty>) =>
     onChange(slaProperties.map(s => (s.id === id ? { ...s, ...patch } : s)))
 
   const remove = (id: string) => onChange(slaProperties.filter(s => s.id !== id))
+
+  const useCompactLayout = shouldUseCompactReadOnly(isLocked, slaProperties.length)
 
   return (
     <div className="max-w-[840px] w-full">
@@ -83,7 +85,7 @@ export function SlaSection({ slaProperties, onChange, isLocked, isPublishedView,
           onCta={() => onChange([makeSla()])}
           isLocked={isLocked}
         />
-      ) : isPublishedView && slaProperties.length <= 2 ? (
+      ) : useCompactLayout ? (
         <SlaCompactList rows={slaProperties} compact={docCompact} />
       ) : (
         <div className={`${governanceTableShellClass} overflow-x-auto`}>
@@ -108,7 +110,7 @@ export function SlaSection({ slaProperties, onChange, isLocked, isPublishedView,
                 {!isLocked && <th className="w-[36px]" />}
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#e4e4f0]">
+            <tbody className="divide-y divide-neutral-100">
               {slaProperties.map(row => {
                 if (isLocked) {
                   return (
@@ -189,14 +191,11 @@ export function SlaSection({ slaProperties, onChange, isLocked, isPublishedView,
                       />
                     </td>
                     <td className={cn(SLA_CELL, 'text-center')}>
-                      <button
-                        type="button"
+                      <GovernanceDeleteButton
                         onClick={() => remove(row.id)}
-                        className="h-7 w-7 inline-flex items-center justify-center text-[#9898a7] hover:text-[#c12c11] hover:bg-[#fff2ee] rounded transition-colors"
                         aria-label="Remove service level"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
+                        className="inline-flex"
+                      />
                     </td>
                   </tr>
                 )
@@ -204,16 +203,10 @@ export function SlaSection({ slaProperties, onChange, isLocked, isPublishedView,
             </tbody>
           </table>
           {!isLocked && (
-            <div className={governanceTableFooterClass}>
-              <button
-                type="button"
-                onClick={() => onChange([...slaProperties, makeSla()])}
-                className={governanceTableFooterActionClass}
-              >
-                <Plus className="h-3.5 w-3.5" />
-                {SLA_EMPTY_CTA}
-              </button>
-            </div>
+            <GovernanceTableFooter
+              label={SLA_EMPTY_CTA}
+              onAdd={() => onChange([...slaProperties, makeSla()])}
+            />
           )}
         </div>
       )}

@@ -315,6 +315,11 @@ export const DATA_ACCESS_ROLES_INTRO =
 export const CUSTOM_PROPERTIES_INTRO =
   'Optional name-value fields included in the exported contract.'
 
+export const CUSTOM_PROPERTIES_EMPTY_TITLE = 'No custom properties'
+export const CUSTOM_PROPERTIES_EMPTY_BODY =
+  'Add camelCase properties such as dataSteward or retentionPolicyRef.'
+export const CUSTOM_PROPERTIES_EMPTY_CTA = 'Add custom property'
+
 export const SLA_SECTION_INTRO =
   'Latency, retention, and availability commitments included in the export.'
 

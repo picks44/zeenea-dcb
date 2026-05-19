@@ -1,18 +1,18 @@
-import { Plus, Trash2, Shield } from 'lucide-react'
+import { Shield } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { OdcsAccessRole } from '@/types/odcs'
 import { generateId, cn } from '@/lib/utils'
+import { GovernanceDeleteButton } from '@/components/shared/GovernanceDeleteButton'
 import { GovernanceEmptyState } from '@/components/shared/GovernanceEmptyState'
+import { GovernanceTableFooter } from '@/components/shared/GovernanceTableFooter'
 import { AccessRoleDocRow } from '@/components/shared/AccessRoleDocRow'
 import { GovernanceReadOnlyCell } from '@/components/shared/GovernanceReadOnlyCell'
 import { GovernanceDocList } from '@/components/shared/GovernanceDocList'
 import { docGovernanceShellClass, docGovernanceHeadClass, docGovernanceHeadRowClass, docGovernanceRowClass } from '@/components/shared/docViewTokens'
 import { ContractSectionHeader } from '@/components/shared/ContractSectionHeader'
 import {
-  governanceTableFooterActionClass,
-  governanceTableFooterClass,
   governanceTableHeadClass,
   governanceTableRowClass,
   governanceTableHeadRowClass,
@@ -25,6 +25,7 @@ import {
   DATA_ACCESS_ADD_ROLE_CTA,
   DATA_ACCESS_ROLES_INTRO,
 } from '@/lib/uxCopy'
+import { shouldUseCompactReadOnly } from '@/lib/governanceReadOnlyLayout'
 
 interface AccessRolesSectionProps {
   roles: OdcsAccessRole[]
@@ -66,7 +67,7 @@ export function AccessRolesSection({ roles, onChange, isLocked, docCompact }: Ac
   const remove = (id: string) => onChange(roles.filter(r => r.id !== id))
 
   const gridClass = isLocked ? ACCESS_GRID_READONLY : ACCESS_GRID
-  const useDocLayout = isLocked && roles.length <= 2
+  const useDocLayout = shouldUseCompactReadOnly(isLocked, roles.length)
   /** Hide table column labels when a single published doc row is self-explanatory. */
   const hideHeader = isLocked && roles.length === 1
 
@@ -121,7 +122,7 @@ export function AccessRolesSection({ roles, onChange, isLocked, docCompact }: Ac
             </div>
           )}
 
-          <div className="divide-y divide-[#e4e4f0]">
+          <div className="divide-y divide-neutral-100">
             {roles.map(r => (
               <div
                 key={r.id}
@@ -154,14 +155,10 @@ export function AccessRolesSection({ roles, onChange, isLocked, docCompact }: Ac
                       rows={1}
                       className="text-xs min-h-[32px] resize-none py-1.5"
                     />
-                    <button
-                      type="button"
+                    <GovernanceDeleteButton
                       onClick={() => remove(r.id)}
-                      className="h-7 w-7 flex items-center justify-center text-[#9898a7] hover:text-[#c12c11] hover:bg-[#fff2ee] rounded transition-colors"
                       aria-label="Remove role"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
+                    />
                   </>
                 )}
               </div>
@@ -169,16 +166,10 @@ export function AccessRolesSection({ roles, onChange, isLocked, docCompact }: Ac
           </div>
 
           {!isLocked && (
-            <div className={governanceTableFooterClass}>
-              <button
-                type="button"
-                onClick={() => onChange([...roles, makeRole()])}
-                className={governanceTableFooterActionClass}
-              >
-                <Plus className="h-3.5 w-3.5" />
-                {DATA_ACCESS_ADD_ROLE_CTA}
-              </button>
-            </div>
+            <GovernanceTableFooter
+              label={DATA_ACCESS_ADD_ROLE_CTA}
+              onAdd={() => onChange([...roles, makeRole()])}
+            />
           )}
         </div>
       )}

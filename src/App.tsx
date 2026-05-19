@@ -573,7 +573,6 @@ export default function App() {
                           slaProperties={contract.slaProperties ?? []}
                           onChange={handleSlaChange}
                           isLocked={isLocked}
-                          isPublishedView={isPublishedView}
                           docCompact={docCompact}
                         />
                       ) : activeSection === 'custom' ? (
