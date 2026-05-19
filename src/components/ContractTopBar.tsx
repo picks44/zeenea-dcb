@@ -188,10 +188,10 @@ export function ContractTopBar({
 
           {/* Actions area */}
           {info.status !== 'deprecated' && info.status !== 'retired' && (
-            <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="flex h-8 items-center gap-2 flex-shrink-0">
 
               {(isOwner || isContributor) && info.status === 'proposed' && !hideStartDrafting && (
-                <Button variant="secondary" size="sm" onClick={onStartDraft} className="gap-1.5">
+                <Button variant="secondary" size="sm" onClick={onStartDraft} className={TOP_BAR_BTN}>
                   <PenLine className="h-3.5 w-3.5" />
                   Start drafting
                 </Button>
@@ -200,12 +200,12 @@ export function ContractTopBar({
               {/* New version — owner + contributor on active contracts */}
               {(isOwner || isContributor) && info.status === 'active' && !contract.inRevision && (
                 <>
-                  <Button variant="secondary" size="sm" onClick={onNewVersion} className="gap-1.5">
+                  <Button variant="secondary" size="sm" onClick={onNewVersion} className={TOP_BAR_BTN}>
                     <GitBranch className="h-3.5 w-3.5" />
                     New version
                   </Button>
                   {isOwner && (
-                    <Button variant="outline" size="sm" onClick={onDeprecate} className="gap-1.5">
+                    <Button variant="outline" size="sm" onClick={onDeprecate} className={TOP_BAR_BTN}>
                       <AlertTriangle className="h-3.5 w-3.5" />
                       Deprecate
                     </Button>
@@ -217,14 +217,14 @@ export function ContractTopBar({
               {(info.status === 'draft' || contract.inRevision) && (gitState === 'never' || gitState === 'unpushed') && (
                 isOwner ? (
                   canPublish ? (
-                    <Button size="sm" onClick={handlePublishClick} className="h-8 text-xs gap-1.5">
+                    <Button size="sm" onClick={handlePublishClick} className={TOP_BAR_BTN}>
                       <Upload className="h-3.5 w-3.5" />
                       {gitState === 'never' ? 'Publish' : 'Publish update'}
                     </Button>
                   ) : (
                     <Tooltip content={publishBlockReason!} side="bottom" delayDuration={300}>
                       <span className="inline-flex" onClick={handlePublishClick} role="button" tabIndex={0}>
-                        <Button size="sm" disabled className="h-8 text-xs gap-1.5 pointer-events-none">
+                        <Button size="sm" disabled className={cn(TOP_BAR_BTN, 'pointer-events-none')}>
                           <Upload className="h-3.5 w-3.5" />
                           {gitState === 'never' ? 'Publish' : 'Publish update'}
                         </Button>
@@ -245,7 +245,7 @@ export function ContractTopBar({
 
               {/* Synced / published state — owner only */}
               {isOwner && (info.status === 'draft' || contract.inRevision) && gitState === 'synced' && (
-                <Button variant="ghost" size="sm" onClick={onPushToGit} title={topBarPublishedTooltip(lastCommit!.version)} className="gap-1.5 text-neutral-400">
+                <Button variant="ghost" size="sm" onClick={onPushToGit} title={topBarPublishedTooltip(lastCommit!.version)} className={cn(TOP_BAR_BTN, 'text-neutral-400')}>
                   <Check className="h-3.5 w-3.5 text-green-700" />
                   Published
                 </Button>
