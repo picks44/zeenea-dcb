@@ -3,6 +3,8 @@ import {
   applyLifecycleAction,
   canPublishFromStatus,
   canTransitionStatus,
+  isContractEditableStatus,
+  isContractLocked,
   LIFECYCLE_TRANSITIONS,
 } from '@/lib/contractLifecycle'
 import { LIFECYCLE_STATUSES } from '@/lib/p1Constants'
@@ -41,5 +43,22 @@ describe('contractLifecycle P1', () => {
     expect(canPublishFromStatus('active', false)).toBe(false)
     expect(canPublishFromStatus('deprecated')).toBe(false)
     expect(canPublishFromStatus('retired')).toBe(false)
+  })
+
+  it('isContractEditableStatus locks proposed like published active', () => {
+    expect(isContractEditableStatus('proposed')).toBe(false)
+    expect(isContractEditableStatus('draft')).toBe(true)
+    expect(isContractEditableStatus('active', false)).toBe(false)
+    expect(isContractEditableStatus('active', true)).toBe(true)
+    expect(isContractEditableStatus('deprecated')).toBe(false)
+    expect(isContractEditableStatus('retired')).toBe(false)
+  })
+
+  it('isContractLocked mirrors lifecycle and viewer rules', () => {
+    expect(isContractLocked('proposed', false, false)).toBe(true)
+    expect(isContractLocked('draft', false, false)).toBe(false)
+    expect(isContractLocked('draft', false, true)).toBe(true)
+    expect(isContractLocked('active', false, false)).toBe(true)
+    expect(isContractLocked('active', true, false)).toBe(false)
   })
 })

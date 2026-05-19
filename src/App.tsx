@@ -27,7 +27,7 @@ import { DataContract, DataContractSnapshot, SectionId, SchemaTable, AppView, Ed
 import type { CustomProperty } from './types/odcsShared'
 import { CustomPropertiesSection } from './components/sections/CustomPropertiesSection'
 import { deriveContractId } from './lib/idDerivation'
-import { applyLifecycleAction } from './lib/contractLifecycle'
+import { applyLifecycleAction, isContractLocked } from './lib/contractLifecycle'
 import type { PushResult } from './components/PushToGitModal'
 import { loadContracts, saveContracts } from './lib/storage'
 import { validateContract } from './lib/contractValidation'
@@ -96,10 +96,7 @@ export default function App() {
   const contract = selectedId ? contracts.find(c => c.uid === selectedId) ?? null : null
   const myRole = getMyRole(contract)
   const isLocked = contract
-    ? myRole === 'viewer'
-      || (contract.info.status === 'active' && !contract.inRevision)
-      || contract.info.status === 'deprecated'
-      || contract.info.status === 'retired'
+    ? isContractLocked(contract.info.status, contract.inRevision, myRole === 'viewer')
     : false
 
   const isPublishedView = contract
@@ -166,6 +163,7 @@ export default function App() {
 
   const handleDDLParsed = useCallback((tables: SchemaTable[], _ddl: string) => {
     if (!contract || tables.length === 0) return
+    if (isContractLocked(contract.info.status, contract.inRevision, myRole === 'viewer')) return
     const first = tables[0]
     updateContract({
       ...contract,
@@ -178,11 +176,12 @@ export default function App() {
     })
     setHasEditedSincePublish(true)
     setActiveSection('fundamentals')
-  }, [contract, updateContract])
+  }, [contract, updateContract, myRole])
 
   const handleFundamentalsChange = useCallback(
     (updates: Partial<DataContract['info']> & { id?: string }) => {
       if (!contract) return
+      if (isContractLocked(contract.info.status, contract.inRevision, myRole === 'viewer')) return
       const { id, ...infoUpdates } = updates
       updateContract({
         ...contract,
@@ -190,37 +189,42 @@ export default function App() {
         info: { ...contract.info, ...infoUpdates },
       })
       setHasEditedSincePublish(true)
-    }, [contract, updateContract])
+    }, [contract, updateContract, myRole])
 
   const handleSchemaChange = useCallback((tables: SchemaTable[]) => {
     if (!contract) return
+    if (isContractLocked(contract.info.status, contract.inRevision, myRole === 'viewer')) return
     updateContract({ ...contract, dataset: tables })
     setHasEditedSincePublish(true)
-  }, [contract, updateContract])
+  }, [contract, updateContract, myRole])
 
   const handleStakeholdersChange = useCallback((stakeholders: DataContract['stakeholders']) => {
     if (!contract) return
+    if (isContractLocked(contract.info.status, contract.inRevision, myRole === 'viewer')) return
     updateContract({ ...contract, stakeholders })
     setHasEditedSincePublish(true)
-  }, [contract, updateContract])
+  }, [contract, updateContract, myRole])
 
   const handleRolesChange = useCallback((roles: OdcsAccessRole[]) => {
     if (!contract) return
+    if (isContractLocked(contract.info.status, contract.inRevision, myRole === 'viewer')) return
     updateContract({ ...contract, roles })
     setHasEditedSincePublish(true)
-  }, [contract, updateContract])
+  }, [contract, updateContract, myRole])
 
   const handleSlaChange = useCallback((slaProperties: SlaProperty[]) => {
     if (!contract) return
+    if (isContractLocked(contract.info.status, contract.inRevision, myRole === 'viewer')) return
     updateContract({ ...contract, slaProperties })
     setHasEditedSincePublish(true)
-  }, [contract, updateContract])
+  }, [contract, updateContract, myRole])
 
   const handleCustomPropertiesChange = useCallback((customProperties: CustomProperty[]) => {
     if (!contract) return
+    if (isContractLocked(contract.info.status, contract.inRevision, myRole === 'viewer')) return
     updateContract({ ...contract, customProperties })
     setHasEditedSincePublish(true)
-  }, [contract, updateContract])
+  }, [contract, updateContract, myRole])
 
   const handleDeleteContract = () => {
     if (!contract) return
@@ -414,6 +418,18 @@ export default function App() {
                   readinessPanelOpen={readinessOpen}
                   onReadinessToggle={() => setReadinessOpen(o => !o)}
                 />
+
+                {contract.info.status === 'proposed' && (
+                  <div className={cn(
+                    'bg-neutral-50 border-b border-neutral-200 flex items-center flex-shrink-0',
+                    docCompact ? 'px-4 py-1.5 gap-2' : 'px-6 py-2 gap-2.5',
+                  )}>
+                    <Lock className="h-3.5 w-3.5 text-neutral-600 flex-shrink-0" />
+                    <p className="text-neutral-700 text-xs font-medium">
+                      This contract is <strong>Proposed</strong> and read-only. Use <strong>Start drafting</strong> in the toolbar to edit.
+                    </p>
+                  </div>
+                )}
 
                 {contract.info.status === 'deprecated' && (
                   <div className="bg-[#fff2ee] border-b border-[#ffc4b0] px-6 py-2 flex items-center gap-2.5 flex-shrink-0">

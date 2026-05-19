@@ -36,8 +36,20 @@ export function canPublishFromStatus(status: LifecycleStatus, inRevision?: boole
   return status === 'draft'
 }
 
+/** True when contract content may be edited (draft, or active while in revision). */
 export function isContractEditableStatus(status: LifecycleStatus, inRevision?: boolean): boolean {
+  if (status === 'proposed') return false
   if (status === 'retired' || status === 'deprecated') return false
   if (status === 'active' && !inRevision) return false
   return true
+}
+
+/** Viewer role or lifecycle lock (proposed, active published, deprecated, retired). */
+export function isContractLocked(
+  status: LifecycleStatus,
+  inRevision: boolean | undefined,
+  isViewer: boolean,
+): boolean {
+  if (isViewer) return true
+  return !isContractEditableStatus(status, inRevision)
 }
