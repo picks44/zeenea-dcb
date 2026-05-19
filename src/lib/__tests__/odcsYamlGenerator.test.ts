@@ -1,0 +1,84 @@
+import { describe, expect, it } from 'vitest'
+import { buildOdcsDocument } from '@/lib/odcsYamlGenerator'
+import { buildP1FixtureContract } from './p1-fixture'
+import { NOT_PRIMARY_KEY_POSITION, ODCS_API_VERSION, ODCS_KIND } from '@/lib/p1Constants'
+
+describe('buildOdcsDocument P1 export', () => {
+  const doc = buildOdcsDocument(buildP1FixtureContract())
+
+  it('exports fundamentals (apiVersion, kind, id, version, status, name, domain, description, tags)', () => {
+    expect(doc.apiVersion).toBe(ODCS_API_VERSION)
+    expect(doc.kind).toBe(ODCS_KIND)
+    expect(doc.id).toBe('seller-payments-v1')
+    expect(doc.version).toBe('1.1.0')
+    expect(doc.status).toBe('draft')
+    expect(doc.name).toBe('Seller Payments v1')
+    expect(doc.domain).toBe('seller')
+    expect((doc.description as Record<string, unknown>).purpose).toBeTruthy()
+    expect(doc.tags).toEqual(['finance', 'sensitive'])
+    expect(doc.dataProduct).toBeUndefined()
+  })
+
+  it('exports customProperties', () => {
+    const cp = doc.customProperties as Record<string, unknown>[]
+    expect(cp[0].property).toBe('dataSteward')
+    expect(cp[0].value).toBe('john.doe@example.com')
+  })
+
+  it('exports schema object fields', () => {
+    const schema = doc.schema as Record<string, unknown>[]
+    const orders = schema.find(s => s.id === 'tbl-orders') as Record<string, unknown>
+    expect(orders.physicalName).toBe('orders')
+    expect(orders.description).toBeTruthy()
+    expect(orders.tags).toEqual(['Core'])
+    expect((orders.quality as unknown[]).length).toBe(1)
+    expect((orders.authoritativeDefinitions as unknown[])[0]).toMatchObject({ type: 'actian' })
+  })
+
+  it('exports property fields including items, primaryKeyPosition, relationships pointer', () => {
+    const schema = doc.schema as Record<string, unknown>[]
+    const orders = schema.find(s => s.id === 'tbl-orders') as Record<string, unknown>
+    const props = orders.properties as Record<string, unknown>[]
+    const txn = props.find(p => p.id === 'tbl_orders_txn_ref_dt_prop')!
+    expect(txn.primaryKeyPosition).toBe(1)
+    expect(txn.physicalType).toBe('DATE')
+    expect(txn.required).toBe(true)
+    expect(txn.examples).toEqual(['2022-10-03'])
+    const rels = txn.relationships as Record<string, unknown>[]
+    expect(rels[0]).toMatchObject({
+      type: 'foreignKey',
+      to: '/schema/tbl-customers/properties/tbl_customers_id_prop',
+    })
+    const tagsCol = props.find(p => p.logicalType === 'array')!
+    expect((tagsCol.items as Record<string, unknown>).logicalType).toBe('string')
+    const nonPk = props.find(p => p.id === 'tbl_orders_tags_prop')!
+    expect(nonPk.primaryKeyPosition).toBe(NOT_PRIMARY_KEY_POSITION)
+  })
+
+  it('exports slaProperties without legacy property field', () => {
+    const sla = doc.slaProperties as Record<string, unknown>[]
+    expect(sla[0].value).toBe('4')
+    expect(sla[0].unit).toBe('h')
+    expect(sla[0].element).toBe('orders.TXN_REF_DT')
+    expect(sla[0].driver).toBe('regulatory')
+    expect(sla[0].property).toBeUndefined()
+  })
+
+  it('exports roles', () => {
+    const roles = doc.roles as Record<string, unknown>[]
+    expect(roles[0].role).toBe('microstrategy_user_opr')
+    expect(roles[0].access).toBe('read')
+  })
+
+  it('exports quality rule shared components', () => {
+    const schema = doc.schema as Record<string, unknown>[]
+    const orders = schema.find(s => s.id === 'tbl-orders') as Record<string, unknown>
+    const prop = (orders.properties as Record<string, unknown>[])[0]
+    const q = (prop.quality as Record<string, unknown>[])[0]
+    expect(q.id).toBe('order_id_no_nulls')
+    expect(q.type).toBe('text')
+    expect(q.dimension).toBe('completeness')
+    expect(q.severity).toBe('high')
+    expect(q.businessImpact).toBe('Reporting failure')
+  })
+})

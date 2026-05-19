@@ -1,8 +1,10 @@
-import type { AuthoritativeDefinition } from './odcsShared'
+import type { AuthoritativeDefinition, CustomProperty } from './odcsShared'
+import type { OdcsLifecycleStatus } from '@/lib/p1Constants'
+import type { QualityDimension } from '@/lib/p1Constants'
 
-export type { AuthoritativeDefinition } from './odcsShared'
+export type { AuthoritativeDefinition, CustomProperty } from './odcsShared'
 
-export type LifecycleStatus = 'draft' | 'active' | 'deprecated'
+export type LifecycleStatus = OdcsLifecycleStatus
 
 export type LogicalType =
   | 'string'
@@ -31,14 +33,26 @@ export type SectionId =
   | 'collaboration'
   | 'tests'
 
+export type { QualityDimension }
+
 export interface QualityRule {
   id: string
   name?: string
   description: string
   type: 'text'
-  dimension?: string
+  dimension?: QualityDimension
   severity?: string
   businessImpact?: string
+  /** P1 MVP: quality rules must be verified by AI before publish. */
+  aiVerified?: boolean
+}
+
+export type ArrayItemLogicalType = 'string' | 'object'
+
+export interface PropertyItems {
+  logicalType: ArrayItemLogicalType
+  /** Nested properties when logicalType is object. */
+  properties?: ColumnDefinition[]
 }
 
 export interface ColumnDefinition {
@@ -58,6 +72,8 @@ export interface ColumnDefinition {
   tags?: string[]
   authoritativeDefinitions?: AuthoritativeDefinition[]
   isUnknownType: boolean
+  /** Only when logicalType is array (P1). */
+  items?: PropertyItems
   /** Single-column foreign key — exported on this property in ODCS YAML. */
   foreignKey?: ColumnForeignKey
 }
@@ -131,7 +147,6 @@ export interface OdcsAccessRole {
 
 export interface SlaProperty {
   id: string
-  property: string
   value: string
   unit?: string
   element?: string
@@ -156,6 +171,7 @@ export interface DataContractSnapshot {
   stakeholders: Stakeholder[]
   roles?: OdcsAccessRole[]
   slaProperties?: SlaProperty[]
+  customProperties?: CustomProperty[]
   collaborators?: Collaborator[]
 }
 
@@ -193,6 +209,7 @@ export interface DataContract {
   stakeholders: Stakeholder[]
   roles: OdcsAccessRole[]
   slaProperties: SlaProperty[]
+  customProperties: CustomProperty[]
   collaborators?: Collaborator[]
   gitHistory: GitCommit[]
   openPR: GitPR | null

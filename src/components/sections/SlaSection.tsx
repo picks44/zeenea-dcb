@@ -21,28 +21,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { SlaProperty } from '@/types/odcs'
 import { generateId } from '@/lib/utils'
-
-const PROPERTY_PRESETS = [
-  'latency',
-  'retention',
-  'frequency',
-  'generalAvailability',
-  'endOfSupport',
-  'endOfLife',
-  'timeOfAvailability',
-  'custom',
-] as const
-
-const SLA_PROPERTY_LABELS: Record<(typeof PROPERTY_PRESETS)[number], string> = {
-  latency: 'Latency',
-  retention: 'Retention',
-  frequency: 'Frequency',
-  generalAvailability: 'Availability',
-  endOfSupport: 'End of support',
-  endOfLife: 'End of life',
-  timeOfAvailability: 'Time of availability',
-  custom: 'Custom…',
-}
+import { SLA_DRIVERS, SLA_UNITS } from '@/lib/p1Constants'
 
 const SLA_CELL = 'px-2 py-1.5 align-middle'
 const SLA_INPUT = 'h-8 text-xs w-full'
@@ -56,22 +35,14 @@ interface SlaSectionProps {
 }
 
 function makeSla(): SlaProperty {
-  return { id: generateId(), property: 'latency', value: '', unit: '', element: '', driver: '', description: '' }
+  return { id: generateId(), value: '', unit: '', element: '', driver: '', description: '' }
 }
 
 const thClass = `${governanceTableHeadClass} text-left px-2 py-2 font-semibold`
 
-function slaPropertyLabel(row: SlaProperty): string {
-  const isCustom = !PROPERTY_PRESETS.slice(0, -1).includes(row.property as (typeof PROPERTY_PRESETS)[number])
-  if (isCustom && row.property.trim()) return row.property.trim()
-  const preset = isCustom ? 'custom' : row.property
-  return SLA_PROPERTY_LABELS[preset as (typeof PROPERTY_PRESETS)[number]] ?? row.property
-}
-
 function SlaReadOnlyRow({ row }: { row: SlaProperty }) {
   return (
     <>
-      <td className={SLA_CELL}><GovernanceReadOnlyCell value={slaPropertyLabel(row)} /></td>
       <td className={SLA_CELL}><GovernanceReadOnlyCell value={row.value} /></td>
       <td className={SLA_CELL}><GovernanceReadOnlyCell value={row.unit ?? ''} /></td>
       <td className={SLA_CELL}><GovernanceReadOnlyCell value={row.element ?? ''} mono /></td>
@@ -92,7 +63,7 @@ export function SlaSection({ slaProperties, onChange, isLocked, isPublishedView,
       <ContractSectionHeader
         title="Service levels"
         conceptTag={SECTION_CONCEPT_SERVICE_LEVELS}
-        description="Define latency, retention, availability, and other service level commitments for this contract."
+        description="Define SLA commitments: value (required), unit, element (Object.Property), driver, and description."
         compact={docCompact && isLocked}
       />
 
@@ -109,20 +80,18 @@ export function SlaSection({ slaProperties, onChange, isLocked, isPublishedView,
         <SlaCompactList rows={slaProperties} compact={docCompact} />
       ) : (
         <div className={`${governanceTableShellClass} overflow-x-auto`}>
-          <table className="w-full text-xs border-collapse table-fixed min-w-[760px]">
+          <table className="w-full text-xs border-collapse table-fixed min-w-[640px]">
             <colgroup>
-              <col className="w-[152px]" />
-              <col className="w-[68px]" />
-              <col className="w-[56px]" />
-              <col className="w-[124px]" />
-              <col className="w-[104px]" />
+              <col className="w-[88px]" />
+              <col className="w-[72px]" />
+              <col className="w-[140px]" />
+              <col className="w-[100px]" />
               <col />
               {!isLocked && <col className="w-[36px]" />}
             </colgroup>
             <thead>
               <tr className={governanceTableHeadRowClass}>
-                <th className={thClass}>Property</th>
-                <th className={thClass}>Value</th>
+                <th className={thClass}>Value *</th>
                 <th className={thClass}>Unit</th>
                 <th className={thClass}>Element</th>
                 <th className={thClass}>Driver</th>
@@ -140,74 +109,50 @@ export function SlaSection({ slaProperties, onChange, isLocked, isPublishedView,
                   )
                 }
 
-                const isCustom = !PROPERTY_PRESETS.slice(0, -1).includes(row.property as typeof PROPERTY_PRESETS[number])
-                const preset = isCustom ? 'custom' : row.property
                 return (
                   <tr key={row.id}>
-                    <td className={SLA_CELL}>
-                      <Select
-                        value={preset}
-                        onValueChange={v => {
-                          if (!v) return
-                          update(row.id, { property: v === 'custom' ? '' : v })
-                        }}
-                      >
-                        <SelectTrigger className={SLA_INPUT}>
-                          <SelectValue>
-                            {(v: string) => {
-                              if (v === 'custom' && row.property.trim()) return row.property
-                              return SLA_PROPERTY_LABELS[v as (typeof PROPERTY_PRESETS)[number]] ?? v
-                            }}
-                          </SelectValue>
-                        </SelectTrigger>
-                        <SelectContent>
-                          {PROPERTY_PRESETS.map(p => (
-                            <SelectItem key={p} value={p} className="text-xs">
-                              {SLA_PROPERTY_LABELS[p]}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {(preset === 'custom' || isCustom) && (
-                        <Input
-                          value={row.property}
-                          onChange={e => update(row.id, { property: e.target.value })}
-                          placeholder="Custom property"
-                          className={cn(SLA_INPUT, 'mt-1')}
-                        />
-                      )}
-                    </td>
                     <td className={SLA_CELL}>
                       <Input
                         value={row.value}
                         onChange={e => update(row.id, { value: e.target.value })}
                         className={SLA_INPUT}
-                        placeholder="Value"
+                        placeholder="e.g. 4"
                       />
                     </td>
                     <td className={SLA_CELL}>
-                      <Input
-                        value={row.unit ?? ''}
-                        onChange={e => update(row.id, { unit: e.target.value })}
-                        className={SLA_INPUT}
-                        placeholder="Unit"
-                      />
+                      <Select
+                        value={row.unit?.trim() || undefined}
+                        onValueChange={v => update(row.id, { unit: v ?? '' })}
+                      >
+                        <SelectTrigger className={SLA_INPUT}><SelectValue placeholder="Unit" /></SelectTrigger>
+                        <SelectContent>
+                          {SLA_UNITS.map(u => (
+                            <SelectItem key={u} value={u} className="text-xs">{u}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </td>
                     <td className={SLA_CELL}>
                       <Input
                         value={row.element ?? ''}
                         onChange={e => update(row.id, { element: e.target.value })}
                         className={cn(SLA_INPUT, 'font-mono')}
-                        placeholder="Table or field"
+                        placeholder="table.field"
+                        title="Object.Property — comma-separate multiples"
                       />
                     </td>
                     <td className={SLA_CELL}>
-                      <Input
-                        value={row.driver ?? ''}
-                        onChange={e => update(row.id, { driver: e.target.value })}
-                        className={SLA_INPUT}
-                        placeholder="e.g. Operations"
-                      />
+                      <Select
+                        value={row.driver?.trim() || undefined}
+                        onValueChange={v => update(row.id, { driver: v ?? '' })}
+                      >
+                        <SelectTrigger className={SLA_INPUT}><SelectValue placeholder="Driver" /></SelectTrigger>
+                        <SelectContent>
+                          {SLA_DRIVERS.map(d => (
+                            <SelectItem key={d} value={d} className="text-xs capitalize">{d}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </td>
                     <td className={SLA_CELL}>
                       <Input

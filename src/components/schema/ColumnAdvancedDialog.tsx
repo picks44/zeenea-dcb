@@ -10,7 +10,8 @@ import {
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import { ColumnDefinition, ColumnForeignKey, QualityRule, SchemaTable } from '@/types/odcs'
+import { ColumnDefinition, ColumnForeignKey, PropertyItems, QualityRule, SchemaTable } from '@/types/odcs'
+import { PropertyItemsEditor } from '@/components/schema/PropertyItemsEditor'
 import { ColumnForeignKeyEditor } from '@/components/shared/ColumnForeignKeyEditor'
 import { TagsEditor } from '@/components/shared/TagsEditor'
 import { AuthoritativeDefinitionsEditor } from '@/components/shared/AuthoritativeDefinitionsEditor'
@@ -70,6 +71,7 @@ export function ColumnAdvancedDialog({
   const [authShowErrors, setAuthShowErrors] = useState(false)
   const [fkShowErrors, setFkShowErrors] = useState(false)
   const [foreignKey, setForeignKey] = useState<ColumnForeignKey | undefined>()
+  const [items, setItems] = useState<PropertyItems | undefined>()
 
   useEffect(() => {
     if (!column || !open) return
@@ -79,6 +81,7 @@ export function ColumnAdvancedDialog({
     setAuthDefs(filterAuthoritativeDefinitionsForSave(column.authoritativeDefinitions ?? []))
     setQuality(loadColumnQuality(column))
     setForeignKey(column.foreignKey)
+    setItems(column.items)
     setAuthShowErrors(false)
     setFkShowErrors(false)
   }, [column, open])
@@ -105,6 +108,7 @@ export function ColumnAdvancedDialog({
       authoritativeDefinitions: savedAuth.length > 0 ? savedAuth : undefined,
       quality: savedQuality.length > 0 ? savedQuality : undefined,
       qualityRule: '',
+      items: column.logicalType === 'array' ? items : undefined,
     })
     onClose()
   }
@@ -117,6 +121,7 @@ export function ColumnAdvancedDialog({
         <DialogHeader className="px-6 pt-6 pb-0 flex-shrink-0">
           <DialogTitle className="text-sm">Field properties</DialogTitle>
           <DialogDescription className="font-mono text-xs text-[#656574]">
+            <span className="block text-[10px] text-[#9898a7] mb-0.5">id: {column.id}</span>
             {column.physicalName}
             {displayName !== column.physicalName ? (
               <span className="font-sans text-[#9898a7]"> · {displayName}</span>
@@ -167,6 +172,14 @@ export function ColumnAdvancedDialog({
                 <TagsEditor tags={tags} onChange={setTags} />
               </div>
 
+              {column.logicalType === 'array' && (
+                <PropertyItemsEditor
+                  items={items}
+                  onChange={setItems}
+                  disabled={isLocked}
+                />
+              )}
+
               <div>
                 <Label className="text-xs text-[#33333d] mb-1 block">Foreign key</Label>
                 <ColumnForeignKeyEditor
@@ -191,6 +204,7 @@ export function ColumnAdvancedDialog({
               <div>
                 <Label className="text-xs text-[#33333d] mb-1 block">{LABEL_REFERENCE_LINKS}</Label>
                 <AuthoritativeDefinitionsEditor
+                  variant="zeenea"
                   definitions={authDefs}
                   onChange={defs => {
                     setAuthDefs(defs)

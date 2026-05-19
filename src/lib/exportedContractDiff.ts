@@ -139,7 +139,12 @@ function roleKey(r: OdcsAccessRole): string {
 }
 
 function slaKey(s: SlaProperty): string {
-  return s.property
+  return `${s.element ?? ''}::${s.value}`
+}
+
+function slaLabel(s: SlaProperty): string {
+  const el = (s.element ?? '').trim()
+  return el || `SLA ${s.value}` || 'SLA'
 }
 
 function buildSchemaFormRows(
@@ -228,13 +233,13 @@ function buildSlaFormRows(left: SlaProperty[], right: SlaProperty[]): FormDiffRo
 
   for (const [key, r] of rightMap) {
     if (!leftMap.has(key)) {
-      rows.push({ kind: 'added', label: r.property, left: '', right: String(r.value) })
+      rows.push({ kind: 'added', label: slaLabel(r), left: '', right: String(r.value) })
     } else {
       const l = leftMap.get(key)!
       if (JSON.stringify(l) !== JSON.stringify(r)) {
         rows.push({
           kind: 'modified',
-          label: r.property,
+          label: slaLabel(r),
           left: String(l.value),
           right: String(r.value),
         })
@@ -243,7 +248,7 @@ function buildSlaFormRows(left: SlaProperty[], right: SlaProperty[]): FormDiffRo
   }
   for (const [key, l] of leftMap) {
     if (!rightMap.has(key)) {
-      rows.push({ kind: 'removed', label: l.property, left: String(l.value), right: '' })
+      rows.push({ kind: 'removed', label: slaLabel(l), left: String(l.value), right: '' })
     }
   }
   return rows
@@ -316,8 +321,8 @@ export function compareExportedSnapshots(
   const rightRoles = (right.roles ?? []).filter(r => r.role.trim())
   const roles = diffByKey(leftRoles, rightRoles, roleKey)
 
-  const leftSla = (left.slaProperties ?? []).filter(s => s.property.trim())
-  const rightSla = (right.slaProperties ?? []).filter(s => s.property.trim())
+  const leftSla = (left.slaProperties ?? []).filter(s => s.value.trim())
+  const rightSla = (right.slaProperties ?? []).filter(s => s.value.trim())
   const sla = diffByKey(leftSla, rightSla, slaKey)
 
   const qualityDiff = diffExportedQualityRules(leftDoc, rightDoc)

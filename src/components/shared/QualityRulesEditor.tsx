@@ -1,9 +1,11 @@
-import { Plus, Trash2 } from 'lucide-react'
+import { Plus, Trash2, Sparkles, Check } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import type { QualityRule } from '@/types/odcs'
 import { generateId, cn } from '@/lib/utils'
 import { QUALITY_RULES_HELPER } from '@/lib/uxCopy'
+import { QUALITY_DIMENSIONS } from '@/lib/p1Constants'
 import { governanceTableFooterActionClass } from '@/components/shared/GovernanceSectionHeader'
 import {
   qualityRuleFieldLabelClass,
@@ -16,31 +18,34 @@ import {
 } from '@/components/shared/qualityRuleUx'
 
 const MAX_RULES = 3
-const DEFAULT_HELPER = QUALITY_RULES_HELPER
+const DEFAULT_HELPER = `${QUALITY_RULES_HELPER} Type is text only (P1). Table-level rules require AI verification before publish.`
 
 interface QualityRulesEditorProps {
   rules: QualityRule[]
   onChange: (rules: QualityRule[]) => void
   disabled?: boolean
   helperText?: string
-  /** Tighter spacing for laptop / docCompact metadata surfaces */
   compact?: boolean
+  /** When true, show AI verify control (table-level quality P1). */
+  showAiVerification?: boolean
 }
 
 function emptyRule(): QualityRule {
-  return { id: generateId(), type: 'text', description: '' }
+  return { id: generateId(), type: 'text', description: '', aiVerified: false }
 }
 
 function QualityRuleEditRow({
   rule,
   compact,
   disabled,
+  showAiVerification,
   onUpdate,
   onRemove,
 }: {
   rule: QualityRule
   compact?: boolean
   disabled?: boolean
+  showAiVerification?: boolean
   onUpdate: (patch: Partial<QualityRule>) => void
   onRemove: () => void
 }) {
@@ -63,7 +68,7 @@ function QualityRuleEditRow({
           <Input
             value={rule.name ?? ''}
             onChange={e => onUpdate({ name: e.target.value })}
-            placeholder="e.g. Freshness, Completeness"
+            placeholder="e.g. No nulls in order_id"
             disabled={disabled}
             className={qualityRuleNameInputClass}
           />
@@ -73,12 +78,69 @@ function QualityRuleEditRow({
           <Textarea
             value={rule.description}
             onChange={e => onUpdate({ description: e.target.value })}
-            placeholder="e.g. Must not be null"
+            placeholder="e.g. There must be no null values in the column."
             rows={2}
             disabled={disabled}
             className={qualityRuleTextareaClass(compact)}
           />
         </div>
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className={qualityRuleFieldLabelClass}>Dimension</label>
+            <Select
+              value={rule.dimension ?? ''}
+              onValueChange={v => v && onUpdate({ dimension: v as QualityRule['dimension'] })}
+              disabled={disabled}
+            >
+              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select…" /></SelectTrigger>
+              <SelectContent>
+                {QUALITY_DIMENSIONS.map(d => (
+                  <SelectItem key={d} value={d} className="text-xs capitalize">{d}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className={qualityRuleFieldLabelClass}>Severity (optional)</label>
+            <Input
+              value={rule.severity ?? ''}
+              onChange={e => onUpdate({ severity: e.target.value })}
+              placeholder="e.g. high"
+              disabled={disabled}
+              className="h-8 text-xs"
+            />
+          </div>
+        </div>
+        <div>
+          <label className={qualityRuleFieldLabelClass}>Business impact (optional)</label>
+          <Input
+            value={rule.businessImpact ?? ''}
+            onChange={e => onUpdate({ businessImpact: e.target.value })}
+            placeholder="Consequences if the rule fails"
+            disabled={disabled}
+            className="h-8 text-xs"
+          />
+        </div>
+        <p className="text-[10px] text-[#656574]">Type: <span className="font-mono">text</span> (P1 only)</p>
+        {showAiVerification && (
+          <div className="flex items-center gap-2">
+            {rule.aiVerified ? (
+              <span className="inline-flex items-center gap-1 text-[10px] font-medium text-[#047800]">
+                <Check className="h-3 w-3" /> AI verified
+              </span>
+            ) : (
+              <button
+                type="button"
+                disabled={disabled || !rule.description.trim()}
+                onClick={() => onUpdate({ aiVerified: true })}
+                className="inline-flex items-center gap-1 text-[10px] font-medium text-[#0550dc] hover:underline disabled:opacity-40"
+              >
+                <Sparkles className="h-3 w-3" />
+                Verify with AI (mock)
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
@@ -90,6 +152,7 @@ export function QualityRulesEditor({
   disabled = false,
   helperText = DEFAULT_HELPER,
   compact = false,
+  showAiVerification = false,
 }: QualityRulesEditorProps) {
   const update = (id: string, patch: Partial<QualityRule>) => {
     onChange(rules.map(r => (r.id === id ? { ...r, ...patch } : r)))
@@ -114,6 +177,7 @@ export function QualityRulesEditor({
               rule={rule}
               compact={compact}
               disabled={disabled}
+              showAiVerification={showAiVerification}
               onUpdate={patch => update(rule.id, patch)}
               onRemove={() => remove(rule.id)}
             />

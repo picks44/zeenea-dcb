@@ -1,4 +1,4 @@
-import { FileText, Database, Upload, Trash2, CheckCircle2, GitBranch, Users, Shield, Clock, AlertCircle } from 'lucide-react'
+import { FileText, Database, Upload, Trash2, CheckCircle2, GitBranch, Users, Shield, Clock, AlertCircle, Settings2 } from 'lucide-react'
 import { DataContract, SectionId } from '@/types/odcs'
 import { cn } from '@/lib/utils'
 import { Tooltip } from '@/components/ui/tooltip'
@@ -104,6 +104,7 @@ export function ContractSectionNav({
     { id: 'stakeholders', label: NAV_GOVERNANCE_CONTACTS, icon: Users },
     { id: 'accessRoles',  label: NAV_DATA_ACCESS,  icon: Shield },
     { id: 'sla',          label: NAV_SERVICE_LEVELS, icon: Clock },
+    { id: 'custom',       label: 'Custom',           icon: Settings2 },
     { id: 'versions',     label: NAV_VERSIONS,     icon: GitBranch },
   ]
 

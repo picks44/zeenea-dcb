@@ -14,8 +14,7 @@ export function TagsEditor({ tags, onChange, disabled = false, placeholder }: Ta
   const ref = useRef<HTMLInputElement>(null)
 
   const add = (val: string) => {
-    const slug = val.trim().toLowerCase().replace(/\s+/g, '-')
-    const tag = slug.charAt(0).toUpperCase() + slug.slice(1)
+    const tag = val.trim()
     if (tag && !tags.includes(tag)) onChange([...tags, tag])
     setInput('')
   }

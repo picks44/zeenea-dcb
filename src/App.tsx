@@ -24,6 +24,9 @@ import { ReadinessPanel } from './components/ReadinessPanel'
 import { ReadinessNavigationProvider } from './components/readiness/ReadinessNavigationContext'
 
 import { DataContract, DataContractSnapshot, SectionId, SchemaTable, AppView, EditorTab, Collaborator, CollaboratorRole, OdcsAccessRole, SlaProperty } from './types/odcs'
+import type { CustomProperty } from './types/odcsShared'
+import { CustomPropertiesSection } from './components/sections/CustomPropertiesSection'
+import { deriveContractId } from './lib/idDerivation'
 import type { PushResult } from './components/PushToGitModal'
 import { loadContracts, saveContracts } from './lib/storage'
 import { validateContract } from './lib/contractValidation'
@@ -53,6 +56,7 @@ function makeContract(): DataContract {
     stakeholders: [],
     roles: [],
     slaProperties: [],
+    customProperties: [],
     gitHistory: [],
     openPR: null,
     createdAt: now,
@@ -109,7 +113,7 @@ export default function App() {
     contract && !isLocked && contract.info.status !== 'deprecated',
   )
 
-  const validation = contract ? validateContract(contract) : null
+  const validation = contract ? validateContract(contract, contracts) : null
   const canPublish = !!validation?.canPublish && hasEditedSincePublish && myRole === 'owner'
 
   const publishBlockReason = !contract ? null
@@ -162,7 +166,7 @@ export default function App() {
         ...contract.info,
         title: contract.info.title || (tables.length === 1 ? first.quantumName : contract.info.title),
       },
-      id: contract.id || first.physicalName.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+      id: contract.id || deriveContractId(contract.info.title || first.physicalName),
       dataset: tables,
     })
     setHasEditedSincePublish(true)
@@ -202,6 +206,12 @@ export default function App() {
   const handleSlaChange = useCallback((slaProperties: SlaProperty[]) => {
     if (!contract) return
     updateContract({ ...contract, slaProperties })
+    setHasEditedSincePublish(true)
+  }, [contract, updateContract])
+
+  const handleCustomPropertiesChange = useCallback((customProperties: CustomProperty[]) => {
+    if (!contract) return
+    updateContract({ ...contract, customProperties })
     setHasEditedSincePublish(true)
   }, [contract, updateContract])
 
@@ -250,6 +260,7 @@ export default function App() {
           stakeholders: [...snap.stakeholders],
           roles: [...(snap.roles ?? [])],
           slaProperties: [...(snap.slaProperties ?? [])],
+          customProperties: [...(snap.customProperties ?? [])],
           inRevision: false,
         })
         setHasEditedSincePublish(false)
@@ -266,6 +277,7 @@ export default function App() {
       stakeholders: [...contract.stakeholders],
       roles: [...(contract.roles ?? [])],
       slaProperties: [...(contract.slaProperties ?? [])],
+      customProperties: [...(contract.customProperties ?? [])],
     }
     const commitWithSnapshot = { ...result.commit, snapshot }
     setContracts(prev => prev.map(c => c.uid === contract.uid ? {
@@ -437,6 +449,13 @@ export default function App() {
                           onChange={handleSlaChange}
                           isLocked={isLocked}
                           isPublishedView={isPublishedView}
+                          docCompact={docCompact}
+                        />
+                      ) : activeSection === 'custom' ? (
+                        <CustomPropertiesSection
+                          customProperties={contract.customProperties ?? []}
+                          onChange={handleCustomPropertiesChange}
+                          isLocked={isLocked}
                           docCompact={docCompact}
                         />
                       ) : null}

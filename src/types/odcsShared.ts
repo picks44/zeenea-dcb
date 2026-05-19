@@ -1,6 +1,3 @@
-/** Re-export core quality type from domain model. */
-export type { QualityRule } from './odcs'
-
 export interface AuthoritativeDefinition {
   id: string
   url: string
@@ -9,19 +6,28 @@ export interface AuthoritativeDefinition {
 }
 
 export interface CustomProperty {
+  id: string
   property: string
   value: string
   description?: string
 }
 
-export const AUTH_DEF_TYPE_OPTIONS = [
-  { value: 'businessDefinition', label: 'Glossary' },
-  { value: 'documentation', label: 'Documentation' },
-  { value: 'privacyPolicy', label: 'Privacy policy' },
-  { value: 'termsAndConditions', label: 'Terms & Conditions' },
-  { value: 'license', label: 'License' },
-  { value: 'externalCatalog', label: 'External catalog' },
-] as const
+export {
+  FUNDAMENTALS_AUTH_DEF_TYPES,
+  FUNDAMENTALS_AUTH_DEF_LABELS,
+  ZEENEA_AUTH_DEF_TYPE,
+  SHARED_AUTH_DEF_TYPES,
+  QUALITY_DIMENSIONS,
+  SLA_UNITS,
+  SLA_DRIVERS,
+} from '@/lib/p1Constants'
+
+export type {
+  FundamentalsAuthDefType,
+  SharedAuthDefType,
+  SlaUnit,
+  SlaDriver,
+} from '@/lib/p1Constants'
 
 export const EXPORTED_RELATIONSHIP_TYPES = [
   'belongs_to',

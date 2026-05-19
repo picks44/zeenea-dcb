@@ -1,15 +1,48 @@
-import { DataContract, ColumnDefinition, DataContractSnapshot, SchemaTable, Stakeholder } from '@/types/odcs'
-import type { AuthoritativeDefinition } from '@/types/odcsShared'
+import { DataContract, ColumnDefinition, DataContractSnapshot, SchemaTable, Stakeholder, SlaProperty } from '@/types/odcs'
+import type { AuthoritativeDefinition, CustomProperty } from '@/types/odcsShared'
+import { LIFECYCLE_STATUSES } from '@/lib/p1Constants'
 import {
   ensureQualityRuleIds,
   migrateExamplesField,
   normalizeTags,
 } from '@/lib/odcsSharedMappers'
+import { deriveContractId, stablePropertyId, stableSchemaId } from '@/lib/idDerivation'
 import { generateId } from '@/lib/utils'
 import { migrateGitCommit } from '@/lib/versionHistory'
 import { SEED_CONTRACTS } from './seedContracts'
 
 const STORAGE_KEY = 'data-contracts-v1'
+
+function migrateLifecycleStatus(status: string | undefined): DataContract['info']['status'] {
+  if (status && (LIFECYCLE_STATUSES as readonly string[]).includes(status)) {
+    return status as DataContract['info']['status']
+  }
+  if (status === 'draft' || status === 'active' || status === 'deprecated') {
+    return status
+  }
+  return 'draft'
+}
+
+function migrateSlaRow(row: SlaProperty & { property?: string }): SlaProperty {
+  const legacy = row as SlaProperty & { property?: string }
+  return {
+    id: legacy.id ?? generateId(),
+    value: legacy.value ?? '',
+    unit: legacy.unit,
+    element: legacy.element,
+    driver: legacy.driver,
+    description: legacy.description,
+  }
+}
+
+function migrateCustomProperty(row: Partial<CustomProperty>): CustomProperty {
+  return {
+    id: row.id ?? generateId(),
+    property: row.property ?? '',
+    value: row.value ?? '',
+    description: row.description,
+  }
+}
 
 function migrateAuthoritativeDefinitions(
   defs: AuthoritativeDefinition[] | undefined,
@@ -22,20 +55,30 @@ function migrateAuthoritativeDefinitions(
   }))
 }
 
-function migrateColumn(col: ColumnDefinition): ColumnDefinition {
+function migrateColumn(col: ColumnDefinition, schemaId: string): ColumnDefinition {
+  const id = col.id?.trim() && col.id.includes('_prop')
+    ? col.id
+    : stablePropertyId(schemaId, col.physicalName)
+
   const next: ColumnDefinition = {
     ...col,
+    id,
     examples: migrateExamplesField(col.examples as string | string[] | undefined),
     tags: normalizeTags(col.tags),
     authoritativeDefinitions: migrateAuthoritativeDefinitions(col.authoritativeDefinitions),
-    quality: ensureQualityRuleIds(col.quality ?? []),
+    quality: ensureQualityRuleIds(col.quality ?? []).map(r => ({
+      ...r,
+      aiVerified: r.aiVerified ?? false,
+    })),
+    items: col.items,
   }
 
   if (col.qualityRule?.trim() && !(next.quality ?? []).length) {
     next.quality = ensureQualityRuleIds([{
-      id: col.id || generateId(),
+      id,
       type: 'text',
       description: col.qualityRule.trim(),
+      aiVerified: false,
     }])
   }
 
@@ -43,13 +86,20 @@ function migrateColumn(col: ColumnDefinition): ColumnDefinition {
 }
 
 function migrateTable(table: SchemaTable): SchemaTable {
+  const id = table.id?.trim() && table.id.startsWith('tbl-')
+    ? table.id
+    : stableSchemaId(table.physicalName)
+
   return {
     ...table,
-    id: table.id ?? generateId(),
+    id,
     tags: normalizeTags(table.tags),
-    quality: ensureQualityRuleIds(table.quality ?? []),
+    quality: ensureQualityRuleIds(table.quality ?? []).map(r => ({
+      ...r,
+      aiVerified: r.aiVerified ?? false,
+    })),
     authoritativeDefinitions: migrateAuthoritativeDefinitions(table.authoritativeDefinitions),
-    columns: (table.columns ?? []).map(migrateColumn),
+    columns: (table.columns ?? []).map(c => migrateColumn(c, id)),
     relationships: table.relationships ?? [],
   }
 }
@@ -68,6 +118,7 @@ function migrateStakeholder(s: Stakeholder): Stakeholder {
 function migrateInfo(info: DataContract['info']): DataContract['info'] {
   return {
     ...info,
+    status: migrateLifecycleStatus(info.status),
     tags: normalizeTags(info.tags),
     descriptionAuthoritativeDefinitions: migrateAuthoritativeDefinitions(
       info.descriptionAuthoritativeDefinitions,
@@ -81,23 +132,33 @@ function migrateSnapshot(snapshot: DataContractSnapshot): DataContractSnapshot {
     info: migrateInfo(snapshot.info),
     stakeholders: (snapshot.stakeholders ?? []).map(migrateStakeholder),
     roles: snapshot.roles ?? [],
-    slaProperties: snapshot.slaProperties ?? [],
+    slaProperties: (snapshot.slaProperties ?? []).map(migrateSlaRow),
+    customProperties: (snapshot.customProperties ?? []).map(migrateCustomProperty),
     dataset: (snapshot.dataset ?? []).map(migrateTable),
   }
 }
 
 function migrateContract(c: DataContract): DataContract {
+  const info = migrateInfo(c.info)
+  const title = info.title?.trim() || ''
+  const id = c.id?.trim() && /^[a-z0-9]+(-[a-z0-9]+)*$/.test(c.id)
+    ? c.id
+    : deriveContractId(title || c.id || 'contract')
+
   return {
     ...c,
-    info: migrateInfo(c.info),
+    id,
+    info,
+    customProperties: (c.customProperties ?? []).map(migrateCustomProperty),
     collaborators: c.collaborators ?? [],
     stakeholders: (c.stakeholders ?? []).map(migrateStakeholder),
     roles: c.roles ?? [],
-    slaProperties: c.slaProperties ?? [],
+    slaProperties: (c.slaProperties ?? []).map(migrateSlaRow),
     gitHistory: (c.gitHistory ?? []).map(commit => {
       const migrated = migrateGitCommit(commit, c.info.title)
       return {
         ...migrated,
+        contractStatus: migrateLifecycleStatus(migrated.contractStatus),
         snapshot: commit.snapshot ? migrateSnapshot(commit.snapshot) : undefined,
       }
     }),

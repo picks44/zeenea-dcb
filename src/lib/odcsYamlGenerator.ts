@@ -2,9 +2,12 @@ import yaml from 'js-yaml'
 import { isRoleRowEmpty, isSlaRowEmpty } from './contractValidation'
 import {
   mapAuthoritativeDefinitionsToYaml,
+  mapCustomPropertiesToYaml,
+  mapPropertyItemsToYaml,
   mapQualityRulesToYaml,
   mapTagsToYaml,
 } from './odcsSharedMappers'
+import { NOT_PRIMARY_KEY_POSITION, ODCS_API_VERSION, ODCS_KIND } from './p1Constants'
 import {
   ColumnDefinition,
   DataContract,
@@ -31,6 +34,11 @@ function columnQualityRules(col: ColumnDefinition): QualityRule[] {
   return []
 }
 
+function resolvePrimaryKeyPosition(col: ColumnDefinition, pkIndex: number | undefined): number {
+  if (col.isPrimaryKey && pkIndex !== undefined) return pkIndex
+  return NOT_PRIMARY_KEY_POSITION
+}
+
 function mapProperty(
   col: ColumnDefinition,
   pkPosition: number | undefined,
@@ -38,23 +46,12 @@ function mapProperty(
 ): Record<string, unknown> {
   const prop: Record<string, unknown> = {
     id: col.id,
-    name: col.physicalName,
     physicalName: col.physicalName,
-    businessName: col.logicalName?.trim() || undefined,
     physicalType: col.physicalType,
     logicalType: col.logicalType,
-    required: col.required || undefined,
+    required: col.required,
+    primaryKeyPosition: resolvePrimaryKeyPosition(col, pkPosition),
     description: col.description?.trim() || undefined,
-    unique: col.isUnique || undefined,
-  }
-
-  if (col.isPrimaryKey && pkPosition !== undefined) {
-    prop.primaryKey = true
-    prop.primaryKeyPosition = pkPosition
-  }
-
-  if (col.isPII) {
-    prop.classification = 'restricted'
   }
 
   const examples = mapTagsToYaml(col.examples)
@@ -69,6 +66,10 @@ function mapProperty(
   const authDefs = mapAuthoritativeDefinitionsToYaml(col.authoritativeDefinitions)
   if (authDefs) prop.authoritativeDefinitions = authDefs
 
+  if (col.logicalType === 'array' && col.items) {
+    prop.items = mapPropertyItemsToYaml(col.items)
+  }
+
   if (propertyRels?.length) {
     prop.relationships = propertyRels
   }
@@ -77,8 +78,8 @@ function mapProperty(
   return prop
 }
 
-function mapSchemaTable(table: SchemaTable): Record<string, unknown> {
-  const propertyRelsByCol = buildPropertyForeignKeys(table)
+function mapSchemaTable(table: SchemaTable, allTables: SchemaTable[]): Record<string, unknown> {
+  const propertyRelsByCol = buildPropertyForeignKeys(table, allTables)
   let pkIndex = 0
 
   const properties = table.columns.map(col => {
@@ -88,14 +89,12 @@ function mapSchemaTable(table: SchemaTable): Record<string, unknown> {
 
   const schemaObj: Record<string, unknown> = {
     id: table.id,
-    name: table.physicalName,
     physicalName: table.physicalName,
-    physicalType: table.tableType || 'table',
     description: table.description?.trim() || undefined,
     properties,
   }
 
-  const schemaRels = buildSchemaLevelRelationships(table)
+  const schemaRels = buildSchemaLevelRelationships(table, allTables)
   if (schemaRels.length > 0) {
     schemaObj.relationships = schemaRels
   }
@@ -135,13 +134,12 @@ export function buildOdcsDocument(contract: DataContract): Record<string, unknow
   const title = contract.info.title?.trim() || 'Untitled Contract'
 
   const doc: Record<string, unknown> = {
-    kind: 'DataContract',
-    apiVersion: 'v3.1.0',
+    kind: ODCS_KIND,
+    apiVersion: ODCS_API_VERSION,
     id: contract.id || 'my-contract-id',
     version: contract.info.version,
     status: contract.info.status,
     name: title,
-    dataProduct: title,
   }
 
   if (contract.info.domain?.trim()) {
@@ -154,8 +152,11 @@ export function buildOdcsDocument(contract: DataContract): Record<string, unknow
   const tags = mapTagsToYaml(contract.info.tags)
   if (tags) doc.tags = tags
 
+  const customProps = mapCustomPropertiesToYaml(contract.customProperties)
+  if (customProps) doc.customProperties = customProps
+
   if (contract.dataset.length > 0) {
-    doc.schema = contract.dataset.map(mapSchemaTable)
+    doc.schema = contract.dataset.map(t => mapSchemaTable(t, contract.dataset))
   }
 
   const roles = (contract.roles ?? []).filter(r => !isRoleRowEmpty(r))
@@ -174,7 +175,6 @@ export function buildOdcsDocument(contract: DataContract): Record<string, unknow
   if (sla.length > 0) {
     doc.slaProperties = sla.map(s => {
       const entry: Record<string, unknown> = {
-        property: s.property,
         value: s.value,
       }
       if (s.unit?.trim()) entry.unit = s.unit.trim()
@@ -210,6 +210,7 @@ export function contractFromSnapshot(s: DataContractSnapshot): DataContract {
     stakeholders: [...(s.stakeholders ?? [])],
     roles: [...(s.roles ?? [])],
     slaProperties: [...(s.slaProperties ?? [])],
+    customProperties: [...(s.customProperties ?? [])],
     gitHistory: [],
     openPR: null,
     createdAt: now,

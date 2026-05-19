@@ -96,12 +96,18 @@ export function TableAdvancedDialog({
 
               <div>
                 <p className="text-xs font-medium text-[#33333d] mb-1">{LABEL_QUALITY_RULES}</p>
-                <QualityRulesEditor rules={quality ?? []} onChange={setQuality} compact={docCompact} />
+                <QualityRulesEditor
+                  rules={quality ?? []}
+                  onChange={setQuality}
+                  compact={docCompact}
+                  showAiVerification
+                />
               </div>
 
               <div>
                 <p className="text-xs font-medium text-[#33333d] mb-1">{LABEL_REFERENCE_LINKS}</p>
                 <AuthoritativeDefinitionsEditor
+                  variant="zeenea"
                   definitions={authDefs}
                   onChange={defs => {
                     setAuthDefs(defs)

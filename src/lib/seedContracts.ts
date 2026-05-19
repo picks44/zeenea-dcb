@@ -179,6 +179,7 @@ export const SEED_CONTRACTS: DataContract[] = [
     stakeholders: [...CUSTOMER_ORDERS_STAKEHOLDERS],
     roles: [],
     slaProperties: [],
+    customProperties: [],
     collaborators: [
       { ...ME, role: 'owner' },
       { id: 'u1', name: 'Alice Martin', email: 'alice.martin@company.com', role: 'editor', invitedAt: NOW },
@@ -206,6 +207,7 @@ export const SEED_CONTRACTS: DataContract[] = [
           stakeholders: [],
           roles: [],
           slaProperties: [],
+          customProperties: [],
         },
       },
       {
@@ -229,6 +231,7 @@ export const SEED_CONTRACTS: DataContract[] = [
           stakeholders: [...CUSTOMER_ORDERS_STAKEHOLDERS],
           roles: [],
           slaProperties: [],
+          customProperties: [],
         },
       },
     ],
@@ -254,6 +257,7 @@ export const SEED_CONTRACTS: DataContract[] = [
     stakeholders: [],
     roles: [],
     slaProperties: [],
+    customProperties: [],
     collaborators: [
       { ...ME, role: 'owner' },
       { id: 'u3', name: 'Sophie Lebrun', email: 'sophie.lebrun@company.com', role: 'editor', invitedAt: NOW },
@@ -283,6 +287,7 @@ export const SEED_CONTRACTS: DataContract[] = [
     ],
     roles: [],
     slaProperties: [],
+    customProperties: [],
     collaborators: [
       { id: 'u2', name: 'Thomas Bernard', email: 'thomas.bernard@company.com', role: 'owner', invitedAt: NOW },
       { ...ME, role: 'editor' },
@@ -312,6 +317,7 @@ export const SEED_CONTRACTS: DataContract[] = [
           ],
           roles: [],
           slaProperties: [],
+          customProperties: [],
         },
       },
     ],
@@ -339,6 +345,7 @@ export const SEED_CONTRACTS: DataContract[] = [
     ],
     roles: [],
     slaProperties: [],
+    customProperties: [],
     collaborators: [
       { id: 'u3', name: 'Sophie Lebrun', email: 'sophie.lebrun@company.com', role: 'owner', invitedAt: NOW },
       { ...ME, role: 'editor' },
@@ -368,6 +375,7 @@ export const SEED_CONTRACTS: DataContract[] = [
     ],
     roles: [],
     slaProperties: [],
+    customProperties: [],
     collaborators: [
       { id: 'u1', name: 'Alice Martin', email: 'alice.martin@company.com', role: 'owner', invitedAt: NOW },
       { id: 'u2', name: 'Thomas Bernard', email: 'thomas.bernard@company.com', role: 'editor', invitedAt: NOW },
@@ -397,6 +405,7 @@ export const SEED_CONTRACTS: DataContract[] = [
           ],
           roles: [],
           slaProperties: [],
+          customProperties: [],
         },
       },
     ],

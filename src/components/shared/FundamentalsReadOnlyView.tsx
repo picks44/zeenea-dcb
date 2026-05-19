@@ -6,18 +6,20 @@ import { ReadOnlyField } from '@/components/shared/ReadOnlyField'
 import { InlineCopyButton } from '@/components/shared/InlineCopyButton'
 import { WorkflowMetadataPill } from '@/components/shared/WorkflowMetadataPill'
 import { CONTRACT_OWNER_HELPER, LABEL_CONTRACT_OWNER, LABEL_REFERENCE_LINKS } from '@/lib/uxCopy'
-import { AUTH_DEF_TYPE_OPTIONS } from '@/types/odcsShared'
+import { authDefTypeLabel } from '@/components/shared/authDefLabels'
 import { cn } from '@/lib/utils'
 import { docShellClass, DOC_COMPACT_SPACING, DOC_COMPACT_TEXT } from '@/components/shared/docViewTokens'
 
 const STATUS_LABELS: Record<LifecycleStatus, string> = {
+  proposed: 'Proposed',
   draft: 'Draft',
   active: 'Active',
   deprecated: 'Deprecated',
+  retired: 'Retired',
 }
 
 function authTypeLabel(type: string): string {
-  return AUTH_DEF_TYPE_OPTIONS.find(o => o.value === type)?.label ?? type
+  return authDefTypeLabel(type)
 }
 
 interface FundamentalsReadOnlyViewProps {

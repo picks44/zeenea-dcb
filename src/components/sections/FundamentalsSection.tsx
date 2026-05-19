@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Copy, Check, AlertCircle, ChevronDown, ChevronRight } from 'lucide-react'
+import { Copy, Check, ChevronDown, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
@@ -7,7 +7,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { DataContract, LifecycleStatus } from '@/types/odcs'
 import { TagsEditor } from '@/components/shared/TagsEditor'
 import { AuthoritativeDefinitionsEditor } from '@/components/shared/AuthoritativeDefinitionsEditor'
-import { slugify, cn } from '@/lib/utils'
+import { cn } from '@/lib/utils'
+import { deriveContractId } from '@/lib/idDerivation'
 import { filterAuthoritativeDefinitionsForSave } from '@/lib/odcsSharedMappers'
 import { ContractSectionHeader } from '@/components/shared/ContractSectionHeader'
 import { WorkflowMetadataPill } from '@/components/shared/WorkflowMetadataPill'
@@ -49,9 +50,11 @@ interface FundamentalsSectionProps {
 }
 
 const STATUS_LABELS: Record<LifecycleStatus, string> = {
+  proposed: 'Proposed',
   draft: 'Draft',
   active: 'Active',
   deprecated: 'Deprecated',
+  retired: 'Retired',
 }
 
 export function FundamentalsSection({
@@ -63,8 +66,6 @@ export function FundamentalsSection({
   docCompact,
 }: FundamentalsSectionProps) {
   const { info, id } = contract
-  const [idManuallyEdited, setIdManuallyEdited] = useState(false)
-  const [idError, setIdError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [additionalOpen, setAdditionalOpen] = useState(true)
   const [usage, setUsage] = useState(info.descriptionUsage ?? '')
@@ -74,29 +75,17 @@ export function FundamentalsSection({
   )
 
   useEffect(() => {
-    if (!idManuallyEdited && info.title) {
-      const slug = slugify(info.title)
-      onChange({ id: slug })
+    if (info.title.trim()) {
+      const derived = deriveContractId(info.title)
+      if (derived && derived !== id) onChange({ id: derived })
     }
-  }, [info.title, idManuallyEdited])
+  }, [info.title])
 
   useEffect(() => {
     setUsage(info.descriptionUsage ?? '')
     setLimitations(info.descriptionLimitations ?? '')
     setAuthDefs(filterAuthoritativeDefinitionsForSave(info.descriptionAuthoritativeDefinitions ?? []))
   }, [contract.uid, info.descriptionUsage, info.descriptionLimitations, info.descriptionAuthoritativeDefinitions])
-
-  const handleIdChange = (value: string) => {
-    setIdManuallyEdited(true)
-    if (/\s/.test(value)) {
-      setIdError('ID cannot contain spaces. Use hyphens instead.')
-    } else if (value && !/^[a-z0-9\-_]+$/.test(value)) {
-      setIdError('Use only lowercase letters, numbers, hyphens, or underscores.')
-    } else {
-      setIdError(null)
-    }
-    onChange({ id: value })
-  }
 
   const handleCopyId = () => {
     navigator.clipboard.writeText(id)
@@ -195,30 +184,19 @@ export function FundamentalsSection({
           missingHelper={READINESS_HELPER_CONTRACT_ID}
         >
           <div className="flex gap-2">
-            <Input
-              value={id}
-              onChange={e => handleIdChange(e.target.value)}
-              placeholder="customer-orders"
-              disabled={ownerFieldLocked}
-              className={cn(
-                ownerInputClass,
-                'font-mono text-sm flex-1',
-                idError && 'border-[#c12c11] focus-visible:border-[#c12c11]',
-              )}
-            />
+            <div
+              data-readiness-control
+              className="font-mono text-sm flex-1 bg-[#f5f5fa] border border-[#d3d3e5] rounded-md px-3 h-9 flex items-center text-[#33333d]"
+            >
+              {id || '—'}
+            </div>
             <Button type="button" variant="outline" size="icon" onClick={handleCopyId} className="flex-shrink-0 h-9 w-9">
               {copied ? <Check className="h-3.5 w-3.5 text-green-700" /> : <Copy className="h-3.5 w-3.5" />}
             </Button>
           </div>
-          {idError ? (
-            <p className="text-[11px] text-[#c12c11] flex items-center gap-1 mt-1">
-              <AlertCircle className="h-3 w-3" /> {idError}
-            </p>
-          ) : (
-            <p className="text-[11px] text-[#656574] mt-1">
-              Auto-generated from the contract name.
-            </p>
-          )}
+          <p className="text-[11px] text-[#656574] mt-1">
+            Derived from the contract name (lowercase ASCII, no special characters).
+          </p>
         </GuidanceField>
 
         <div className="grid grid-cols-2 gap-4">
@@ -292,6 +270,7 @@ export function FundamentalsSection({
                   {LABEL_REFERENCE_LINKS}
                 </label>
                 <AuthoritativeDefinitionsEditor
+                  variant="fundamentals"
                   definitions={authDefs}
                   onChange={defs => {
                     setAuthDefs(defs)

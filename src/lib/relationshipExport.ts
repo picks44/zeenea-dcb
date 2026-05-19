@@ -1,11 +1,16 @@
 import type { ColumnDefinition, SchemaTable, TableRelationship } from '@/types/odcs'
 
-/** ODCS `to` / `from` reference: `table.column` (dot notation per Excel guidance). */
-export function relationshipEndpoint(table: string, column?: string): string {
-  const t = table.trim()
-  const c = column?.trim()
-  if (!t) return ''
-  return c ? `${t}.${c}` : t
+/** P1 format: `/schema/{schemaId}/properties/{propertyId}` */
+export function propertyRelationshipPointer(
+  allTables: SchemaTable[],
+  toTablePhysicalName: string,
+  toColumnPhysicalName: string,
+): string {
+  const table = allTables.find(t => t.physicalName.trim() === toTablePhysicalName.trim())
+  if (!table) return ''
+  const col = table.columns.find(c => c.physicalName.trim() === toColumnPhysicalName.trim())
+  if (!col) return ''
+  return `/schema/${table.id}/properties/${col.id}`
 }
 
 export function isColumnForeignKeyComplete(fk: ColumnDefinition['foreignKey']): boolean {
@@ -65,15 +70,16 @@ export function isTableRelationshipNotPublished(rel: TableRelationship): boolean
   return !isTableRelationshipExported(rel)
 }
 
-/** Property-level foreignKey entries for YAML export. */
+/** Property-level foreignKey entries for YAML export (P1: `from` implicit). */
 export function buildPropertyForeignKeys(
   table: SchemaTable,
+  allTables: SchemaTable[],
 ): Map<string, Record<string, unknown>[]> {
   const byColumn = new Map<string, Record<string, unknown>[]>()
 
-  const add = (columnName: string, to: string) => {
-    if (!columnName.trim() || !to.trim()) return
-    const entry = { type: 'foreignKey', to }
+  const add = (columnName: string, toPointer: string) => {
+    if (!columnName.trim() || !toPointer.trim()) return
+    const entry = { type: 'foreignKey', to: toPointer }
     const list = byColumn.get(columnName) ?? []
     list.push(entry)
     byColumn.set(columnName, list)
@@ -81,33 +87,43 @@ export function buildPropertyForeignKeys(
 
   for (const col of table.columns) {
     if (isColumnForeignKeyComplete(col.foreignKey)) {
-      add(
-        col.physicalName,
-        relationshipEndpoint(col.foreignKey!.toTable, col.foreignKey!.toColumn),
+      const pointer = propertyRelationshipPointer(
+        allTables,
+        col.foreignKey!.toTable,
+        col.foreignKey!.toColumn,
       )
+      if (pointer) add(col.physicalName, pointer)
     }
   }
 
   for (const rel of table.relationships ?? []) {
     if (!isLegacySingleColumnBelongsTo(rel) || !rel.fromColumn?.trim()) continue
-    const to = relationshipEndpoint(rel.toTable, rel.toColumn)
-    add(rel.fromColumn, to)
+    const pointer = propertyRelationshipPointer(allTables, rel.toTable, rel.toColumn ?? '')
+    if (pointer) add(rel.fromColumn, pointer)
   }
 
   return byColumn
 }
 
 /** Table/object-level relationships for YAML export (composite FK + many-to-many). */
-export function buildSchemaLevelRelationships(table: SchemaTable): Record<string, unknown>[] {
+export function buildSchemaLevelRelationships(
+  table: SchemaTable,
+  allTables: SchemaTable[],
+): Record<string, unknown>[] {
   const schemaRels: Record<string, unknown>[] = []
-  const tbl = table.physicalName
 
   for (const rel of table.relationships ?? []) {
     if (rel.type === 'many_to_many') {
+      const fromPointer = rel.fromColumn
+        ? `/schema/${table.id}/properties/${table.columns.find(c => c.physicalName === rel.fromColumn)?.id ?? rel.fromColumn}`
+        : `/schema/${table.id}`
+      const toPointer = rel.toColumn
+        ? propertyRelationshipPointer(allTables, rel.toTable, rel.toColumn)
+        : `/schema/${allTables.find(t => t.physicalName === rel.toTable)?.id ?? rel.toTable}`
       schemaRels.push({
         type: 'manyToMany',
-        from: [rel.fromColumn ? `${tbl}.${rel.fromColumn}` : tbl],
-        to: [rel.toColumn ? `${relationshipEndpoint(rel.toTable, rel.toColumn)}` : rel.toTable],
+        from: [fromPointer],
+        to: [toPointer],
       })
       continue
     }
@@ -120,8 +136,11 @@ export function buildSchemaLevelRelationships(table: SchemaTable): Record<string
 
     schemaRels.push({
       type: 'foreignKey',
-      from: fromCols.map(c => `${tbl}.${c}`),
-      to: toCols.map(c => relationshipEndpoint(rel.toTable, c)),
+      from: fromCols.map(c => {
+        const col = table.columns.find(col => col.physicalName === c)
+        return col ? `/schema/${table.id}/properties/${col.id}` : `/schema/${table.id}/properties/${c}`
+      }),
+      to: toCols.map(c => propertyRelationshipPointer(allTables, rel.toTable, c)).filter(Boolean),
     })
   }
 

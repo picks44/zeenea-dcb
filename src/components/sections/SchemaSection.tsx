@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button'
 import { ContractSectionHeader } from '@/components/shared/ContractSectionHeader'
 import { Input } from '@/components/ui/input'
 import { SchemaTable } from '@/types/odcs'
-import { generateId, cn } from '@/lib/utils'
+import { cn } from '@/lib/utils'
+import { stableSchemaId } from '@/lib/idDerivation'
 import { TableBlock } from '@/components/schema/TableBlock'
 import { SchemaNavigationProvider } from '@/components/schema/SchemaNavigationContext'
 import {
@@ -25,7 +26,7 @@ interface SchemaSectionProps {
 
 function makeTable(name: string): SchemaTable {
   return {
-    id: generateId(),
+    id: stableSchemaId(name),
     physicalName: name,
     quantumName: name,
     tableType: 'table',

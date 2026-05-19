@@ -1,5 +1,6 @@
 import { ColumnDefinition, LogicalType, SchemaTable, TableRelationship } from '../types/odcs'
 import { generateId } from './utils'
+import { stablePropertyId, stableSchemaId } from './idDerivation'
 
 const SQL_TYPE_MAP: Record<string, { logicalType: LogicalType; label: string }> = {
   varchar: { logicalType: 'string', label: 'Text' },
@@ -319,15 +320,19 @@ function parseTableDefinition(columnsBlock: string): {
 }
 
 function buildTable(tableName: string, columns: ColumnDefinition[]): SchemaTable {
+  const schemaId = stableSchemaId(tableName)
   return {
-    id: generateId(),
+    id: schemaId,
     physicalName: tableName,
     quantumName: tableName
       .replace(/_/g, ' ')
       .replace(/\b\w/g, c => c.toUpperCase()),
     tableType: 'table',
     description: '',
-    columns,
+    columns: columns.map(c => ({
+      ...c,
+      id: stablePropertyId(schemaId, c.physicalName),
+    })),
     tags: [],
     quality: [],
     authoritativeDefinitions: [],

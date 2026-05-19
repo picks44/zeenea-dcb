@@ -2,11 +2,11 @@ import { cn } from '@/lib/utils'
 import { GovernanceDocList } from '@/components/shared/GovernanceDocList'
 import { DOC_COMPACT_ROW } from '@/components/shared/docViewTokens'
 import type { AuthoritativeDefinition } from '@/types/odcsShared'
-import { AUTH_DEF_TYPE_OPTIONS } from '@/types/odcsShared'
+import { authDefTypeLabel } from '@/components/shared/authDefLabels'
 import { REFERENCE_LINKS_EMPTY } from '@/lib/uxCopy'
 
 function authTypeLabel(type: string): string {
-  return AUTH_DEF_TYPE_OPTIONS.find(o => o.value === type)?.label ?? type
+  return authDefTypeLabel(type)
 }
 
 function linkHasContent(def: AuthoritativeDefinition): boolean {

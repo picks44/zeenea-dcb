@@ -15,6 +15,28 @@ import {
   isLegacyBelongsToIncomplete,
   isLegacySingleColumnBelongsTo,
 } from '@/lib/relationshipExport'
+import {
+  arrayPropertyNeedsItems,
+  collectPropertyIds,
+  collectSchemaIds,
+  contractIdMatchesName,
+  customPropertyRowHasContent,
+  hasDuplicateIds,
+  isDuplicateContractId,
+  isQualityRuleContentEmpty,
+  isValidArrayItems,
+  isValidCustomPropertyName,
+  isValidFundamentalsAuthDefType,
+  isValidLifecycleStatus,
+  isValidP1ContractId,
+  isValidQualityDimension,
+  isValidSlaDriver,
+  isValidSlaElement,
+  isValidSlaUnit,
+  isValidZeeneaAuthDef,
+  qualityRuleNeedsDimension,
+  slaRowHasContent,
+} from '@/lib/p1Validation'
 
 /** Rows with no user-entered content are ignored for validation and export. */
 export function isRoleRowEmpty(r: OdcsAccessRole): boolean {
@@ -22,11 +44,7 @@ export function isRoleRowEmpty(r: OdcsAccessRole): boolean {
 }
 
 export function isSlaRowEmpty(row: SlaProperty): boolean {
-  return !row.value?.trim()
-    && !row.unit?.trim()
-    && !row.element?.trim()
-    && !row.driver?.trim()
-    && !row.description?.trim()
+  return !slaRowHasContent(row)
 }
 
 export interface ValidationIssue {
@@ -34,7 +52,6 @@ export interface ValidationIssue {
   message: string
   severity: 'error' | 'warning'
   section?: SectionId
-  /** DOM anchor for readiness navigation (`readinessGuidance` field ids). */
   fieldId?: string
 }
 
@@ -48,20 +65,54 @@ export interface ValidationResult {
 
 const SEMVER = /^\d+\.\d+\.\d+$/
 
-function validateAuthoritativeDefinitions(
+function validateFundamentalsAuthDefs(
   issues: ValidationIssue[],
   defs: AuthoritativeDefinition[] | undefined,
-  context: string,
-  section: SectionId,
 ): void {
   for (const d of defs ?? []) {
     if (isAuthoritativeDefinitionEmpty(d)) continue
     if (!isAuthoritativeDefinitionComplete(d)) {
       issues.push({
         code: 'auth-def-incomplete',
-        message: `${context}: URL and type are required to publish a reference link.`,
+        message: 'Contract description reference: URL and type are required.',
         severity: 'error',
-        section,
+        section: 'fundamentals',
+      })
+      continue
+    }
+    if (!isValidFundamentalsAuthDefType(d.type)) {
+      issues.push({
+        code: 'auth-def-fundamentals-type',
+        message: 'Contract description reference type must be privacyStatement, termsAndConditions, or licenseAgreement.',
+        severity: 'error',
+        section: 'fundamentals',
+      })
+    }
+  }
+}
+
+function validateZeeneaAuthDefs(
+  issues: ValidationIssue[],
+  defs: AuthoritativeDefinition[] | undefined,
+  context: string,
+): void {
+  for (const d of defs ?? []) {
+    if (isAuthoritativeDefinitionEmpty(d)) continue
+    if (!isAuthoritativeDefinitionComplete(d)) {
+      issues.push({
+        code: 'auth-def-incomplete',
+        message: `${context}: URL and type are required.`,
+        severity: 'error',
+        section: 'schema',
+      })
+      continue
+    }
+    if (!isValidZeeneaAuthDef(d)) {
+      issues.push({
+        code: 'auth-def-zeenea',
+        message: `${context}: only Zeenea catalog links with type "actian" are allowed.`,
+        severity: 'error',
+        section: 'schema',
       })
     }
   }
@@ -69,10 +120,12 @@ function validateAuthoritativeDefinitions(
 
 function validateQualityRules(
   issues: ValidationIssue[],
-  rules: { id?: string; description?: string }[] | undefined,
+  rules: DataContract['dataset'][0]['quality'],
   context: string,
+  requireAiVerified: boolean,
 ): void {
   for (const q of rules ?? []) {
+    if (isQualityRuleContentEmpty(q)) continue
     if (!q.description?.trim()) {
       issues.push({
         code: 'quality-empty',
@@ -81,10 +134,36 @@ function validateQualityRules(
         section: 'schema',
       })
     }
+    if (qualityRuleNeedsDimension(q) && !q.dimension) {
+      issues.push({
+        code: 'quality-dimension',
+        message: `Quality rule on ${context} needs a dimension.`,
+        severity: 'error',
+        section: 'schema',
+      })
+    } else if (q.dimension && !isValidQualityDimension(q.dimension)) {
+      issues.push({
+        code: 'quality-dimension-invalid',
+        message: `Quality rule on ${context} has an invalid dimension.`,
+        severity: 'error',
+        section: 'schema',
+      })
+    }
+    if (requireAiVerified && !q.aiVerified) {
+      issues.push({
+        code: 'quality-ai-unverified',
+        message: `Quality rule on ${context} must be verified by AI before publishing.`,
+        severity: 'error',
+        section: 'schema',
+      })
+    }
   }
 }
 
-export function validateContract(contract: DataContract): ValidationResult {
+export function validateContract(
+  contract: DataContract,
+  allContracts: DataContract[] = [],
+): ValidationResult {
   const issues: ValidationIssue[] = []
   const { info, id, dataset } = contract
 
@@ -105,7 +184,32 @@ export function validateContract(contract: DataContract): ValidationResult {
       section: 'fundamentals',
       fieldId: 'contract-id',
     })
+  } else if (!isValidP1ContractId(id)) {
+    issues.push({
+      code: 'id-format',
+      message: 'Contract ID must be lowercase ASCII with hyphens only.',
+      severity: 'error',
+      section: 'fundamentals',
+      fieldId: 'contract-id',
+    })
+  } else if (info.title.trim() && !contractIdMatchesName(contract)) {
+    issues.push({
+      code: 'id-derived',
+      message: 'Contract ID must match the name (auto-derived slug).',
+      severity: 'error',
+      section: 'fundamentals',
+      fieldId: 'contract-id',
+    })
+  } else if (isDuplicateContractId(id, allContracts, contract.uid)) {
+    issues.push({
+      code: 'id-duplicate',
+      message: 'Contract ID must be unique in the registry.',
+      severity: 'error',
+      section: 'fundamentals',
+      fieldId: 'contract-id',
+    })
   }
+
   if (!info.owner.trim()) {
     issues.push({
       code: 'owner',
@@ -125,12 +229,55 @@ export function validateContract(contract: DataContract): ValidationResult {
     })
   }
 
-  validateAuthoritativeDefinitions(
-    issues,
-    info.descriptionAuthoritativeDefinitions,
-    'Contract description',
-    'fundamentals',
-  )
+  if (!isValidLifecycleStatus(info.status)) {
+    issues.push({
+      code: 'status-invalid',
+      message: 'Contract status must be a valid ODCS lifecycle value.',
+      severity: 'error',
+      section: 'fundamentals',
+    })
+  }
+
+  validateFundamentalsAuthDefs(issues, info.descriptionAuthoritativeDefinitions)
+
+  const dupSchema = hasDuplicateIds(collectSchemaIds(dataset))
+  if (dupSchema) {
+    issues.push({
+      code: 'schema-id-duplicate',
+      message: `Duplicate schema id "${dupSchema}" in this contract.`,
+      severity: 'error',
+      section: 'schema',
+    })
+  }
+
+  const dupProp = hasDuplicateIds(collectPropertyIds(dataset))
+  if (dupProp) {
+    issues.push({
+      code: 'property-id-duplicate',
+      message: `Duplicate property id "${dupProp}" in this contract.`,
+      severity: 'error',
+      section: 'schema',
+    })
+  }
+
+  for (const cp of contract.customProperties ?? []) {
+    if (!customPropertyRowHasContent(cp)) continue
+    if (!cp.property?.trim() || !cp.value?.trim()) {
+      issues.push({
+        code: 'custom-incomplete',
+        message: 'Each custom property needs a name and value.',
+        severity: 'error',
+        section: 'custom',
+      })
+    } else if (!isValidCustomPropertyName(cp.property)) {
+      issues.push({
+        code: 'custom-property-format',
+        message: `Custom property "${cp.property}" must be camelCase.`,
+        severity: 'error',
+        section: 'custom',
+      })
+    }
+  }
 
   if (dataset.length === 0) {
     issues.push({
@@ -189,13 +336,8 @@ export function validateContract(contract: DataContract): ValidationResult {
     }
 
     for (const col of table.columns) {
-      validateQualityRules(issues, col.quality, `"${col.physicalName}"`)
-      validateAuthoritativeDefinitions(
-        issues,
-        col.authoritativeDefinitions,
-        `Field "${col.physicalName}"`,
-        'schema',
-      )
+      validateQualityRules(issues, col.quality, `"${col.physicalName}"`, false)
+      validateZeeneaAuthDefs(issues, col.authoritativeDefinitions, `Field "${col.physicalName}"`)
       if (isColumnForeignKeyPartial(col.foreignKey)) {
         issues.push({
           code: 'column-fk-incomplete',
@@ -204,15 +346,18 @@ export function validateContract(contract: DataContract): ValidationResult {
           section: 'schema',
         })
       }
+      if (arrayPropertyNeedsItems(col) && !isValidArrayItems(col)) {
+        issues.push({
+          code: 'array-items',
+          message: `Field "${col.physicalName}" is an array and requires items configuration.`,
+          severity: 'error',
+          section: 'schema',
+        })
+      }
     }
 
-    validateQualityRules(issues, table.quality, `table "${table.physicalName}"`)
-    validateAuthoritativeDefinitions(
-      issues,
-      table.authoritativeDefinitions,
-      `Table "${table.physicalName}"`,
-      'schema',
-    )
+    validateQualityRules(issues, table.quality, `table "${table.physicalName}"`, true)
+    validateZeeneaAuthDefs(issues, table.authoritativeDefinitions, `Table "${table.physicalName}"`)
 
     for (const rel of table.relationships ?? []) {
       if (!isExportedRelationshipType(rel.type)) {
@@ -245,10 +390,34 @@ export function validateContract(contract: DataContract): ValidationResult {
 
   for (const row of contract.slaProperties ?? []) {
     if (isSlaRowEmpty(row)) continue
-    if (!row.property?.trim() || !row.value?.trim()) {
+    if (!row.value?.trim()) {
       issues.push({
-        code: 'sla-incomplete',
-        message: 'Each SLA row needs a property and value.',
+        code: 'sla-value-required',
+        message: 'Each SLA row needs a value.',
+        severity: 'error',
+        section: 'sla',
+      })
+    }
+    if (row.unit?.trim() && !isValidSlaUnit(row.unit)) {
+      issues.push({
+        code: 'sla-unit-invalid',
+        message: 'SLA unit must be one of: d, day, days, y, yr, years, h, hr, hours.',
+        severity: 'error',
+        section: 'sla',
+      })
+    }
+    if (row.driver?.trim() && !isValidSlaDriver(row.driver)) {
+      issues.push({
+        code: 'sla-driver-invalid',
+        message: 'SLA driver must be regulatory, analytics, or operational.',
+        severity: 'error',
+        section: 'sla',
+      })
+    }
+    if (row.element?.trim() && !isValidSlaElement(row.element)) {
+      issues.push({
+        code: 'sla-element-invalid',
+        message: 'SLA element must use Object.Property notation (comma-separated for multiple).',
         severity: 'error',
         section: 'sla',
       })
@@ -257,10 +426,18 @@ export function validateContract(contract: DataContract): ValidationResult {
 
   for (const r of contract.roles ?? []) {
     if (isRoleRowEmpty(r)) continue
-    if (!r.role?.trim() || !r.access) {
+    if (!r.role?.trim()) {
       issues.push({
         code: 'role-incomplete',
-        message: 'Each data access role needs a role name and access level.',
+        message: 'Each data access role needs a role name.',
+        severity: 'error',
+        section: 'accessRoles',
+      })
+    }
+    if (!r.access) {
+      issues.push({
+        code: 'role-access',
+        message: 'Each data access role needs an access level.',
         severity: 'error',
         section: 'accessRoles',
       })
