@@ -253,7 +253,7 @@ export function ContractTopBar({
 
               {/* Approval request open — owner only (simulated; openPR unused in seed data) */}
               {isOwner && gitState === 'pr-open' && (
-                <Button variant="warning" size="sm" className="gap-1.5 pointer-events-none">
+                <Button variant="warning" size="sm" className={cn(TOP_BAR_BTN, 'pointer-events-none')}>
                   <AlertCircle className="h-3.5 w-3.5" />
                   {TOP_BAR_APPROVAL_IN_PROGRESS}
                 </Button>
@@ -263,7 +263,7 @@ export function ContractTopBar({
           )}
 
           {isOwner && info.status === 'deprecated' && (
-            <Button variant="outline" size="sm" onClick={onRetire} className="gap-1.5">
+            <Button variant="outline" size="sm" onClick={onRetire} className={TOP_BAR_BTN}>
               <ArchiveX className="h-3.5 w-3.5" />
               Retire contract
             </Button>
