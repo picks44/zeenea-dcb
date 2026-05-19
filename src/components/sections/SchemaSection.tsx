@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Plus, Database } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { ContractSectionHeader } from '@/components/shared/ContractSectionHeader'
 import { Input } from '@/components/ui/input'
 import { SchemaTable } from '@/types/odcs'
 import { generateId, cn } from '@/lib/utils'
@@ -76,20 +77,19 @@ export function SchemaSection({ tables, onChange, isLocked, docCompact }: Schema
 
   return (
     <div ref={sectionRootRef} className="w-full">
-      <div className="flex items-start justify-between gap-4 mb-5">
-        <div>
-          <h2 className="text-base font-semibold text-[#12131f]">Schema</h2>
-          <p className="text-[#3f3f4a] text-xs mt-0.5">
-            Define tables and fields for this contract. Use the metadata control on each row for descriptions, tags, quality, and links.
-          </p>
-        </div>
-        {!isLocked && (
-          <Button size="sm" onClick={openForm} className="h-8 text-xs gap-1.5 flex-shrink-0">
-            <Plus className="h-3.5 w-3.5" />
-            Add table
-          </Button>
-        )}
-      </div>
+      <ContractSectionHeader
+        title="Schema"
+        description="Define tables and fields for this contract. Use the metadata control on each row for descriptions, tags, quality, and links."
+        compact={docCompact && isLocked}
+        action={
+          !isLocked ? (
+            <Button size="sm" onClick={openForm} className="h-8 text-xs gap-1.5 flex-shrink-0">
+              <Plus className="h-3.5 w-3.5" />
+              Add table
+            </Button>
+          ) : undefined
+        }
+      />
 
       {tables.length === 0 && !addingTable ? (
         <div

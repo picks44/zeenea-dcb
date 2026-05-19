@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge'
 import { Tooltip } from '@/components/ui/tooltip'
 import { DataContract } from '@/types/odcs'
 import { timeAgo, cn } from '@/lib/utils'
-import { WorkflowMetadataNote } from '@/components/shared/WorkflowMetadataPill'
+import { ContractSectionHeader } from '@/components/shared/ContractSectionHeader'
 import { VERSION_HISTORY_INTRO_EMPTY, versionHistoryIntroCount } from '@/lib/uxCopy'
 import { hasWorkingCopyDraft, summarizeExportChangesSince } from '@/lib/exportedContractDiff'
 import { getCommitChangelog, getCommitTitle, parseChangelogLines } from '@/lib/versionHistory'
@@ -59,17 +59,15 @@ export function VersionsView({
   return (
     <div className="max-w-[600px] w-full">
 
-      {/* Header */}
-      <div className="mb-6">
-        <h2 className="text-base font-semibold text-[#12131f]">Version history</h2>
-        <p className="text-[#3f3f4a] text-xs mt-0.5 leading-relaxed">
-          <WorkflowMetadataNote pill="application-lifecycle">
-            {gitHistory.length === 0
-              ? VERSION_HISTORY_INTRO_EMPTY
-              : versionHistoryIntroCount(gitHistory.length)}
-          </WorkflowMetadataNote>
-        </p>
-      </div>
+      <ContractSectionHeader
+        title="Version history"
+        metadataVariant="application-lifecycle"
+        metadataNote={
+          gitHistory.length === 0
+            ? VERSION_HISTORY_INTRO_EMPTY
+            : versionHistoryIntroCount(gitHistory.length)
+        }
+      />
 
       {/* Empty state */}
       {!showTimeline && (

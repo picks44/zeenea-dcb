@@ -6,6 +6,7 @@ import { generateId, cn } from '@/lib/utils'
 import { GovernanceDocList } from '@/components/shared/GovernanceDocList'
 import { StakeholderDocRow } from '@/components/shared/StakeholderDocRow'
 import { GovernanceEmptyState } from '@/components/shared/GovernanceEmptyState'
+import { ContractSectionHeader } from '@/components/shared/ContractSectionHeader'
 import {
   governanceTableFooterActionClass,
   governanceTableFooterClass,
@@ -13,9 +14,7 @@ import {
   governanceTableHeadRowClass,
   governanceTableRowClass,
   governanceTableShellClass,
-  GovernanceSectionHeader,
 } from '@/components/shared/GovernanceSectionHeader'
-import { WorkflowMetadataNote } from '@/components/shared/WorkflowMetadataPill'
 import {
   SECTION_GOVERNANCE_CONTACTS,
   STAKEHOLDERS_EMPTY_BODY,
@@ -84,11 +83,12 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked, docCompa
   return (
     <div ref={sectionRootRef} className="max-w-[720px] w-full">
       <div ref={contactsAnchorRef}>
-        <GovernanceSectionHeader
+        <ContractSectionHeader
           title={SECTION_GOVERNANCE_CONTACTS}
           conceptTag={SECTION_CONCEPT_COMMUNICATION}
-          description={<WorkflowMetadataNote pill="not-in-odcs">{STAKEHOLDERS_INTRO}</WorkflowMetadataNote>}
-          compact={docCompact}
+          description={STAKEHOLDERS_INTRO}
+          metadataVariant="not-in-odcs"
+          compact={docCompact && isLocked}
           flashTitle
         />
 

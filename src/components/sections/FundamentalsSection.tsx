@@ -9,6 +9,7 @@ import { TagsEditor } from '@/components/shared/TagsEditor'
 import { AuthoritativeDefinitionsEditor } from '@/components/shared/AuthoritativeDefinitionsEditor'
 import { slugify, cn } from '@/lib/utils'
 import { filterAuthoritativeDefinitionsForSave } from '@/lib/odcsSharedMappers'
+import { ContractSectionHeader } from '@/components/shared/ContractSectionHeader'
 import { WorkflowMetadataPill } from '@/components/shared/WorkflowMetadataPill'
 import { FundamentalsReadOnlyView } from '@/components/shared/FundamentalsReadOnlyView'
 import {
@@ -143,15 +144,12 @@ export function FundamentalsSection({
       ref={sectionRootRef}
       className={isLocked && isPublishedView ? 'max-w-3xl w-full' : 'max-w-[560px] w-full'}
     >
-      <div className={docCompact && isLocked ? 'mb-3' : 'mb-6'}>
-        <p className="text-[10px] font-semibold uppercase tracking-wide text-[#9898a7] mb-1">
-          {SECTION_CONCEPT_ACCOUNTABILITY}
-        </p>
-        <h2 className="text-base font-semibold text-[#12131f]">{NAV_FUNDAMENTALS}</h2>
-        <p className="text-[#3f3f4a] text-xs mt-0.5 leading-relaxed">
-          {FUNDAMENTALS_INTRO}
-        </p>
-      </div>
+      <ContractSectionHeader
+        conceptTag={SECTION_CONCEPT_ACCOUNTABILITY}
+        title={NAV_FUNDAMENTALS}
+        description={FUNDAMENTALS_INTRO}
+        compact={docCompact && isLocked}
+      />
 
       {isLocked ? (
         <FundamentalsReadOnlyView contract={contract} compact={docCompact} />

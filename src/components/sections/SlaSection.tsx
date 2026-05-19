@@ -3,16 +3,21 @@ import { Input } from '@/components/ui/input'
 import { GovernanceEmptyState } from '@/components/shared/GovernanceEmptyState'
 import { GovernanceReadOnlyCell } from '@/components/shared/GovernanceReadOnlyCell'
 import { SlaCompactList } from '@/components/shared/SlaCompactList'
+import { ContractSectionHeader } from '@/components/shared/ContractSectionHeader'
 import {
   governanceTableFooterActionClass,
   governanceTableFooterClass,
   governanceTableHeadClass,
   governanceTableHeadRowClass,
   governanceTableShellClass,
-  GovernanceSectionHeader,
 } from '@/components/shared/GovernanceSectionHeader'
 import { cn } from '@/lib/utils'
-import { SLA_EMPTY_BODY, SLA_EMPTY_CTA, SLA_EMPTY_TITLE } from '@/lib/uxCopy'
+import {
+  SECTION_CONCEPT_SERVICE_LEVELS,
+  SLA_EMPTY_BODY,
+  SLA_EMPTY_CTA,
+  SLA_EMPTY_TITLE,
+} from '@/lib/uxCopy'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { SlaProperty } from '@/types/odcs'
 import { generateId } from '@/lib/utils'
@@ -84,10 +89,11 @@ export function SlaSection({ slaProperties, onChange, isLocked, isPublishedView,
 
   return (
     <div className="max-w-[840px] w-full">
-      <GovernanceSectionHeader
+      <ContractSectionHeader
         title="Service levels"
+        conceptTag={SECTION_CONCEPT_SERVICE_LEVELS}
         description="Define latency, retention, availability, and other service level commitments for this contract."
-        compact={docCompact}
+        compact={docCompact && isLocked}
       />
 
       {slaProperties.length === 0 ? (

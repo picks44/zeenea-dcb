@@ -1,46 +1,12 @@
-import type { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
-interface GovernanceSectionHeaderProps {
-  title: string
-  description: ReactNode
-  conceptTag?: string
-  action?: ReactNode
-  compact?: boolean
-  /** Outline flash target for readiness navigation (h2 only). */
-  flashTitle?: boolean
-}
-
-/** Shared h2 + description rhythm for governance/configuration sections. */
-export function GovernanceSectionHeader({
-  title,
-  description,
-  conceptTag,
-  action,
-  compact,
-  flashTitle,
-}: GovernanceSectionHeaderProps) {
-  return (
-    <div className={cn('flex items-start justify-between gap-4', compact ? 'mb-4' : 'mb-6')}>
-      <div className="min-w-0">
-        {conceptTag ? (
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-[#9898a7] mb-1">{conceptTag}</p>
-        ) : null}
-        <h2
-          data-readiness-flash={flashTitle ? '' : undefined}
-          className={cn(
-            'text-base font-semibold text-[#12131f]',
-            flashTitle && 'inline-block rounded',
-          )}
-        >
-          {title}
-        </h2>
-        <p className="text-[#3f3f4a] text-xs mt-0.5 leading-relaxed">{description}</p>
-      </div>
-      {action ? <div className="flex-shrink-0">{action}</div> : null}
-    </div>
-  )
-}
+export {
+  ContractSectionHeader,
+  ContractSectionHeader as GovernanceSectionHeader,
+  contractSectionHeaderMarginClass,
+  type ContractSectionHeaderProps,
+  type ContractSectionHeaderProps as GovernanceSectionHeaderProps,
+} from '@/components/shared/ContractSectionHeader'
 
 export const governanceTableShellClass =
   'border border-[#d3d3e5] rounded-xl overflow-hidden bg-white'

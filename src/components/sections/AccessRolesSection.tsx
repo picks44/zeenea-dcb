@@ -9,6 +9,7 @@ import { AccessRoleDocRow } from '@/components/shared/AccessRoleDocRow'
 import { GovernanceReadOnlyCell } from '@/components/shared/GovernanceReadOnlyCell'
 import { GovernanceDocList } from '@/components/shared/GovernanceDocList'
 import { docGovernanceShellClass, docGovernanceHeadClass, docGovernanceHeadRowClass, docGovernanceRowClass } from '@/components/shared/docViewTokens'
+import { ContractSectionHeader } from '@/components/shared/ContractSectionHeader'
 import {
   governanceTableFooterActionClass,
   governanceTableFooterClass,
@@ -16,7 +17,6 @@ import {
   governanceTableRowClass,
   governanceTableHeadRowClass,
   governanceTableShellClass,
-  GovernanceSectionHeader,
 } from '@/components/shared/GovernanceSectionHeader'
 import {
   DATA_ACCESS_EMPTY_BODY,
@@ -68,15 +68,16 @@ export function AccessRolesSection({ roles, onChange, isLocked, docCompact }: Ac
 
   const gridClass = isLocked ? ACCESS_GRID_READONLY : ACCESS_GRID
   const useDocLayout = isLocked && roles.length <= 2
+  /** Hide table column labels when a single published doc row is self-explanatory. */
   const hideHeader = isLocked && roles.length === 1
 
   return (
     <div className="max-w-[720px] w-full">
-      <GovernanceSectionHeader
+      <ContractSectionHeader
         title="Data access roles"
         conceptTag={SECTION_CONCEPT_DATA_CONTRACT}
         description={DATA_ACCESS_ROLES_INTRO}
-        compact={docCompact}
+        compact={docCompact && isLocked}
       />
 
       {roles.length === 0 ? (

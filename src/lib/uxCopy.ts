@@ -84,6 +84,8 @@ export const SECTION_CONCEPT_APPLICATION_ACCESS = 'Application access'
 export const SECTION_CONCEPT_COMMUNICATION = 'Communication & support'
 /** Data contract — Data access roles (ODCS consumer roles) */
 export const SECTION_CONCEPT_DATA_CONTRACT = 'Data contract'
+/** Service levels — SLA section */
+export const SECTION_CONCEPT_SERVICE_LEVELS = 'Service commitment'
 
 // ─── Fundamentals ────────────────────────────────────────────────────────────
 
