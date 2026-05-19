@@ -4,7 +4,12 @@ import { Tooltip } from '@/components/ui/tooltip'
 import { DataContract } from '@/types/odcs'
 import { timeAgo, cn } from '@/lib/utils'
 import { ContractSectionHeader } from '@/components/shared/ContractSectionHeader'
-import { VERSION_HISTORY_INTRO_EMPTY, versionHistoryIntroCount } from '@/lib/uxCopy'
+import {
+  VERSION_HISTORY_INTRO_EMPTY,
+  VERSIONS_CHANGES_NOT_PUBLISHED,
+  VERSIONS_WORKING_COPY_LABEL,
+  versionHistoryIntroCount,
+} from '@/lib/uxCopy'
 import { hasWorkingCopyDraft, summarizeExportChangesSince } from '@/lib/exportedContractDiff'
 import { getCommitChangelog, getCommitTitle, parseChangelogLines } from '@/lib/versionHistory'
 
@@ -103,7 +108,7 @@ export function VersionsView({
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-sm font-semibold text-neutral-900">Draft</span>
+                          <span className="text-sm font-semibold text-neutral-900">{VERSIONS_WORKING_COPY_LABEL}</span>
                         </div>
                         {exportDiff ? (
                           <p className="text-[11px] text-neutral-500 mt-1.5 leading-snug">
@@ -112,7 +117,7 @@ export function VersionsView({
                               : exportDiff.summaryLines.join(' · ')}
                           </p>
                         ) : (
-                          <p className="text-[11px] text-neutral-300 mt-1">Not published yet</p>
+                          <p className="text-[11px] text-neutral-300 mt-1">{VERSIONS_CHANGES_NOT_PUBLISHED}</p>
                         )}
                       </div>
 

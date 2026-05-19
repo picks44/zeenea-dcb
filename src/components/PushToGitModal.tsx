@@ -7,6 +7,15 @@ import { Button } from '@/components/ui/button'
 import { DataContract, GitCommit } from '@/types/odcs'
 import { validateContract } from '@/lib/contractValidation'
 import { validationUserMessage } from '@/lib/validationUserMessages'
+import {
+  PUBLISH_EXTERNAL_SYNC_NOTE,
+  PUBLISH_MODAL_SUBTITLE,
+  PUBLISH_STEP_CHANGES_PREPARED,
+  PUBLISH_STEP_PREPARING,
+  PUBLISH_STEP_SAVING_VERSION,
+  PUBLISH_STEP_VERSION_SAVED,
+  publishStepUpdatingVersion,
+} from '@/lib/uxCopy'
 import { buildPublishChangelog, summarizeExportChangesSince } from '@/lib/exportedContractDiff'
 import { publishCommitTitle } from '@/lib/versionHistory'
 import { cn } from '@/lib/utils'
@@ -228,9 +237,9 @@ export function PushToGitModal({ contract, open, onClose, onPushed }: PushToGitM
     const result: PushResult = { commit, newVersion }
 
     const steps = [
-      'Preparing changes',
-      `Updating to version ${newVersion}`,
-      'Saving to repository',
+      PUBLISH_STEP_PREPARING,
+      publishStepUpdatingVersion(newVersion),
+      PUBLISH_STEP_SAVING_VERSION,
     ]
     setPhase({ kind: 'loading', steps, current: 0 })
     await delay(480)
@@ -256,7 +265,7 @@ export function PushToGitModal({ contract, open, onClose, onPushed }: PushToGitM
               <p className="font-semibold text-[#12131f] text-sm leading-tight">
                 {isFirstPublish ? 'Publish first version' : 'Publish new version'}
               </p>
-              <p className="text-[11px] text-[#656574] leading-tight">Saves a versioned snapshot</p>
+              <p className="text-[11px] text-[#656574] leading-tight">{PUBLISH_MODAL_SUBTITLE}</p>
             </div>
           </div>
           <Button variant="ghost" size="icon-sm" onClick={onClose}>
@@ -362,9 +371,9 @@ export function PushToGitModal({ contract, open, onClose, onPushed }: PushToGitM
           {phase.kind === 'pushed' && (
             <div className="py-2 space-y-4">
               <div className="space-y-2">
-                <Step label="Changes prepared" state="done" />
-                <Step label={`Updated to v${phase.result.newVersion}`} state="done" />
-                <Step label="Saved to repository" state="done" />
+                <Step label={PUBLISH_STEP_CHANGES_PREPARED} state="done" />
+                <Step label={publishStepUpdatingVersion(phase.result.newVersion)} state="done" />
+                <Step label={PUBLISH_STEP_VERSION_SAVED} state="done" />
               </div>
               <div className="bg-[#f0ffec] border border-[#b8dfb5] rounded-xl px-4 py-3 flex items-center gap-3">
                 <Check className="h-4 w-4 text-[#047800] flex-shrink-0" />
@@ -382,7 +391,7 @@ export function PushToGitModal({ contract, open, onClose, onPushed }: PushToGitM
               </div>
               <p className="text-[11px] text-[#656574] flex items-center gap-1.5">
                 <AlertCircle className="h-3 w-3" />
-                Sync with GitHub/GitLab is coming soon.
+                {PUBLISH_EXTERNAL_SYNC_NOTE}
               </p>
             </div>
           )}

@@ -8,6 +8,8 @@ import {
   COLLABORATORS_MODAL_TITLE,
   COLLABORATORS_MORE_COUNT,
   PUBLISH_REQUIRES_PUBLISHER_CONTRACT,
+  TOP_BAR_APPROVAL_IN_PROGRESS,
+  topBarPublishedTooltip,
 } from '@/lib/uxCopy'
 import { useReadinessNavigation } from '@/components/readiness/ReadinessNavigationContext'
 import { cn } from '@/lib/utils'
@@ -227,17 +229,17 @@ export function ContractTopBar({
 
               {/* Synced / published state — owner only */}
               {isOwner && (info.status === 'draft' || contract.inRevision) && gitState === 'synced' && (
-                <Button variant="ghost" size="sm" onClick={onPushToGit} title={`Published · ${lastCommit!.hash}`} className="gap-1.5 text-neutral-400">
+                <Button variant="ghost" size="sm" onClick={onPushToGit} title={topBarPublishedTooltip(lastCommit!.version)} className="gap-1.5 text-neutral-400">
                   <Check className="h-3.5 w-3.5 text-green-700" />
                   Published
                 </Button>
               )}
 
-              {/* PR open — owner only */}
+              {/* Approval request open — owner only (simulated; openPR unused in seed data) */}
               {isOwner && gitState === 'pr-open' && (
                 <Button variant="warning" size="sm" className="gap-1.5 pointer-events-none">
                   <AlertCircle className="h-3.5 w-3.5" />
-                  Review pending
+                  {TOP_BAR_APPROVAL_IN_PROGRESS}
                 </Button>
               )}
 

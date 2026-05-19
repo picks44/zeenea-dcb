@@ -49,7 +49,7 @@ Le prototype est une **application web SPA** (Single Page Application) qui perme
 |--------|----------------------|
 | Édition guidée | Sections formulaire (Fundamentals, Schema, gouvernance, SLA, etc.) |
 | Conformité P1 | Champs et validations alignés sur les 54 lignes de `p1.md` |
-| Publication | Workflow **simulé** (pas de dépôt Git réel) avec verrouillage du contrat publié |
+| Publication | Workflow **simulé** (pas de dépôt externe réel) avec verrouillage du contrat publié |
 | Persistance | Navigateur uniquement (`localStorage`) |
 
 ### Lien avec ODCS v3.1.0
@@ -82,7 +82,7 @@ Des champs ODCS **hors P1** ou **hors scope UI** ne sont pas exposés (voir sect
 | YAML | Onglet YAML temps réel (`YamlView`, `generateODCSYaml`) |
 | Readiness | Panneau score + guidance (`ReadinessPanel`, `publicationReadiness.ts`) |
 | Versions | Historique commits simulés, comparaison, abandon brouillon (`VersionsView`) |
-| Publication | Modale Push to Git simulée (`PushToGitModal`) |
+| Publication | Modale **Publish contract** simulée (`PushToGitModal` — libellés UI dans `uxCopy.ts`) |
 | Partage | Collaborateurs mock (`ShareModal`) |
 | Design system | Page composants UI (`ComponentsPage`) |
 
@@ -91,7 +91,7 @@ Des champs ODCS **hors P1** ou **hors scope UI** ne sont pas exposés (voir sect
 | Limite | Source |
 |--------|--------|
 | Pas de backend API | `storage.ts`, commentaires README |
-| Pas de Git / registry réel | `PushToGitModal` (hash aléatoire), pas d’appel réseau |
+| Pas de dépôt externe / sync réelle | `PushToGitModal` (identifiant de version simulé), message UI : *External repository sync is not connected in this prototype.* |
 | Pas d’authentification SSO | `currentUser.ts` stub |
 | Sections ODCS non implémentées en UI | `SectionId` : `terms`, `servers`, `pricing`, `collaboration`, `tests` sans rendu dans `App.tsx` |
 | Pas d’export YAML des stakeholders, owner, collaborateurs | `src/lib/uxCopy.ts` (`EXPORT_COVERAGE`) |
@@ -922,8 +922,8 @@ Liste issue du code et des tests (pas d’hypothèses produit future).
 | Catégorie | Limite |
 |-----------|--------|
 | **Backend** | Aucune API ; données uniquement dans le navigateur |
-| **Git** | Simulé : hash `randomHash()`, pas de remote |
-| **PR ouverte (`openPR`)** | Le modèle et la toolbar prévoient un état de review pending, mais aucun flux observé ne positionne `openPR` ; il reste `null` dans le prototype actuel. |
+| **Publication / versions** | Simulée : identifiant de version local (`randomHash()`), pas de sync vers un dépôt externe ; UI « Publish contract », « Version saved », note *External repository sync is not connected in this prototype.* |
+| **Demande d’approbation (`openPR`)** | Le modèle et la toolbar prévoient l’état UI « Approval in progress », mais aucun flux observé ne positionne `openPR` ; il reste `null` dans le prototype actuel. |
 | **Authentification** | `CURRENT_USER` fixe |
 | **Partage** | Annuaire mock dans `ShareModal` |
 | **Catalogue Zeenea** | 4 entrées mock ; validation URL stricte sinon |

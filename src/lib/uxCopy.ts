@@ -199,6 +199,35 @@ export function versionHistoryIntroCount(count: number): string {
   return `${count} published ${noun} on record.`
 }
 
+// ─── Publish flow (simulated version history — no external Git) ───────────────
+
+export const PUBLISH_MODAL_SUBTITLE = 'Saves a versioned snapshot in this prototype.'
+
+export const PUBLISH_STEP_PREPARING = 'Preparing changes'
+
+export function publishStepUpdatingVersion(version: string): string {
+  return `Updating to v${version}`
+}
+
+export const PUBLISH_STEP_SAVING_VERSION = 'Saving version'
+
+export const PUBLISH_STEP_CHANGES_PREPARED = 'Changes prepared'
+
+export const PUBLISH_STEP_VERSION_SAVED = 'Version saved'
+
+export const PUBLISH_EXTERNAL_SYNC_NOTE =
+  'External repository sync is not connected in this prototype.'
+
+export const TOP_BAR_APPROVAL_IN_PROGRESS = 'Approval in progress'
+
+export function topBarPublishedTooltip(version: string): string {
+  return `Published · v${version}`
+}
+
+export const VERSIONS_WORKING_COPY_LABEL = 'Working copy'
+
+export const VERSIONS_CHANGES_NOT_PUBLISHED = 'Changes not yet published'
+
 // ─── Collaborators (application access; not in ODCS YAML) ───────────────────
 
 export const COLLABORATORS_MODAL_TITLE = 'Collaborators'
