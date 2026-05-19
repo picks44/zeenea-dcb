@@ -2,7 +2,7 @@ import { FileText, Code2, Upload, Check, AlertCircle, GitBranch, Users, Gauge } 
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tooltip } from '@/components/ui/tooltip'
-import { DataContract, EditorTab, Collaborator, CollaboratorRole } from '@/types/odcs'
+import { DataContract, EditorTab, Collaborator, CollaboratorRole, LifecycleStatus } from '@/types/odcs'
 import {
   COLLABORATOR_ROLE_LABELS,
   COLLABORATORS_MODAL_TITLE,
@@ -20,6 +20,9 @@ interface ContractTopBarProps {
   publishBlockReason: string | null
   onPushToGit: () => void
   onNewVersion: () => void
+  onStartDraft: () => void
+  onDeprecate: () => void
+  onRetire: () => void
   collaborators: Collaborator[]
   onShare: () => void
   myRole: CollaboratorRole
@@ -28,6 +31,14 @@ interface ContractTopBarProps {
   readinessToggleLabel?: string
   readinessPanelOpen?: boolean
   onReadinessToggle?: () => void
+}
+
+const STATUS_LABELS: Record<LifecycleStatus, string> = {
+  proposed: 'Proposed',
+  draft: 'Draft',
+  active: 'Active',
+  deprecated: 'Deprecated',
+  retired: 'Retired',
 }
 
 const TABS: { id: EditorTab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
@@ -53,7 +64,7 @@ function getInitials(name: string): string {
 
 export function ContractTopBar({
   contract, activeTab, onTabChange,
-  canPublish, publishBlockReason, onPushToGit, onNewVersion,
+  canPublish, publishBlockReason, onPushToGit, onNewVersion, onStartDraft, onDeprecate, onRetire,
   collaborators, onShare, myRole,
   showReadinessToggle,
   readinessToggleLabel,
@@ -86,7 +97,7 @@ export function ContractTopBar({
         <span className="font-semibold text-[#12131f] text-sm truncate max-w-[120px] md:max-w-[180px] xl:max-w-[240px]">
           {info.title || 'Untitled Contract'}
         </span>
-        <Badge variant={info.status}>{info.status.charAt(0).toUpperCase() + info.status.slice(1)}</Badge>
+        <Badge variant={info.status}>{STATUS_LABELS[info.status]}</Badge>
         <Badge variant="version" className="flex-shrink-0">v{info.version}</Badge>
       </div>
 
@@ -160,15 +171,28 @@ export function ContractTopBar({
           </div>
 
           {/* Actions area */}
-          {info.status !== 'deprecated' && (
+          {info.status !== 'deprecated' && info.status !== 'retired' && (
             <div className="flex items-center gap-2 flex-shrink-0">
+
+              {(isOwner || isContributor) && info.status === 'proposed' && (
+                <Button variant="secondary" size="sm" onClick={onStartDraft}>
+                  Start drafting
+                </Button>
+              )}
 
               {/* New version — owner + contributor on active contracts */}
               {(isOwner || isContributor) && info.status === 'active' && !contract.inRevision && (
-                <Button variant="secondary" size="sm" onClick={onNewVersion} className="gap-1.5">
-                  <GitBranch className="h-3.5 w-3.5" />
-                  New version
-                </Button>
+                <>
+                  <Button variant="secondary" size="sm" onClick={onNewVersion} className="gap-1.5">
+                    <GitBranch className="h-3.5 w-3.5" />
+                    New version
+                  </Button>
+                  {isOwner && (
+                    <Button variant="outline" size="sm" onClick={onDeprecate}>
+                      Deprecate
+                    </Button>
+                  )}
+                </>
               )}
 
               {/* Publish area — draft / in-revision state */}
@@ -218,6 +242,12 @@ export function ContractTopBar({
               )}
 
             </div>
+          )}
+
+          {isOwner && info.status === 'deprecated' && (
+            <Button variant="outline" size="sm" onClick={onRetire}>
+              Retire contract
+            </Button>
           )}
         </>
       )}

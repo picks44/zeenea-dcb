@@ -43,4 +43,12 @@ describe('validateContract P1', () => {
     const result = validateContract(c, [c, other])
     expect(result.errors.some(e => e.code === 'id-duplicate')).toBe(true)
   })
+
+  it('blocks publish when status is proposed', () => {
+    const c = buildP1FixtureContract()
+    c.info.status = 'proposed'
+    const result = validateContract(c, [c])
+    expect(result.canPublish).toBe(false)
+    expect(result.errors.some(e => e.code === 'status-proposed')).toBe(true)
+  })
 })

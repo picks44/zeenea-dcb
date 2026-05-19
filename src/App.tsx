@@ -27,6 +27,7 @@ import { DataContract, DataContractSnapshot, SectionId, SchemaTable, AppView, Ed
 import type { CustomProperty } from './types/odcsShared'
 import { CustomPropertiesSection } from './components/sections/CustomPropertiesSection'
 import { deriveContractId } from './lib/idDerivation'
+import { applyLifecycleAction } from './lib/contractLifecycle'
 import type { PushResult } from './components/PushToGitModal'
 import { loadContracts, saveContracts } from './lib/storage'
 import { validateContract } from './lib/contractValidation'
@@ -49,7 +50,7 @@ function makeContract(): DataContract {
       domain: '',
       owner: '',
       description: '',
-      status: 'draft',
+      status: 'proposed',
       tags: [],
     },
     dataset: [],
@@ -95,7 +96,10 @@ export default function App() {
   const contract = selectedId ? contracts.find(c => c.uid === selectedId) ?? null : null
   const myRole = getMyRole(contract)
   const isLocked = contract
-    ? myRole === 'viewer' || (contract.info.status === 'active' && !contract.inRevision) || contract.info.status === 'deprecated'
+    ? myRole === 'viewer'
+      || (contract.info.status === 'active' && !contract.inRevision)
+      || contract.info.status === 'deprecated'
+      || contract.info.status === 'retired'
     : false
 
   const isPublishedView = contract
@@ -110,7 +114,10 @@ export default function App() {
   const showReadinessToggle = showReadinessPanel && !panelPinned
 
   const showPublicationGuidance = Boolean(
-    contract && !isLocked && contract.info.status !== 'deprecated',
+    contract
+    && !isLocked
+    && contract.info.status !== 'deprecated'
+    && contract.info.status !== 'retired',
   )
 
   const validation = contract ? validateContract(contract, contracts) : null
@@ -236,6 +243,47 @@ export default function App() {
     setHasEditedSincePublish(false)
   }, [contract, updateContract])
 
+  const handleStartDraft = useCallback(() => {
+    if (!contract || contract.info.status !== 'proposed') return
+    updateContract({
+      ...contract,
+      info: { ...contract.info, status: applyLifecycleAction(contract.info.status, 'start_draft') },
+    })
+    setHasEditedSincePublish(true)
+  }, [contract, updateContract])
+
+  const handleDeprecateContract = useCallback(() => {
+    if (!contract || contract.info.status !== 'active' || contract.inRevision) return
+    setConfirmConfig({
+      title: 'Deprecate contract',
+      description: 'Mark this contract as deprecated? Consumers should migrate to a newer version.',
+      confirmLabel: 'Deprecate',
+      variant: 'destructive',
+      onConfirm: () => {
+        updateContract({
+          ...contract,
+          info: { ...contract.info, status: applyLifecycleAction(contract.info.status, 'deprecate') },
+        })
+      },
+    })
+  }, [contract, updateContract])
+
+  const handleRetireContract = useCallback(() => {
+    if (!contract || contract.info.status !== 'deprecated') return
+    setConfirmConfig({
+      title: 'Retire contract',
+      description: 'Retire this contract? It will no longer be available for use.',
+      confirmLabel: 'Retire',
+      variant: 'destructive',
+      onConfirm: () => {
+        updateContract({
+          ...contract,
+          info: { ...contract.info, status: applyLifecycleAction(contract.info.status, 'retire') },
+        })
+      },
+    })
+  }, [contract, updateContract])
+
   const handleCollaboratorsChange = useCallback((collaborators: Collaborator[]) => {
     if (!contract) return
     updateContract({ ...contract, collaborators })
@@ -272,7 +320,11 @@ export default function App() {
     if (!contract) return
     const snapshot: DataContractSnapshot = {
       id: contract.id,
-      info: { ...contract.info, version: result.newVersion, status: 'active' },
+      info: {
+        ...contract.info,
+        version: result.newVersion,
+        status: applyLifecycleAction(contract.info.status, 'publish'),
+      },
       dataset: JSON.parse(JSON.stringify(contract.dataset)),
       stakeholders: [...contract.stakeholders],
       roles: [...(contract.roles ?? [])],
@@ -282,7 +334,7 @@ export default function App() {
     const commitWithSnapshot = { ...result.commit, snapshot }
     setContracts(prev => prev.map(c => c.uid === contract.uid ? {
       ...c,
-      info: { ...c.info, version: result.newVersion, status: 'active' },
+      info: { ...c.info, version: result.newVersion, status: applyLifecycleAction(c.info.status, 'publish') },
       gitHistory: [...c.gitHistory.map(h => ({ ...h, contractStatus: 'deprecated' as const })), commitWithSnapshot],
       inRevision: false,
       updatedAt: result.commit.timestamp,
@@ -324,6 +376,7 @@ export default function App() {
             <>
             <ReadinessNavigationProvider
               contract={contract}
+              contracts={contracts}
               enabled={showPublicationGuidance}
               onSectionChange={setActiveSection}
             >
@@ -350,6 +403,9 @@ export default function App() {
                   publishBlockReason={publishBlockReason}
                   onPushToGit={() => setShowPushModal(true)}
                   onNewVersion={handleNewVersion}
+                  onStartDraft={handleStartDraft}
+                  onDeprecate={handleDeprecateContract}
+                  onRetire={handleRetireContract}
                   collaborators={contract.collaborators ?? []}
                   onShare={() => setShowShareModal(true)}
                   myRole={myRole}
@@ -364,6 +420,15 @@ export default function App() {
                     <AlertTriangle className="h-3.5 w-3.5 text-[#c12c11] flex-shrink-0" />
                     <p className="text-[#c12c11] text-xs font-medium">
                       This contract is <strong>Deprecated</strong> and should no longer be used.
+                    </p>
+                  </div>
+                )}
+
+                {contract.info.status === 'retired' && (
+                  <div className="bg-neutral-100 border-b border-neutral-300 px-6 py-2 flex items-center gap-2.5 flex-shrink-0">
+                    <AlertTriangle className="h-3.5 w-3.5 text-neutral-600 flex-shrink-0" />
+                    <p className="text-neutral-700 text-xs font-medium">
+                      This contract is <strong>Retired</strong> and is no longer maintained.
                     </p>
                   </div>
                 )}
@@ -464,6 +529,7 @@ export default function App() {
                     {showReadinessPanel && panelPinned && (
                       <ReadinessPanel
                         contract={contract}
+                        contracts={contracts}
                         myRole={myRole}
                         hasEditedSincePublish={hasEditedSincePublish}
                         layout="pinned"
@@ -480,6 +546,7 @@ export default function App() {
                         />
                         <ReadinessPanel
                           contract={contract}
+                          contracts={contracts}
                           myRole={myRole}
                           hasEditedSincePublish={hasEditedSincePublish}
                           layout="overlay"

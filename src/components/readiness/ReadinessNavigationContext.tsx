@@ -65,6 +65,7 @@ function flashElement(el: HTMLElement) {
 interface ReadinessNavigationProviderProps {
   children: ReactNode
   contract: DataContract
+  contracts: DataContract[]
   enabled: boolean
   onSectionChange: (section: SectionId) => void
 }
@@ -72,6 +73,7 @@ interface ReadinessNavigationProviderProps {
 export function ReadinessNavigationProvider({
   children,
   contract,
+  contracts,
   enabled,
   onSectionChange,
 }: ReadinessNavigationProviderProps) {
@@ -91,10 +93,13 @@ export function ReadinessNavigationProvider({
     }
   }, [contract.uid])
 
-  const validation = useMemo(() => validateContract(contract), [contract])
+  const validation = useMemo(
+    () => validateContract(contract, contracts),
+    [contract, contracts],
+  )
   const sectionGuidance = useMemo(
-    () => (enabled ? computeSectionGuidance(contract, validation) : {}),
-    [contract, validation, enabled],
+    () => (enabled ? computeSectionGuidance(contract, validation, contracts) : {}),
+    [contract, validation, contracts, enabled],
   )
 
   const markPublishAttempted = useCallback(() => {

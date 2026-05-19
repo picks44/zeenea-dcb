@@ -37,6 +37,7 @@ import {
   qualityRuleNeedsDimension,
   slaRowHasContent,
 } from '@/lib/p1Validation'
+import { canPublishFromStatus } from '@/lib/contractLifecycle'
 
 /** Rows with no user-entered content are ignored for validation and export. */
 export function isRoleRowEmpty(r: OdcsAccessRole): boolean {
@@ -233,6 +234,15 @@ export function validateContract(
     issues.push({
       code: 'status-invalid',
       message: 'Contract status must be a valid ODCS lifecycle value.',
+      severity: 'error',
+      section: 'fundamentals',
+    })
+  }
+
+  if (info.status === 'proposed') {
+    issues.push({
+      code: 'status-proposed',
+      message: 'Start drafting before publishing.',
       severity: 'error',
       section: 'fundamentals',
     })
@@ -456,8 +466,13 @@ export function validateContract(
 
   const errors = issues.filter(i => i.severity === 'error')
   const warnings = issues.filter(i => i.severity === 'warning')
-  const canPublish = errors.length === 0
-  const publishBlockReason = canPublish ? null : errors[0].message
+  const publishStatusOk = canPublishFromStatus(info.status, contract.inRevision)
+  const canPublish = errors.length === 0 && publishStatusOk
+  const publishBlockReason = canPublish
+    ? null
+    : !publishStatusOk
+      ? 'Contract must be in draft (or in revision) before publishing.'
+      : errors[0].message
 
   return { issues, canPublish, publishBlockReason, errors, warnings }
 }

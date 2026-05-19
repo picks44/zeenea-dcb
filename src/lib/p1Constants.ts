@@ -41,6 +41,13 @@ export const FUNDAMENTALS_AUTH_DEF_LABELS: Record<FundamentalsAuthDefType, strin
 
 export const ZEENEA_AUTH_DEF_TYPE = 'actian' as const
 
+/**
+ * Strict Actian/Zeenea URL pattern for P1 MVP (documented).
+ * Production URLs must match this host/path shape or exist in the mock catalog.
+ */
+export const ZEENEA_ACTIAN_URL_PATTERN =
+  /^https:\/\/catalog\.zeenea\.example\/actian\/[a-z0-9/_-]+$/
+
 export const SHARED_AUTH_DEF_TYPES = [
   'businessDefinition',
   'transformationImplementation',

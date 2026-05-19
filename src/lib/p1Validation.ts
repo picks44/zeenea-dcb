@@ -10,6 +10,7 @@ import {
   SLA_ELEMENT_SEGMENT_REGEX,
   SLA_UNITS,
   ZEENEA_AUTH_DEF_TYPE,
+  ZEENEA_ACTIAN_URL_PATTERN,
 } from '@/lib/p1Constants'
 import { deriveContractId } from '@/lib/idDerivation'
 import { findZeeneaCatalogItemByUrl } from '@/lib/zeeneaCatalog'
@@ -52,8 +53,9 @@ export function isValidFundamentalsAuthDefType(type: string): boolean {
 
 export function isValidZeeneaAuthDef(def: AuthoritativeDefinition): boolean {
   if (def.type.trim() !== ZEENEA_AUTH_DEF_TYPE) return false
-  if (!def.url?.trim()) return false
-  return Boolean(findZeeneaCatalogItemByUrl(def.url) || def.url.includes('zeenea') || def.url.includes('actian'))
+  const url = def.url?.trim()
+  if (!url) return false
+  return Boolean(findZeeneaCatalogItemByUrl(url) || ZEENEA_ACTIAN_URL_PATTERN.test(url))
 }
 
 export function isValidSlaUnit(unit: string): boolean {

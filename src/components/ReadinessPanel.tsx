@@ -28,6 +28,7 @@ import { Tooltip } from '@/components/ui/tooltip'
 
 interface ReadinessPanelProps {
   contract: DataContract
+  contracts: DataContract[]
   myRole: CollaboratorRole
   hasEditedSincePublish: boolean
   /** Pinned in layout (xl+) or floating overlay (lg and below). */
@@ -154,6 +155,7 @@ function CheckRow({
 
 export function ReadinessPanel({
   contract,
+  contracts,
   myRole,
   hasEditedSincePublish,
   layout = 'pinned',
@@ -161,8 +163,8 @@ export function ReadinessPanel({
   docCompact,
 }: ReadinessPanelProps) {
   const readiness = useMemo(
-    () => computePublicationReadiness(contract, myRole, hasEditedSincePublish),
-    [contract, myRole, hasEditedSincePublish],
+    () => computePublicationReadiness(contract, myRole, hasEditedSincePublish, contracts),
+    [contract, contracts, myRole, hasEditedSincePublish],
   )
 
   const nav = useReadinessNavigation()

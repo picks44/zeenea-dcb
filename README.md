@@ -189,7 +189,7 @@ Les contraintes de table (`PRIMARY KEY`, `FOREIGN KEY`, etc. en ligne séparée)
 
 Le module `src/lib/odcsYamlGenerator.ts` produit un document YAML aligné sur ODCS 3.1.0 :
 
-- `apiVersion: v3.1.0`, `name` et `dataProduct` (depuis le titre du contrat)
+- `apiVersion: v3.1.0`, `kind: DataContract`, `name` (depuis le titre du contrat)
 - `id`, `version`, `status`, `domain`, objet `description` (purpose, usage, limitations, liens)
 - `schema[]` avec `id` stable par table, `properties[]`, tags, quality, authoritativeDefinitions
 - `quality[].id` sur les règles colonne et table

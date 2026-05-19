@@ -97,8 +97,9 @@ function hasReferenceLinks(contract: DataContract): boolean {
 export function computeSectionGuidance(
   contract: DataContract,
   validation?: ValidationResult,
+  allContracts?: DataContract[],
 ): Partial<Record<SectionId, SectionGuidanceInfo>> {
-  const v = validation ?? validateContract(contract)
+  const v = validation ?? validateContract(contract, allContracts)
   const piiCount = contract.dataset.reduce(
     (acc, t) => acc + t.columns.filter(c => c.isPII).length,
     0,
@@ -161,8 +162,11 @@ export function computeSectionGuidance(
   }
 }
 
-export function buildReadinessGuidanceItems(contract: DataContract): ReadinessGuidanceItem[] {
-  const validation = validateContract(contract)
+export function buildReadinessGuidanceItems(
+  contract: DataContract,
+  allContracts?: DataContract[],
+): ReadinessGuidanceItem[] {
+  const validation = validateContract(contract, allContracts)
   const { info, id } = contract
   const fieldCount = contract.dataset.reduce((acc, t) => acc + t.columns.length, 0)
   const fieldsWithDesc = contract.dataset.reduce(

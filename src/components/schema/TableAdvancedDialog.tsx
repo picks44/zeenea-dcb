@@ -83,12 +83,21 @@ export function TableAdvancedDialog({
         <div className="flex-1 overflow-y-auto px-6 py-4 min-h-0">
           {isLocked ? (
             <TableMetadataReadOnlyBody
+              schemaId={table.id}
               tags={tags}
               quality={quality ?? []}
               authDefs={authDefs}
             />
           ) : (
             <div className="space-y-5">
+              <div>
+                <p className="text-xs font-medium text-[#33333d] mb-1">Schema ID</p>
+                <p className="font-mono text-xs text-[#656574] bg-[#f5f5fa] border border-[#e4e4f0] rounded px-2 py-1.5">
+                  {table.id}
+                </p>
+                <p className="text-[10px] text-[#9898a7] mt-1">Stable identifier (read-only, used in YAML export).</p>
+              </div>
+
               <div>
                 <p className="text-xs font-medium text-[#33333d] mb-1">Tags</p>
                 <TagsEditor tags={tags} onChange={setTags} />

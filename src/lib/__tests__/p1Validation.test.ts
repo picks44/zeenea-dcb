@@ -5,6 +5,7 @@ import {
   isValidSlaUnit,
   isValidQualityDimension,
   isValidCustomPropertyName,
+  isValidZeeneaAuthDef,
 } from '@/lib/p1Validation'
 
 describe('p1Validation enums', () => {
@@ -33,5 +34,23 @@ describe('p1Validation enums', () => {
   it('validates camelCase custom properties', () => {
     expect(isValidCustomPropertyName('dataSteward')).toBe(true)
     expect(isValidCustomPropertyName('DataSteward')).toBe(false)
+  })
+
+  it('accepts Zeenea auth defs only from catalog or strict Actian URL pattern', () => {
+    expect(isValidZeeneaAuthDef({
+      id: '1',
+      url: 'https://catalog.zeenea.example/actian/glossary/order',
+      type: 'actian',
+    })).toBe(true)
+    expect(isValidZeeneaAuthDef({
+      id: '2',
+      url: 'https://random.example/zeenea/item',
+      type: 'actian',
+    })).toBe(false)
+    expect(isValidZeeneaAuthDef({
+      id: '3',
+      url: 'https://catalog.zeenea.example/actian/custom/path',
+      type: 'actian',
+    })).toBe(true)
   })
 })

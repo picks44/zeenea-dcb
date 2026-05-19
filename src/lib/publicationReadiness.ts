@@ -65,11 +65,12 @@ export function computePublicationReadiness(
   contract: DataContract,
   myRole: CollaboratorRole,
   hasEditedSincePublish: boolean,
+  allContracts?: DataContract[],
 ): PublicationReadiness {
   const { dataset } = contract
-  const validation = validateContract(contract)
+  const validation = validateContract(contract, allContracts)
   const stakeholderCount = countAssignedStakeholders(contract.stakeholders)
-  const guidanceItems = buildReadinessGuidanceItems(contract)
+  const guidanceItems = buildReadinessGuidanceItems(contract, allContracts)
   const requiredChecks = guidanceItems.filter(i => i.variant === 'required')
   const recommendedChecks = guidanceItems.filter(i => i.variant === 'recommended')
 

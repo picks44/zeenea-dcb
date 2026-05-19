@@ -203,14 +203,16 @@ export function FieldMetadataReadOnlyBody({
 }
 
 interface TableMetadataReadOnlyProps {
+  schemaId?: string
   tags: string[]
   quality: QualityRule[]
   authDefs: AuthoritativeDefinition[]
   docCompact?: boolean
 }
 
-export function TableMetadataReadOnlyBody({ tags, quality, authDefs, docCompact }: TableMetadataReadOnlyProps) {
+export function TableMetadataReadOnlyBody({ schemaId, tags, quality, authDefs, docCompact }: TableMetadataReadOnlyProps) {
   const hasAny =
+    Boolean(schemaId?.trim()) ||
     tags.some(t => t.trim()) ||
     quality.some(r => r.description.trim() || r.name?.trim()) ||
     authDefs.some(d => d.url.trim() || d.type.trim() || (d.description ?? '').trim())
@@ -225,6 +227,12 @@ export function TableMetadataReadOnlyBody({ tags, quality, authDefs, docCompact 
 
   return (
     <div className="space-y-4">
+      {schemaId?.trim() && (
+        <MetadataReadOnlySection label="Schema ID">
+          <p className="font-mono text-xs text-[#33333d]">{schemaId}</p>
+        </MetadataReadOnlySection>
+      )}
+
       <MetadataReadOnlySection label="Tags">
         <MetadataReadOnlyTags tags={tags} emptyLabel="No tags added." />
       </MetadataReadOnlySection>
