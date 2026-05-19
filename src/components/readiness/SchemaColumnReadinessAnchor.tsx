@@ -1,6 +1,8 @@
-import type { ReactNode } from 'react'
+import { useLayoutEffect, useRef, type ReactNode } from 'react'
 import { useReadinessField } from '@/components/readiness/ReadinessNavigationContext'
 import { schemaFieldAnchorId } from '@/lib/readinessAnchors'
+
+const FIELD_PROPERTIES_SELECTOR = '[aria-label="Field properties"]'
 
 interface SchemaColumnReadinessAnchorProps {
   tableIndex: number
@@ -21,15 +23,35 @@ export function SchemaColumnReadinessAnchor({
   className,
   children,
 }: SchemaColumnReadinessAnchorProps) {
+  const rootRef = useRef<HTMLDivElement | null>(null)
   const { setRef: setReadinessRef } = useReadinessField(
     schemaFieldAnchorId(tableIndex, columnIndex),
     isMissing,
     false,
   )
 
+  useLayoutEffect(() => {
+    const root = rootRef.current
+    if (!root) return
+
+    const metadataBtn = root.querySelector<HTMLElement>(FIELD_PROPERTIES_SELECTOR)
+    if (!metadataBtn) return
+
+    if (isMissing) {
+      metadataBtn.setAttribute('data-readiness-control', '')
+    } else {
+      metadataBtn.removeAttribute('data-readiness-control')
+    }
+
+    return () => {
+      metadataBtn.removeAttribute('data-readiness-control')
+    }
+  }, [isMissing, columnName])
+
   return (
     <div
       ref={el => {
+        rootRef.current = el
         registerColumn(columnName, el)
         setReadinessRef(el)
       }}

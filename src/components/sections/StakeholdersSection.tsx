@@ -82,19 +82,16 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked, docCompa
   const remove = (id: string) => onChange(stakeholders.filter(s => s.id !== id))
 
   return (
-    <div
-      ref={el => {
-        sectionRootRef(el)
-        contactsAnchorRef(el)
-      }}
-      className="max-w-[720px] w-full"
-    >
-      <GovernanceSectionHeader
-        title={SECTION_GOVERNANCE_CONTACTS}
-        conceptTag={SECTION_CONCEPT_COMMUNICATION}
-        description={<WorkflowMetadataNote pill="not-in-odcs">{STAKEHOLDERS_INTRO}</WorkflowMetadataNote>}
-        compact={docCompact}
-      />
+    <div ref={sectionRootRef} className="max-w-[720px] w-full">
+      <div ref={contactsAnchorRef}>
+        <div data-readiness-flash className="rounded -mx-0.5 px-0.5">
+          <GovernanceSectionHeader
+            title={SECTION_GOVERNANCE_CONTACTS}
+            conceptTag={SECTION_CONCEPT_COMMUNICATION}
+            description={<WorkflowMetadataNote pill="not-in-odcs">{STAKEHOLDERS_INTRO}</WorkflowMetadataNote>}
+            compact={docCompact}
+          />
+        </div>
 
       {stakeholders.length === 0 ? (
         <GovernanceEmptyState
@@ -186,6 +183,7 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked, docCompa
           </div>
         </div>
       )}
+      </div>
     </div>
   )
 }

@@ -13,9 +13,10 @@ interface GuidanceFieldProps {
 }
 
 /**
- * Progressive required/recommended field wrapper:
- * - Draft: scannable tint + badge (not an error state)
- * - Guided / publish: stronger emphasis + optional helper
+ * Progressive required field wrapper:
+ * - Draft: reinforced label + Required badge
+ * - Panel navigation: outline pulse on control (CSS via flashElement)
+ * - Publish attempted: orange label/badge + helper + control border
  */
 export function GuidanceField({
   fieldId,
@@ -26,49 +27,48 @@ export function GuidanceField({
   className,
   children,
 }: GuidanceFieldProps) {
-  const { setRef, showRequiredBadge, showEmphasis, showDraftScan } = useReadinessField(
+  const { setRef, showRequiredBadge, showEmphasis } = useReadinessField(
     fieldId,
     isMissing,
     required,
   )
 
   return (
-    <div
-      ref={setRef}
-      className={cn(
-        className,
-        showDraftScan && required && 'rounded-md border border-[#e4e2dc] bg-[#fafaf8] px-2.5 py-2 -mx-0.5',
-        showDraftScan && !required && 'rounded-md border border-[#ebebf0] bg-[#fcfcfd] px-2.5 py-2 -mx-0.5',
-        showEmphasis && 'rounded-md border border-[#fed7aa] bg-[#fff7ed]/80 px-2.5 py-2 -mx-0.5 transition-colors duration-200',
-      )}
-    >
+    <div ref={setRef} className={className}>
       <label
         className={cn(
-          'text-xs mb-1 block',
-          showDraftScan && required ? 'font-semibold text-[#2a2a35]' : 'font-medium text-[#33333d]',
+          'text-xs mb-1 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5',
+          showRequiredBadge && required ? 'font-semibold text-[#2a2a35]' : 'font-medium text-[#33333d]',
+          showEmphasis && required && 'text-[#8a5c00]',
         )}
       >
         {label}
         {showRequiredBadge && required ? (
           <span
             className={cn(
-              'ml-1.5 inline-flex items-center text-[9px] font-medium uppercase tracking-wide rounded px-1 py-px',
+              'inline-flex items-center text-[9px] font-medium uppercase tracking-wide rounded border px-1 py-px',
               showEmphasis
-                ? 'text-[#b8956a] bg-[#fff7ed]'
-                : 'text-[#656574] bg-[#eef0f4]',
+                ? 'text-[#b8956a] border-[#f5d9b8] bg-[#fff7ed]'
+                : 'text-[#8a5c00] border-[#f0e0c8] bg-[#fffbf5]',
             )}
           >
             Required
           </span>
         ) : null}
-        {showRequiredBadge && !required ? (
-          <span className="ml-1.5 text-[9px] font-medium text-[#9898a7]">Suggested</span>
-        ) : null}
       </label>
-      {children}
+      <div
+        className={cn(
+          showEmphasis
+            && required
+            && '[&_input]:border-[#f5d9b8] [&_textarea]:border-[#f5d9b8] [&_select]:border-[#f5d9b8] [&_[data-readiness-control]]:border-[#f5d9b8]',
+        )}
+      >
+        {children}
+      </div>
       {showEmphasis && missingHelper ? (
         <p className="text-[10px] text-[#b8956a] mt-1 leading-snug">{missingHelper}</p>
       ) : null}
     </div>
   )
 }
+

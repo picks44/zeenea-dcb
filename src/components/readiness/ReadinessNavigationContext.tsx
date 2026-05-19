@@ -27,7 +27,7 @@ type ReadinessNavigationValue = {
   enabled: boolean
   /** True after the user clicks Publish (blocked or not). Unlocks level-3 field emphasis. */
   publishAttempted: boolean
-  /** Field highlighted from readiness navigation (level 2). */
+  /** Field targeted by panel navigation (functional: accordion, scroll anchor). */
   focusedFieldId: string | null
   sectionGuidance: Partial<Record<SectionId, SectionGuidanceInfo>>
   navigateTo: (target: ReadinessNavigateTarget) => void
@@ -40,11 +40,26 @@ const ReadinessNavigationContext = createContext<ReadinessNavigationValue | null
 
 const FOCUS_DURATION_MS = 2500
 
+function findFlashTarget(root: HTMLElement): HTMLElement {
+  return (
+    root.querySelector<HTMLElement>('[data-readiness-control]')
+    ?? root.querySelector<HTMLElement>('input:not([type="hidden"])')
+    ?? root.querySelector<HTMLElement>('textarea')
+    ?? root.querySelector<HTMLElement>('select')
+    ?? root.querySelector<HTMLElement>('button')
+    ?? root.querySelector<HTMLElement>('[data-readiness-flash]')
+    ?? root
+  )
+}
+
 function flashElement(el: HTMLElement) {
-  el.classList.add('schema-nav-flash')
-  const cleanup = () => el.classList.remove('schema-nav-flash')
-  el.addEventListener('animationend', cleanup, { once: true })
-  window.setTimeout(cleanup, 1500)
+  const target = findFlashTarget(el)
+  target.classList.remove('readiness-nav-flash')
+  void target.offsetWidth
+  target.classList.add('readiness-nav-flash')
+  const cleanup = () => target.classList.remove('readiness-nav-flash')
+  target.addEventListener('animationend', cleanup, { once: true })
+  window.setTimeout(cleanup, 1200)
 }
 
 interface ReadinessNavigationProviderProps {
@@ -178,19 +193,22 @@ export function useReadinessField(fieldId: string, isMissing: boolean, _required
   )
 
   const showEmphasis = Boolean(
-    ctx?.enabled
-    && isMissing
-    && (ctx.publishAttempted || ctx.focusedFieldId === fieldId),
+    ctx?.enabled && isMissing && ctx.publishAttempted,
   )
 
-  const showRequiredBadge = Boolean(ctx?.enabled && isMissing)
-  const showDraftScan = Boolean(ctx?.enabled && isMissing && !showEmphasis)
+  const isGuidedFocus = Boolean(
+    ctx?.enabled
+    && ctx.focusedFieldId === fieldId
+    && !ctx.publishAttempted,
+  )
+
+  const showRequiredBadge = Boolean(ctx?.enabled && isMissing && _required)
 
   return {
     setRef,
     showRequiredBadge,
     showEmphasis,
-    showDraftScan,
+    isGuidedFocus,
     isFocused: ctx?.focusedFieldId === fieldId,
   }
 }

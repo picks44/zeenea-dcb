@@ -21,8 +21,8 @@ Multiple orange signals stacked at once on an empty draft:
 | Level | Trigger | Form | Nav | Readiness panel |
 |-------|---------|------|-----|-----------------|
 | **1 — Draft** | Default editable draft | Normal inputs; muted “Required” on missing fields only | Icon/badge only; neutral labels | Neutral checklist; grey incomplete dots |
-| **2 — Guided** | Click item in panel → navigate | Blue flash + orange emphasis on **target** field only (2.5s) | Unchanged | Click-to-scroll preserved |
-| **3 — Blocking publish** | Click **Publish** (enabled or disabled) | Orange emphasis on **all** missing required fields | Unchanged | Warmer status line; “Details to fix” section appears |
+| **2 — Guided** | Click item in panel → navigate | Blue spotlight flash on label/focal target only (~1.2s); no orange, no helper | Unchanged | Click-to-scroll preserved |
+| **3 — Blocking publish** | Click **Publish** (enabled or disabled) | Orange emphasis + helpers on **all** missing required fields | Unchanged | Warmer status line; “Details to fix” section appears |
 
 ## What was lightened
 

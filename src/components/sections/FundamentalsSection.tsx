@@ -231,7 +231,7 @@ export function FundamentalsSection({
             isMissing={!semver.test(info.version)}
             missingHelper={READINESS_HELPER_CONTRACT_VERSION}
           >
-            <div className="font-mono text-sm bg-[#f5f5fa] border border-[#d3d3e5] rounded-md px-3 h-9 flex items-center text-[#33333d]">
+            <div data-readiness-control className="font-mono text-sm bg-[#f5f5fa] border border-[#d3d3e5] rounded-md px-3 h-9 flex items-center text-[#33333d]">
               v{info.version}
             </div>
           </GuidanceField>
@@ -290,7 +290,9 @@ export function FundamentalsSection({
                 />
               </div>
               <div ref={refLinksRef}>
-                <label className={labelClass}>{LABEL_REFERENCE_LINKS}</label>
+                <label data-readiness-flash className={cn(labelClass, 'inline-block rounded')}>
+                  {LABEL_REFERENCE_LINKS}
+                </label>
                 <AuthoritativeDefinitionsEditor
                   definitions={authDefs}
                   onChange={defs => {

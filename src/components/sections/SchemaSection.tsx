@@ -39,11 +39,11 @@ function makeTable(name: string): SchemaTable {
 export function SchemaSection({ tables, onChange, isLocked, docCompact }: SchemaSectionProps) {
   const fieldCount = tables.reduce((acc, t) => acc + t.columns.length, 0)
   const { setRef: sectionRootRef } = useSectionGuidanceRoot('schema')
-  const { setRef: schemaAnchorRef, showEmphasis: showSchemaEmphasis, showDraftScan: showSchemaDraft } = useReadinessField(
-    READINESS_FIELD_SCHEMA_ROOT,
-    fieldCount === 0,
-    true,
-  )
+  const {
+    setRef: schemaAnchorRef,
+    showEmphasis: showSchemaPublishEmphasis,
+    showRequiredBadge: showSchemaRequiredBadge,
+  } = useReadinessField(READINESS_FIELD_SCHEMA_ROOT, fieldCount === 0, true)
 
   const [addingTable, setAddingTable] = useState(false)
   const [newName, setNewName] = useState('')
@@ -96,23 +96,35 @@ export function SchemaSection({ tables, onChange, isLocked, docCompact }: Schema
           ref={schemaAnchorRef}
           className={cn(
             'border-2 border-dashed rounded-xl p-16 flex flex-col items-center gap-4',
-            showSchemaEmphasis
-              ? 'border-[#fed7aa] bg-[#fff7ed]/60'
-              : showSchemaDraft
-                ? 'border-[#e4e2dc] bg-[#fafaf8]'
-                : 'border-[#d3d3e5] bg-[#fbfbff]/50',
+            showSchemaPublishEmphasis
+              ? 'border-[#f5d9b8]'
+              : 'border-[#d3d3e5] bg-[#fbfbff]/50',
           )}
         >
           <Database className="h-6 w-6 text-[#656574]" />
           <div className="text-center">
-            <p className="text-sm font-semibold text-[#12131f] mb-1">No tables defined</p>
+            <p className="text-sm font-semibold text-[#12131f] mb-1 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-0.5">
+              <span data-readiness-flash className="inline-block rounded">No tables defined</span>
+              {showSchemaRequiredBadge ? (
+                <span
+                  className={cn(
+                    'inline-flex items-center text-[9px] font-medium uppercase tracking-wide rounded border px-1 py-px',
+                    showSchemaPublishEmphasis
+                      ? 'text-[#b8956a] border-[#f5d9b8] bg-[#fff7ed]'
+                      : 'text-[#8a5c00] border-[#f0e0c8] bg-[#fffbf5]',
+                  )}
+                >
+                  Required
+                </span>
+              ) : null}
+            </p>
             <p className="text-sm text-[#3f3f4a]">Import SQL to auto-populate, or add a table manually.</p>
-            {showSchemaEmphasis ? (
-              <p className="text-[11px] text-[#b8956a] leading-snug">{READINESS_HELPER_SCHEMA_FIELDS}</p>
+            {showSchemaPublishEmphasis ? (
+              <p className="text-[11px] text-[#b8956a] leading-snug mt-1">{READINESS_HELPER_SCHEMA_FIELDS}</p>
             ) : null}
           </div>
           {!isLocked && (
-            <Button onClick={openForm} className="gap-2">
+            <Button data-readiness-flash onClick={openForm} className="gap-2">
               <Plus className="h-4 w-4" />
               Add first table
             </Button>

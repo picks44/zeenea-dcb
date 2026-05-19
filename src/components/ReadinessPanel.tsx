@@ -1,13 +1,11 @@
-import { useState, useMemo, useEffect } from 'react'
-import { Check, Copy, ChevronDown, ChevronUp, CheckCircle2, AlertCircle, AlertTriangle, ArrowRight, X } from 'lucide-react'
+import { useMemo } from 'react'
+import { Check, CheckCircle2, AlertCircle, AlertTriangle, ArrowRight, X } from 'lucide-react'
 import { CollaboratorRole, DataContract } from '@/types/odcs'
-import { generateODCSYaml } from '@/lib/odcsYamlGenerator'
 import { computePublicationReadiness } from '@/lib/publicationReadiness'
 import { cn } from '@/lib/utils'
 import {
   CONTRACT_QUALITY_PANEL_TITLE,
   DOCUMENTED_FIELDS_TOOLTIP,
-  EXPORT_COVERAGE,
   PUBLICATION_READY_TOOLTIP,
   PUBLISHED_READ_ONLY_STATUS,
   PUBLISHED_REQUIRED_SECTION_TITLE,
@@ -27,7 +25,6 @@ import {
   useReadinessNavigation,
 } from '@/components/readiness/ReadinessNavigationContext'
 import { Tooltip } from '@/components/ui/tooltip'
-import { DocDisclosure } from '@/components/shared/DocDisclosure'
 
 interface ReadinessPanelProps {
   contract: DataContract
@@ -69,18 +66,23 @@ function SectionHeaderWithScore({
   )
 }
 
+const CHECK_ROW_GRID =
+  'grid grid-cols-[16px_minmax(0,1fr)_auto] gap-x-2 items-center min-h-[26px] py-1 px-1 -mx-1'
+
 function CheckRow({
   item,
   onNavigate,
-  publishAttempted,
+  accentIncompleteRequired = false,
 }: {
   item: ReadinessGuidanceItem
   onNavigate?: (item: ReadinessGuidanceItem) => void
-  publishAttempted?: boolean
+  /** When true, incomplete required rows get a light orange accent (required section only). */
+  accentIncompleteRequired?: boolean
 }) {
   const { label, ok, variant, badge } = item
   const isRequired = variant === 'required'
   const clickable = Boolean(onNavigate && !ok)
+  const showRequiredAccent = accentIncompleteRequired && isRequired && !ok
 
   const rowInner = (
     <>
@@ -89,33 +91,33 @@ function CheckRow({
           'h-4 w-4 rounded-full flex items-center justify-center flex-shrink-0',
           ok && isRequired && 'bg-[#e8f5e6]',
           ok && !isRequired && 'bg-[#f0f4ff]',
-          !ok && isRequired && 'border border-[#e4e4f0] bg-[#fbfbff]',
-          !ok && !isRequired && 'border border-[#e4e4f0] bg-[#fbfbff]',
+          showRequiredAccent && 'border border-[#f5d9b8] bg-[#fff7ed]',
+          !ok && !showRequiredAccent && 'border border-[#e4e4f0] bg-[#fbfbff]',
         )}
       >
         {ok ? (
           <Check className={cn('h-2.5 w-2.5', isRequired ? 'text-[#047800]' : 'text-[#3a8f38]')} />
-        ) : isRequired ? (
-          <span className="h-1.5 w-1.5 rounded-full bg-[#c4c4d4]" />
+        ) : showRequiredAccent ? (
+          <span className="h-1.5 w-1.5 rounded-full bg-[#e8a86a]" />
         ) : (
           <span className="h-1.5 w-1.5 rounded-full bg-[#d3d3e5]" />
         )}
       </span>
-      <span className="flex-1 min-w-0 text-left">
-        <span
-          className={cn(
-            'block text-xs leading-snug',
-            ok ? 'text-[#33333d]' : 'text-[#656574]',
-          )}
-        >
-          {label}
-        </span>
+      <span
+        className={cn(
+          'min-w-0 text-xs leading-snug text-left',
+          ok ? 'text-[#33333d]' : showRequiredAccent ? 'text-[#7a4e12]' : 'text-[#656574]',
+        )}
+      >
+        {label}
       </span>
       {badge ? (
-        <span className="text-[10px] font-medium text-[#9898a7] tabular-nums flex-shrink-0">
+        <span className="text-[10px] font-medium text-[#9898a7] tabular-nums flex-shrink-0 leading-none">
           {badge}
         </span>
-      ) : null}
+      ) : (
+        <span aria-hidden className="w-0" />
+      )}
     </>
   )
 
@@ -126,9 +128,10 @@ function CheckRow({
           type="button"
           onClick={() => onNavigate!(item)}
           className={cn(
-            'w-full flex items-center gap-2 rounded-md px-1 py-1 -mx-1 text-left transition-colors',
+            'w-full rounded-md text-left transition-colors',
+            CHECK_ROW_GRID,
             'hover:bg-[#f5f5fa] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#0550dc] cursor-pointer',
-            publishAttempted && !ok && isRequired && 'hover:bg-[#fff7ed]/50',
+            showRequiredAccent && 'hover:bg-[#fff7ed]/70',
           )}
         >
           {rowInner}
@@ -137,7 +140,16 @@ function CheckRow({
     )
   }
 
-  return <li className="flex items-center gap-2 px-1 py-0.5">{rowInner}</li>
+  return (
+    <li
+      className={cn(
+        CHECK_ROW_GRID,
+        showRequiredAccent && 'rounded-md bg-[#fff7ed]/35',
+      )}
+    >
+      {rowInner}
+    </li>
+  )
 }
 
 export function ReadinessPanel({
@@ -148,17 +160,6 @@ export function ReadinessPanel({
   onClose,
   docCompact,
 }: ReadinessPanelProps) {
-  const [copied, setCopied] = useState(false)
-
-  const isPublishedViewEarly =
-    contract.info.status === 'active' && !contract.inRevision
-
-  const [yamlOpen, setYamlOpen] = useState(false)
-
-  useEffect(() => {
-    setYamlOpen(false)
-  }, [contract.uid, isPublishedViewEarly])
-
   const readiness = useMemo(
     () => computePublicationReadiness(contract, myRole, hasEditedSincePublish),
     [contract, myRole, hasEditedSincePublish],
@@ -193,16 +194,8 @@ export function ReadinessPanel({
     validationWarnings,
   } = readiness
 
-  const yaml = useMemo(() => generateODCSYaml(contract), [contract])
-
   const isPublishedView =
     contract.info.status === 'active' && !contract.inRevision
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(yaml)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
-  }
 
   const scoreColor =
     healthScore >= 90 ? 'text-[#047800] bg-[#f0ffec] border-emerald-200' :
@@ -217,30 +210,7 @@ export function ReadinessPanel({
   const publishedDense = isPublishedView && docCompact
   const sectionPad = publishedDense ? 'px-2.5 py-1.5' : isPublishedView ? 'px-3 py-2' : 'px-3 py-2.5'
   const panelBorder = isPublishedView ? 'border-[#ebebf0]' : 'border-[#d3d3e5]'
-  const listGap = isPublishedView ? 'space-y-0.5' : 'space-y-0.5'
-
-  const yamlBlock = (
-    <div className="border-t border-[#e4e4f0] mt-1">
-      <div className="px-3 py-2 flex items-center justify-between bg-[#fbfbff]">
-        <span className="text-[10px] font-semibold uppercase tracking-wide text-[#656574]">ODCS v3.1.0</span>
-        <button
-          type="button"
-          onClick={handleCopy}
-          className="flex items-center gap-1 text-[11px] text-[#3f3f4a] hover:text-[#33333d] transition-colors"
-        >
-          {copied ? <Check className="h-3 w-3 text-[#047800]" /> : <Copy className="h-3 w-3" />}
-          {copied ? 'Copied' : 'Copy'}
-        </button>
-      </div>
-      <div className="px-3 py-2 border-b border-[#e4e4f0] bg-white space-y-1">
-        <p className="text-[10px] text-[#656574] leading-snug">{EXPORT_COVERAGE.includedInYaml}</p>
-        <p className="text-[10px] text-[#656574] leading-snug">{EXPORT_COVERAGE.excludedFromYaml}</p>
-      </div>
-      <pre className="text-[10px] font-mono text-[#33333d] px-3 py-3 max-h-56 overflow-y-auto bg-[#fbfbff] leading-4">
-        {yaml}
-      </pre>
-    </div>
-  )
+  const listGap = 'space-y-0'
 
   return (
     <div
@@ -340,7 +310,7 @@ export function ReadinessPanel({
               <CheckRow
                 key={item.key}
                 item={item}
-                publishAttempted={publishAttempted}
+                accentIncompleteRequired
                 onNavigate={nav?.enabled ? handleNavigateItem : undefined}
               />
             ))}
@@ -455,7 +425,6 @@ export function ReadinessPanel({
               <CheckRow
                 key={item.key}
                 item={item}
-                publishAttempted={publishAttempted}
                 onNavigate={nav?.enabled ? handleNavigateItem : undefined}
               />
             ))}
@@ -488,43 +457,6 @@ export function ReadinessPanel({
         ) : null}
       </div>
 
-      <div className={cn('border-t flex-shrink-0', panelBorder)}>
-        {isPublishedView ? (
-          <DocDisclosure
-            className={sectionPad}
-            headerClassName="py-0 hover:bg-transparent"
-            open={yamlOpen}
-            onToggle={() => setYamlOpen(o => !o)}
-            title={
-              <span className="text-left">
-                <span className="block text-xs font-medium text-[#3f3f4a]">Export YAML</span>
-                <span className="block text-[10px] text-[#656574] font-normal leading-snug mt-0.5">
-                  Preview ODCS YAML payload
-                </span>
-              </span>
-            }
-          >
-            {yamlBlock}
-          </DocDisclosure>
-        ) : (
-          <>
-        <button
-          onClick={() => setYamlOpen(o => !o)}
-          className="w-full flex items-center justify-between px-4 py-2.5 text-xs text-[#3f3f4a] hover:bg-[#fbfbff] transition-colors"
-        >
-          <span className="text-left">
-            <span className="block font-medium">Export YAML</span>
-            <span className="block text-[10px] text-[#656574] font-normal leading-snug mt-0.5">
-              Preview ODCS YAML payload
-            </span>
-          </span>
-          {yamlOpen ? <ChevronUp className="h-3.5 w-3.5 flex-shrink-0" /> : <ChevronDown className="h-3.5 w-3.5 flex-shrink-0" />}
-        </button>
-
-        {yamlOpen && yamlBlock}
-          </>
-        )}
-      </div>
     </div>
   )
 }
