@@ -1,5 +1,5 @@
 /**
- * Exhaustive P1 compliance — one assertion per line in p1.md (54 rows).
+ * Exhaustive P1 compliance — one assertion per line in odcs-p1-reference.md (55 rows).
  * Fails if a major P1 field disappears from model, YAML export, or validation.
  */
 import { describe, expect, it } from 'vitest'
@@ -14,6 +14,7 @@ import {
   QUALITY_DIMENSIONS,
   SHARED_AUTH_DEF_TYPES,
   SLA_DRIVERS,
+  SLA_PROPERTY_TYPES,
   SLA_UNITS,
   ZEENEA_AUTH_DEF_TYPE,
 } from '@/lib/p1Constants'
@@ -22,6 +23,7 @@ import {
   isValidZeeneaAuthDef,
   isValidQualityDimension,
   isValidSlaDriver,
+  isValidSlaPropertyType,
   isValidSlaUnit,
   isValidCustomPropertyName,
   isValidLifecycleStatus,
@@ -47,7 +49,7 @@ function schemaProperty(table: Record<string, unknown>, propId: string) {
   return props.find(p => p.id === propId) as Record<string, unknown>
 }
 
-describe('P1 compliance — 54 lines (p1.md)', () => {
+describe('P1 compliance — 55 lines (odcs-p1-reference)', () => {
   const contract = buildP1FixtureContract()
   const doc = buildOdcsDocument(contract) as Record<string, unknown>
   const validation = validateContract(contract, [contract])
@@ -187,26 +189,37 @@ describe('P1 compliance — 54 lines (p1.md)', () => {
       },
     },
 
-    // SLA (lines 32–36)
-    { line: 32, tab: 'Schema Reference', section: 'SLA', path: 'slaProperties[].value', run: () => expect(sla.value).toBe('4') },
-    { line: 33, tab: 'Schema Reference', section: 'SLA', path: 'slaProperties[].unit', run: () => { expect(sla.unit).toBe('h'); expect(isValidSlaUnit('h')).toBe(true) } },
-    { line: 34, tab: 'Schema Reference', section: 'SLA', path: 'slaProperties[].element', run: () => expect(sla.element).toBe('orders.TXN_REF_DT') },
-    { line: 35, tab: 'Schema Reference', section: 'SLA', path: 'slaProperties[].driver', run: () => { expect(sla.driver).toBe('regulatory'); expect(SLA_DRIVERS).toContain('regulatory') } },
-    { line: 36, tab: 'Schema Reference', section: 'SLA', path: 'slaProperties[].description', run: () => expect(sla.description).toBeTruthy() },
-
-    // Roles (lines 37–40)
-    { line: 37, tab: 'Schema Reference', section: 'Roles', path: 'roles', run: () => expect(doc.roles).toHaveLength(1) },
-    { line: 38, tab: 'Schema Reference', section: 'Roles', path: 'roles[].role', run: () => expect(role.role).toBe('microstrategy_user_opr') },
-    { line: 39, tab: 'Schema Reference', section: 'Roles', path: 'roles[].access', run: () => expect(role.access).toBe('read') },
-    { line: 40, tab: 'Schema Reference', section: 'Roles', path: 'roles[].description', run: () => expect(role.description).toBeTruthy() },
-
-    // Shared Components (lines 61–74)
-    { line: 61, tab: 'Shared Components', section: 'Quality rule', path: '[].id', run: () => expect(propQuality.id).toBe('order_id_no_nulls') },
-    { line: 62, tab: 'Shared Components', section: 'Quality rule', path: '[].name', run: () => expect(propQuality.name).toBe('No nulls') },
-    { line: 63, tab: 'Shared Components', section: 'Quality rule', path: '[].description', run: () => expect(propQuality.description).toBeTruthy() },
-    { line: 64, tab: 'Shared Components', section: 'Quality rule', path: '[].type', run: () => expect(propQuality.type).toBe('text') },
+    // SLA (lines 32–37)
     {
-      line: 65,
+      line: 32,
+      tab: 'Schema Reference',
+      section: 'SLA',
+      path: 'slaProperties[].property',
+      run: () => {
+        expect(sla.property).toBe('latency')
+        expect(SLA_PROPERTY_TYPES).toContain('latency')
+        expect(isValidSlaPropertyType('latency')).toBe(true)
+      },
+    },
+    { line: 33, tab: 'Schema Reference', section: 'SLA', path: 'slaProperties[].value', run: () => expect(sla.value).toBe('4') },
+    { line: 34, tab: 'Schema Reference', section: 'SLA', path: 'slaProperties[].unit', run: () => { expect(sla.unit).toBe('h'); expect(isValidSlaUnit('h')).toBe(true) } },
+    { line: 35, tab: 'Schema Reference', section: 'SLA', path: 'slaProperties[].element', run: () => expect(sla.element).toBe('orders.TXN_REF_DT') },
+    { line: 36, tab: 'Schema Reference', section: 'SLA', path: 'slaProperties[].driver', run: () => { expect(sla.driver).toBe('regulatory'); expect(SLA_DRIVERS).toContain('regulatory') } },
+    { line: 37, tab: 'Schema Reference', section: 'SLA', path: 'slaProperties[].description', run: () => expect(sla.description).toBeTruthy() },
+
+    // Roles (lines 38–41)
+    { line: 38, tab: 'Schema Reference', section: 'Roles', path: 'roles', run: () => expect(doc.roles).toHaveLength(1) },
+    { line: 39, tab: 'Schema Reference', section: 'Roles', path: 'roles[].role', run: () => expect(role.role).toBe('microstrategy_user_opr') },
+    { line: 40, tab: 'Schema Reference', section: 'Roles', path: 'roles[].access', run: () => expect(role.access).toBe('read') },
+    { line: 41, tab: 'Schema Reference', section: 'Roles', path: 'roles[].description', run: () => expect(role.description).toBeTruthy() },
+
+    // Shared Components (lines 62–75)
+    { line: 62, tab: 'Shared Components', section: 'Quality rule', path: '[].id', run: () => expect(propQuality.id).toBe('order_id_no_nulls') },
+    { line: 63, tab: 'Shared Components', section: 'Quality rule', path: '[].name', run: () => expect(propQuality.name).toBe('No nulls') },
+    { line: 64, tab: 'Shared Components', section: 'Quality rule', path: '[].description', run: () => expect(propQuality.description).toBeTruthy() },
+    { line: 65, tab: 'Shared Components', section: 'Quality rule', path: '[].type', run: () => expect(propQuality.type).toBe('text') },
+    {
+      line: 66,
       tab: 'Shared Components',
       section: 'Quality rule',
       path: '[].dimension',
@@ -216,11 +229,11 @@ describe('P1 compliance — 54 lines (p1.md)', () => {
         expect(isValidQualityDimension('completeness')).toBe(true)
       },
     },
-    { line: 66, tab: 'Shared Components', section: 'Quality rule', path: '[].severity', run: () => expect(propQuality.severity).toBe('high') },
-    { line: 67, tab: 'Shared Components', section: 'Quality rule', path: '[].businessImpact', run: () => expect(propQuality.businessImpact).toBeTruthy() },
-    { line: 68, tab: 'Shared Components', section: 'Authoritative definition', path: '[].url', run: () => expect(fundAuth.url).toBeTruthy() },
+    { line: 67, tab: 'Shared Components', section: 'Quality rule', path: '[].severity', run: () => expect(propQuality.severity).toBe('high') },
+    { line: 68, tab: 'Shared Components', section: 'Quality rule', path: '[].businessImpact', run: () => expect(propQuality.businessImpact).toBeTruthy() },
+    { line: 69, tab: 'Shared Components', section: 'Authoritative definition', path: '[].url', run: () => expect(fundAuth.url).toBeTruthy() },
     {
-      line: 69,
+      line: 70,
       tab: 'Shared Components',
       section: 'Authoritative definition',
       path: '[].type',
@@ -229,15 +242,15 @@ describe('P1 compliance — 54 lines (p1.md)', () => {
         expect(ZEENEA_AUTH_DEF_TYPE).toBe('actian')
       },
     },
-    { line: 70, tab: 'Shared Components', section: 'Authoritative definition', path: '[].description', run: () => expect(fundAuth.description).toBeTruthy() },
-    { line: 71, tab: 'Shared Components', section: 'Custom property', path: '[].property', run: () => { expect(custom.property).toBe('dataSteward'); expect(isValidCustomPropertyName('dataSteward')).toBe(true) } },
-    { line: 72, tab: 'Shared Components', section: 'Custom property', path: '[].value', run: () => expect(custom.value).toBeTruthy() },
-    { line: 73, tab: 'Shared Components', section: 'Custom property', path: '[].description', run: () => expect(custom.description).toBeTruthy() },
-    { line: 74, tab: 'Shared Components', section: 'Tag', path: '[]', run: () => expect(doc.tags).toContain('finance') },
+    { line: 71, tab: 'Shared Components', section: 'Authoritative definition', path: '[].description', run: () => expect(fundAuth.description).toBeTruthy() },
+    { line: 72, tab: 'Shared Components', section: 'Custom property', path: '[].property', run: () => { expect(custom.property).toBe('dataSteward'); expect(isValidCustomPropertyName('dataSteward')).toBe(true) } },
+    { line: 73, tab: 'Shared Components', section: 'Custom property', path: '[].value', run: () => expect(custom.value).toBeTruthy() },
+    { line: 74, tab: 'Shared Components', section: 'Custom property', path: '[].description', run: () => expect(custom.description).toBeTruthy() },
+    { line: 75, tab: 'Shared Components', section: 'Tag', path: '[]', run: () => expect(doc.tags).toContain('finance') },
   ]
 
-  it('defines exactly 54 P1 rows', () => {
-    expect(rows).toHaveLength(54)
+  it('defines exactly 55 P1 rows', () => {
+    expect(rows).toHaveLength(55)
   })
 
   rows.forEach(({ line, tab, section, path, run }) => {

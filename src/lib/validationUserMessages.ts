@@ -14,6 +14,10 @@ const USER_MESSAGES: Partial<Record<ValidationIssue['code'], string>> = {
     'Review and confirm table quality rules before publishing.',
   'sla-element-invalid':
     'Link the SLA to a field using Table.field, for example orders.createdAt. Separate multiple fields with commas.',
+  'sla-property-required':
+    'Choose an SLA type (for example latency or retention) for each service level row.',
+  'sla-property-invalid':
+    'SLA type must be one of the supported ODCS values (latency, retention, frequency, etc.).',
 
   // C2
   'id-format':

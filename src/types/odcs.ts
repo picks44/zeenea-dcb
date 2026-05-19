@@ -1,5 +1,5 @@
 import type { AuthoritativeDefinition, CustomProperty } from './odcsShared'
-import type { OdcsLifecycleStatus } from '@/lib/p1Constants'
+import type { OdcsLifecycleStatus, SlaPropertyType } from '@/lib/p1Constants'
 import type { QualityDimension } from '@/lib/p1Constants'
 
 export type { AuthoritativeDefinition, CustomProperty } from './odcsShared'
@@ -33,7 +33,7 @@ export type SectionId =
   | 'collaboration'
   | 'tests'
 
-export type { QualityDimension }
+export type { QualityDimension, SlaPropertyType }
 
 export interface QualityRule {
   id: string
@@ -147,6 +147,8 @@ export interface OdcsAccessRole {
 
 export interface SlaProperty {
   id: string
+  /** ODCS SLA type; required at publish when the row has any content. */
+  property?: SlaPropertyType
   value: string
   unit?: string
   element?: string

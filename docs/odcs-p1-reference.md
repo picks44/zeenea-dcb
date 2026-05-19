@@ -8,21 +8,21 @@ Annexe normative — priorités P1 ODCS v3.1.0 pour le prototype Data Contract B
 
 Source : `odcs-v3.1.0-schema-reference.xlsx`
 
-Total extrait : 54 lignes P1.
+Total extrait : 55 lignes P1.
 Règle d’extraction : lignes dont la colonne `Priority` est strictement égale à `P1`, sur les deux onglets du fichier Excel.
 
 ## Onglet `Schema Reference`
 
-Nombre de lignes P1 extraites : 40
+Nombre de lignes P1 extraites : 41
 
 | Priority | Section | Required | Property Path | Description | Comment for MVP | Examples / Valid Values |
 | --- | --- | --- | --- | --- | --- | --- |
 | P1 | Fundamentals | Yes | apiVersion | Version of the ODCS standard used to build this data contract. Default is v3.1.0. | Hard coded to 3.1.0 | v3.1.0 |
 | P1 | Fundamentals | Yes | kind | The kind of file this is. Only valid value is DataContract. | Hard coded to DataContract | DataContract |
-| P1 | Fundamentals | Yes | id | Unique identifier used to reduce the risk of contract name collisions (e.g. a UUID). | Derived from Name. Lower case, no special characters, ASCII. Check unicity in the registry | 53581432-6c55-4ba2-a65f-72344a91553a |
+| P1 | Fundamentals | Yes | id | Unique identifier used to reduce the risk of contract name collisions (e.g. a UUID). | MVP: hybrid id `{slug}-{8hex}` derived from contract name (slug) + stable suffix from contract `uid` (not a pure UUID). Lowercase ASCII slug, no special characters. Uniqueness checked in the local registry at publish. | `seller-payments-v1-a3f91c2b` |
 | P1 | Fundamentals | Yes | version | Current version of the data contract. | Managed by the system (see spec) | 1.1.0 |
 | P1 | Fundamentals | Yes | status | Current lifecycle status of the data contract. | Managed by the system (see spec) | proposed, draft, active, deprecated, retired |
-| P1 | Fundamentals | No | name | Name of the data contract. |  | seller_payments_v1 |
+| P1 | Fundamentals | No | name | Name of the data contract. | ODCS optional; **required by product rules to publish** in this prototype. | seller_payments_v1 |
 | P1 | Fundamentals | No | domain | Name of the logical data domain. |  | seller |
 | P1 | Fundamentals | No | description | Object containing human-readable descriptions. |  | — |
 | P1 | Fundamentals | No | description.purpose | Intended purpose for the provided data. |  | Views built on top of seller tables. |
@@ -48,6 +48,7 @@ Nombre de lignes P1 extraites : 40
 | P1 | Schema | No | schema[].properties[].relationships | Foreign key relationships to other properties. The from field is implicit at property level. |  | type: foreignKey, to: /schema/orders/properties/id |
 | P1 | Schema | No | schema[].properties[].tags | Tags for categorizing the property. |  | → tags[] |
 | P1 | Schema | No | schema[].properties[].authoritativeDefinitions | Links to authoritative sources for the property. | Only supports links to items managed in Zeenea (type: actian) | → authoritativeDefinitions[] |
+| P1 | SLA | Yes | slaProperties[].property | Specific SLA property type (Data QoS). | ODCS v3.1.0 strict | latency, retention, frequency, availability, throughput, errorRate, generalAvailability, endOfSupport, endOfLife, timeOfAvailability, timeToDetect, timeToNotify, timeToRepair |
 | P1 | SLA | Yes | slaProperties[].value | The agreed SLA value. |  | 4, 2022-05-12T09:30:10-08:00, 09:00-08:00 |
 | P1 | SLA | No | slaProperties[].unit | Unit for the SLA value (ISO standard). |  | d / day / days, y / yr / years, h / hr / hours |
 | P1 | SLA | No | slaProperties[].element | Element path to apply the SLA on, using Object.Property notation. Comma-separate multiples. |  | tab1.txn_ref_dt |

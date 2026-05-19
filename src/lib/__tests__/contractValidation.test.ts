@@ -9,11 +9,25 @@ describe('validateContract P1', () => {
     expect(result.canPublish).toBe(true)
   })
 
-  it('requires sla value only (not property)', () => {
+  it('requires sla property when row has other fields', () => {
     const c = buildP1FixtureContract()
-    c.slaProperties = [{ id: 'x', value: '', unit: 'h' }]
+    c.slaProperties = [{ id: 'x', value: '4', unit: 'h' }]
+    const result = validateContract(c, [c])
+    expect(result.errors.some(e => e.code === 'sla-property-required')).toBe(true)
+  })
+
+  it('requires sla value when property is set', () => {
+    const c = buildP1FixtureContract()
+    c.slaProperties = [{ id: 'x', property: 'latency', value: '', unit: 'h' }]
     const result = validateContract(c, [c])
     expect(result.errors.some(e => e.code === 'sla-value-required')).toBe(true)
+  })
+
+  it('rejects invalid sla property type', () => {
+    const c = buildP1FixtureContract()
+    c.slaProperties = [{ id: 'x', property: 'ly' as never, value: '4' }]
+    const result = validateContract(c, [c])
+    expect(result.errors.some(e => e.code === 'sla-property-invalid')).toBe(true)
   })
 
   it('requires roles[].role when row present', () => {

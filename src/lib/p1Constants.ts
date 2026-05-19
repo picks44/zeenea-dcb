@@ -76,6 +76,41 @@ export const SLA_DRIVERS = ['regulatory', 'analytics', 'operational'] as const
 
 export type SlaDriver = (typeof SLA_DRIVERS)[number]
 
+/** ODCS v3.1.0 Data QoS SLA property types (case-sensitive). */
+export const SLA_PROPERTY_TYPES = [
+  'latency',
+  'retention',
+  'frequency',
+  'availability',
+  'throughput',
+  'errorRate',
+  'generalAvailability',
+  'endOfSupport',
+  'endOfLife',
+  'timeOfAvailability',
+  'timeToDetect',
+  'timeToNotify',
+  'timeToRepair',
+] as const
+
+export type SlaPropertyType = (typeof SLA_PROPERTY_TYPES)[number]
+
+export const SLA_PROPERTY_LABELS: Record<SlaPropertyType, string> = {
+  latency: 'Latency',
+  retention: 'Retention',
+  frequency: 'Frequency',
+  availability: 'Availability',
+  throughput: 'Throughput',
+  errorRate: 'Error rate',
+  generalAvailability: 'General availability',
+  endOfSupport: 'End of support',
+  endOfLife: 'End of life',
+  timeOfAvailability: 'Time of availability',
+  timeToDetect: 'Time to detect',
+  timeToNotify: 'Time to notify',
+  timeToRepair: 'Time to repair',
+}
+
 export const CONTRACT_ID_REGEX = /^[a-z0-9]+(-[a-z0-9]+)*$/
 
 export const CUSTOM_PROPERTY_REGEX = /^[a-z][a-zA-Z0-9]*$/

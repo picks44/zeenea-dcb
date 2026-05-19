@@ -1,9 +1,10 @@
 import { SlaProperty } from '@/types/odcs'
 import { GovernanceDocList } from '@/components/shared/GovernanceDocList'
 import { DOC_COMPACT_ROW } from '@/components/shared/docViewTokens'
+import { SLA_PROPERTY_LABELS } from '@/lib/p1Constants'
 import { cn } from '@/lib/utils'
 
-function formatInlineValue(row: SlaProperty): string {
+function formatValueDetail(row: SlaProperty): string {
   const value = row.value.trim() || '—'
   const unit = (row.unit ?? '').trim()
   const main = unit ? `${value} ${unit}` : value
@@ -14,13 +15,14 @@ function formatInlineValue(row: SlaProperty): string {
 }
 
 function slaLabel(row: SlaProperty): string {
+  if (row.property) return SLA_PROPERTY_LABELS[row.property]
   const el = (row.element ?? '').trim()
   return el || `Value: ${row.value}` || 'SLA'
 }
 
 function SlaInlineRow({ row, compact }: { row: SlaProperty; compact?: boolean }) {
   const label = slaLabel(row)
-  const detail = formatInlineValue(row)
+  const detail = formatValueDetail(row)
 
   return (
     <div className={cn(compact ? DOC_COMPACT_ROW : 'px-3 py-2', 'text-xs leading-snug')}>

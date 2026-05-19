@@ -34,6 +34,7 @@ import {
   isValidRoleAccess,
   isValidSlaDriver,
   isValidSlaElement,
+  isValidSlaPropertyType,
   isValidSlaUnit,
   isValidZeeneaAuthDef,
   qualityRuleNeedsDimension,
@@ -410,6 +411,21 @@ export function validateContract(
 
   for (const row of contract.slaProperties ?? []) {
     if (isSlaRowEmpty(row)) continue
+    if (!row.property) {
+      issues.push({
+        code: 'sla-property-required',
+        message: 'Each SLA row needs a property type (for example latency or retention).',
+        severity: 'error',
+        section: 'sla',
+      })
+    } else if (!isValidSlaPropertyType(row.property)) {
+      issues.push({
+        code: 'sla-property-invalid',
+        message: 'SLA property type must be one of the supported ODCS values.',
+        severity: 'error',
+        section: 'sla',
+      })
+    }
     if (!row.value?.trim()) {
       issues.push({
         code: 'sla-value-required',

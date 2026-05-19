@@ -46,7 +46,7 @@ Current prototype characteristics:
 | `src/App.tsx` | Global state, views, lifecycle orchestration, permissions |
 | `docs/product-documentation.md` | Product and functional documentation (source of truth) |
 | `docs/technical-notes.md` | Developer technical notes |
-| `docs/odcs-p1-reference.md` | ODCS P1 field reference (54 lines) |
+| `docs/odcs-p1-reference.md` | ODCS P1 field reference (55 lines) |
 | `README.md` | Project portal and quick start |
 
 ## Contract creation flow
@@ -125,8 +125,11 @@ Rules:
 - Lowercase ASCII.
 - No special characters except hyphens.
 - 8-hex suffix is stable, based on `uid` when available.
-- ID must remain unique in the local registry.
+- ID must remain unique in the local registry (checked at publish via `validateContract`).
 - Do not reintroduce slug-only contract IDs.
+- This is not a pure UUID; the Excel P1 example UUID is illustrative only.
+
+**Contract name (`name` in YAML):** optional in ODCS P1 but required by product publish validation (`title` in `ContractInfo`).
 
 Table and property IDs must remain stable and should use the existing ID helpers.
 
@@ -135,7 +138,7 @@ Table and property IDs must remain stable and should use the existing ID helpers
 - YAML export must remain aligned with ODCS v3.1.0 and the P1 reference implemented in the codebase.
 - `apiVersion` and `kind` are fixed by the generator.
 - `creationSource`, collaborators, app-only governance state, UI state and lifecycle helpers must not be exported unless explicitly required.
-- `slaProperties[].property` must not be reintroduced.
+- `slaProperties[].property` is required when an SLA row has any content; must be one of the 13 ODCS Data QoS types and exported in YAML.
 - `dataProduct` must not be reintroduced to the current export.
 - Relationships and foreign keys must go through `relationshipExport.ts`.
 - Any model change must update:

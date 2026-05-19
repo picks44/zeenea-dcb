@@ -19,9 +19,9 @@ import {
   SLA_SECTION_INTRO,
 } from '@/lib/uxCopy'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { SlaProperty } from '@/types/odcs'
+import { SlaProperty, SlaPropertyType } from '@/types/odcs'
 import { generateId } from '@/lib/utils'
-import { SLA_DRIVERS, SLA_UNITS } from '@/lib/p1Constants'
+import { SLA_DRIVERS, SLA_PROPERTY_LABELS, SLA_PROPERTY_TYPES, SLA_UNITS } from '@/lib/p1Constants'
 
 const SLA_CELL = 'px-2 py-1.5 align-middle'
 const SLA_INPUT = 'h-8 text-xs w-full'
@@ -38,11 +38,19 @@ function makeSla(): SlaProperty {
   return { id: generateId(), value: '', unit: '', element: '', driver: '', description: '' }
 }
 
+function slaPropertyDisplay(property?: SlaPropertyType): string {
+  if (!property) return ''
+  return SLA_PROPERTY_LABELS[property]
+}
+
 const thClass = `${governanceTableHeadClass} text-left px-2 py-2 font-semibold`
 
 function SlaReadOnlyRow({ row }: { row: SlaProperty }) {
   return (
     <>
+      <td className={SLA_CELL}>
+        <GovernanceReadOnlyCell value={slaPropertyDisplay(row.property) || '—'} />
+      </td>
       <td className={SLA_CELL}><GovernanceReadOnlyCell value={row.value} /></td>
       <td className={SLA_CELL}><GovernanceReadOnlyCell value={row.unit ?? ''} /></td>
       <td className={SLA_CELL}><GovernanceReadOnlyCell value={row.element ?? ''} mono /></td>
@@ -79,8 +87,9 @@ export function SlaSection({ slaProperties, onChange, isLocked, isPublishedView,
         <SlaCompactList rows={slaProperties} compact={docCompact} />
       ) : (
         <div className={`${governanceTableShellClass} overflow-x-auto`}>
-          <table className="w-full text-xs border-collapse table-fixed min-w-[640px]">
+          <table className="w-full text-xs border-collapse table-fixed min-w-[760px]">
             <colgroup>
+              <col className="w-[120px]" />
               <col className="w-[88px]" />
               <col className="w-[72px]" />
               <col className="w-[140px]" />
@@ -90,6 +99,7 @@ export function SlaSection({ slaProperties, onChange, isLocked, isPublishedView,
             </colgroup>
             <thead>
               <tr className={governanceTableHeadRowClass}>
+                <th className={thClass}>Type *</th>
                 <th className={thClass}>Value *</th>
                 <th className={thClass}>Unit</th>
                 <th className={thClass}>Element</th>
@@ -110,6 +120,23 @@ export function SlaSection({ slaProperties, onChange, isLocked, isPublishedView,
 
                 return (
                   <tr key={row.id}>
+                    <td className={SLA_CELL}>
+                      <Select
+                        value={row.property ?? undefined}
+                        onValueChange={v => update(row.id, { property: v as SlaPropertyType })}
+                      >
+                        <SelectTrigger className={SLA_INPUT}>
+                          <SelectValue placeholder="Type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {SLA_PROPERTY_TYPES.map(p => (
+                            <SelectItem key={p} value={p} className="text-xs">
+                              {SLA_PROPERTY_LABELS[p]}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </td>
                     <td className={SLA_CELL}>
                       <Input
                         value={row.value}

@@ -175,6 +175,7 @@ export function buildOdcsDocument(contract: DataContract): Record<string, unknow
   if (sla.length > 0) {
     doc.slaProperties = sla.map(s => {
       const entry: Record<string, unknown> = {
+        property: s.property,
         value: s.value,
       }
       if (s.unit?.trim()) entry.unit = s.unit.trim()

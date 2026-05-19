@@ -132,6 +132,7 @@ export function buildP1FixtureContract(): DataContract {
     }],
     slaProperties: [{
       id: 'sla1',
+      property: 'latency',
       value: '4',
       unit: 'h',
       element: 'orders.TXN_REF_DT',

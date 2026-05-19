@@ -4,7 +4,7 @@ Documentation fonctionnelle et métier du prototype **Data Contract Builder**. E
 
 **Annexes :**
 
-- [Référence ODCS P1](./odcs-p1-reference.md) — 54 champs prioritaires
+- [Référence ODCS P1](./odcs-p1-reference.md) — 55 champs prioritaires
 - [Notes techniques développeurs](./technical-notes.md) — persistance, tests, architecture code
 
 ---
@@ -81,7 +81,7 @@ Toute mention de « publication » ou « Git » dans l’interface désigne un *
 ### 1.4 Relation avec ODCS v3.1.0 et le fichier YAML
 
 - Le contrat exporté respecte **ODCS v3.1.0** (`apiVersion: v3.1.0`, `kind: DataContract`).
-- L’application couvre les **54 propriétés P1** listées dans [l’annexe référence](./odcs-p1-reference.md).
+- L’application couvre les **55 propriétés P1** listées dans [l’annexe référence](./odcs-p1-reference.md).
 - Le **fichier YAML** est la livraison destinée au dépôt Git ; l’application conserve en plus des informations **non exportées** (owner, contacts, collaborateurs, historique).
 
 ### 1.5 Comment lire ce document
@@ -517,12 +517,16 @@ Tant que le contrat est **proposed**, l’utilisateur peut coller un nouveau scr
 
 ### 8.1 Fundamentals
 
+Un bloc **ODCS metadata** (lecture seule) affiche dans Fundamentals les champs système exportés : `apiVersion`, `kind`, `status`, `id`, `version`.
+
 | Élément | Éditable | Export YAML | Notes |
 |---------|----------|-------------|-------|
-| Contract name | Oui | `name` | Requis pour publier |
-| Contract identifier | Affiché (dérivé du nom) | `id` | Format : slug + suffixe stable ; unicité dans le backlog local |
-| Version | Affichée | `version` | SemVer ; bump à la publication (sauf 1ère fois) |
-| Status | Système | `status` | Lifecycle |
+| apiVersion | Non (système) | `apiVersion` | Toujours `v3.1.0` |
+| kind | Non (système) | `kind` | Toujours `DataContract` |
+| Contract name | Oui | `name` | Optionnel ODCS ; **requis côté produit pour publier** |
+| Contract identifier | Affiché (dérivé du nom) | `id` | Format MVP : `{slug}-{8hex}` — slug lowercase ASCII dérivé du nom, suffixe stable basé sur le `uid` du contrat (pas un UUID pur) ; unicité vérifiée dans le registre local à la publication |
+| Version | Affichée (système) | `version` | SemVer ; bump à la publication (sauf 1ère fois) |
+| Status | Système | `status` | Lifecycle (`proposed`, `draft`, `active`, `deprecated`, `retired`) |
 | Domain | Oui | Si renseigné | Recommandé readiness |
 | Business purpose, contexte | Oui | `description.*` | Purpose recommandé |
 | Tags | Oui | `tags` | Libre |
@@ -571,8 +575,11 @@ Les tables référencées doivent exister dans le même contrat pour un export c
 
 | Champ | Obligatoire si ligne présente |
 |-------|------------------------------|
+| Property (type SLA) | Oui |
 | Value | Oui |
 | Unit, element, driver, description | Optionnels (valeurs contrôlées pour unit et driver) |
+
+Types **property** autorisés (ODCS v3.1.0) : `latency`, `retention`, `frequency`, `availability`, `throughput`, `errorRate`, `generalAvailability`, `endOfSupport`, `endOfLife`, `timeOfAvailability`, `timeToDetect`, `timeToNotify`, `timeToRepair`.
 
 Format **element** : `Table.field`, plusieurs champs séparés par des virgules.
 
@@ -646,6 +653,8 @@ Affiché lorsque le contenu est identique au dernier snapshot publié : inciter 
 
 **SLA et accès**
 
+- SLA property type required when row present
+- SLA property type must be a supported ODCS value
 - SLA value required when row present
 - Supported time unit and driver
 - SLA element format : `Table.field`
@@ -766,7 +775,8 @@ roles:
   - role: microstrategy_user_opr
     access: read
 slaProperties:
-  - value: "4"
+  - property: latency
+    value: "4"
     unit: h
     element: orders.TXN_REF_DT
     driver: regulatory
@@ -774,7 +784,7 @@ slaProperties:
 
 ### 11.5 Périmètre P1
 
-Voir [Référence ODCS P1](./odcs-p1-reference.md) pour la liste exhaustive des 54 propriétés prioritaires et commentaires MVP.
+Voir [Référence ODCS P1](./odcs-p1-reference.md) pour la liste exhaustive des 55 propriétés prioritaires et commentaires MVP.
 
 ### 11.6 Hors scope MVP (sections ODCS non exposées)
 

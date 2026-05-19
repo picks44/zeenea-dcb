@@ -56,13 +56,15 @@ describe('buildOdcsDocument P1 export', () => {
     expect(nonPk.primaryKeyPosition).toBe(NOT_PRIMARY_KEY_POSITION)
   })
 
-  it('exports slaProperties without legacy property field', () => {
+  it('exports slaProperties with property first', () => {
     const sla = doc.slaProperties as Record<string, unknown>[]
+    expect(sla[0].property).toBe('latency')
     expect(sla[0].value).toBe('4')
     expect(sla[0].unit).toBe('h')
     expect(sla[0].element).toBe('orders.TXN_REF_DT')
     expect(sla[0].driver).toBe('regulatory')
-    expect(sla[0].property).toBeUndefined()
+    expect(Object.keys(sla[0])[0]).toBe('property')
+    expect(Object.keys(sla[0])[1]).toBe('value')
   })
 
   it('exports roles', () => {

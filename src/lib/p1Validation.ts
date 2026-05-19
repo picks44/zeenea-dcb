@@ -7,6 +7,7 @@ import {
   QUALITY_DIMENSIONS,
   SLA_DRIVERS,
   SLA_ELEMENT_SEGMENT_REGEX,
+  SLA_PROPERTY_TYPES,
   SLA_UNITS,
   ZEENEA_AUTH_DEF_TYPE,
   ZEENEA_ACTIAN_URL_PATTERN,
@@ -65,6 +66,10 @@ export function isValidSlaDriver(driver: string): boolean {
   return (SLA_DRIVERS as readonly string[]).includes(driver.trim())
 }
 
+export function isValidSlaPropertyType(property: string): boolean {
+  return (SLA_PROPERTY_TYPES as readonly string[]).includes(property.trim())
+}
+
 export function isValidSlaElement(element: string): boolean {
   const parts = element.split(',').map(p => p.trim()).filter(Boolean)
   if (parts.length === 0) return false
@@ -116,7 +121,8 @@ export function isValidArrayItems(col: ColumnDefinition): boolean {
 
 export function slaRowHasContent(row: SlaProperty): boolean {
   return Boolean(
-    row.value?.trim()
+    row.property
+    || row.value?.trim()
     || row.unit?.trim()
     || row.element?.trim()
     || row.driver?.trim()

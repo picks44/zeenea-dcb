@@ -111,13 +111,28 @@ App.tsx               →  orchestration + persistance
 | Migration | Détail |
 |-----------|--------|
 | Lifecycle status | Normalisation 5 statuts P1 |
-| Contract `id` | Slug-only legacy → `{slug}-{suffixe-8-hex}` |
-| SLA | Suppression champ legacy `property` |
+| Contract `id` | Slug-only legacy → `{slug}-{suffixe-8-hex}` ; voir [ID hybride P1](#id-hybride-p1) |
+| SLA | Préservation et validation de `slaProperties[].property` (13 types ODCS) |
 | Schema / property ids | `stableSchemaId` / `stablePropertyId` |
 | Quality | `type: text`, `aiVerified`, migration `qualityRule` → `quality[]` |
 | Git commits | `migrateGitCommit` |
 
 **Risques :** pas de versioning explicite du schéma de stockage ; unicité `id` locale ; `saveContracts` échoue silencieusement si quota dépassé.
+
+### ID hybride P1
+
+Le prototype n’utilise pas un UUID ODCS pur pour `id`. Format attendu :
+
+```text
+{slug}-{8hex}
+```
+
+- **slug** : dérivé du nom du contrat (`info.title` → export YAML `name`) — lowercase, ASCII, sans caractères spéciaux (accents retirés).
+- **suffixe 8 hex** : stable, dérivé du `uid` du contrat (ou du nom si seed absent) via `contractIdSuffix` / `deriveContractId` (`src/lib/idDerivation.ts`).
+- **Unicité** : `isDuplicateContractId` dans `validateContract` à la publication (registre `localStorage`).
+- **UI** : bloc read-only « ODCS metadata » dans Fundamentals ; l’`id` n’est pas éditable librement.
+
+`name` (ODCS) est optionnel dans la spec P1 mais **requis côté produit** pour publier (`contractValidation` code `title`) — la validation n’a pas été assouplie dans ce prototype.
 
 ---
 
@@ -127,7 +142,7 @@ App.tsx               →  orchestration + persistance
 
 | Fichier | Rôle |
 |---------|------|
-| `p1-compliance.test.ts` | 54 lignes P1 + golden YAML |
+| `p1-compliance.test.ts` | 55 lignes P1 + golden YAML |
 | `createContract.test.ts` | Création, bannières proposed |
 | `contractLifecycle.test.ts` | Transitions, lock, import |
 | `contractValidation.test.ts` | Validation publish |

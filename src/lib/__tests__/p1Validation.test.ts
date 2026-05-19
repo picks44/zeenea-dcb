@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   FUNDAMENTALS_AUTH_DEF_TYPES,
   QUALITY_DIMENSIONS,
+  SLA_PROPERTY_TYPES,
   SLA_UNITS,
 } from '@/lib/p1Constants'
 import {
@@ -11,6 +12,7 @@ import {
   isValidRoleAccess,
   isValidSlaDriver,
   isValidSlaElement,
+  isValidSlaPropertyType,
   isValidSlaUnit,
   isValidCustomPropertyName,
   isValidZeeneaAuthDef,
@@ -24,6 +26,16 @@ describe('p1Validation enums', () => {
   it('rejects unknown SLA units', () => {
     expect(isValidSlaUnit('weeks')).toBe(false)
     expect(isValidSlaUnit('')).toBe(false)
+  })
+
+  it.each(SLA_PROPERTY_TYPES)('accepts SLA property type "%s" from ODCS', property => {
+    expect(isValidSlaPropertyType(property)).toBe(true)
+  })
+
+  it('rejects unknown SLA property types', () => {
+    expect(isValidSlaPropertyType('')).toBe(false)
+    expect(isValidSlaPropertyType('ly')).toBe(false)
+    expect(isValidSlaPropertyType('latencyX')).toBe(false)
   })
 
   it.each(QUALITY_DIMENSIONS)('accepts quality dimension "%s" from p1', dimension => {

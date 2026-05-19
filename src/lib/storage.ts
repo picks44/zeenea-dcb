@@ -1,6 +1,7 @@
 import { DataContract, ColumnDefinition, DataContractSnapshot, SchemaTable, Stakeholder, SlaProperty } from '@/types/odcs'
 import type { AuthoritativeDefinition, CustomProperty } from '@/types/odcsShared'
-import { LIFECYCLE_STATUSES } from '@/lib/p1Constants'
+import { LIFECYCLE_STATUSES, type SlaPropertyType } from '@/lib/p1Constants'
+import { isValidSlaPropertyType } from '@/lib/p1Validation'
 import {
   ensureQualityRuleIds,
   migrateExamplesField,
@@ -31,7 +32,7 @@ function migrateLifecycleStatus(status: string | undefined): DataContract['info'
 
 function migrateSlaRow(row: SlaProperty & { property?: string }): SlaProperty {
   const legacy = row as SlaProperty & { property?: string }
-  return {
+  const next: SlaProperty = {
     id: legacy.id ?? generateId(),
     value: legacy.value ?? '',
     unit: legacy.unit,
@@ -39,6 +40,11 @@ function migrateSlaRow(row: SlaProperty & { property?: string }): SlaProperty {
     driver: legacy.driver,
     description: legacy.description,
   }
+  const p = legacy.property?.trim()
+  if (p && isValidSlaPropertyType(p)) {
+    next.property = p as SlaPropertyType
+  }
+  return next
 }
 
 function migrateCustomProperty(row: Partial<CustomProperty>): CustomProperty {
