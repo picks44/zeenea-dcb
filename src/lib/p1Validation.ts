@@ -8,10 +8,13 @@ import type {
 } from '@/types/odcs'
 import type { AuthoritativeDefinition, CustomProperty } from '@/types/odcsShared'
 import {
+  CLASSIFICATION_VALUES,
   CUSTOM_PROPERTY_REGEX,
   FUNDAMENTALS_AUTH_DEF_TYPES,
   LIFECYCLE_STATUSES,
+  ODCS_LOGICAL_TYPES,
   QUALITY_DIMENSIONS,
+  SCHEMA_PHYSICAL_TYPES,
   SLA_DRIVERS,
   SLA_ELEMENT_SEGMENT_REGEX,
   ROLE_ACCESS_VALUES,
@@ -20,6 +23,14 @@ import {
   ZEENEA_AUTH_DEF_TYPE,
   ZEENEA_ACTIAN_URL_PATTERN,
 } from '@/lib/p1Constants'
+import {
+  isAppOnlyLogicalType,
+  isValidClassification,
+  isValidOdcsLogicalType,
+  isValidSchemaPhysicalType,
+  resolvePropertyName,
+  resolveTableName,
+} from '@/lib/schemaOdcsMapping'
 import { deriveContractId, isValidContractId } from '@/lib/idDerivation'
 import { findZeeneaCatalogItemByUrl } from '@/lib/zeeneaCatalog'
 
@@ -108,6 +119,33 @@ export function isValidQualityRuleType(type: string | undefined): boolean {
 export function isValidRoleAccess(access: string): boolean {
   return (ROLE_ACCESS_VALUES as readonly string[]).includes(access)
 }
+
+export function isValidOdcsLogicalTypeValue(logicalType: string): boolean {
+  return isValidOdcsLogicalType(logicalType)
+}
+
+export function isValidClassificationValue(value: string): boolean {
+  return isValidClassification(value)
+}
+
+export function isValidSchemaPhysicalTypeValue(value: string): boolean {
+  return isValidSchemaPhysicalType(value)
+}
+
+export function columnHasInvalidLogicalType(col: ColumnDefinition): boolean {
+  return isAppOnlyLogicalType(col.logicalType)
+    || !isValidOdcsLogicalType(col.logicalType)
+}
+
+export function tableMissingOdcsName(table: SchemaTable): boolean {
+  return !table.physicalName?.trim() || !resolveTableName(table).trim()
+}
+
+export function columnMissingOdcsName(col: ColumnDefinition): boolean {
+  return !col.physicalName?.trim() || !resolvePropertyName(col).trim()
+}
+
+export { ODCS_LOGICAL_TYPES, SCHEMA_PHYSICAL_TYPES, CLASSIFICATION_VALUES }
 
 /** True when the user entered any non-placeholder content on a data access role row. */
 export function roleRowHasContent(r: OdcsAccessRole): boolean {

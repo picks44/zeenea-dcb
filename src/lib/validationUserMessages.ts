@@ -28,6 +28,16 @@ const USER_MESSAGES: Partial<Record<ValidationIssue['code'], string>> = {
     'Another contract already uses this identifier. Change the contract name.',
   'pk-positions':
     'Fix primary key order on this table — keys must be numbered 1, 2, 3 without gaps.',
+  'schema-name-required':
+    'Each table needs a technical name before publishing.',
+  'property-name-required':
+    'Each field needs a name before publishing.',
+  'logical-type-unknown':
+    'Choose a supported field type — unknown types cannot be published.',
+  'classification-invalid':
+    'Choose public, restricted, or confidential for field classification.',
+  'schema-physical-type-invalid':
+    'Choose a supported table type: table, view, topic, or file.',
   'quality-type-invalid':
     'Quality rules must be written as text descriptions.',
   'quality-dimension-invalid':

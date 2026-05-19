@@ -4,8 +4,15 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { ColumnDefinition, LogicalType, SchemaTable, TableRelationship, RelationshipType } from '@/types/odcs'
+import type { ClassificationValue } from '@/lib/p1Constants'
+import { CLASSIFICATION_VALUES } from '@/lib/p1Constants'
 import { cn, generateId } from '@/lib/utils'
-import { LOGICAL_TYPES, DB_TYPES_BY_LOGICAL, typeConfig, makeColumn } from './constants'
+import {
+  classificationImpliesPii,
+  normalizeOdcsName,
+  syncClassificationFromPii,
+} from '@/lib/schemaOdcsMapping'
+import { LOGICAL_TYPES, DB_TYPES_BY_LOGICAL, typeConfig, makeColumn, syncColumnNameFromPhysical } from './constants'
 import { TypePicker } from './TypePicker'
 import { FlagBadge } from './FlagBadge'
 import { ColumnAdvancedDialog } from './ColumnAdvancedDialog'
@@ -174,7 +181,14 @@ export function TableBlock({
           <Input
             autoFocus
             value={table.physicalName}
-            onChange={e => onTableChange(tableIndex, { ...table, physicalName: e.target.value })}
+            onChange={e => {
+              const physicalName = e.target.value
+              onTableChange(tableIndex, {
+                ...table,
+                physicalName,
+                name: normalizeOdcsName(physicalName || table.name),
+              })
+            }}
             onBlur={() => setEditingTableName(false)}
             onKeyDown={e => { if (e.key === 'Enter' || e.key === 'Escape') setEditingTableName(false) }}
             placeholder="table_name"
@@ -204,11 +218,23 @@ export function TableBlock({
           <SlidersHorizontal className="h-3.5 w-3.5" />
         </button>
         {!isLocked && (
-          <Select value={table.tableType || 'table'} onValueChange={v => onTableChange(tableIndex, { ...table, tableType: v as 'table' | 'view' })}>
+          <Select
+            value={table.physicalType || table.tableType || 'table'}
+            onValueChange={v => {
+              const physicalType = v as SchemaTable['physicalType']
+              onTableChange(tableIndex, {
+                ...table,
+                tableType: physicalType,
+                physicalType,
+              })
+            }}
+          >
             <SelectTrigger className="h-6 text-xs w-20 flex-shrink-0 bg-white"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="table" className="text-xs">Table</SelectItem>
               <SelectItem value="view" className="text-xs">View</SelectItem>
+              <SelectItem value="topic" className="text-xs">Topic</SelectItem>
+              <SelectItem value="file" className="text-xs">File</SelectItem>
             </SelectContent>
           </Select>
         )}
@@ -283,7 +309,18 @@ export function TableBlock({
                       </div>
                     ) : (
                       <div className="space-y-0.5">
-                        <Input value={col.physicalName} onChange={e => updateCol(col.id, { physicalName: e.target.value })} placeholder="col_name" className="h-7 text-xs font-semibold w-full" />
+                        <Input
+                          value={col.physicalName}
+                          onChange={e => {
+                            const physicalName = e.target.value
+                            updateCol(col.id, {
+                              physicalName,
+                              name: syncColumnNameFromPhysical(physicalName, col.name),
+                            })
+                          }}
+                          placeholder="col_name"
+                          className="h-7 text-xs font-semibold w-full"
+                        />
                         {editingLogicalId === col.id ? (
                           <Input autoFocus value={col.logicalName !== '' ? col.logicalName : deriveLogicalName(col.physicalName)} onChange={e => updateCol(col.id, { logicalName: e.target.value })} onBlur={() => setEditingLogicalId(null)} onKeyDown={e => { if (e.key === 'Enter' || e.key === 'Escape') setEditingLogicalId(null) }} placeholder="Display name" className="h-5 text-[10px] w-full" />
                         ) : (
@@ -346,9 +383,46 @@ export function TableBlock({
                   <div className="flex items-start w-44 flex-shrink-0">
                     <FlagBadge shape="left"  flag="PK"  active={col.isPrimaryKey} onClick={() => updateCol(col.id, { isPrimaryKey: !col.isPrimaryKey })} disabled={isLocked} compact={denseReadOnly} />
                     <FlagBadge shape="mid"   flag="REQ" active={col.required}     onClick={() => updateCol(col.id, { required: !col.required })}         disabled={isLocked} compact={denseReadOnly} />
-                    <FlagBadge shape="mid"   flag="PII" active={col.isPII}        onClick={() => updateCol(col.id, { isPII: !col.isPII })}               disabled={isLocked} compact={denseReadOnly} />
-                    <FlagBadge shape="right" flag="UQ"  active={col.isUnique}     onClick={() => updateCol(col.id, { isUnique: !col.isUnique })}         disabled={isLocked} compact={denseReadOnly} />
+                    <FlagBadge
+                      shape="mid"
+                      flag="PII"
+                      active={col.isPII}
+                      onClick={() => {
+                        const isPII = !col.isPII
+                        updateCol(col.id, {
+                          isPII,
+                          classification: syncClassificationFromPii(isPII, col.classification),
+                        })
+                      }}
+                      disabled={isLocked}
+                      compact={denseReadOnly}
+                    />
+                    <FlagBadge shape="mid"   flag="UQ"  active={col.isUnique}     onClick={() => updateCol(col.id, { isUnique: !col.isUnique })}         disabled={isLocked} compact={denseReadOnly} />
+                    <FlagBadge shape="right" flag="CDE" active={col.criticalDataElement} onClick={() => updateCol(col.id, { criticalDataElement: !col.criticalDataElement })} disabled={isLocked} compact={denseReadOnly} />
                   </div>
+
+                  {!isLocked && (
+                    <div className="w-24 flex-shrink-0 pr-2">
+                      <Select
+                        value={col.classification ?? 'none'}
+                        onValueChange={v => {
+                          const classification = v === 'none' ? undefined : v as ClassificationValue
+                          updateCol(col.id, {
+                            classification,
+                            isPII: classificationImpliesPii(classification),
+                          })
+                        }}
+                      >
+                        <SelectTrigger className="h-7 text-[10px] w-full"><SelectValue placeholder="Class" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none" className="text-xs">—</SelectItem>
+                          {CLASSIFICATION_VALUES.map(c => (
+                            <SelectItem key={c} value={c} className="text-xs capitalize">{c}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
 
                   <div className="flex-1" />
 

@@ -109,7 +109,9 @@ Le **fichier YAML exporté** est un sous-ensemble normalisé pour l’écosystè
 - **Table** : entité physique (ex. `orders`) avec nom technique, description, tags, règles qualité table.
 - **Colonne (field)** : propriété avec format technique, type logique, nullabilité, clé primaire, relations, données personnelles.
 - **Entity name** : libellé lisible dérivé du nom technique (surtout après import SQL).
-- **Business label** : libellé métier d’une colonne (aide à la lecture ; non exporté dans le YAML actuel).
+- **Business label** (`logicalName`) : libellé métier d’une colonne ; exporté en YAML sous `properties[].businessName`.
+- **ODCS name** : identifiant logique normalisé (`name`), distinct du nom physique (`physicalName`) ; synchronisé automatiquement depuis le nom de champ édité en UI.
+- **Classification** : sensibilité ODCS (`public` / `restricted` / `confidential`) exportée ; le flag **personal data** (PII) reste applicatif et se synchronise avec `confidential`.
 
 Le schéma affiché dans l’éditeur est exporté sous la clé ODCS **`schema`**.
 
@@ -767,14 +769,20 @@ description:
 tags: [finance, sensitive]
 schema:
   - id: tbl-orders
+    name: orders
     physicalName: orders
+    physicalType: table
+    businessName: Payments Table
     description: Core payment metrics
     properties:
       - id: tbl_orders_txn_ref_dt_prop
+        name: txn_ref_dt
         physicalName: TXN_REF_DT
+        businessName: Transaction date
         physicalType: DATE
         logicalType: date
         required: true
+        primaryKey: true
         primaryKeyPosition: 1
 roles:
   - role: microstrategy_user_opr

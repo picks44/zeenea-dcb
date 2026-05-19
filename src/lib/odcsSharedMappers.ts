@@ -1,6 +1,11 @@
 import type { AuthoritativeDefinition, CustomProperty } from '@/types/odcsShared'
 import type { PropertyItems, QualityRule } from '@/types/odcs'
 import { generateId } from '@/lib/utils'
+import {
+  applyPropertyBooleanExportFlags,
+  isValidOdcsLogicalType,
+  resolvePropertyOdcsFields,
+} from '@/lib/schemaOdcsMapping'
 
 function stripUndefined(obj: Record<string, unknown>): void {
   for (const key of Object.keys(obj)) {
@@ -61,12 +66,19 @@ export function mapCustomPropertiesToYaml(
 export function mapPropertyItemsToYaml(items: PropertyItems): Record<string, unknown> {
   const out: Record<string, unknown> = { logicalType: items.logicalType }
   if (items.logicalType === 'object' && items.properties?.length) {
-    out.properties = items.properties.map(p => ({
-      id: p.id,
-      physicalName: p.physicalName,
-      physicalType: p.physicalType,
-      logicalType: p.logicalType,
-    }))
+    out.properties = items.properties.map(p => {
+      const odcs = resolvePropertyOdcsFields(p)
+      const nested: Record<string, unknown> = {
+        id: p.id,
+        name: odcs.name,
+        physicalName: odcs.physicalName,
+        physicalType: p.physicalType,
+      }
+      if (isValidOdcsLogicalType(p.logicalType)) nested.logicalType = p.logicalType
+      if (odcs.businessName) nested.businessName = odcs.businessName
+      applyPropertyBooleanExportFlags(nested, odcs)
+      return nested
+    })
   }
   return out
 }

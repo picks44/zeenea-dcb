@@ -1,6 +1,7 @@
 import { ColumnDefinition, LogicalType, SchemaTable, TableRelationship } from '../types/odcs'
 import { generateId } from './utils'
 import { stablePropertyId, stableSchemaId } from './idDerivation'
+import { migrateColumnOdcsFields, migrateTableOdcsFields, normalizeOdcsName } from './schemaOdcsMapping'
 
 const SQL_TYPE_MAP: Record<string, { logicalType: LogicalType; label: string }> = {
   varchar: { logicalType: 'string', label: 'Text' },
@@ -32,7 +33,7 @@ const SQL_TYPE_MAP: Record<string, { logicalType: LogicalType; label: string }> 
   datetime: { logicalType: 'timestamp', label: 'Date & Time' },
   datetime2: { logicalType: 'timestamp', label: 'Date & Time' },
   date: { logicalType: 'date', label: 'Date & Time' },
-  time: { logicalType: 'timestamp', label: 'Date & Time' },
+  time: { logicalType: 'time', label: 'Time' },
   boolean: { logicalType: 'boolean', label: 'Yes/No' },
   bool: { logicalType: 'boolean', label: 'Yes/No' },
   bit: { logicalType: 'boolean', label: 'Yes/No' },
@@ -228,8 +229,9 @@ function parseColumnLine(trimmed: string): ColumnDefinition | null {
 
   const { logicalType, isUnknownType } = mapSqlType(colType)
 
-  const column: ColumnDefinition = {
+  const column: ColumnDefinition = migrateColumnOdcsFields({
     id: generateId(),
+    name: normalizeOdcsName(colName),
     physicalName: colName,
     logicalName: colName
       .replace(/_/g, ' ')
@@ -241,10 +243,11 @@ function parseColumnLine(trimmed: string): ColumnDefinition | null {
     isPrimaryKey,
     isPII: false,
     isUnique,
+    criticalDataElement: false,
     examples: [],
     qualityRule: '',
     isUnknownType,
-  }
+  })
 
   const inlineRef = parseReferencesTail(rest)
   if (inlineRef?.toColumns.length === 1) {
@@ -321,13 +324,15 @@ function parseTableDefinition(columnsBlock: string): {
 
 function buildTable(tableName: string, columns: ColumnDefinition[]): SchemaTable {
   const schemaId = stableSchemaId(tableName)
-  return {
+  return migrateTableOdcsFields({
     id: schemaId,
+    name: normalizeOdcsName(tableName),
     physicalName: tableName,
     quantumName: tableName
       .replace(/_/g, ' ')
       .replace(/\b\w/g, c => c.toUpperCase()),
     tableType: 'table',
+    physicalType: 'table',
     description: '',
     columns: columns.map(c => ({
       ...c,
@@ -337,7 +342,7 @@ function buildTable(tableName: string, columns: ColumnDefinition[]): SchemaTable
     quality: [],
     authoritativeDefinitions: [],
     relationships: [],
-  }
+  })
 }
 
 function countTableRelationships(tables: SchemaTable[]): {

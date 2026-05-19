@@ -123,3 +123,33 @@ export const CUSTOM_PROPERTY_REGEX = /^[a-z][a-zA-Z0-9]*$/
 export const SLA_ELEMENT_SEGMENT_REGEX = /^[a-zA-Z_][a-zA-Z0-9_]*\.[a-zA-Z_][a-zA-Z0-9_]*$/
 
 export const NOT_PRIMARY_KEY_POSITION = -1
+
+/** ODCS schema object physical types (P0). */
+export const SCHEMA_PHYSICAL_TYPES = ['table', 'view', 'topic', 'file'] as const
+
+export type SchemaPhysicalType = (typeof SCHEMA_PHYSICAL_TYPES)[number]
+
+/** ODCS property sensitivity classification (P0). */
+export const CLASSIFICATION_VALUES = ['public', 'restricted', 'confidential'] as const
+
+export type ClassificationValue = (typeof CLASSIFICATION_VALUES)[number]
+
+/** Logical types accepted in ODCS YAML export (P0). */
+export const ODCS_LOGICAL_TYPES = [
+  'string',
+  'integer',
+  'number',
+  'boolean',
+  'timestamp',
+  'date',
+  'time',
+  'object',
+  'array',
+] as const
+
+export type OdcsLogicalType = (typeof ODCS_LOGICAL_TYPES)[number]
+
+/** App-only logical type from DDL import — not valid for ODCS export. */
+export const APP_ONLY_LOGICAL_TYPES = ['unknown'] as const
+
+export type AppOnlyLogicalType = (typeof APP_ONLY_LOGICAL_TYPES)[number]

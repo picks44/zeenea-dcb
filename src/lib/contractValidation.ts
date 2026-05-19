@@ -19,12 +19,15 @@ import {
   arrayPropertyNeedsItems,
   collectPropertyIds,
   collectSchemaIds,
+  columnHasInvalidLogicalType,
+  columnMissingOdcsName,
   contractIdMatchesName,
   customPropertyRowHasContent,
   hasDuplicateIds,
   isDuplicateContractId,
   isQualityRuleContentEmpty,
   isValidArrayItems,
+  isValidClassificationValue,
   isValidCustomPropertyName,
   isValidFundamentalsAuthDefType,
   isValidLifecycleStatus,
@@ -32,6 +35,7 @@ import {
   isValidQualityDimension,
   isValidQualityRuleType,
   isValidRoleAccess,
+  isValidSchemaPhysicalTypeValue,
   roleRowHasContent,
   isValidSlaDriver,
   isValidSlaElement,
@@ -40,6 +44,7 @@ import {
   isValidZeeneaAuthDef,
   qualityRuleNeedsDimension,
   slaRowHasContent,
+  tableMissingOdcsName,
 } from '@/lib/p1Validation'
 import { canPublishFromStatus } from '@/lib/contractLifecycle'
 
@@ -312,6 +317,25 @@ export function validateContract(
   }
 
   for (const table of dataset) {
+    if (tableMissingOdcsName(table)) {
+      issues.push({
+        code: 'schema-name-required',
+        message: `Table "${table.physicalName || '(unnamed)'}" needs an ODCS name.`,
+        severity: 'error',
+        section: 'schema',
+      })
+    }
+
+    const physicalType = table.physicalType ?? table.tableType
+    if (physicalType && !isValidSchemaPhysicalTypeValue(physicalType)) {
+      issues.push({
+        code: 'schema-physical-type-invalid',
+        message: `Table "${table.physicalName}" has an invalid physical type.`,
+        severity: 'error',
+        section: 'schema',
+      })
+    }
+
     if (table.columns.length === 0) {
       issues.push({
         code: 'schema-empty-table',
@@ -358,6 +382,30 @@ export function validateContract(
     }
 
     for (const col of table.columns) {
+      if (columnMissingOdcsName(col)) {
+        issues.push({
+          code: 'property-name-required',
+          message: `Field in table "${table.physicalName}" needs an ODCS name.`,
+          severity: 'error',
+          section: 'schema',
+        })
+      }
+      if (columnHasInvalidLogicalType(col)) {
+        issues.push({
+          code: 'logical-type-unknown',
+          message: `Field "${col.physicalName}" has an unknown logical type — choose a supported type before publishing.`,
+          severity: 'error',
+          section: 'schema',
+        })
+      }
+      if (col.classification && !isValidClassificationValue(col.classification)) {
+        issues.push({
+          code: 'classification-invalid',
+          message: `Field "${col.physicalName}" has an invalid classification.`,
+          severity: 'error',
+          section: 'schema',
+        })
+      }
       validateQualityRules(issues, col.quality, `"${col.physicalName}"`, false)
       validateZeeneaAuthDefs(issues, col.authoritativeDefinitions, `Field "${col.physicalName}"`)
       if (isColumnForeignKeyPartial(col.foreignKey)) {

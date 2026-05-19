@@ -2,6 +2,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import type { PropertyItems } from '@/types/odcs'
 import { Input } from '@/components/ui/input'
+import { normalizeOdcsName } from '@/lib/schemaOdcsMapping'
 
 interface PropertyItemsEditorProps {
   items: PropertyItems | undefined
@@ -53,6 +54,7 @@ export function PropertyItemsEditor({ items, onChange, disabled }: PropertyItems
                 logicalType: 'object',
                 properties: names.map(name => ({
                   id: `item_${name}`,
+                  name: normalizeOdcsName(name),
                   physicalName: name,
                   logicalName: name,
                   physicalType: 'VARCHAR',
@@ -61,6 +63,7 @@ export function PropertyItemsEditor({ items, onChange, disabled }: PropertyItems
                   isPrimaryKey: false,
                   isPII: false,
                   isUnique: false,
+                  criticalDataElement: false,
                   description: '',
                   examples: [],
                   qualityRule: '',

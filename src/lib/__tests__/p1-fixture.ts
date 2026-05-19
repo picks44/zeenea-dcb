@@ -1,6 +1,7 @@
-import type { DataContract } from '@/types/odcs'
+import type { DataContract, SchemaTable } from '@/types/odcs'
 import { ZEENEA_AUTH_DEF_TYPE } from '@/lib/p1Constants'
 import { deriveContractId } from '@/lib/idDerivation'
+import { migrateTableOdcsFields } from '@/lib/schemaOdcsMapping'
 
 /** Contract exercising P1 fields for YAML and validation tests. */
 export function buildP1FixtureContract(): DataContract {
@@ -32,15 +33,18 @@ export function buildP1FixtureContract(): DataContract {
       value: 'john.doe@example.com',
       description: 'Owner responsible for data quality.',
     }],
-    dataset: [{
+    dataset: [migrateTableOdcsFields({
+      name: 'orders',
+      physicalType: 'table',
       id: 'tbl-orders',
       physicalName: 'orders',
-      quantumName: 'orders',
+      quantumName: 'Payments Table',
       tableType: 'table',
       description: 'Provides core payment metrics',
       columns: [
         {
           id: 'tbl_orders_txn_ref_dt_prop',
+          name: 'txn_ref_dt',
           physicalName: 'TXN_REF_DT',
           logicalName: 'Txn Ref Dt',
           physicalType: 'DATE',
@@ -49,6 +53,7 @@ export function buildP1FixtureContract(): DataContract {
           isPrimaryKey: true,
           isPII: false,
           isUnique: false,
+          criticalDataElement: false,
           description: 'A description for column rcvr_id.',
           examples: ['2022-10-03'],
           qualityRule: '',
@@ -72,6 +77,7 @@ export function buildP1FixtureContract(): DataContract {
         },
         {
           id: 'tbl_orders_tags_prop',
+          name: 'tags',
           physicalName: 'tags',
           logicalName: 'Tags',
           physicalType: 'JSON',
@@ -80,6 +86,7 @@ export function buildP1FixtureContract(): DataContract {
           isPrimaryKey: false,
           isPII: false,
           isUnique: false,
+          criticalDataElement: false,
           description: '',
           examples: [],
           qualityRule: '',
@@ -101,7 +108,9 @@ export function buildP1FixtureContract(): DataContract {
         url: 'https://catalog.zeenea.example/actian/lineage/orders',
         type: ZEENEA_AUTH_DEF_TYPE,
       }],
-    }, {
+    } as SchemaTable), migrateTableOdcsFields({
+      name: 'customers',
+      physicalType: 'table',
       id: 'tbl-customers',
       physicalName: 'customers',
       quantumName: 'customers',
@@ -109,6 +118,7 @@ export function buildP1FixtureContract(): DataContract {
       description: 'Customers',
       columns: [{
         id: 'tbl_customers_id_prop',
+        name: 'id',
         physicalName: 'id',
         logicalName: 'Id',
         physicalType: 'UUID',
@@ -117,12 +127,13 @@ export function buildP1FixtureContract(): DataContract {
         isPrimaryKey: true,
         isPII: false,
         isUnique: true,
+        criticalDataElement: false,
         description: '',
         examples: [],
         qualityRule: '',
         isUnknownType: false,
       }],
-    }],
+    } as SchemaTable)],
     stakeholders: [],
     roles: [{
       id: 'r1',

@@ -1,4 +1,5 @@
 import { DataContract, LogicalType, SchemaTable } from '@/types/odcs'
+import { normalizeOdcsName } from '@/lib/schemaOdcsMapping'
 import { CURRENT_USER } from './currentUser'
 
 const NOW = '2026-05-06T10:00:00.000Z'
@@ -16,6 +17,7 @@ function col(
 ) {
   return {
     id,
+    name: normalizeOdcsName(physicalName),
     physicalName,
     logicalName,
     physicalType,
@@ -24,6 +26,7 @@ function col(
     isPrimaryKey,
     isPII: false,
     isUnique: false,
+    criticalDataElement: false,
     description: '',
     examples: [] as string[],
     qualityRule: '',
@@ -39,9 +42,11 @@ function cloneDataset(tables: SchemaTable[]): SchemaTable[] {
 
 const CUSTOMER_ORDERS_ORDERS_TABLE: SchemaTable = {
   id: 'tbl-co-orders',
+  name: 'orders',
   physicalName: 'orders',
   quantumName: 'orders',
   tableType: 'table',
+  physicalType: 'table',
   description: 'One row per customer order.',
   tags: ['Core', 'Commerce'],
   columns: [
@@ -61,9 +66,11 @@ const CUSTOMER_ORDERS_ORDERS_TABLE: SchemaTable = {
 
 const CUSTOMER_ORDERS_ORDER_ITEMS_TABLE: SchemaTable = {
   id: 'tbl-co-order-items',
+  name: 'order_items',
   physicalName: 'order_items',
   quantumName: 'order_items',
   tableType: 'table',
+  physicalType: 'table',
   description: 'Line items belonging to an order.',
   columns: [
     col('co-i-id', 'id', 'Item ID', 'uuid', 'string', true, true),
@@ -90,9 +97,11 @@ const CUSTOMER_ORDERS_STAKEHOLDERS = [
 const PRODUCT_CATALOG_DATASET: SchemaTable[] = [
   {
     id: 'tbl-pc-products',
+    name: 'products',
     physicalName: 'products',
     quantumName: 'products',
     tableType: 'table',
+    physicalType: 'table',
     description: 'Core product definition.',
     columns: [
       col('pc-id', 'id', 'Product ID', 'uuid', 'string', true, true),
@@ -109,9 +118,11 @@ const PRODUCT_CATALOG_DATASET: SchemaTable[] = [
 const ANALYTICS_EVENTS_DATASET: SchemaTable[] = [
   {
     id: 'tbl-ua-events',
+    name: 'events',
     physicalName: 'events',
     quantumName: 'events',
     tableType: 'table',
+    physicalType: 'table',
     description: 'Raw event stream.',
     columns: [
       col('ua-id', 'id', 'Event ID', 'uuid', 'string', true, true),
@@ -127,9 +138,11 @@ const ANALYTICS_EVENTS_DATASET: SchemaTable[] = [
 const PAYMENT_TRANSACTIONS_DATASET: SchemaTable[] = [
   {
     id: 'tbl-pt-transactions',
+    name: 'transactions',
     physicalName: 'transactions',
     quantumName: 'transactions',
     tableType: 'table',
+    physicalType: 'table',
     description: 'One row per payment attempt.',
     columns: [
       col('pt-id', 'id', 'Transaction ID', 'uuid', 'string', true, true),
@@ -146,9 +159,11 @@ const PAYMENT_TRANSACTIONS_DATASET: SchemaTable[] = [
 const INVENTORY_DATASET: SchemaTable[] = [
   {
     id: 'tbl-inv-inventory',
+    name: 'inventory',
     physicalName: 'inventory',
     quantumName: 'inventory',
     tableType: 'table',
+    physicalType: 'table',
     description: 'Current stock levels per product per warehouse.',
     columns: [
       col('inv-pid', 'product_id', 'Product ID', 'uuid', 'string', true, true),

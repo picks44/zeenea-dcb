@@ -48,6 +48,22 @@ Nombre de lignes P1 extraites : 41
 | P1 | Schema | No | schema[].properties[].relationships | Foreign key relationships to other properties. The from field is implicit at property level. |  | type: foreignKey, to: /schema/orders/properties/id |
 | P1 | Schema | No | schema[].properties[].tags | Tags for categorizing the property. |  | → tags[] |
 | P1 | Schema | No | schema[].properties[].authoritativeDefinitions | Links to authoritative sources for the property. | Only supports links to items managed in Zeenea (type: actian) | → authoritativeDefinitions[] |
+
+## Annexe — champs Schema P0 (export prototype)
+
+| Priority | Section | Required | Property Path | Description | Comment for MVP | Examples / Valid Values |
+| --- | --- | --- | --- | --- | --- | --- |
+| P0 | Schema | Yes | schema[].name | Logical name of the schema object. | Synced from `physicalName` in UI; stored as `SchemaTable.name` | orders |
+| P0 | Schema | No | schema[].physicalType | Physical type of the object. | `physicalType` + UI `tableType` | table, view, topic, file |
+| P0 | Schema | No | schema[].businessName | Business name of the object. | Exported from app `quantumName` | Payments Table |
+| P0 | Schema | Yes | schema[].properties[].name | Logical name of the property. | Synced from column `physicalName` | txn_ref_dt |
+| P0 | Schema | No | schema[].properties[].logicalType | Logical type of the property. | `unknown` blocked at publish | string, date, time, timestamp, … |
+| P0 | Schema | No | schema[].properties[].primaryKey | Whether the property is a primary key. | From `isPrimaryKey`; omit if false | true, false |
+| P0 | Schema | No | schema[].properties[].classification | Sensitivity classification. | From `classification`; PII sync; omit if public | public, restricted, confidential |
+| P0 | Schema | No | schema[].properties[].businessName | Business name of the property. | From `logicalName` | Transaction date |
+| P0 | Schema | No | schema[].properties[].unique | Whether values are unique. | From `isUnique`; omit if false | true, false |
+| P0 | Schema | No | schema[].properties[].criticalDataElement | Critical Data Element flag. | `criticalDataElement`; omit if false | true, false |
+
 | P0 | SLA | No | slaProperties | Array of SLA entries (Data QoS). | Container optional; export omits key when no exportable rows | → slaProperties[] |
 | P0 | SLA | Yes* | slaProperties[].property | Specific SLA property type (Data QoS). | *Required per non-empty row; ODCS v3.1.0 strict; required for export | latency, retention, frequency, availability, throughput, errorRate, generalAvailability, endOfSupport, endOfLife, timeOfAvailability, timeToDetect, timeToNotify, timeToRepair |
 | P1 | SLA | Yes* | slaProperties[].value | The agreed SLA value. | *Required per non-empty row; trimmed on export; free text in MVP (no format validation by type) | 4, 2022-05-12T09:30:10-08:00, 09:00-08:00 |

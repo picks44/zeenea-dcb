@@ -29,7 +29,10 @@ describe('buildOdcsDocument P1 export', () => {
   it('exports schema object fields', () => {
     const schema = doc.schema as Record<string, unknown>[]
     const orders = schema.find(s => s.id === 'tbl-orders') as Record<string, unknown>
+    expect(orders.name).toBe('orders')
     expect(orders.physicalName).toBe('orders')
+    expect(orders.physicalType).toBe('table')
+    expect(orders.businessName).toBe('Payments Table')
     expect(orders.description).toBeTruthy()
     expect(orders.tags).toEqual(['Core'])
     expect((orders.quality as unknown[]).length).toBe(1)
@@ -41,8 +44,13 @@ describe('buildOdcsDocument P1 export', () => {
     const orders = schema.find(s => s.id === 'tbl-orders') as Record<string, unknown>
     const props = orders.properties as Record<string, unknown>[]
     const txn = props.find(p => p.id === 'tbl_orders_txn_ref_dt_prop')!
+    expect(txn.name).toBe('txn_ref_dt')
+    expect(txn.physicalName).toBe('TXN_REF_DT')
+    expect(txn.businessName).toBe('Txn Ref Dt')
+    expect(txn.primaryKey).toBe(true)
     expect(txn.primaryKeyPosition).toBe(1)
     expect(txn.physicalType).toBe('DATE')
+    expect(txn.logicalType).toBe('date')
     expect(txn.required).toBe(true)
     expect(txn.examples).toEqual(['2022-10-03'])
     const rels = txn.relationships as Record<string, unknown>[]
@@ -53,7 +61,13 @@ describe('buildOdcsDocument P1 export', () => {
     const tagsCol = props.find(p => p.logicalType === 'array')!
     expect((tagsCol.items as Record<string, unknown>).logicalType).toBe('string')
     const nonPk = props.find(p => p.id === 'tbl_orders_tags_prop')!
+    expect(nonPk.primaryKey).toBeUndefined()
     expect(nonPk.primaryKeyPosition).toBe(NOT_PRIMARY_KEY_POSITION)
+
+    const customers = schema.find(s => s.id === 'tbl-customers') as Record<string, unknown>
+    const custProps = customers.properties as Record<string, unknown>[]
+    const custId = custProps.find(p => p.id === 'tbl_customers_id_prop')!
+    expect(custId.unique).toBe(true)
   })
 
   it('exports slaProperties with property first', () => {
@@ -174,6 +188,7 @@ describe('buildOdcsDocument P1 export', () => {
       logicalType: 'object',
       properties: [{
         id: 'item_field_a',
+        name: 'field_a',
         physicalName: 'field_a',
         logicalName: 'field_a',
         physicalType: 'VARCHAR',
@@ -182,6 +197,7 @@ describe('buildOdcsDocument P1 export', () => {
         isPrimaryKey: false,
         isPII: false,
         isUnique: false,
+        criticalDataElement: false,
         description: '',
         examples: [],
         qualityRule: '',
@@ -196,6 +212,7 @@ describe('buildOdcsDocument P1 export', () => {
     expect(items.logicalType).toBe('object')
     const nested = items.properties as Record<string, unknown>[]
     expect(nested).toHaveLength(1)
+    expect(nested[0].name).toBe('field_a')
     expect(nested[0].physicalName).toBe('field_a')
   })
 
@@ -204,6 +221,7 @@ describe('buildOdcsDocument P1 export', () => {
     const table = contract.dataset[0]
     table.columns.push({
       id: 'tbl_orders_region_prop',
+      name: 'region_cd',
       physicalName: 'REGION_CD',
       logicalName: 'Region Cd',
       physicalType: 'VARCHAR(2)',
@@ -212,6 +230,7 @@ describe('buildOdcsDocument P1 export', () => {
       isPrimaryKey: true,
       isPII: false,
       isUnique: false,
+      criticalDataElement: false,
       description: 'Second PK column',
       examples: [],
       qualityRule: '',

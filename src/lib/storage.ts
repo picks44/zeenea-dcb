@@ -15,6 +15,7 @@ import {
   stableSchemaId,
 } from '@/lib/idDerivation'
 import { generateId } from '@/lib/utils'
+import { migrateColumnOdcsFields, migrateTableOdcsFields } from '@/lib/schemaOdcsMapping'
 import { migrateGitCommit } from '@/lib/versionHistory'
 import { SEED_CONTRACTS } from './seedContracts'
 
@@ -94,7 +95,7 @@ function migrateColumn(col: ColumnDefinition, schemaId: string): ColumnDefinitio
     }])
   }
 
-  return next
+  return migrateColumnOdcsFields(next)
 }
 
 function migrateTable(table: SchemaTable): SchemaTable {
@@ -102,7 +103,7 @@ function migrateTable(table: SchemaTable): SchemaTable {
     ? table.id
     : stableSchemaId(table.physicalName)
 
-  return {
+  const base: SchemaTable = {
     ...table,
     id,
     tags: normalizeTags(table.tags),
@@ -114,6 +115,8 @@ function migrateTable(table: SchemaTable): SchemaTable {
     columns: (table.columns ?? []).map(c => migrateColumn(c, id)),
     relationships: table.relationships ?? [],
   }
+
+  return migrateTableOdcsFields(base)
 }
 
 function migrateStakeholder(s: Stakeholder): Stakeholder {

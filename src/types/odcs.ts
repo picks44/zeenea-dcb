@@ -1,8 +1,11 @@
 import type { AuthoritativeDefinition, CustomProperty } from './odcsShared'
 import type {
+  ClassificationValue,
   OdcsLifecycleStatus,
+  OdcsLogicalType,
   QualityDimension,
   RoleAccess,
+  SchemaPhysicalType,
   SlaPropertyType,
 } from '@/lib/p1Constants'
 
@@ -10,16 +13,10 @@ export type { AuthoritativeDefinition, CustomProperty } from './odcsShared'
 
 export type LifecycleStatus = OdcsLifecycleStatus
 
-export type LogicalType =
-  | 'string'
-  | 'integer'
-  | 'number'
-  | 'boolean'
-  | 'timestamp'
-  | 'date'
-  | 'object'
-  | 'array'
-  | 'unknown'
+/** ODCS-exportable logical types plus app-only `unknown` (DDL import). */
+export type LogicalType = OdcsLogicalType | 'unknown'
+
+export type { ClassificationValue, OdcsLogicalType, SchemaPhysicalType }
 
 export type SectionId =
   | 'import'
@@ -61,14 +58,21 @@ export interface PropertyItems {
 
 export interface ColumnDefinition {
   id: string
+  /** ODCS logical property name (normalized, distinct from physicalName). */
+  name: string
   physicalName: string
   logicalName: string
   physicalType: string
   logicalType: LogicalType
   required: boolean
   isPrimaryKey: boolean
+  /** App-only personal-data flag; syncs with classification in UI. Not exported to YAML. */
   isPII: boolean
   isUnique: boolean
+  /** ODCS sensitivity classification (exported; omit when public/unset). */
+  classification?: ClassificationValue
+  /** ODCS Critical Data Element flag (exported when true). */
+  criticalDataElement: boolean
   description: string
   examples: string[]
   qualityRule: string
@@ -108,9 +112,15 @@ export interface TableRelationship {
 
 export interface SchemaTable {
   id: string
+  /** ODCS schema object name (normalized, distinct from physicalName). */
+  name: string
   physicalName: string
+  /** App-only entity display name; exported as ODCS businessName when set. */
   quantumName: string
-  tableType: 'table' | 'view'
+  /** App UI mirror of physicalType (table/view); kept for backward compatibility. */
+  tableType: 'table' | 'view' | 'topic' | 'file'
+  /** ODCS schema object physical type. */
+  physicalType: SchemaPhysicalType
   description: string
   columns: ColumnDefinition[]
   relationships?: TableRelationship[]

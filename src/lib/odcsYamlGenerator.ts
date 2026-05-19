@@ -19,6 +19,12 @@ import {
   buildPropertyForeignKeys,
   buildSchemaLevelRelationships,
 } from './relationshipExport'
+import {
+  applyPropertyBooleanExportFlags,
+  isValidOdcsLogicalType,
+  resolvePropertyOdcsFields,
+  resolveTableOdcsFields,
+} from './schemaOdcsMapping'
 
 function stripUndefined(obj: Record<string, unknown>): void {
   for (const key of Object.keys(obj)) {
@@ -44,15 +50,23 @@ function mapProperty(
   pkPosition: number | undefined,
   propertyRels: Record<string, unknown>[] | undefined,
 ): Record<string, unknown> {
+  const odcs = resolvePropertyOdcsFields(col)
   const prop: Record<string, unknown> = {
     id: col.id,
-    physicalName: col.physicalName,
+    name: odcs.name,
+    physicalName: odcs.physicalName,
     physicalType: col.physicalType,
-    logicalType: col.logicalType,
     required: col.required,
     primaryKeyPosition: resolvePrimaryKeyPosition(col, pkPosition),
     description: col.description?.trim() || undefined,
   }
+
+  if (isValidOdcsLogicalType(col.logicalType)) {
+    prop.logicalType = col.logicalType
+  }
+
+  if (odcs.businessName) prop.businessName = odcs.businessName
+  applyPropertyBooleanExportFlags(prop, odcs)
 
   const examples = mapTagsToYaml(col.examples)
   if (examples) prop.examples = examples
@@ -87,12 +101,17 @@ function mapSchemaTable(table: SchemaTable, allTables: SchemaTable[]): Record<st
     return mapProperty(col, pkPosition, propertyRelsByCol.get(col.physicalName))
   })
 
+  const odcsTable = resolveTableOdcsFields(table)
   const schemaObj: Record<string, unknown> = {
     id: table.id,
-    physicalName: table.physicalName,
+    name: odcsTable.name,
+    physicalName: odcsTable.physicalName,
+    physicalType: odcsTable.physicalType,
     description: table.description?.trim() || undefined,
     properties,
   }
+
+  if (odcsTable.businessName) schemaObj.businessName = odcsTable.businessName
 
   const schemaRels = buildSchemaLevelRelationships(table, allTables)
   if (schemaRels.length > 0) {

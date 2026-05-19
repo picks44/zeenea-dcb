@@ -143,6 +143,21 @@ describe('validateContract P1', () => {
     expect(result.canPublish).toBe(false)
   })
 
+  it('blocks publish when property has empty ODCS name', () => {
+    const c = buildP1FixtureContract()
+    c.dataset[0].columns[0].name = ''
+    c.dataset[0].columns[0].physicalName = ''
+    const result = validateContract(c, [c])
+    expect(result.errors.some(e => e.code === 'property-name-required')).toBe(true)
+  })
+
+  it('blocks publish when logical type is unknown', () => {
+    const c = buildP1FixtureContract()
+    c.dataset[0].columns[0].logicalType = 'unknown'
+    const result = validateContract(c, [c])
+    expect(result.errors.some(e => e.code === 'logical-type-unknown')).toBe(true)
+  })
+
   it('rejects quality rule with library type on column', () => {
     const c = buildP1FixtureContract()
     const col = c.dataset[0].columns[0]

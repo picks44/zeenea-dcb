@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { SchemaTable } from '@/types/odcs'
 import { cn } from '@/lib/utils'
 import { stableSchemaId } from '@/lib/idDerivation'
+import { normalizeOdcsName } from '@/lib/schemaOdcsMapping'
 import { TableBlock } from '@/components/schema/TableBlock'
 import { SchemaNavigationProvider } from '@/components/schema/SchemaNavigationContext'
 import {
@@ -25,11 +26,14 @@ interface SchemaSectionProps {
 }
 
 function makeTable(name: string): SchemaTable {
+  const physicalName = name
   return {
-    id: stableSchemaId(name),
-    physicalName: name,
-    quantumName: name,
+    id: stableSchemaId(physicalName),
+    name: normalizeOdcsName(physicalName),
+    physicalName,
+    quantumName: physicalName,
     tableType: 'table',
+    physicalType: 'table',
     description: '',
     columns: [],
     tags: [],

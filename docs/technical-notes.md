@@ -134,6 +134,26 @@ Le prototype n’utilise pas un UUID ODCS pur pour `id`. Format attendu :
 
 `name` (ODCS) est optionnel dans la spec P1 mais **requis côté produit** pour publier (`contractValidation` code `title`) — la validation n’a pas été assouplie dans ce prototype.
 
+### Mapping Schema app → export ODCS (P0/P1)
+
+Source unique : `src/lib/schemaOdcsMapping.ts` (résolution) + `src/lib/odcsYamlGenerator.ts` (sérialisation).
+
+| ODCS (export) | Champ app (`dataset` / `columns`) | Notes |
+|---------------|-----------------------------------|--------|
+| `schema[].name` | `SchemaTable.name` | Sync auto depuis `physicalName` à l’édition ; migration : `normalizeOdcsName(physicalName)` |
+| `schema[].physicalName` | `physicalName` | Inchangé |
+| `schema[].physicalType` | `physicalType` (miroir `tableType`) | `table` \| `view` \| `topic` \| `file` |
+| `schema[].businessName` | `quantumName` | App-only label ; export si renseigné |
+| `properties[].name` | `ColumnDefinition.name` | Sync auto depuis `physicalName` |
+| `properties[].businessName` | `logicalName` | Export si renseigné |
+| `properties[].primaryKey` | `isPrimaryKey` | Export si `true` (omit-if-false) |
+| `properties[].unique` | `isUnique` | Export si `true` |
+| `properties[].classification` | `classification` (+ sync `isPII`) | Export si `restricted` ou `confidential` ; `isPII` non exporté |
+| `properties[].criticalDataElement` | `criticalDataElement` | Export si `true` |
+| `properties[].logicalType` | `logicalType` | `unknown` bloqué au publish ; `time` supporté |
+
+IDs stables (`id` table/colonne) et pointers FK `/schema/{id}/properties/{propertyId}` ne dépendent pas de `name`.
+
 ---
 
 ## 4. Tests et conformité P1
@@ -150,6 +170,10 @@ Le prototype n’utilise pas un UUID ODCS pur pour `id`. Format attendu :
 | `odcsYamlGenerator.test.ts` | Structure export |
 | `p1Validation.test.ts` | Helpers P1 |
 | `idDerivation.test.ts` | IDs hybrides |
+| `schemaOdcsMapping.test.ts` | Normalisation `name`, résolution export |
+| `storageSchemaMigration.test.ts` | Migration legacy schema |
+| `ddlParser.schemaOdcs.test.ts` | Import DDL → champs ODCS |
+| `relationshipExport.rename.test.ts` | FK stable après rename |
 
 **Total observé :** ~157 tests.
 

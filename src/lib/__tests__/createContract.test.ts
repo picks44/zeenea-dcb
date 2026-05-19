@@ -13,6 +13,7 @@ import {
   PROPOSED_BANNER_LEGACY,
 } from '@/lib/uxCopy'
 import type { SchemaTable } from '@/types/odcs'
+import { migrateTableOdcsFields } from '@/lib/schemaOdcsMapping'
 
 describe('getInitialLifecycleStatus', () => {
   it('returns draft for manual creation', () => {
@@ -41,7 +42,7 @@ describe('createContract', () => {
   })
 })
 
-const sampleTables: SchemaTable[] = [{
+const sampleTables: SchemaTable[] = [migrateTableOdcsFields({
   id: 't1',
   physicalName: 'orders',
   quantumName: 'Orders',
@@ -62,7 +63,7 @@ const sampleTables: SchemaTable[] = [{
     qualityRule: '',
     isUnknownType: false,
   }],
-}]
+} as unknown as SchemaTable)]
 
 describe('getProposedLifecycleBannerMessage', () => {
   it('returns import pending when proposed import with empty dataset', () => {
