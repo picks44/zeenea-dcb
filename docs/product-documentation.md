@@ -181,7 +181,7 @@ _Note : l’ancien libellé documentaire « Data Contract Studio » n’est plus
 | Écran               | Description                                                                                                            |
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | **Backlog**         | Liste des contrats ; filtres par statut lifecycle ; **Create contract**                                                |
-| **Create contract** | Écran temporaire d’import SQL ou **Start from scratch** - **aucun contrat enregistré** tant qu’un choix n’est pas fait |
+| **Create contract** | Écran en **deux étapes** : choix du mode (**Import DDL** ou **Start from scratch**), puis formulaire DDL si import. **Aucun contrat enregistré** tant qu’un parcours n’est pas mené à terme (import validé ou création draft) |
 | **Éditeur**         | Barre supérieure (nom, statut, version, actions) ; navigation latérale ; contenu ; panneau readiness (onglet Form)     |
 | **Onglet Form**     | Sections d’édition                                                                                                     |
 | **Onglet YAML**     | Aperçu du fichier ODCS généré + rappel export / app-only                                                               |
@@ -371,25 +371,29 @@ D’anciens contrats stockés localement peuvent être en **proposed** sans hist
 1. Ouvrir le **Backlog**.
 2. Cliquer **Create contract**.
 3. Arriver sur l’écran **Create contract** (fil d’Ariane _Contracts > Create contract_) - **aucun contrat n’est encore enregistré**.
+4. Section **How would you like to start?** : deux cartes (**Import DDL** et **Start from scratch**) - **aucun textarea SQL** à cette étape.
 
 ### 6.2 Parcours A - Start from scratch
 
-1. Sur l’écran Create, choisir **Start from scratch**.
-2. Un contrat **draft** est créé et ouvert sur **Fundamentals**.
+1. Sur l’écran Create, cliquer **Create empty contract** (carte **Start from scratch**).
+2. Un contrat **draft** est créé immédiatement et ouvert sur **Fundamentals**.
 3. La section Import SQL n’apparaît plus dans la navigation (parcours manuel).
 
-### 6.3 Parcours B - Import SQL
+### 6.3 Parcours B - Import DDL
 
-1. Sur l’écran Create, coller ou charger un script `CREATE TABLE` (plusieurs tables possibles).
-2. Valider l’import : un contrat **proposed** est créé avec le schéma pré-rempli.
-3. Revoir l’import si besoin (section Import encore éditable).
-4. Cliquer **Start drafting** → statut **draft** ; toutes les sections se déverrouillent.
+1. Sur l’écran Create, cliquer **Continue with DDL import** (carte **Import DDL**).
+2. Affichage du **formulaire d’import DDL** (coller, upload `.sql`, **Load example**, aperçu, **Import fields**). Bouton **Back to creation options** pour revenir au choix sans créer de contrat.
+3. Valider l’import : un contrat **proposed** est créé avec le schéma pré-rempli.
+4. Revoir l’import si besoin (section Import encore éditable dans l’éditeur).
+5. Cliquer **Start drafting** → statut **draft** ; toutes les sections se déverrouillent.
 
 ```mermaid
 flowchart LR
   backlog[Backlog] --> create[Create contract]
-  create --> scratch[Start from scratch]
-  create --> import[Import SQL]
+  create --> choice[Choix du mode]
+  choice --> scratch[Start from scratch]
+  choice --> ddl[Formulaire DDL]
+  ddl --> import[Import validé]
   scratch --> draft[Draft]
   import --> proposed[Proposed]
   proposed --> drafting[Start drafting]
@@ -464,6 +468,19 @@ Parcours type :
 ---
 
 ## 7. Création et import SQL
+
+### 7.0 Écran Create contract (UX)
+
+| Étape | Contenu |
+| ----- | ------- |
+| **1 - Choix** | Titre _Create contract_ ; sous-titre rappelant qu’aucun contrat n’est enregistré tant qu’un parcours n’est pas terminé ; section _How would you like to start?_ avec deux cartes équivalentes. |
+| **Carte Import DDL** | Description courte ; CTA **Continue with DDL import** → étape 2 (pas de contrat créé). |
+| **Carte Start from scratch** | Description courte ; CTA **Create empty contract** → contrat **draft** immédiat. |
+| **2 - Import DDL** | Formulaire SQL (`ImportSection`, layout création) : textarea, upload, exemple, aperçu, erreurs, **Import fields** ; **Back to creation options** pour revenir à l’étape 1. |
+
+Libellés centralisés dans `src/lib/uxCopy.ts` ; composant `src/components/CreateContractView.tsx`. L’écran **Import SQL** d’un contrat **proposed** existant (éditeur) reste distinct : formulaire complet avec option **Start from scratch** pour les contrats legacy.
+
+**Hors périmètre MVP sur cet écran :** pas d’options Catalog, Excel, AI ou Git.
 
 ### 7.1 Entrées acceptées
 
@@ -889,7 +906,7 @@ L’interface privilégie des libellés compréhensibles :
 | Service levels      | _No service levels defined_                                   |
 | Version history     | _No versions yet_ - historique app-only                       |
 | Collaborators       | _No collaborators yet_                                        |
-| Import (Create)     | Zone de collage DDL pour premier contrat                      |
+| Import (Create)     | Étape 1 : cartes Import DDL / Start from scratch ; étape 2 : formulaire DDL si import |
 
 ### 14.4 Contrats actifs verrouillés
 
@@ -922,14 +939,14 @@ Légende : ✓ autorisé, ✗ interdit, (✓) si conditions.
 **S1 - Create sans persistance**
 
 - _Given_ le backlog
-- _When_ l’utilisateur clique Create contract sans autre action
-- _Then_ aucun nouveau contrat n’apparaît dans la liste tant qu’il n’a pas choisi scratch ou import
+- _When_ l’utilisateur clique Create contract puis reste sur l’écran de choix (ou revient depuis le formulaire DDL via **Back to creation options**) sans valider un import ni **Create empty contract**
+- _Then_ aucun nouveau contrat n’apparaît dans la liste
 
 **S2 - Import → proposed → draft**
 
-- _Given_ l’écran Create avec un DDL valide
-- _When_ l’utilisateur valide l’import puis Start drafting
-- _Then_ le statut passe à draft et Fundamentals/Schema sont éditables
+- _Given_ l’écran Create, carte **Import DDL**, puis un DDL valide dans le formulaire
+- _When_ l’utilisateur valide **Import fields** puis **Start drafting** dans l’éditeur
+- _Then_ le contrat est d’abord **proposed** après import, puis **draft** après Start drafting ; Fundamentals/Schema sont éditables en draft
 
 **S3 - Publish bloqué en proposed**
 

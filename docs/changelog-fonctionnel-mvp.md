@@ -38,7 +38,7 @@ En quelques semaines d’itération, le projet est passé d’un **prototype Rea
 |                   |                                                                                                                                                                                                                                                                     |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Ajouté**        | Écran **Create contract** dédié : aucun contrat enregistré tant que l’utilisateur n’a pas choisi **Start from scratch** ou validé un import. Import → statut `proposed` ; scratch → `draft` direct. Fichier `demo.sql` riche pour la QA (multi-tables, FK variées). |
-| **Évolué**        | Parseur DDL : une table → **plusieurs tables** ; détection des **clés étrangères** et affichage des relations ; barre de progression à l’import (durée fixe, indicative). Section Import masquée après parcours manuel.                                             |
+| **Évolué**        | Parseur DDL : une table → **plusieurs tables** ; détection des **clés étrangères** et affichage des relations ; barre de progression à l’import (durée fixe, indicative). Section Import masquée après parcours manuel. UX Create en **deux étapes** : cartes de choix (_Import DDL_ / _Start from scratch_) puis formulaire DDL (`CreateContractView`, `ImportSection` layout `creation`, retour **Back to creation options**). Libellés dans `uxCopy.ts`. |
 | **Valeur métier** | Sépare clairement l’intention de création de la persistance ; reflète le métier « je pars du DDL existant » vs « je construis from scratch ».                                                                                                                       |
 | **Statut actuel** | Parcours documenté et testé ; parseur limité au sous-ensemble SQL `CREATE TABLE` (voir §7).                                                                                                                                                                         |
 
@@ -252,7 +252,7 @@ flowchart TD
 
 | Étape             | Comportement clé                                                                                    |
 | ----------------- | --------------------------------------------------------------------------------------------------- |
-| **Création**      | Backlog → Create : pas de contrat en liste tant qu’aucun choix.                                     |
+| **Création**      | Backlog → Create : choix (cartes) → import DDL ou draft immédiat ; pas de contrat en liste tant qu’aucun parcours terminé. |
 | **Import**        | DDL multi-tables → `proposed` ; Import seul éditable jusqu’à Start drafting.                        |
 | **Édition**       | Fundamentals → Schema → Contacts → Data access → SLA → Custom ; panneau readiness sur Form.         |
 | **Readiness**     | Score /100 ; navigation vers champs manquants ; publish bloqué si erreurs.                          |

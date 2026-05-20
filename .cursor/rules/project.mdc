@@ -43,6 +43,9 @@ Current prototype characteristics:
 | `src/lib/relationshipExport.ts`     | Relationship / foreign key YAML export                    |
 | `src/lib/storage.ts`                | `loadContracts` / `saveContracts` and migrations          |
 | `src/lib/idDerivation.ts`           | Contract/table/property stable ID helpers                 |
+| `src/components/CreateContractView.tsx` | Create screen: mode choice + DDL import branch          |
+| `src/components/sections/ImportSection.tsx` | SQL import (editor proposed + create DDL step)        |
+| `src/lib/uxCopy.ts`                 | Shared UI copy (including Create contract labels)         |
 | `src/App.tsx`                       | Global state, views, lifecycle orchestration, permissions |
 | `docs/product-documentation.md`     | Product and functional documentation (source of truth)    |
 | `docs/technical-notes.md`           | Developer technical notes                                 |
@@ -56,14 +59,15 @@ Backlog has a single **Create contract** entry point.
 - Clicking **Create contract** opens `AppView = 'create'`.
 - No `DataContract` is created at that point.
 - No contract is persisted to `localStorage` until the user chooses a path.
-- The create view displays the import / scratch step without contract chrome.
+- The create view (`CreateContractView`) shows a **mode choice** first (two cards: Import DDL / Start from scratch); no SQL textarea until Import DDL is chosen.
+- Choosing Import DDL shows `ImportSection` (`layout: 'creation'`) with **Back to creation options**; still no contract until import validates.
 
 Creation paths:
 
 | User action        | Result                                                                                                                    |
 | ------------------ | ------------------------------------------------------------------------------------------------------------------------- |
 | Start from scratch | Create `DataContract` with `status: 'draft'`, `creationSource: 'manual'`, open Fundamentals                               |
-| Import SQL         | Parse SQL, create `DataContract` with `status: 'proposed'`, `creationSource: 'import'`, inject dataset, open Fundamentals |
+| Import DDL         | Parse SQL, create `DataContract` with `status: 'proposed'`, `creationSource: 'import'`, inject dataset, open Fundamentals |
 
 ## Lifecycle rules
 

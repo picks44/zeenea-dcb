@@ -58,7 +58,7 @@ Stub dans `src/lib/currentUser.ts` - modifier pour tester rôles et partage.
 | Vue          | Rôle                                                          |
 | ------------ | ------------------------------------------------------------- |
 | `backlog`    | Liste des contrats                                            |
-| `create`     | Create contract - Import seul, pas de persistance avant choix |
+| `create`     | Create contract — choix de mode puis formulaire DDL (`CreateContractView`) ; pas de persistance avant import validé ou scratch |
 | `editor`     | Éditeur (sections, readiness, publication)                    |
 | `components` | Galerie UI Kit                                                |
 
@@ -80,7 +80,9 @@ Stub dans `src/lib/currentUser.ts` - modifier pour tester rôles et partage.
 | `src/lib/readinessGuidance.ts`      | Guidance par section            |
 | `src/lib/uxCopy.ts`                 | Libellés UI                     |
 | `src/lib/validationUserMessages.ts` | Messages utilisateur validation |
-| `src/components/sections/`          | Sections éditeur                |
+| `src/components/CreateContractView.tsx` | Écran Create : `mode` `null` \| `'ddl'`, cartes de choix, branche import |
+| `src/components/sections/ImportSection.tsx` | Import SQL — éditeur `proposed` (`default`) et étape Create (`creation`) |
+| `src/components/sections/`          | Autres sections éditeur         |
 | `src/lib/__tests__/`                | Tests unitaires                 |
 
 ### Séparation des responsabilités
