@@ -343,7 +343,7 @@ export function VersionCompareModal({ contract, initialHash, open, onClose }: Ve
                   const s = sources.find(x => x.id === id)
                   return id === 'draft'
                     ? <span className="font-sans font-semibold">Draft</span>
-                    : <span className="font-mono">{s?.version ?? '—'}</span>
+                    : <span className="font-mono">{s?.version ?? '-'}</span>
                 }}
               </SelectValue>
             </SelectTrigger>
@@ -370,7 +370,7 @@ export function VersionCompareModal({ contract, initialHash, open, onClose }: Ve
                   const s = sources.find(x => x.id === id)
                   return id === 'draft'
                     ? <span className="font-sans font-semibold">Draft</span>
-                    : <span className="font-mono">{s?.version ?? '—'}</span>
+                    : <span className="font-mono">{s?.version ?? '-'}</span>
                 }}
               </SelectValue>
             </SelectTrigger>

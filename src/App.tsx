@@ -14,6 +14,7 @@ import { Toast, useToast } from './components/ui/toast'
 import { ConfirmDialog, ConfirmConfig } from './components/ui/confirm-dialog'
 
 import { ComponentsPage } from './pages/ComponentsPage'
+import { CreateContractView } from './components/CreateContractView'
 import { ImportSection } from './components/sections/ImportSection'
 import { FundamentalsSection } from './components/sections/FundamentalsSection'
 import { SchemaSection } from './components/sections/SchemaSection'
@@ -383,13 +384,10 @@ export default function App() {
             />
           ) : currentView === 'create' ? (
             <div className="flex-1 overflow-y-auto min-w-0 bg-[#fbfbff]">
-              <div className="px-4 lg:px-6 xl:px-8 py-6 max-w-4xl mx-auto w-full">
-                <ImportSection
-                  onParsed={(tables) => handleCreationDDLParsed(tables)}
-                  onStartFromScratch={handleCreationStartFromScratch}
-                  isLocked={false}
-                />
-              </div>
+              <CreateContractView
+                onParsed={handleCreationDDLParsed}
+                onStartFromScratch={handleCreationStartFromScratch}
+              />
             </div>
           ) : contract ? (
             <>

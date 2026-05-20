@@ -5,7 +5,7 @@ import { SLA_PROPERTY_LABELS } from '@/lib/p1Constants'
 import { cn } from '@/lib/utils'
 
 function formatValueDetail(row: SlaProperty): string {
-  const value = row.value.trim() || '—'
+  const value = row.value.trim() || '-'
   const unit = (row.unit ?? '').trim()
   const main = unit ? `${value} ${unit}` : value
   const extras = [(row.element ?? '').trim(), (row.driver ?? '').trim(), (row.description ?? '').trim()]

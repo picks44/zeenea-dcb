@@ -21,7 +21,7 @@ export function GovernanceReadOnlyCell({ value, mono, className }: GovernanceRea
       )}
       title={trimmed || undefined}
     >
-      {trimmed || '—'}
+      {trimmed || '-'}
     </span>
   )
 }

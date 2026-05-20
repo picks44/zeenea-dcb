@@ -45,7 +45,7 @@ const COLOR_PALETTES: { name: string; colors: { token: string; hex: string; shad
     ],
   },
   {
-    name: 'Blue — Action',
+    name: 'Blue - Action',
     colors: [
       { token: '--color-blue-25',  hex: '#edf6ff', shade: '25'  },
       { token: '--color-blue-50',  hex: '#cfeafd', shade: '50'  },
@@ -55,7 +55,7 @@ const COLOR_PALETTES: { name: string; colors: { token: string; hex: string; shad
     ],
   },
   {
-    name: 'Cyan — Info',
+    name: 'Cyan - Info',
     colors: [
       { token: '--color-cyan-25',  hex: '#ecf6ff', shade: '25'  },
       { token: '--color-cyan-100', hex: '#99cde8', shade: '100' },
@@ -63,7 +63,7 @@ const COLOR_PALETTES: { name: string; colors: { token: string; hex: string; shad
     ],
   },
   {
-    name: 'Green — Success',
+    name: 'Green - Success',
     colors: [
       { token: '--color-green-25',  hex: '#f0ffec', shade: '25'  },
       { token: '--color-green-50',  hex: '#d3efcd', shade: '50'  },
@@ -73,7 +73,7 @@ const COLOR_PALETTES: { name: string; colors: { token: string; hex: string; shad
     ],
   },
   {
-    name: 'Red — Danger',
+    name: 'Red - Danger',
     colors: [
       { token: '--color-red-25',  hex: '#fff2ee', shade: '25'  },
       { token: '--color-red-50',  hex: '#ffdacf', shade: '50'  },
@@ -83,7 +83,7 @@ const COLOR_PALETTES: { name: string; colors: { token: string; hex: string; shad
     ],
   },
   {
-    name: 'Orange — Warning',
+    name: 'Orange - Warning',
     colors: [
       { token: '--color-orange-25',  hex: '#fff8ec', shade: '25'  },
       { token: '--color-orange-50',  hex: '#ffebce', shade: '50'  },
@@ -143,7 +143,7 @@ export function ComponentsPage() {
 
         <h1 className="text-xl font-semibold text-[#12131f] mb-1">Components</h1>
         <p className="text-sm text-[#656574] mb-8">
-          UI component library — Actian Design System v1.3.0
+          UI component library - Actian Design System v1.3.0
         </p>
 
         <Separator className="mb-8" />

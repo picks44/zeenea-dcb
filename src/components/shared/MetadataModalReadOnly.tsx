@@ -33,7 +33,7 @@ export function MetadataReadOnlySection({
 export function MetadataReadOnlyValue({ value, multiline }: { value: string; multiline?: boolean }) {
   const trimmed = value.trim()
   if (!trimmed) {
-    return <p className="text-xs text-[#9898a7] leading-snug">—</p>
+    return <p className="text-xs text-[#9898a7] leading-snug">-</p>
   }
   return (
     <p

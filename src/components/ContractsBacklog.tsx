@@ -127,7 +127,7 @@ export function ContractsBacklog({ contracts, onSelectContract, onCreateContract
           </div>
         </div>
 
-        {/* Status stats — clickable filters */}
+        {/* Status stats - clickable filters */}
         <div className="mt-4 flex items-center gap-2 flex-wrap">
           {lifecycleFilters.map(item => {
             const filterTooltip = item.status
@@ -260,13 +260,13 @@ export function ContractsBacklog({ contracts, onSelectContract, onCreateContract
                           <Badge variant="version">v{contract.info.version}</Badge>
                         </td>
                         <td className="px-4 py-3 text-xs text-neutral-600">
-                          {contract.info.owner || <span className="text-neutral-400">—</span>}
+                          {contract.info.owner || <span className="text-neutral-400">-</span>}
                         </td>
                         <td className="px-4 py-3 text-xs text-neutral-600">
-                          {contract.info.domain || <span className="text-neutral-400">—</span>}
+                          {contract.info.domain || <span className="text-neutral-400">-</span>}
                         </td>
                         <td className="px-4 py-3 text-xs text-neutral-600 text-center">
-                          {fieldCount > 0 ? fieldCount : <span className="text-neutral-400">—</span>}
+                          {fieldCount > 0 ? fieldCount : <span className="text-neutral-400">-</span>}
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex flex-wrap gap-1">

@@ -169,7 +169,7 @@ export function ContractTopBar({
                 </Button>
               )}
 
-              {/* New version — owner + contributor on active contracts */}
+              {/* New version - owner + contributor on active contracts */}
               {(isOwner || isContributor) && info.status === 'active' && !contract.inRevision && (
                 <>
                   <Button variant="secondary" size="sm" onClick={onNewVersion} className={TOP_BAR_BTN}>
@@ -185,7 +185,7 @@ export function ContractTopBar({
                 </>
               )}
 
-              {/* Publish area — draft / in-revision state */}
+              {/* Publish area - draft / in-revision state */}
               {(info.status === 'draft' || contract.inRevision) && (gitState === 'never' || gitState === 'unpushed') && (
                 isOwner ? (
                   <Tooltip
@@ -220,7 +220,7 @@ export function ContractTopBar({
                 )
               )}
 
-              {/* Synced / published state — owner only */}
+              {/* Synced / published state - owner only */}
               {isOwner && (info.status === 'draft' || contract.inRevision) && gitState === 'synced' && (
                 <Button variant="ghost" size="sm" onClick={onPushToGit} title={topBarPublishedTooltip(lastCommit!.version)} className={cn(TOP_BAR_BTN, 'text-neutral-400')}>
                   <Check className="h-3.5 w-3.5 text-green-700" />
@@ -228,7 +228,7 @@ export function ContractTopBar({
                 </Button>
               )}
 
-              {/* Approval request open — owner only (simulated; openPR unused in seed data) */}
+              {/* Approval request open - owner only (simulated; openPR unused in seed data) */}
               {isOwner && gitState === 'pr-open' && (
                 <Button variant="warning" size="sm" className={cn(TOP_BAR_BTN, 'pointer-events-none')}>
                   <AlertCircle className="h-3.5 w-3.5" />

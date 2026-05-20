@@ -125,7 +125,7 @@ export function ContractSectionNav({
 
           const tooltipContent =
             status === 'incomplete' && missingCount > 0
-              ? `${navLabel} — ${statusCueTooltip(status, missingCount)}`
+              ? `${navLabel} - ${statusCueTooltip(status, missingCount)}`
               : navLabel
 
           return (

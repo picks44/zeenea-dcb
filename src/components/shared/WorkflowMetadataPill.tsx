@@ -47,7 +47,7 @@ export function WorkflowMetadataPill({ variant, label, className }: WorkflowMeta
   )
 }
 
-/** Business copy with an adjacent workflow-metadata pill — consistent section intros. */
+/** Business copy with an adjacent workflow-metadata pill - consistent section intros. */
 export function WorkflowMetadataNote({
   children,
   pill,

@@ -31,7 +31,7 @@ export function FundamentalsReadOnlyView({ contract, compact }: FundamentalsRead
   const hasAdditionalContext = Boolean(usage || limitations || authDefs.length > 0)
   const [additionalOpen, setAdditionalOpen] = useState(hasAdditionalContext)
 
-  const ownerName = info.owner.trim() || '—'
+  const ownerName = info.owner.trim() || '-'
 
   return (
     <div className={cn(compact ? DOC_COMPACT_SPACING.sectionStack : 'space-y-3')}>
@@ -56,7 +56,7 @@ export function FundamentalsReadOnlyView({ contract, compact }: FundamentalsRead
                 !id.trim() && 'text-neutral-300',
               )}
             >
-              {id.trim() || '—'}
+              {id.trim() || '-'}
             </p>
             {id.trim() ? (
               <InlineCopyButton value={id} ariaLabel="Copy contract ID" dense={compact} />
@@ -103,7 +103,7 @@ export function FundamentalsReadOnlyView({ contract, compact }: FundamentalsRead
                 <ul className="space-y-1">
                   {authDefs.map(def => (
                     <li key={def.id} className="text-[11px] leading-snug">
-                      <p className="font-mono text-neutral-600 break-all">{def.url || '—'}</p>
+                      <p className="font-mono text-neutral-600 break-all">{def.url || '-'}</p>
                       {def.type ? (
                         <p className={DOC_COMPACT_TEXT.muted}>{authTypeLabel(def.type)}</p>
                       ) : null}
@@ -139,7 +139,7 @@ export function FundamentalsReadOnlyView({ contract, compact }: FundamentalsRead
           Tags
         </span>
         {tags.length === 0 ? (
-          <p className={cn(compact ? DOC_COMPACT_TEXT.muted : 'text-[13px] text-neutral-300')}>—</p>
+          <p className={cn(compact ? DOC_COMPACT_TEXT.muted : 'text-[13px] text-neutral-300')}>-</p>
         ) : (
           <div className="flex flex-wrap gap-0.5">
             {tags.map(tag => (

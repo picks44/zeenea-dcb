@@ -54,7 +54,7 @@ function SlaReadOnlyRow({ row }: { row: SlaProperty }) {
   return (
     <>
       <td className={SLA_CELL}>
-        <GovernanceReadOnlyCell value={slaPropertyDisplay(row.property) || '—'} />
+        <GovernanceReadOnlyCell value={slaPropertyDisplay(row.property) || '-'} />
       </td>
       <td className={SLA_CELL}><GovernanceReadOnlyCell value={row.value} /></td>
       <td className={SLA_CELL}><GovernanceReadOnlyCell value={row.unit ?? ''} /></td>
@@ -177,7 +177,7 @@ export function SlaSection({ slaProperties, onChange, isLocked, docCompact }: Sl
                         onChange={e => update(row.id, { element: e.target.value })}
                         className={cn(SLA_INPUT, 'font-mono')}
                         placeholder="table.field"
-                        title="Object.Property — comma-separate multiples"
+                        title="Object.Property - comma-separate multiples"
                       />
                     </td>
                     <td className={SLA_CELL}>

@@ -16,7 +16,7 @@ export function PropertyItemsEditor({ items, onChange, disabled }: PropertyItems
   return (
     <div className="space-y-3 border border-neutral-100 rounded-lg p-3 bg-neutral-25">
       <p className="text-[10px] text-neutral-400 leading-snug">
-        Array items — describe element type when logical type is array.
+        Array items - describe element type when logical type is array.
       </p>
       <div>
         <Label className="text-xs text-neutral-600 mb-1 block">Items logical type</Label>

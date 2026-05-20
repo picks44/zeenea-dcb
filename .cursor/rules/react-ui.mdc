@@ -55,7 +55,7 @@ Check, in order:
 If a pattern already exists, reuse it instead of recreating it.
 If a pattern appears missing from the UI Kit, report the gap before adding a new local implementation.
 
-## Example — locking editable fields
+## Example - locking editable fields
 
 ```tsx
 // Correct: editable fields respect isLocked.

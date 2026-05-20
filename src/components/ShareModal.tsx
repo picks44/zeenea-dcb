@@ -134,7 +134,7 @@ export function ShareModal({ contract, open, onClose, onCollaboratorsChange, can
           </Button>
         </div>
 
-        {/* Invite row — Publishers can manage collaborators */}
+        {/* Invite row - Publishers can manage collaborators */}
         {canManageMembers && <div className="px-5 py-4 border-b border-neutral-100">
           <div className="flex gap-2">
 

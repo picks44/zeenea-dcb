@@ -358,7 +358,7 @@ export function ReadinessPanel({
                   onClick={handleDocumentFieldsClick}
                   className="text-[10px] text-neutral-400 mt-1 leading-snug hover:text-blue-700 hover:underline text-left"
                 >
-                  {fieldCount - fieldsWithDesc} without description — open field
+                  {fieldCount - fieldsWithDesc} without description - open field
                 </button>
               ) : fieldsWithDesc < fieldCount ? (
                 <p className="text-[10px] text-neutral-300 mt-1 leading-snug">

@@ -1,4 +1,4 @@
-> **OBSOLÈTE — archive historique.** Ne pas utiliser pour le lifecycle, les parcours ou la stack UI.
+> **OBSOLÈTE - archive historique.** Ne pas utiliser pour le lifecycle, les parcours ou la stack UI.
 > Source de vérité produit : [product-documentation.md](../product-documentation.md).
 > Principes UX encore valides (libellés métier, empty states) : repris dans le document maître §14.
 
@@ -77,7 +77,6 @@ The interface follows a persistent three-pane structure:
 
         Validation: Real-time inline validation (e.g., "ID cannot contain spaces" or "Version must follow SemVer").
 
-
 SECTION 2: DATA ENGINE & ODCS MAPPING
 2.1 Standard Compliance
 
@@ -102,12 +101,12 @@ The MVP must include a SQL-to-ODCS parser. The UI will provide a text area for C
 2.3 Technical-to-Logical Type Mapping
 
 To help non-technical users, the UI must translate SQL types into user-friendly categories:
-SQL Type (Physical)	UI Label (User Friendly)	ODCS Logical Type (Suggested)
-VARCHAR, TEXT, CHAR	Text	string
-INT, BIGINT, SMALLINT	Whole Number	integer
-DECIMAL, FLOAT, DOUBLE	Decimal Number	number
-TIMESTAMP, DATE, DATETIME	Date & Time	timestamp / date
-BOOLEAN, BIT	Yes/No	boolean
+SQL Type (Physical) UI Label (User Friendly) ODCS Logical Type (Suggested)
+VARCHAR, TEXT, CHAR Text string
+INT, BIGINT, SMALLINT Whole Number integer
+DECIMAL, FLOAT, DOUBLE Decimal Number number
+TIMESTAMP, DATE, DATETIME Date & Time timestamp / date
+BOOLEAN, BIT Yes/No boolean
 2.4 Data Structure (Internal State)
 
 The application state should mirror the ODCS structure to ensure what the user sees is what the dev gets.
@@ -135,7 +134,6 @@ The UI must prevent "broken" contracts before they reach Git:
     Missing Fundamentals: id, version, and owner are mandatory to enable the "Activate" button.
 
     Type Safety: If a DDL type is unknown, default to string and flag the field for manual review.
-
 
 Parfait. Voici le Block 3 pour ton design.md. Ce volet est crucial car il définit la "logique métier" du cycle de vie des données, ce qui permet aux développeurs de coder les règles de gestion (permissions, verrous, incrémentation) de manière cohérente.
 SECTION 3: LIFECYCLE, VERSIONING & GIT WORKFLOW
@@ -194,21 +192,3 @@ The "Source of Truth" for contracts is a Git repository. The MVP simulates/imple
     Activation: User clicks "Publish". The UI locks, the YAML is finalized and pushed to Git.
 
     Evolution: User returns later, views the Active contract, and clicks "New Version" to start a new Draft cycle.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

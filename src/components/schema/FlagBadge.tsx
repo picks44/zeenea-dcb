@@ -3,11 +3,11 @@ import { TooltipContent } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 
 const FLAG_CONFIG = {
-  PK:  { title: 'Primary Key — uniquely identifies each row',        color: 'bg-orange-50 text-orange-700 border-orange-100'  },
-  REQ: { title: 'Required — this field cannot be empty',            color: 'bg-red-50 text-red-700 border-red-100'            },
-  PII: { title: 'Personal Data — contains private user information', color: 'bg-orange-100 text-orange-700 border-orange-100' },
-  UQ:  { title: 'Unique — no two rows can have the same value',     color: 'bg-blue-50 text-blue-700 border-blue-100'         },
-  CDE: { title: 'Critical Data Element — governed as a critical asset', color: 'bg-green-50 text-green-700 border-green-100' },
+  PK:  { title: 'Primary Key - uniquely identifies each row',        color: 'bg-orange-50 text-orange-700 border-orange-100'  },
+  REQ: { title: 'Required - this field cannot be empty',            color: 'bg-red-50 text-red-700 border-red-100'            },
+  PII: { title: 'Personal Data - contains private user information', color: 'bg-orange-100 text-orange-700 border-orange-100' },
+  UQ:  { title: 'Unique - no two rows can have the same value',     color: 'bg-blue-50 text-blue-700 border-blue-100'         },
+  CDE: { title: 'Critical Data Element - governed as a critical asset', color: 'bg-green-50 text-green-700 border-green-100' },
 } as const
 
 type FlagKey = keyof typeof FLAG_CONFIG

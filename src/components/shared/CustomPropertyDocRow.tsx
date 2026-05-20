@@ -8,8 +8,8 @@ export function CustomPropertyDocRow({
   property: CustomProperty
   compact?: boolean
 }) {
-  const name = property.property.trim() || '—'
-  const value = property.value.trim() || '—'
+  const name = property.property.trim() || '-'
+  const value = property.value.trim() || '-'
   const desc = (property.description ?? '').trim()
 
   return (

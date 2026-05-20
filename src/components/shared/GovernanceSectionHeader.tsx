@@ -22,7 +22,7 @@ export const governanceTableRowClass = 'px-3 py-1.5'
 export const governanceTableFooterClass =
   'px-3 py-2.5 border-t border-neutral-100 bg-neutral-25/50'
 
-/** Secondary table footer action — shared across Data access, SLA, etc. */
+/** Secondary table footer action - shared across Data access, SLA, etc. */
 export const governanceTableFooterActionClass = cn(
   'inline-flex items-center gap-1.5 rounded-md -mx-0.5 px-1 py-0.5',
   'text-xs font-medium text-neutral-500',

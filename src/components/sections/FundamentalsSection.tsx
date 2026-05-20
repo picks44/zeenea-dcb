@@ -176,7 +176,7 @@ export function FundamentalsSection({
               data-readiness-control
               className="font-mono text-sm flex-1 bg-neutral-50 border border-neutral-200 rounded-md px-3 h-9 flex items-center text-neutral-600"
             >
-              {id || '—'}
+              {id || '-'}
             </div>
             <Button type="button" variant="outline" size="icon" onClick={handleCopyId} className="flex-shrink-0 h-9 w-9">
               {copied ? <Check className="h-3.5 w-3.5 text-green-700" /> : <Copy className="h-3.5 w-3.5" />}

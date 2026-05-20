@@ -56,7 +56,7 @@ type Phase =
 const BUMP_CONFIG = {
   minor: {
     label: 'Update',
-    desc: 'New fields added, nothing removed — existing consumers unaffected',
+    desc: 'New fields added, nothing removed - existing consumers unaffected',
     icon: Plus,
     selectedBorder: 'border-cyan-100',
     selectedBg: 'from-blue-50/80 to-white',
@@ -69,7 +69,7 @@ const BUMP_CONFIG = {
   },
   major: {
     label: 'Breaking',
-    desc: 'Fields removed or renamed — consumers will need to update',
+    desc: 'Fields removed or renamed - consumers will need to update',
     icon: Zap,
     selectedBorder: 'border-red-100',
     selectedBg: 'from-red-25/80 to-white',
@@ -334,7 +334,7 @@ export function PushToGitModal({ contract, allContracts, open, onClose, onPushed
                     <span className="font-mono bg-green-50 px-1.5 py-0.5 rounded">v{newVersion}</span>
                   </p>
                   <p className="text-[11px] text-green-700 mt-1">
-                    This is the first version — it will become active immediately.
+                    This is the first version - it will become active immediately.
                   </p>
                 </div>
               ) : (

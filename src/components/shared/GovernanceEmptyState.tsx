@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 
 /**
  * Shared empty state for governance/configuration sections.
- * Baseline: Stakeholders — dashed card, compact density, outline CTA, one action only.
+ * Baseline: Stakeholders - dashed card, compact density, outline CTA, one action only.
  */
 export interface GovernanceEmptyStateProps {
   icon: LucideIcon

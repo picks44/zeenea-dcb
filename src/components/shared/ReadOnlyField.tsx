@@ -33,7 +33,7 @@ export function ReadOnlyField({ label, value, required, mono, multiline, compact
           multiline && !empty && 'whitespace-pre-wrap',
         )}
       >
-        {empty ? '—' : trimmed}
+        {empty ? '-' : trimmed}
       </p>
     </div>
   )

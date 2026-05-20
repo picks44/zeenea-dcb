@@ -1,5 +1,5 @@
 ---
-description: Data Contract Builder — project context, ODCS, architecture, business rules
+description: Data Contract Builder - project context, ODCS, architecture, business rules
 alwaysApply: true
 ---
 
@@ -27,27 +27,27 @@ Current prototype characteristics:
 
 ## Key source files
 
-| Path | Role |
-|------|------|
-| `src/types/odcs.ts` | Business model source of truth |
-| `src/lib/createContract.ts` | Contract creation modes and creation helpers |
-| `src/lib/contractLifecycle.ts` | Lifecycle transitions and lock helpers |
-| `src/lib/p1Constants.ts` | P1 constants, enums and fixed values |
-| `src/lib/p1Validation.ts` | Low-level P1 validators |
-| `src/lib/contractValidation.ts` | Publish validation rules |
-| `src/lib/publicationReadiness.ts` | Readiness score and publish status aggregation |
-| `src/lib/readinessGuidance.ts` | Readiness checklist items and navigation metadata |
-| `src/lib/validationUserMessages.ts` | User-facing validation message mapper |
-| `src/lib/ddlParser.ts` | SQL `CREATE TABLE` → `SchemaTable[]` |
-| `src/lib/odcsYamlGenerator.ts` | `DataContract` → ODCS YAML document |
-| `src/lib/relationshipExport.ts` | Relationship / foreign key YAML export |
-| `src/lib/storage.ts` | `loadContracts` / `saveContracts` and migrations |
-| `src/lib/idDerivation.ts` | Contract/table/property stable ID helpers |
-| `src/App.tsx` | Global state, views, lifecycle orchestration, permissions |
-| `docs/product-documentation.md` | Product and functional documentation (source of truth) |
-| `docs/technical-notes.md` | Developer technical notes |
-| `docs/odcs-p1-reference.md` | ODCS P1 field reference (55 lines) |
-| `README.md` | Project portal and quick start |
+| Path                                | Role                                                      |
+| ----------------------------------- | --------------------------------------------------------- |
+| `src/types/odcs.ts`                 | Business model source of truth                            |
+| `src/lib/createContract.ts`         | Contract creation modes and creation helpers              |
+| `src/lib/contractLifecycle.ts`      | Lifecycle transitions and lock helpers                    |
+| `src/lib/p1Constants.ts`            | P1 constants, enums and fixed values                      |
+| `src/lib/p1Validation.ts`           | Low-level P1 validators                                   |
+| `src/lib/contractValidation.ts`     | Publish validation rules                                  |
+| `src/lib/publicationReadiness.ts`   | Readiness score and publish status aggregation            |
+| `src/lib/readinessGuidance.ts`      | Readiness checklist items and navigation metadata         |
+| `src/lib/validationUserMessages.ts` | User-facing validation message mapper                     |
+| `src/lib/ddlParser.ts`              | SQL `CREATE TABLE` → `SchemaTable[]`                      |
+| `src/lib/odcsYamlGenerator.ts`      | `DataContract` → ODCS YAML document                       |
+| `src/lib/relationshipExport.ts`     | Relationship / foreign key YAML export                    |
+| `src/lib/storage.ts`                | `loadContracts` / `saveContracts` and migrations          |
+| `src/lib/idDerivation.ts`           | Contract/table/property stable ID helpers                 |
+| `src/App.tsx`                       | Global state, views, lifecycle orchestration, permissions |
+| `docs/product-documentation.md`     | Product and functional documentation (source of truth)    |
+| `docs/technical-notes.md`           | Developer technical notes                                 |
+| `docs/odcs-p1-reference.md`         | ODCS P1 field reference (55 lines)                        |
+| `README.md`                         | Project portal and quick start                            |
 
 ## Contract creation flow
 
@@ -60,10 +60,10 @@ Backlog has a single **Create contract** entry point.
 
 Creation paths:
 
-| User action | Result |
-|-------------|--------|
-| Start from scratch | Create `DataContract` with `status: 'draft'`, `creationSource: 'manual'`, open Fundamentals |
-| Import SQL | Parse SQL, create `DataContract` with `status: 'proposed'`, `creationSource: 'import'`, inject dataset, open Fundamentals |
+| User action        | Result                                                                                                                    |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| Start from scratch | Create `DataContract` with `status: 'draft'`, `creationSource: 'manual'`, open Fundamentals                               |
+| Import SQL         | Parse SQL, create `DataContract` with `status: 'proposed'`, `creationSource: 'import'`, inject dataset, open Fundamentals |
 
 ## Lifecycle rules
 
@@ -103,11 +103,11 @@ Do not bypass lifecycle helpers. Use:
 
 Current readiness model:
 
-| Section | Weight |
-|---------|--------|
-| Required before publishing | 70 |
-| Field quality | 25 |
-| Suggested improvements | 5 |
+| Section                    | Weight |
+| -------------------------- | ------ |
+| Required before publishing | 70     |
+| Field quality              | 25     |
+| Suggested improvements     | 5      |
 
 Suggested improvements should remain distinct from Field quality. Field descriptions belong to Field quality, not Suggested improvements.
 

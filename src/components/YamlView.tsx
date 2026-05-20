@@ -72,7 +72,7 @@ export function YamlView({ contract }: YamlViewProps) {
   return (
     <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#f8f8f8]">
       <div className="flex items-center justify-between px-6 py-2.5 bg-white border-b border-[#d3d3e5] flex-shrink-0">
-        <span className="text-xs font-semibold text-[#3f3f4a] uppercase tracking-wide">ODCS v3.1.0 — Generated export (read-only)</span>
+        <span className="text-xs font-semibold text-[#3f3f4a] uppercase tracking-wide">ODCS v3.1.0 - Generated export (read-only)</span>
         <Button variant="outline" size="sm" onClick={handleCopy} className="gap-1.5">
           {copied ? <><Check className="h-3 w-3 text-green-700" /> Copied</> : <><Copy className="h-3 w-3" /> Copy YAML</>}
         </Button>

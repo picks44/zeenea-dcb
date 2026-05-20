@@ -51,7 +51,7 @@ function makeRole(): OdcsAccessRole {
 function formatAccess(access: string): string {
   if (access === 'read') return 'Read'
   if (access === 'write') return 'Write'
-  return access.trim() || '—'
+  return access.trim() || '-'
 }
 
 function AccessRoleReadOnlyCells({ role }: { role: OdcsAccessRole }) {

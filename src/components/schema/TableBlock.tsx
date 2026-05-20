@@ -275,7 +275,7 @@ export function TableBlock({
           <div className="divide-y divide-neutral-100">
             {table.columns.length === 0 && (
               <div className="px-4 py-6 text-center text-neutral-400 text-xs italic">
-                No fields yet — click "+ Add field" below
+                No fields yet - click "+ Add field" below
               </div>
             )}
             {table.columns.map((col, colIndex) => {
@@ -359,7 +359,7 @@ export function TableBlock({
                         </SelectContent>
                       </Select>
                     ) : (
-                      <button onClick={() => setEditingType(col.id)} title={`${tc.techLabel} — click to change`} className={cn('inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded border transition-all hover:shadow-sm', tc.color, col.isUnknownType && 'ring-1 ring-red-100')}>
+                      <button onClick={() => setEditingType(col.id)} title={`${tc.techLabel} - click to change`} className={cn('inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded border transition-all hover:shadow-sm', tc.color, col.isUnknownType && 'ring-1 ring-red-100')}>
                         <Icon className="h-2.5 w-2.5" />{tc.pmLabel}{col.isUnknownType && <AlertTriangle className="h-2.5 w-2.5 ml-0.5" />}
                       </button>
                     )}
@@ -484,7 +484,7 @@ export function TableBlock({
             editingRel ? (
               <div className="bg-white border border-neutral-200 rounded-xl p-4">
 
-                {/* Step 1 — target table */}
+                {/* Step 1 - target table */}
                 <p className="text-xs font-medium text-neutral-500 mb-2">Link to which table?</p>
                 <div className="flex flex-wrap gap-1.5 mb-4">
                   {otherTables.map(t => (
@@ -510,7 +510,7 @@ export function TableBlock({
                   ))}
                 </div>
 
-                {/* Step 2 — relationship type */}
+                {/* Step 2 - relationship type */}
                 {editingRel.toTable && (
                   <>
                     <p className="text-xs font-medium text-neutral-500 mb-2">What's the relationship?</p>

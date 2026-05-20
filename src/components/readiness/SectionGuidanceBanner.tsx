@@ -5,7 +5,7 @@ interface SectionGuidanceHintProps {
   className?: string
 }
 
-/** Inline micro-hint — no card, border, or background. */
+/** Inline micro-hint - no card, border, or background. */
 export function SectionGuidanceHint({ message, className }: SectionGuidanceHintProps) {
   return (
     <p className={cn('text-[11px] text-[#9898a7] leading-snug mb-3', className)} role="status">
@@ -14,5 +14,5 @@ export function SectionGuidanceHint({ message, className }: SectionGuidanceHintP
   )
 }
 
-/** @deprecated Use SectionGuidanceHint — kept for import compatibility during migration. */
+/** @deprecated Use SectionGuidanceHint - kept for import compatibility during migration. */
 export const SectionGuidanceBanner = SectionGuidanceHint

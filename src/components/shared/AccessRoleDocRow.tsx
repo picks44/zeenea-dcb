@@ -4,11 +4,11 @@ import { GovernanceDocRow } from '@/components/shared/GovernanceDocRow'
 function formatAccess(access: string): string {
   if (access === 'read') return 'Read'
   if (access === 'write') return 'Write'
-  return access.trim() || '—'
+  return access.trim() || '-'
 }
 
 export function AccessRoleDocRow({ role, compact }: { role: OdcsAccessRole; compact?: boolean }) {
-  const name = role.role.trim() || '—'
+  const name = role.role.trim() || '-'
   const access = formatAccess(role.access)
   const desc = (role.description ?? '').trim()
   const secondary = desc ? `${access} · ${desc}` : access
