@@ -1,0 +1,1219 @@
+"id","custom_id","name","text_content","description","markdown_description","status","orderindex","date_created","date_updated","date_closed","date_done","creator","assignees","watchers","priority","due_date","start_date","points","time_estimate","time_spent","list","folder","space","url","tags","parent","dependencies","linked_tasks","custom_fields_raw_json"
+"86c9n9a54","","ETQ système, je veux sérialiser le modèle interne en YAML ODCS v3.1.0 afin de produire le contrat technique","Description métier
+
+Sérialisation backend du modèle applicatif vers YAML ODCS P1 (apiVersion, kind, schema, governance export rules). Distinct de la preview UI SP1.
+
+Périmètre
+
+Inclus
+
+Sérialisation Fundamentals + schema + governance selon règles P1
+apiVersion/kind fixes ; champs app-only exclus de l’export
+Stable ordering et format lisible
+Alignement odcsYamlGenerator / buildOdcsDocument
+Utilisé après import, édition et avant publish
+
+Exclus
+
+UI onglet YAML — SP1
+Validation publish complète — SP5 5b
+MD5 / Git push — SP5
+Doublon 86c9nw8d1 — annulé
+
+Critères d’acceptation
+
+Le YAML généré est valide ODCS P1 pour un contrat importé type
+Les champs non exportables (owner app-only, inRevision) sont absents du YAML
+La sérialisation est déterministe pour un même modèle
+Les relationships/FK exportées passent par relationshipExport
+
+Cas d’erreur / limites
+
+Modèle incohérent → erreur sérialisation remontée à l’UI
+
+Règles de gestion
+
+Tag technical foundation
+86c9nw8d1 annulée — doublon exact
+
+Validation fonctionnelle
+
+Proto : odcsYamlGenerator tests
+MVP : service serialization API
+
+Hypothèses
+
+Validé sur prototype UX (référence démo)
+
+odcsYamlGenerator.ts, buildOdcsDocument
+relationshipExport.ts
+
+Implémentation MVP cible
+
+Microservice ou module serialization versionné
+Contrat OpenAPI export preview
+
+Hors périmètre prototype (exigence MVP conservée)
+
+Sérialisation incrémentale temps réel multi-utilisateur
+
+Liens SP1 — Interfaces (shell create / YAML UI)
+
+86c9nw8br — YAML preview UI (Copy/Download) — SP1 CREATE alignement
+
+Liens SP5 — Publish & GitOps
+
+86c9n9a5b — Validation YAML pré-publication
+86c9n9a5u / 86c9n9a5z — Publish (hors import)","Description métier
+
+Sérialisation backend du modèle applicatif vers YAML ODCS P1 (apiVersion, kind, schema, governance export rules). Distinct de la preview UI SP1.
+
+Périmètre
+
+Inclus
+
+Sérialisation Fundamentals + schema + governance selon règles P1
+apiVersion/kind fixes ; champs app-only exclus de l’export
+Stable ordering et format lisible
+Alignement odcsYamlGenerator / buildOdcsDocument
+Utilisé après import, édition et avant publish
+
+Exclus
+
+UI onglet YAML — SP1
+Validation publish complète — SP5 5b
+MD5 / Git push — SP5
+Doublon 86c9nw8d1 — annulé
+
+Critères d’acceptation
+
+Le YAML généré est valide ODCS P1 pour un contrat importé type
+Les champs non exportables (owner app-only, inRevision) sont absents du YAML
+La sérialisation est déterministe pour un même modèle
+Les relationships/FK exportées passent par relationshipExport
+
+Cas d’erreur / limites
+
+Modèle incohérent → erreur sérialisation remontée à l’UI
+
+Règles de gestion
+
+Tag technical foundation
+86c9nw8d1 annulée — doublon exact
+
+Validation fonctionnelle
+
+Proto : odcsYamlGenerator tests
+MVP : service serialization API
+
+Hypothèses
+
+Validé sur prototype UX (référence démo)
+
+odcsYamlGenerator.ts, buildOdcsDocument
+relationshipExport.ts
+
+Implémentation MVP cible
+
+Microservice ou module serialization versionné
+Contrat OpenAPI export preview
+
+Hors périmètre prototype (exigence MVP conservée)
+
+Sérialisation incrémentale temps réel multi-utilisateur
+
+Liens SP1 — Interfaces (shell create / YAML UI)
+
+86c9nw8br — YAML preview UI (Copy/Download) — SP1 CREATE alignement
+
+Liens SP5 — Publish & GitOps
+
+86c9n9a5b — Validation YAML pré-publication
+86c9n9a5u / 86c9n9a5z — Publish (hors import)","Description métier
+
+Sérialisation backend du modèle applicatif vers YAML ODCS P1 (apiVersion, kind, schema, governance export rules). Distinct de la preview UI SP1.
+
+Périmètre
+
+Inclus
+
+*   Sérialisation Fundamentals + schema + governance selon règles P1
+*   apiVersion/kind fixes ; champs app-only exclus de l’export
+*   Stable ordering et format lisible
+*   Alignement odcsYamlGenerator / buildOdcsDocument
+*   Utilisé après import, édition et avant publish
+
+Exclus
+
+*   UI onglet YAML — SP1
+*   Validation publish complète — SP5 5b
+*   MD5 / Git push — SP5
+*   Doublon 86c9nw8d1 — annulé
+
+Critères d’acceptation
+
+*   Le YAML généré est valide ODCS P1 pour un contrat importé type
+*   Les champs non exportables (owner app-only, inRevision) sont absents du YAML
+*   La sérialisation est déterministe pour un même modèle
+*   Les relationships/FK exportées passent par relationshipExport
+
+Cas d’erreur / limites
+
+*   Modèle incohérent → erreur sérialisation remontée à l’UI
+
+Règles de gestion
+
+*   Tag technical foundation
+*   86c9nw8d1 annulée — doublon exact
+
+Validation fonctionnelle
+
+*   Proto : odcsYamlGenerator tests
+*   MVP : service serialization API
+
+Hypothèses
+
+Validé sur prototype UX (référence démo)
+
+*   odcsYamlGenerator.ts, buildOdcsDocument
+*   relationshipExport.ts
+
+Implémentation MVP cible
+
+*   Microservice ou module serialization versionné
+*   Contrat OpenAPI export preview
+
+Hors périmètre prototype (exigence MVP conservée)
+
+*   Sérialisation incrémentale temps réel multi-utilisateur
+
+Liens SP1 — Interfaces (shell create / YAML UI)
+
+*   86c9nw8br — YAML preview UI (Copy/Download) — SP1 CREATE alignement
+
+Liens SP5 — Publish & GitOps
+
+*   86c9n9a5b — Validation YAML pré-publication
+*   86c9n9a5u / 86c9n9a5z — Publish (hors import)","a faire","33856278.00003740000000000000000000000000","2026-05-05T14:50:41.506Z","2026-05-20T12:58:33.733Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP3 - DDL Import","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a54","technical foundation","","","","[]"
+"86c9n9a53","","ETQ système, je veux garantir la cohérence du YAML généré après import DDL afin de valider la chaîne parse → map → serialize","Description métier
+
+Cette US couvre la cohérence fonctionnelle du YAML produit après un import DDL réussi — pas l’UI preview/copy/download (SP1) ni la validation publish/Git (SP5). Évite un trou QA sur la chaîne import → serialization.
+
+Périmètre
+
+Inclus
+
+YAML généré depuis le schéma importé reflète tables/colonnes/FK mappées
+Cohérence entre modèle in-memory post-import et export ODCS P1
+Vérification après import proposed et après Start drafting
+Read-only : pas d’édition YAML directe
+
+Exclus
+
+Onglet YAML UI, boutons Copy/Download — SP1
+MD5, push Git, validation publish — SP5
+Comparaison versions historiques — SP4
+Édition schéma — SP2
+
+Critères d’acceptation
+
+Après import DDL, le YAML preview contient les tables/colonnes importées
+Les FK importées apparaissent dans le YAML exporté (relationships)
+Aucune régression sur champs P1 fundamentals après import
+Le YAML reste non éditable (tous rôles)
+
+Cas d’erreur / limites
+
+Schéma importé vide → YAML schema section vide explicite
+
+Règles de gestion
+
+Ownership SP3 : cohérence serialization post-import
+Ne pas dupliquer les AC UI de SP1 nw8br
+Tag yaml view conservé avec périmètre fonctionnel réduit
+
+Validation fonctionnelle
+
+Proto : generateODCSYaml après import dans le parcours proposed
+MVP : test API export YAML post-import
+
+Hypothèses
+
+La preview UI reste testée via SP1 CREATE alignement
+
+Validé sur prototype UX (référence démo)
+
+odcsYamlGenerator.ts / generateODCSYaml
+Parcours import → proposed documenté product-documentation §7
+
+Implémentation MVP cible
+
+Tests intégration import → YAML snapshot
+Service serialization aligné odcsYamlGenerator
+
+Hors périmètre prototype (exigence MVP conservée)
+
+Éditeur YAML WYSIWYG
+
+Liens SP1 — Interfaces (shell create / YAML UI)
+
+86c9nw8br — YAML preview UI (Copy/Download) — SP1 CREATE alignement
+
+Liens SP5 — Publish & GitOps
+
+86c9n9a5b — Validation YAML pré-publication
+86c9n9a5n — MD5 sur YAML publié","Description métier
+
+Cette US couvre la cohérence fonctionnelle du YAML produit après un import DDL réussi — pas l’UI preview/copy/download (SP1) ni la validation publish/Git (SP5). Évite un trou QA sur la chaîne import → serialization.
+
+Périmètre
+
+Inclus
+
+YAML généré depuis le schéma importé reflète tables/colonnes/FK mappées
+Cohérence entre modèle in-memory post-import et export ODCS P1
+Vérification après import proposed et après Start drafting
+Read-only : pas d’édition YAML directe
+
+Exclus
+
+Onglet YAML UI, boutons Copy/Download — SP1
+MD5, push Git, validation publish — SP5
+Comparaison versions historiques — SP4
+Édition schéma — SP2
+
+Critères d’acceptation
+
+Après import DDL, le YAML preview contient les tables/colonnes importées
+Les FK importées apparaissent dans le YAML exporté (relationships)
+Aucune régression sur champs P1 fundamentals après import
+Le YAML reste non éditable (tous rôles)
+
+Cas d’erreur / limites
+
+Schéma importé vide → YAML schema section vide explicite
+
+Règles de gestion
+
+Ownership SP3 : cohérence serialization post-import
+Ne pas dupliquer les AC UI de SP1 nw8br
+Tag yaml view conservé avec périmètre fonctionnel réduit
+
+Validation fonctionnelle
+
+Proto : generateODCSYaml après import dans le parcours proposed
+MVP : test API export YAML post-import
+
+Hypothèses
+
+La preview UI reste testée via SP1 CREATE alignement
+
+Validé sur prototype UX (référence démo)
+
+odcsYamlGenerator.ts / generateODCSYaml
+Parcours import → proposed documenté product-documentation §7
+
+Implémentation MVP cible
+
+Tests intégration import → YAML snapshot
+Service serialization aligné odcsYamlGenerator
+
+Hors périmètre prototype (exigence MVP conservée)
+
+Éditeur YAML WYSIWYG
+
+Liens SP1 — Interfaces (shell create / YAML UI)
+
+86c9nw8br — YAML preview UI (Copy/Download) — SP1 CREATE alignement
+
+Liens SP5 — Publish & GitOps
+
+86c9n9a5b — Validation YAML pré-publication
+86c9n9a5n — MD5 sur YAML publié","Description métier
+
+Cette US couvre la cohérence fonctionnelle du YAML produit après un import DDL réussi — pas l’UI preview/copy/download (SP1) ni la validation publish/Git (SP5). Évite un trou QA sur la chaîne import → serialization.
+
+Périmètre
+
+Inclus
+
+*   YAML généré depuis le schéma importé reflète tables/colonnes/FK mappées
+*   Cohérence entre modèle in-memory post-import et export ODCS P1
+*   Vérification après import proposed et après Start drafting
+*   Read-only : pas d’édition YAML directe
+
+Exclus
+
+*   Onglet YAML UI, boutons Copy/Download — SP1
+*   MD5, push Git, validation publish — SP5
+*   Comparaison versions historiques — SP4
+*   Édition schéma — SP2
+
+Critères d’acceptation
+
+*   Après import DDL, le YAML preview contient les tables/colonnes importées
+*   Les FK importées apparaissent dans le YAML exporté (relationships)
+*   Aucune régression sur champs P1 fundamentals après import
+*   Le YAML reste non éditable (tous rôles)
+
+Cas d’erreur / limites
+
+*   Schéma importé vide → YAML schema section vide explicite
+
+Règles de gestion
+
+*   Ownership SP3 : cohérence serialization post-import
+*   Ne pas dupliquer les AC UI de SP1 nw8br
+*   Tag yaml view conservé avec périmètre fonctionnel réduit
+
+Validation fonctionnelle
+
+*   Proto : generateODCSYaml après import dans le parcours proposed
+*   MVP : test API export YAML post-import
+
+Hypothèses
+
+*   La preview UI reste testée via SP1 CREATE alignement
+
+Validé sur prototype UX (référence démo)
+
+*   odcsYamlGenerator.ts / generateODCSYaml
+*   Parcours import → proposed documenté product-documentation §7
+
+Implémentation MVP cible
+
+*   Tests intégration import → YAML snapshot
+*   Service serialization aligné odcsYamlGenerator
+
+Hors périmètre prototype (exigence MVP conservée)
+
+*   Éditeur YAML WYSIWYG
+
+Liens SP1 — Interfaces (shell create / YAML UI)
+
+*   86c9nw8br — YAML preview UI (Copy/Download) — SP1 CREATE alignement
+
+Liens SP5 — Publish & GitOps
+
+*   86c9n9a5b — Validation YAML pré-publication
+*   86c9n9a5n — MD5 sur YAML publié","a faire","33856279.00007900000000000000000000000000","2026-05-05T14:50:41.506Z","2026-05-20T12:46:23.619Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP3 - DDL Import","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a53","yaml view","","","","[]"
+"86c9n9a47","","ETQ utilisateur, je veux que le DDL soit converti en schéma ODCS éditable afin de compléter le contrat sans ressaisie","Description métier
+
+Après parsing, transformation des tables/colonnes/contraintes DDL en modèle ODCS (SchemaTable, properties, relationships). L’édition continue du schéma relève de SP2.
+
+Périmètre
+
+Inclus
+
+Mapping table → schema object (stableSchemaId)
+Mapping colonne → property (stablePropertyId)
+physicalType conservé, logicalType mappé
+required, primaryKey, unique depuis DDL
+FOREIGN KEY inline → foreignKey ou composite relationship
+Ordre des colonnes conservé
+Schéma modifiable après import (via SP2)
+
+Exclus
+
+Édition relation graphique avancée — SP2
+Mapping sémantique Zeenea / glossaire
+Quality rules exécutables
+Édition YAML inline
+
+Critères d’acceptation
+
+Chaque CREATE TABLE supporté produit une table schema
+Chaque colonne supportée produit une property
+NOT NULL → required ; PK → primaryKey
+FK DDL produit foreignKey ou relationship composite
+Le YAML généré reflète le schéma importé (cohérence 53/54)
+
+Cas d’erreur / limites
+
+Table sans colonnes valides → rejet ou table vide signalée
+
+Règles de gestion
+
+Champs enrichis non déductibles du DDL restent vides
+Tag epic ddl parser
+
+Validation fonctionnelle
+
+Proto : ddlParser + schemaOdcsMapping + relationshipExport
+MVP : API map-to-odcs avec mêmes règles IDs
+
+Hypothèses
+
+Self-referencing FK supportées (proto)
+
+Validé sur prototype UX (référence démo)
+
+parseDDLMulti, applyForeignKeys, stablePropertyId/stableSchemaId
+schemaOdcsMapping migrate helpers
+
+Implémentation MVP cible
+
+Service mapping documenté + tests snapshot ODCS
+Propagation rename/delete via schemaRelationshipRefs (SP2)
+
+Hors périmètre prototype (exigence MVP conservée)
+
+Inférence automatique descriptions colonnes
+
+Liens SP2 — Editor & Lifecycle
+
+86c9n9a4e — Édition schéma post-import (CRUD tables/colonnes)
+86c9n9a4r — Relations — édition manuelle SP2
+
+Liens SP5 — Publish & GitOps
+
+86c9n9a5b — Validation YAML pré-publication","Description métier
+
+Après parsing, transformation des tables/colonnes/contraintes DDL en modèle ODCS (SchemaTable, properties, relationships). L’édition continue du schéma relève de SP2.
+
+Périmètre
+
+Inclus
+
+Mapping table → schema object (stableSchemaId)
+Mapping colonne → property (stablePropertyId)
+physicalType conservé, logicalType mappé
+required, primaryKey, unique depuis DDL
+FOREIGN KEY inline → foreignKey ou composite relationship
+Ordre des colonnes conservé
+Schéma modifiable après import (via SP2)
+
+Exclus
+
+Édition relation graphique avancée — SP2
+Mapping sémantique Zeenea / glossaire
+Quality rules exécutables
+Édition YAML inline
+
+Critères d’acceptation
+
+Chaque CREATE TABLE supporté produit une table schema
+Chaque colonne supportée produit une property
+NOT NULL → required ; PK → primaryKey
+FK DDL produit foreignKey ou relationship composite
+Le YAML généré reflète le schéma importé (cohérence 53/54)
+
+Cas d’erreur / limites
+
+Table sans colonnes valides → rejet ou table vide signalée
+
+Règles de gestion
+
+Champs enrichis non déductibles du DDL restent vides
+Tag epic ddl parser
+
+Validation fonctionnelle
+
+Proto : ddlParser + schemaOdcsMapping + relationshipExport
+MVP : API map-to-odcs avec mêmes règles IDs
+
+Hypothèses
+
+Self-referencing FK supportées (proto)
+
+Validé sur prototype UX (référence démo)
+
+parseDDLMulti, applyForeignKeys, stablePropertyId/stableSchemaId
+schemaOdcsMapping migrate helpers
+
+Implémentation MVP cible
+
+Service mapping documenté + tests snapshot ODCS
+Propagation rename/delete via schemaRelationshipRefs (SP2)
+
+Hors périmètre prototype (exigence MVP conservée)
+
+Inférence automatique descriptions colonnes
+
+Liens SP2 — Editor & Lifecycle
+
+86c9n9a4e — Édition schéma post-import (CRUD tables/colonnes)
+86c9n9a4r — Relations — édition manuelle SP2
+
+Liens SP5 — Publish & GitOps
+
+86c9n9a5b — Validation YAML pré-publication","Description métier
+
+Après parsing, transformation des tables/colonnes/contraintes DDL en modèle ODCS (SchemaTable, properties, relationships). L’édition continue du schéma relève de SP2.
+
+Périmètre
+
+Inclus
+
+*   Mapping table → schema object (stableSchemaId)
+*   Mapping colonne → property (stablePropertyId)
+*   physicalType conservé, logicalType mappé
+*   required, primaryKey, unique depuis DDL
+*   FOREIGN KEY inline → foreignKey ou composite relationship
+*   Ordre des colonnes conservé
+*   Schéma modifiable après import (via SP2)
+
+Exclus
+
+*   Édition relation graphique avancée — SP2
+*   Mapping sémantique Zeenea / glossaire
+*   Quality rules exécutables
+*   Édition YAML inline
+
+Critères d’acceptation
+
+*   Chaque CREATE TABLE supporté produit une table schema
+*   Chaque colonne supportée produit une property
+*   NOT NULL → required ; PK → primaryKey
+*   FK DDL produit foreignKey ou relationship composite
+*   Le YAML généré reflète le schéma importé (cohérence 53/54)
+
+Cas d’erreur / limites
+
+*   Table sans colonnes valides → rejet ou table vide signalée
+
+Règles de gestion
+
+*   Champs enrichis non déductibles du DDL restent vides
+*   Tag epic ddl parser
+
+Validation fonctionnelle
+
+*   Proto : ddlParser + schemaOdcsMapping + relationshipExport
+*   MVP : API map-to-odcs avec mêmes règles IDs
+
+Hypothèses
+
+*   Self-referencing FK supportées (proto)
+
+Validé sur prototype UX (référence démo)
+
+*   parseDDLMulti, applyForeignKeys, stablePropertyId/stableSchemaId
+*   schemaOdcsMapping migrate helpers
+
+Implémentation MVP cible
+
+*   Service mapping documenté + tests snapshot ODCS
+*   Propagation rename/delete via schemaRelationshipRefs (SP2)
+
+Hors périmètre prototype (exigence MVP conservée)
+
+*   Inférence automatique descriptions colonnes
+
+Liens SP2 — Editor & Lifecycle
+
+*   86c9n9a4e — Édition schéma post-import (CRUD tables/colonnes)
+*   86c9n9a4r — Relations — édition manuelle SP2
+
+Liens SP5 — Publish & GitOps
+
+*   86c9n9a5b — Validation YAML pré-publication","a faire","33856230.00168570000000000000000000000000","2026-05-05T14:50:39.554Z","2026-05-20T12:58:11.848Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP3 - DDL Import","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a47","ddl parser","","","","[]"
+"86c9n9a44","","ETQ utilisateur, je veux importer un DDL afin de générer automatiquement un schéma initial","Description métier
+
+Parcours d’import DDL : saisie, upload, preview, validation, création contrat proposed. Le shell create two-step et le routing sont portés par SP1 ; cette US couvre le formulaire import et le déclenchement parser côté SP3.
+
+Périmètre
+
+Inclus
+
+Zone SQL (paste, upload .sql, drag-and-drop)
+Load example (fixture)
+Preview tables/colonnes/FK avant validation (summarizeDDLImport)
+Bouton Import schema (uxCopy)
+Messages d’erreur exploitables
+Import réussi → contrat proposed + schéma injecté
+Re-import DDL tant que contrat proposed (section Import éditable)
+Progression UX import (prototype simulée)
+
+Exclus
+
+Mode choice create (cartes Import / Scratch) — SP1
+Parser SQL complet multi-dialecte
+Publish, readiness panel
+Connexion base distante
+
+Critères d’acceptation
+
+Un DDL valide génère un schéma initial affiché en preview
+Un DDL invalide affiche une erreur sans persister de contrat corrompu
+Load example et upload .sql fonctionnent
+Après import, le contrat est en statut proposed et ouvre Fundamentals
+Re-import en proposed remplace le schéma importé
+Les types non supportés sont signalés (unknown type)
+
+Cas d’erreur / limites
+
+DDL vide → message invitant à coller du SQL
+Parse échoué → pas de contrat proposed créé
+Abandon parcours create → aucun contrat (SP1)
+
+Règles de gestion
+
+DDL recommandé ; Start from scratch reste secondaire (SP1)
+Ne pas référencer « casser le Draft » — flux proposed
+Tag epic ddl parser (plus contract creation seul)
+
+Validation fonctionnelle
+
+Proto : ImportSection layout creation + default, parseDDLMulti preview
+MVP : API POST import-parse + transaction create proposed
+
+Hypothèses
+
+Le dialecte SQL reste TBD (voir US 40)
+
+Validé sur prototype UX (référence démo)
+
+ImportSection.tsx — preview, phases loading/success, demo.sql
+CreateContractView → ImportSection layout creation
+docs/product-documentation.md §6.3, §7
+
+Implémentation MVP cible
+
+API import DDL avec validation serveur
+Stockage temporaire fichier .sql si requis sécurité
+Idempotence abandon parcours
+
+Hors périmètre prototype (exigence MVP conservée)
+
+Import asynchrone file d’attente
+Multi-fichiers batch
+
+Liens SP1 — Interfaces (shell create / YAML UI)
+
+86c9n9a3v — Create flow (mode choice, non-persistance) — CREATE alignement SP1
+
+Liens SP4 — Versioning
+
+86c9n9a4t / lifecycle — proposed, Start drafting, re-import proposed","Description métier
+
+Parcours d’import DDL : saisie, upload, preview, validation, création contrat proposed. Le shell create two-step et le routing sont portés par SP1 ; cette US couvre le formulaire import et le déclenchement parser côté SP3.
+
+Périmètre
+
+Inclus
+
+Zone SQL (paste, upload .sql, drag-and-drop)
+Load example (fixture)
+Preview tables/colonnes/FK avant validation (summarizeDDLImport)
+Bouton Import schema (uxCopy)
+Messages d’erreur exploitables
+Import réussi → contrat proposed + schéma injecté
+Re-import DDL tant que contrat proposed (section Import éditable)
+Progression UX import (prototype simulée)
+
+Exclus
+
+Mode choice create (cartes Import / Scratch) — SP1
+Parser SQL complet multi-dialecte
+Publish, readiness panel
+Connexion base distante
+
+Critères d’acceptation
+
+Un DDL valide génère un schéma initial affiché en preview
+Un DDL invalide affiche une erreur sans persister de contrat corrompu
+Load example et upload .sql fonctionnent
+Après import, le contrat est en statut proposed et ouvre Fundamentals
+Re-import en proposed remplace le schéma importé
+Les types non supportés sont signalés (unknown type)
+
+Cas d’erreur / limites
+
+DDL vide → message invitant à coller du SQL
+Parse échoué → pas de contrat proposed créé
+Abandon parcours create → aucun contrat (SP1)
+
+Règles de gestion
+
+DDL recommandé ; Start from scratch reste secondaire (SP1)
+Ne pas référencer « casser le Draft » — flux proposed
+Tag epic ddl parser (plus contract creation seul)
+
+Validation fonctionnelle
+
+Proto : ImportSection layout creation + default, parseDDLMulti preview
+MVP : API POST import-parse + transaction create proposed
+
+Hypothèses
+
+Le dialecte SQL reste TBD (voir US 40)
+
+Validé sur prototype UX (référence démo)
+
+ImportSection.tsx — preview, phases loading/success, demo.sql
+CreateContractView → ImportSection layout creation
+docs/product-documentation.md §6.3, §7
+
+Implémentation MVP cible
+
+API import DDL avec validation serveur
+Stockage temporaire fichier .sql si requis sécurité
+Idempotence abandon parcours
+
+Hors périmètre prototype (exigence MVP conservée)
+
+Import asynchrone file d’attente
+Multi-fichiers batch
+
+Liens SP1 — Interfaces (shell create / YAML UI)
+
+86c9n9a3v — Create flow (mode choice, non-persistance) — CREATE alignement SP1
+
+Liens SP4 — Versioning
+
+86c9n9a4t / lifecycle — proposed, Start drafting, re-import proposed","Description métier
+
+Parcours d’import DDL : saisie, upload, preview, validation, création contrat proposed. Le shell create two-step et le routing sont portés par SP1 ; cette US couvre le formulaire import et le déclenchement parser côté SP3.
+
+Périmètre
+
+Inclus
+
+*   Zone SQL (paste, upload .sql, drag-and-drop)
+*   Load example (fixture)
+*   Preview tables/colonnes/FK avant validation (summarizeDDLImport)
+*   Bouton Import schema (uxCopy)
+*   Messages d’erreur exploitables
+*   Import réussi → contrat proposed + schéma injecté
+*   Re-import DDL tant que contrat proposed (section Import éditable)
+*   Progression UX import (prototype simulée)
+
+Exclus
+
+*   Mode choice create (cartes Import / Scratch) — SP1
+*   Parser SQL complet multi-dialecte
+*   Publish, readiness panel
+*   Connexion base distante
+
+Critères d’acceptation
+
+*   Un DDL valide génère un schéma initial affiché en preview
+*   Un DDL invalide affiche une erreur sans persister de contrat corrompu
+*   Load example et upload .sql fonctionnent
+*   Après import, le contrat est en statut proposed et ouvre Fundamentals
+*   Re-import en proposed remplace le schéma importé
+*   Les types non supportés sont signalés (unknown type)
+
+Cas d’erreur / limites
+
+*   DDL vide → message invitant à coller du SQL
+*   Parse échoué → pas de contrat proposed créé
+*   Abandon parcours create → aucun contrat (SP1)
+
+Règles de gestion
+
+*   DDL recommandé ; Start from scratch reste secondaire (SP1)
+*   Ne pas référencer « casser le Draft » — flux proposed
+*   Tag epic ddl parser (plus contract creation seul)
+
+Validation fonctionnelle
+
+*   Proto : ImportSection layout creation + default, parseDDLMulti preview
+*   MVP : API POST import-parse + transaction create proposed
+
+Hypothèses
+
+*   Le dialecte SQL reste TBD (voir US 40)
+
+Validé sur prototype UX (référence démo)
+
+*   ImportSection.tsx — preview, phases loading/success, demo.sql
+*   CreateContractView → ImportSection layout creation
+*   docs/product-documentation.md §6.3, §7
+
+Implémentation MVP cible
+
+*   API import DDL avec validation serveur
+*   Stockage temporaire fichier .sql si requis sécurité
+*   Idempotence abandon parcours
+
+Hors périmètre prototype (exigence MVP conservée)
+
+*   Import asynchrone file d’attente
+*   Multi-fichiers batch
+
+Liens SP1 — Interfaces (shell create / YAML UI)
+
+*   86c9n9a3v — Create flow (mode choice, non-persistance) — CREATE alignement SP1
+
+Liens SP4 — Versioning
+
+*   86c9n9a4t / lifecycle — proposed, Start drafting, re-import proposed","a faire","33856229.00162280000000000000000000000000","2026-05-05T14:50:39.084Z","2026-05-20T12:57:53.605Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP3 - DDL Import","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a44","ddl parser","","","","[]"
+"86c9n9a42","","ETQ équipe produit/tech, je veux disposer de fixtures DDL afin de tester le parser MVP de manière reproductible","Description métier
+
+Bibliothèque DDL de référence pour tests parser, bouton Load example et CI. Le prototype expose demo.sql ; le MVP exige fixtures versionnées et couverture tests.
+
+Périmètre
+
+Inclus
+
+Fixtures DDL versionnées dans le repo (simple, multi-table, PK/FK, types courants)
+Fixture invalide avec erreur contrôlée attendue
+Load example alimenté par une fixture canonique
+Tests automatisés Vitest/Jest sur parseDDLMulti
+Documentation des résultats attendus par fixture
+
+Exclus
+
+Jeu exhaustif par dialecte vendor
+Données client sensibles dans les fixtures
+Benchmark performance parser en CI P0
+
+Critères d’acceptation
+
+Au moins cinq fichiers DDL de référence existent (MVP)
+Load example injecte un DDL valide issu des fixtures
+La fixture invalide produit une erreur contrôlée
+Les tests CI utilisent les fixtures sans données sensibles
+Chaque fixture a un snapshot ou assertion de tables/colonnes attendues
+
+Cas d’erreur / limites
+
+Fixture modifiée sans mise à jour snapshot → CI en échec explicite
+
+Règles de gestion
+
+Fixtures alignées sur le subset documenté dans 40
+demo.sql reste la référence UX Load example au prototype
+
+Validation fonctionnelle
+
+Proto : demo.sql + ddlParser.schemaOdcs.test.ts
+MVP : dossier fixtures + pipeline CI
+
+Hypothèses
+
+Les DDL clients remplaceront progressivement les exemples synthétiques
+
+Validé sur prototype UX (référence démo)
+
+demo.sql importé dans ImportSection (Load example)
+src/lib/tests/ddlParser.schemaOdcs.test.ts
+
+Implémentation MVP cible
+
+Répertoire backlog/fixtures ou tests/fixtures/ddl/
+Job CI parse-all-fixtures
+
+Hors périmètre prototype (exigence MVP conservée)
+
+Import automatique de DDL production client","Description métier
+
+Bibliothèque DDL de référence pour tests parser, bouton Load example et CI. Le prototype expose demo.sql ; le MVP exige fixtures versionnées et couverture tests.
+
+Périmètre
+
+Inclus
+
+Fixtures DDL versionnées dans le repo (simple, multi-table, PK/FK, types courants)
+Fixture invalide avec erreur contrôlée attendue
+Load example alimenté par une fixture canonique
+Tests automatisés Vitest/Jest sur parseDDLMulti
+Documentation des résultats attendus par fixture
+
+Exclus
+
+Jeu exhaustif par dialecte vendor
+Données client sensibles dans les fixtures
+Benchmark performance parser en CI P0
+
+Critères d’acceptation
+
+Au moins cinq fichiers DDL de référence existent (MVP)
+Load example injecte un DDL valide issu des fixtures
+La fixture invalide produit une erreur contrôlée
+Les tests CI utilisent les fixtures sans données sensibles
+Chaque fixture a un snapshot ou assertion de tables/colonnes attendues
+
+Cas d’erreur / limites
+
+Fixture modifiée sans mise à jour snapshot → CI en échec explicite
+
+Règles de gestion
+
+Fixtures alignées sur le subset documenté dans 40
+demo.sql reste la référence UX Load example au prototype
+
+Validation fonctionnelle
+
+Proto : demo.sql + ddlParser.schemaOdcs.test.ts
+MVP : dossier fixtures + pipeline CI
+
+Hypothèses
+
+Les DDL clients remplaceront progressivement les exemples synthétiques
+
+Validé sur prototype UX (référence démo)
+
+demo.sql importé dans ImportSection (Load example)
+src/lib/tests/ddlParser.schemaOdcs.test.ts
+
+Implémentation MVP cible
+
+Répertoire backlog/fixtures ou tests/fixtures/ddl/
+Job CI parse-all-fixtures
+
+Hors périmètre prototype (exigence MVP conservée)
+
+Import automatique de DDL production client","Description métier
+
+Bibliothèque DDL de référence pour tests parser, bouton Load example et CI. Le prototype expose demo.sql ; le MVP exige fixtures versionnées et couverture tests.
+
+Périmètre
+
+Inclus
+
+*   Fixtures DDL versionnées dans le repo (simple, multi-table, PK/FK, types courants)
+*   Fixture invalide avec erreur contrôlée attendue
+*   Load example alimenté par une fixture canonique
+*   Tests automatisés Vitest/Jest sur parseDDLMulti
+*   Documentation des résultats attendus par fixture
+
+Exclus
+
+*   Jeu exhaustif par dialecte vendor
+*   Données client sensibles dans les fixtures
+*   Benchmark performance parser en CI P0
+
+Critères d’acceptation
+
+*   Au moins cinq fichiers DDL de référence existent (MVP)
+*   Load example injecte un DDL valide issu des fixtures
+*   La fixture invalide produit une erreur contrôlée
+*   Les tests CI utilisent les fixtures sans données sensibles
+*   Chaque fixture a un snapshot ou assertion de tables/colonnes attendues
+
+Cas d’erreur / limites
+
+*   Fixture modifiée sans mise à jour snapshot → CI en échec explicite
+
+Règles de gestion
+
+*   Fixtures alignées sur le subset documenté dans 40
+*   demo.sql reste la référence UX Load example au prototype
+
+Validation fonctionnelle
+
+*   Proto : demo.sql + ddlParser.schemaOdcs.test.ts
+*   MVP : dossier fixtures + pipeline CI
+
+Hypothèses
+
+*   Les DDL clients remplaceront progressivement les exemples synthétiques
+
+Validé sur prototype UX (référence démo)
+
+*   demo.sql importé dans ImportSection (Load example)
+*   src/lib/**tests**/ddlParser.schemaOdcs.test.ts
+
+Implémentation MVP cible
+
+*   Répertoire backlog/fixtures ou tests/fixtures/ddl/
+*   Job CI parse-all-fixtures
+
+Hors périmètre prototype (exigence MVP conservée)
+
+*   Import automatique de DDL production client","a faire","33856228.00156090000000000000000000000000","2026-05-05T14:50:38.870Z","2026-05-20T12:46:23.235Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP3 - DDL Import","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a42","ddl parser","","","","[]"
+"86c9n9a40","","ETQ équipe produit/tech, je veux définir le sous-ensemble DDL supporté afin de cadrer précisément le parser MVP","Description métier
+
+Le MVP doit documenter un sous-ensemble SQL pragmatique (CREATE TABLE) sans promettre un support ANSI ou vendor exhaustif. Le dialecte cible reste TBD jusqu’à validation Zeenea.
+
+Périmètre
+
+Inclus
+
+Dialecte DDL cible marqué TBD tant qu’il n’est pas arbitré
+Liste des syntaxes supportées (multi CREATE TABLE, colonnes, types courants)
+Liste des syntaxes explicitement non supportées
+PRIMARY KEY, NOT NULL, UNIQUE simple
+FOREIGN KEY inline simple et composite (aligné prototype)
+Types inconnus → logicalType string + flag isUnknownType
+Messages d’erreur utilisateur compréhensibles
+
+Exclus
+
+Support multi-dialectes exhaustif
+Procédures stockées, index avancés, contraintes complexes vendor-specific
+Connexion directe à une base
+Promesse « ANSI SQL complet » ou « PostgreSQL exhaustif »
+
+Critères d’acceptation
+
+Le dialecte cible est documenté TBD sans choix arbitraire PostgreSQL/Snowflake/SQL Server
+La matrice supporté / non supporté est lisible par dev et QA
+Les FK DDL inline sont dans le périmètre documenté
+Les erreurs de parsing sont formulées pour l’utilisateur final
+Le parser ne promet pas un support SQL universel
+
+Cas d’erreur / limites
+
+Syntaxe hors subset → message explicite, pas de crash
+
+Règles de gestion
+
+Ne pas sur-promettre le coverage parser MVP (anti-pattern gouvernance)
+Aucun dialecte prioritaire sans validation PO/Zeenea
+
+Validation fonctionnelle
+
+Revue doc + tests parser sur fixtures 42
+MVP : contrat API parser documente le même subset
+
+Hypothèses
+
+Le dialecte cible sera tranché avant industrialisation parser service
+
+Validé sur prototype UX (référence démo)
+
+ddlParser.ts — CREATE TABLE, nettoyage commentaires, mapSqlType, isUnknownType
+FK simple et composite parsées
+
+Implémentation MVP cible
+
+Spécification parser service versionnée
+Catalogue erreurs API aligné messages UX
+Tests de non-régression sur subset documenté
+
+Hors périmètre prototype (exigence MVP conservée)
+
+Parser distribué multi-tenant haute dispo
+Support DDL hors CREATE TABLE
+
+Liens SP2 — Editor & Lifecycle
+
+86c9n9a4r — Relations — édition manuelle SP2","Description métier
+
+Le MVP doit documenter un sous-ensemble SQL pragmatique (CREATE TABLE) sans promettre un support ANSI ou vendor exhaustif. Le dialecte cible reste TBD jusqu’à validation Zeenea.
+
+Périmètre
+
+Inclus
+
+Dialecte DDL cible marqué TBD tant qu’il n’est pas arbitré
+Liste des syntaxes supportées (multi CREATE TABLE, colonnes, types courants)
+Liste des syntaxes explicitement non supportées
+PRIMARY KEY, NOT NULL, UNIQUE simple
+FOREIGN KEY inline simple et composite (aligné prototype)
+Types inconnus → logicalType string + flag isUnknownType
+Messages d’erreur utilisateur compréhensibles
+
+Exclus
+
+Support multi-dialectes exhaustif
+Procédures stockées, index avancés, contraintes complexes vendor-specific
+Connexion directe à une base
+Promesse « ANSI SQL complet » ou « PostgreSQL exhaustif »
+
+Critères d’acceptation
+
+Le dialecte cible est documenté TBD sans choix arbitraire PostgreSQL/Snowflake/SQL Server
+La matrice supporté / non supporté est lisible par dev et QA
+Les FK DDL inline sont dans le périmètre documenté
+Les erreurs de parsing sont formulées pour l’utilisateur final
+Le parser ne promet pas un support SQL universel
+
+Cas d’erreur / limites
+
+Syntaxe hors subset → message explicite, pas de crash
+
+Règles de gestion
+
+Ne pas sur-promettre le coverage parser MVP (anti-pattern gouvernance)
+Aucun dialecte prioritaire sans validation PO/Zeenea
+
+Validation fonctionnelle
+
+Revue doc + tests parser sur fixtures 42
+MVP : contrat API parser documente le même subset
+
+Hypothèses
+
+Le dialecte cible sera tranché avant industrialisation parser service
+
+Validé sur prototype UX (référence démo)
+
+ddlParser.ts — CREATE TABLE, nettoyage commentaires, mapSqlType, isUnknownType
+FK simple et composite parsées
+
+Implémentation MVP cible
+
+Spécification parser service versionnée
+Catalogue erreurs API aligné messages UX
+Tests de non-régression sur subset documenté
+
+Hors périmètre prototype (exigence MVP conservée)
+
+Parser distribué multi-tenant haute dispo
+Support DDL hors CREATE TABLE
+
+Liens SP2 — Editor & Lifecycle
+
+86c9n9a4r — Relations — édition manuelle SP2","Description métier
+
+Le MVP doit documenter un sous-ensemble SQL pragmatique (CREATE TABLE) sans promettre un support ANSI ou vendor exhaustif. Le dialecte cible reste TBD jusqu’à validation Zeenea.
+
+Périmètre
+
+Inclus
+
+*   Dialecte DDL cible marqué TBD tant qu’il n’est pas arbitré
+*   Liste des syntaxes supportées (multi CREATE TABLE, colonnes, types courants)
+*   Liste des syntaxes explicitement non supportées
+*   PRIMARY KEY, NOT NULL, UNIQUE simple
+*   FOREIGN KEY inline simple et composite (aligné prototype)
+*   Types inconnus → logicalType string + flag isUnknownType
+*   Messages d’erreur utilisateur compréhensibles
+
+Exclus
+
+*   Support multi-dialectes exhaustif
+*   Procédures stockées, index avancés, contraintes complexes vendor-specific
+*   Connexion directe à une base
+*   Promesse « ANSI SQL complet » ou « PostgreSQL exhaustif »
+
+Critères d’acceptation
+
+*   Le dialecte cible est documenté TBD sans choix arbitraire PostgreSQL/Snowflake/SQL Server
+*   La matrice supporté / non supporté est lisible par dev et QA
+*   Les FK DDL inline sont dans le périmètre documenté
+*   Les erreurs de parsing sont formulées pour l’utilisateur final
+*   Le parser ne promet pas un support SQL universel
+
+Cas d’erreur / limites
+
+*   Syntaxe hors subset → message explicite, pas de crash
+
+Règles de gestion
+
+*   Ne pas sur-promettre le coverage parser MVP (anti-pattern gouvernance)
+*   Aucun dialecte prioritaire sans validation PO/Zeenea
+
+Validation fonctionnelle
+
+*   Revue doc + tests parser sur fixtures 42
+*   MVP : contrat API parser documente le même subset
+
+Hypothèses
+
+*   Le dialecte cible sera tranché avant industrialisation parser service
+
+Validé sur prototype UX (référence démo)
+
+*   ddlParser.ts — CREATE TABLE, nettoyage commentaires, mapSqlType, isUnknownType
+*   FK simple et composite parsées
+
+Implémentation MVP cible
+
+*   Spécification parser service versionnée
+*   Catalogue erreurs API aligné messages UX
+*   Tests de non-régression sur subset documenté
+
+Hors périmètre prototype (exigence MVP conservée)
+
+*   Parser distribué multi-tenant haute dispo
+*   Support DDL hors CREATE TABLE
+
+Liens SP2 — Editor & Lifecycle
+
+*   86c9n9a4r — Relations — édition manuelle SP2","a faire","33856227.00154680000000000000000000000000","2026-05-05T14:50:38.673Z","2026-05-20T12:46:23.671Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP3 - DDL Import","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a40","ddl parser","","","","[]"

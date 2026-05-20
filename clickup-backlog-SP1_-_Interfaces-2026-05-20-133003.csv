@@ -1,0 +1,2130 @@
+"id","custom_id","name","text_content","description","markdown_description","status","orderindex","date_created","date_updated","date_closed","date_done","creator","assignees","watchers","priority","due_date","start_date","points","time_estimate","time_spent","list","folder","space","url","tags","parent","dependencies","linked_tasks","custom_fields_raw_json"
+"86c9wmdpm","","[Alignement] Fundamentals — lifecycle P1, owner, validation MVP","Description métier
+
+US complémentaire pour Fundamentals : alignement lifecycle 5 statuts, owner, champs P1 et cible API. US source 86c9nw8bu (qa) inchangée.
+
+Gouvernance — US sources (statuts protégés, non modifiées)
+
+86c9nw8bu (qa) — Éditer Fundamentals
+
+Corrigé / aligné par rapport aux US sources
+
+Statut système : alignement proposed/draft/active/deprecated/retired (pas Draft seul avant publish)
+Name obligatoire produit (déjà dans source — rappel P1)
+
+Ajouté (delta backlog MVP)
+
+Affichage lifecycle cohérent avec modèle produit
+Owner / collaborateurs app-only (non exportés YAML sauf règle P1)
+Cible PATCH API Fundamentals
+
+Exclu de cette US (autre liste ou obsolète)
+
+Validation publish complète (SP5 5b)
+
+Reste porté par l’US source (QA historique)
+
+Champs domain, descriptions, tags fundamentals
+apiVersion/kind/id système non éditables
+Erreurs champs obligatoires
+
+Périmètre
+
+Inclus
+
+Formulaire FundamentalsSection
+Champs P1 visibles et éditables si non locked
+Génération YAML incluant fundamentals
+
+Exclus
+
+Multi-owner avancé, approval workflow
+Édition manuelle status/version système
+
+Critères d’acceptation
+
+Les champs fundamentals sont éditables si contrat non locked
+Le statut lifecycle affiché correspond au modèle 5 statuts
+name obligatoire côté produit avant publish
+Les champs système restent non éditables librement
+Les modifications sont reflétées dans le YAML preview
+
+Cas d’erreur / limites
+
+Champ obligatoire manquant → message inline
+
+Règles de gestion
+
+Alignement odcs P1 et contractValidation publish
+
+Validation fonctionnelle
+
+Proto : FundamentalsSection, ContractInfo fields
+MVP : PATCH /contracts/{id}/fundamentals
+
+Validé sur prototype UX (référence démo)
+
+FundamentalsSection, types ContractInfo status lifecycle
+
+Implémentation MVP cible
+
+API PATCH fundamentals avec validation P1
+Owner depuis session / collaborator stub
+
+Liens SP2 — Editor & Lifecycle (ne pas réimplémenter ici)
+
+Règles structurelles transverses si impact schema — SP2
+
+Liens SP5 — Publish & GitOps
+
+86c9n9a5b — Validation YAML pré-publication","Description métier
+
+US complémentaire pour Fundamentals : alignement lifecycle 5 statuts, owner, champs P1 et cible API. US source 86c9nw8bu (qa) inchangée.
+
+Gouvernance — US sources (statuts protégés, non modifiées)
+
+86c9nw8bu (qa) — Éditer Fundamentals
+
+Corrigé / aligné par rapport aux US sources
+
+Statut système : alignement proposed/draft/active/deprecated/retired (pas Draft seul avant publish)
+Name obligatoire produit (déjà dans source — rappel P1)
+
+Ajouté (delta backlog MVP)
+
+Affichage lifecycle cohérent avec modèle produit
+Owner / collaborateurs app-only (non exportés YAML sauf règle P1)
+Cible PATCH API Fundamentals
+
+Exclu de cette US (autre liste ou obsolète)
+
+Validation publish complète (SP5 5b)
+
+Reste porté par l’US source (QA historique)
+
+Champs domain, descriptions, tags fundamentals
+apiVersion/kind/id système non éditables
+Erreurs champs obligatoires
+
+Périmètre
+
+Inclus
+
+Formulaire FundamentalsSection
+Champs P1 visibles et éditables si non locked
+Génération YAML incluant fundamentals
+
+Exclus
+
+Multi-owner avancé, approval workflow
+Édition manuelle status/version système
+
+Critères d’acceptation
+
+Les champs fundamentals sont éditables si contrat non locked
+Le statut lifecycle affiché correspond au modèle 5 statuts
+name obligatoire côté produit avant publish
+Les champs système restent non éditables librement
+Les modifications sont reflétées dans le YAML preview
+
+Cas d’erreur / limites
+
+Champ obligatoire manquant → message inline
+
+Règles de gestion
+
+Alignement odcs P1 et contractValidation publish
+
+Validation fonctionnelle
+
+Proto : FundamentalsSection, ContractInfo fields
+MVP : PATCH /contracts/{id}/fundamentals
+
+Validé sur prototype UX (référence démo)
+
+FundamentalsSection, types ContractInfo status lifecycle
+
+Implémentation MVP cible
+
+API PATCH fundamentals avec validation P1
+Owner depuis session / collaborator stub
+
+Liens SP2 — Editor & Lifecycle (ne pas réimplémenter ici)
+
+Règles structurelles transverses si impact schema — SP2
+
+Liens SP5 — Publish & GitOps
+
+86c9n9a5b — Validation YAML pré-publication","Description métier
+
+US complémentaire pour Fundamentals : alignement lifecycle 5 statuts, owner, champs P1 et cible API. US source 86c9nw8bu (qa) inchangée.
+
+Gouvernance — US sources (statuts protégés, non modifiées)
+
+*   86c9nw8bu (qa) — Éditer Fundamentals
+
+Corrigé / aligné par rapport aux US sources
+
+*   Statut système : alignement proposed/draft/active/deprecated/retired (pas Draft seul avant publish)
+*   Name obligatoire produit (déjà dans source — rappel P1)
+
+Ajouté (delta backlog MVP)
+
+*   Affichage lifecycle cohérent avec modèle produit
+*   Owner / collaborateurs app-only (non exportés YAML sauf règle P1)
+*   Cible PATCH API Fundamentals
+
+Exclu de cette US (autre liste ou obsolète)
+
+*   Validation publish complète (SP5 5b)
+
+Reste porté par l’US source (QA historique)
+
+*   Champs domain, descriptions, tags fundamentals
+*   apiVersion/kind/id système non éditables
+*   Erreurs champs obligatoires
+
+Périmètre
+
+Inclus
+
+*   Formulaire FundamentalsSection
+*   Champs P1 visibles et éditables si non locked
+*   Génération YAML incluant fundamentals
+
+Exclus
+
+*   Multi-owner avancé, approval workflow
+*   Édition manuelle status/version système
+
+Critères d’acceptation
+
+*   Les champs fundamentals sont éditables si contrat non locked
+*   Le statut lifecycle affiché correspond au modèle 5 statuts
+*   name obligatoire côté produit avant publish
+*   Les champs système restent non éditables librement
+*   Les modifications sont reflétées dans le YAML preview
+
+Cas d’erreur / limites
+
+*   Champ obligatoire manquant → message inline
+
+Règles de gestion
+
+*   Alignement odcs P1 et contractValidation publish
+
+Validation fonctionnelle
+
+*   Proto : FundamentalsSection, ContractInfo fields
+*   MVP : PATCH /contracts/{id}/fundamentals
+
+Validé sur prototype UX (référence démo)
+
+*   FundamentalsSection, types ContractInfo status lifecycle
+
+Implémentation MVP cible
+
+*   API PATCH fundamentals avec validation P1
+*   Owner depuis session / collaborator stub
+
+Liens SP2 — Editor & Lifecycle (ne pas réimplémenter ici)
+
+*   Règles structurelles transverses si impact schema — SP2
+
+Liens SP5 — Publish & GitOps
+
+*   86c9n9a5b — Validation YAML pré-publication","a faire","33856616.00000000000000000000000000000000","2026-05-20T12:29:21.306Z","2026-05-20T12:29:21.306Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP1 - Interfaces","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9wmdpm","contract fundamentals","","","","[]"
+"86c9wmdnh","","[Alignement] Navigation sections — cues, Versions sans Form/YAML","Description métier
+
+US complémentaire pour la navigation entre sections du contrat : cues readiness sidebar, accès Versions sans switch Form/YAML, retrait Save draft. US source 86c9n9a4a (qa) inchangée.
+
+Gouvernance — US sources (statuts protégés, non modifiées)
+
+86c9n9a4a (qa) — Navigation entre sections
+
+Corrigé / aligné par rapport aux US sources
+
+Retrait exigence bouton Save draft (obsolète — autosave SP4)
+Distinction cues sidebar vs readiness panel SP4
+
+Ajouté (delta backlog MVP)
+
+Readiness cues sur sections si contrat éditable (sectionNavCues)
+Section Versions accessible sans switch global Form/YAML
+Sections alignées produit actuel (Fundamentals, Schema, gouvernance, YAML, Versions, etc.)
+
+Exclu de cette US (autre liste ou obsolète)
+
+Édition tables/colonnes/relations (SP2)
+Readiness panel complet avec score (SP4 5e)
+Publish Git (SP5)
+
+Reste porté par l’US source (QA historique)
+
+Navigation progressive entre sections
+Indication section active
+Accès YAML lecture seule depuis le shell
+
+Périmètre
+
+Inclus
+
+Sidebar ContractSectionNav
+Cues visuels par section (si règles sectionNavCues)
+Versions : pas de toggle Form/YAML dans ContractTopBar
+Publish depuis top bar quand éligible (renvoi SP5 pour exécution)
+
+Exclus
+
+Save draft P0
+Workflow collaboratif, commentaires
+Éditeur schema détaillé
+
+Critères d’acceptation
+
+La section active est visible dans la sidebar
+Les cues n’apparaissent pas sur contrat read-only
+Versions n’affiche pas le switch Form/YAML
+Aucun bouton Save draft dans le shell navigation
+L’utilisateur accède à Schema sans AC d’édition schema dans cette US
+
+Cas d’erreur / limites
+
+Contrat locked → pas de cues édition, navigation read-only OK
+
+Règles de gestion
+
+SP1 = shell navigation uniquement
+86c9n9a4a dépend des sections SP2 pour le comportement Schema
+
+Validation fonctionnelle
+
+Proto : ContractSectionNav, shouldShowSectionNavProgressCue, Versions sans view toggle
+MVP : lock API + mêmes règles cues
+
+Validé sur prototype UX (référence démo)
+
+ContractSectionNav.tsx, sectionNavCues.ts
+ContractTopBar hideViewToggle sur section versions
+
+Implémentation MVP cible
+
+API lock status drive cues visibility
+
+Liens SP2 — Editor & Lifecycle (ne pas réimplémenter ici)
+
+86c9n9a4e — Édition schéma (tables/champs)
+86c9n9a4r — Relations entre tables
+86c9nw8fj — Verrouillage contrat actif
+
+Liens SP4 — Versioning
+
+86c9n9a55 — Autosave (remplace Save draft)
+86c9n9a5e — Readiness panel (pas les cues sidebar SP1)
+86c9n9a6m — Section Versions (timeline)
+
+Liens SP5 — Publish & GitOps
+
+86c9n9a5u / 86c9n9a5z — Publish (hors create)","Description métier
+
+US complémentaire pour la navigation entre sections du contrat : cues readiness sidebar, accès Versions sans switch Form/YAML, retrait Save draft. US source 86c9n9a4a (qa) inchangée.
+
+Gouvernance — US sources (statuts protégés, non modifiées)
+
+86c9n9a4a (qa) — Navigation entre sections
+
+Corrigé / aligné par rapport aux US sources
+
+Retrait exigence bouton Save draft (obsolète — autosave SP4)
+Distinction cues sidebar vs readiness panel SP4
+
+Ajouté (delta backlog MVP)
+
+Readiness cues sur sections si contrat éditable (sectionNavCues)
+Section Versions accessible sans switch global Form/YAML
+Sections alignées produit actuel (Fundamentals, Schema, gouvernance, YAML, Versions, etc.)
+
+Exclu de cette US (autre liste ou obsolète)
+
+Édition tables/colonnes/relations (SP2)
+Readiness panel complet avec score (SP4 5e)
+Publish Git (SP5)
+
+Reste porté par l’US source (QA historique)
+
+Navigation progressive entre sections
+Indication section active
+Accès YAML lecture seule depuis le shell
+
+Périmètre
+
+Inclus
+
+Sidebar ContractSectionNav
+Cues visuels par section (si règles sectionNavCues)
+Versions : pas de toggle Form/YAML dans ContractTopBar
+Publish depuis top bar quand éligible (renvoi SP5 pour exécution)
+
+Exclus
+
+Save draft P0
+Workflow collaboratif, commentaires
+Éditeur schema détaillé
+
+Critères d’acceptation
+
+La section active est visible dans la sidebar
+Les cues n’apparaissent pas sur contrat read-only
+Versions n’affiche pas le switch Form/YAML
+Aucun bouton Save draft dans le shell navigation
+L’utilisateur accède à Schema sans AC d’édition schema dans cette US
+
+Cas d’erreur / limites
+
+Contrat locked → pas de cues édition, navigation read-only OK
+
+Règles de gestion
+
+SP1 = shell navigation uniquement
+86c9n9a4a dépend des sections SP2 pour le comportement Schema
+
+Validation fonctionnelle
+
+Proto : ContractSectionNav, shouldShowSectionNavProgressCue, Versions sans view toggle
+MVP : lock API + mêmes règles cues
+
+Validé sur prototype UX (référence démo)
+
+ContractSectionNav.tsx, sectionNavCues.ts
+ContractTopBar hideViewToggle sur section versions
+
+Implémentation MVP cible
+
+API lock status drive cues visibility
+
+Liens SP2 — Editor & Lifecycle (ne pas réimplémenter ici)
+
+86c9n9a4e — Édition schéma (tables/champs)
+86c9n9a4r — Relations entre tables
+86c9nw8fj — Verrouillage contrat actif
+
+Liens SP4 — Versioning
+
+86c9n9a55 — Autosave (remplace Save draft)
+86c9n9a5e — Readiness panel (pas les cues sidebar SP1)
+86c9n9a6m — Section Versions (timeline)
+
+Liens SP5 — Publish & GitOps
+
+86c9n9a5u / 86c9n9a5z — Publish (hors create)","Description métier
+
+US complémentaire pour la navigation entre sections du contrat : cues readiness sidebar, accès Versions sans switch Form/YAML, retrait Save draft. US source 86c9n9a4a (qa) inchangée.
+
+Gouvernance — US sources (statuts protégés, non modifiées)
+
+*   86c9n9a4a (qa) — Navigation entre sections
+
+Corrigé / aligné par rapport aux US sources
+
+*   Retrait exigence bouton Save draft (obsolète — autosave SP4)
+*   Distinction cues sidebar vs readiness panel SP4
+
+Ajouté (delta backlog MVP)
+
+*   Readiness cues sur sections si contrat éditable (sectionNavCues)
+*   Section Versions accessible sans switch global Form/YAML
+*   Sections alignées produit actuel (Fundamentals, Schema, gouvernance, YAML, Versions, etc.)
+
+Exclu de cette US (autre liste ou obsolète)
+
+*   Édition tables/colonnes/relations (SP2)
+*   Readiness panel complet avec score (SP4 5e)
+*   Publish Git (SP5)
+
+Reste porté par l’US source (QA historique)
+
+*   Navigation progressive entre sections
+*   Indication section active
+*   Accès YAML lecture seule depuis le shell
+
+Périmètre
+
+Inclus
+
+*   Sidebar ContractSectionNav
+*   Cues visuels par section (si règles sectionNavCues)
+*   Versions : pas de toggle Form/YAML dans ContractTopBar
+*   Publish depuis top bar quand éligible (renvoi SP5 pour exécution)
+
+Exclus
+
+*   Save draft P0
+*   Workflow collaboratif, commentaires
+*   Éditeur schema détaillé
+
+Critères d’acceptation
+
+*   La section active est visible dans la sidebar
+*   Les cues n’apparaissent pas sur contrat read-only
+*   Versions n’affiche pas le switch Form/YAML
+*   Aucun bouton Save draft dans le shell navigation
+*   L’utilisateur accède à Schema sans AC d’édition schema dans cette US
+
+Cas d’erreur / limites
+
+*   Contrat locked → pas de cues édition, navigation read-only OK
+
+Règles de gestion
+
+*   SP1 = shell navigation uniquement
+*   86c9n9a4a dépend des sections SP2 pour le comportement Schema
+
+Validation fonctionnelle
+
+*   Proto : ContractSectionNav, shouldShowSectionNavProgressCue, Versions sans view toggle
+*   MVP : lock API + mêmes règles cues
+
+Validé sur prototype UX (référence démo)
+
+*   ContractSectionNav.tsx, sectionNavCues.ts
+*   ContractTopBar hideViewToggle sur section versions
+
+Implémentation MVP cible
+
+*   API lock status drive cues visibility
+
+Liens SP2 — Editor & Lifecycle (ne pas réimplémenter ici)
+
+*   86c9n9a4e — Édition schéma (tables/champs)
+*   86c9n9a4r — Relations entre tables
+*   86c9nw8fj — Verrouillage contrat actif
+
+Liens SP4 — Versioning
+
+*   86c9n9a55 — Autosave (remplace Save draft)
+*   86c9n9a5e — Readiness panel (pas les cues sidebar SP1)
+*   86c9n9a6m — Section Versions (timeline)
+
+Liens SP5 — Publish & GitOps
+
+*   86c9n9a5u / 86c9n9a5z — Publish (hors create)","a faire","33856614.00000813000000000000000000000000","2026-05-20T12:29:18.625Z","2026-05-20T12:29:18.625Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","normal","","","","","","SP1 - Interfaces","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9wmdnh","contract structure","","","","[]"
+"86c9wmdne","","[Alignement] YAML view — Copy/Download, working copy courante","Description métier
+
+US complémentaire pour l’onglet YAML : copy, download, preview reflétant l’état courant (working copy). US source 86c9nw8br (qa) inchangée.
+
+Gouvernance — US sources (statuts protégés, non modifiées)
+
+86c9nw8br (qa) — YAML généré lecture seule
+
+Corrigé / aligné par rapport aux US sources
+
+Synchronisation explicite = état courant en mémoire (pas seulement dernier save draft)
+Actions Copy et Download documentées
+
+Ajouté (delta backlog MVP)
+
+Bouton Copy YAML (clipboard)
+Bouton Download YAML (fichier .yaml nommé id_version)
+Indication export coverage / read-only
+
+Exclu de cette US (autre liste ou obsolète)
+
+MD5, push Git, compare versions
+
+Reste porté par l’US source (QA historique)
+
+YAML read-only pour tous les rôles
+Génération depuis modèle ODCS P1
+Pas d’édition inline YAML
+
+Périmètre
+
+Inclus
+
+Onglet YAML dans le shell contrat
+Preview texte généré par odcsYamlGenerator
+Copy + Download sur le même contenu que la preview
+
+Exclus
+
+Save draft
+Édition YAML
+Validation live avancée dans l’éditeur
+
+Critères d’acceptation
+
+Le YAML affiché reflète le contrat courant (working copy) après modification
+Copy copie l’intégralité du YAML visible
+Download produit un fichier .yaml cohérent avec la preview
+Aucun champ YAML n’est éditable
+En révision (inRevision), le YAML reflète la working copy
+
+Cas d’erreur / limites
+
+Clipboard refusé → feedback utilisateur
+
+Règles de gestion
+
+Preview = source de vérité pour copy/download (yamlFileDownload)
+
+Validation fonctionnelle
+
+Proto : YamlView copy/download, generateODCSYaml(contract)
+MVP : preview serveur sur état courant brouillon
+
+Validé sur prototype UX (référence démo)
+
+YamlView.tsx — Copy, Download, buildYamlDownloadFilename
+odcsYamlGenerator.ts
+
+Implémentation MVP cible
+
+GET preview YAML working copy
+Download filename convention {id}_{version}.yaml
+
+Liens SP4 — Versioning
+
+Compare versions — SP4
+
+Liens SP5 — Publish & GitOps
+
+Checksum MD5 sur version publiée — SP5 5n, pas dans cette US","Description métier
+
+US complémentaire pour l’onglet YAML : copy, download, preview reflétant l’état courant (working copy). US source 86c9nw8br (qa) inchangée.
+
+Gouvernance — US sources (statuts protégés, non modifiées)
+
+86c9nw8br (qa) — YAML généré lecture seule
+
+Corrigé / aligné par rapport aux US sources
+
+Synchronisation explicite = état courant en mémoire (pas seulement dernier save draft)
+Actions Copy et Download documentées
+
+Ajouté (delta backlog MVP)
+
+Bouton Copy YAML (clipboard)
+Bouton Download YAML (fichier .yaml nommé id_version)
+Indication export coverage / read-only
+
+Exclu de cette US (autre liste ou obsolète)
+
+MD5, push Git, compare versions
+
+Reste porté par l’US source (QA historique)
+
+YAML read-only pour tous les rôles
+Génération depuis modèle ODCS P1
+Pas d’édition inline YAML
+
+Périmètre
+
+Inclus
+
+Onglet YAML dans le shell contrat
+Preview texte généré par odcsYamlGenerator
+Copy + Download sur le même contenu que la preview
+
+Exclus
+
+Save draft
+Édition YAML
+Validation live avancée dans l’éditeur
+
+Critères d’acceptation
+
+Le YAML affiché reflète le contrat courant (working copy) après modification
+Copy copie l’intégralité du YAML visible
+Download produit un fichier .yaml cohérent avec la preview
+Aucun champ YAML n’est éditable
+En révision (inRevision), le YAML reflète la working copy
+
+Cas d’erreur / limites
+
+Clipboard refusé → feedback utilisateur
+
+Règles de gestion
+
+Preview = source de vérité pour copy/download (yamlFileDownload)
+
+Validation fonctionnelle
+
+Proto : YamlView copy/download, generateODCSYaml(contract)
+MVP : preview serveur sur état courant brouillon
+
+Validé sur prototype UX (référence démo)
+
+YamlView.tsx — Copy, Download, buildYamlDownloadFilename
+odcsYamlGenerator.ts
+
+Implémentation MVP cible
+
+GET preview YAML working copy
+Download filename convention {id}_{version}.yaml
+
+Liens SP4 — Versioning
+
+Compare versions — SP4
+
+Liens SP5 — Publish & GitOps
+
+Checksum MD5 sur version publiée — SP5 5n, pas dans cette US","Description métier
+
+US complémentaire pour l’onglet YAML : copy, download, preview reflétant l’état courant (working copy). US source 86c9nw8br (qa) inchangée.
+
+Gouvernance — US sources (statuts protégés, non modifiées)
+
+*   86c9nw8br (qa) — YAML généré lecture seule
+
+Corrigé / aligné par rapport aux US sources
+
+*   Synchronisation explicite = état courant en mémoire (pas seulement dernier save draft)
+*   Actions Copy et Download documentées
+
+Ajouté (delta backlog MVP)
+
+*   Bouton Copy YAML (clipboard)
+*   Bouton Download YAML (fichier .yaml nommé id\_version)
+*   Indication export coverage / read-only
+
+Exclu de cette US (autre liste ou obsolète)
+
+*   MD5, push Git, compare versions
+
+Reste porté par l’US source (QA historique)
+
+*   YAML read-only pour tous les rôles
+*   Génération depuis modèle ODCS P1
+*   Pas d’édition inline YAML
+
+Périmètre
+
+Inclus
+
+*   Onglet YAML dans le shell contrat
+*   Preview texte généré par odcsYamlGenerator
+*   Copy + Download sur le même contenu que la preview
+
+Exclus
+
+*   Save draft
+*   Édition YAML
+*   Validation live avancée dans l’éditeur
+
+Critères d’acceptation
+
+*   Le YAML affiché reflète le contrat courant (working copy) après modification
+*   Copy copie l’intégralité du YAML visible
+*   Download produit un fichier .yaml cohérent avec la preview
+*   Aucun champ YAML n’est éditable
+*   En révision (inRevision), le YAML reflète la working copy
+
+Cas d’erreur / limites
+
+*   Clipboard refusé → feedback utilisateur
+
+Règles de gestion
+
+*   Preview = source de vérité pour copy/download (yamlFileDownload)
+
+Validation fonctionnelle
+
+*   Proto : YamlView copy/download, generateODCSYaml(contract)
+*   MVP : preview serveur sur état courant brouillon
+
+Validé sur prototype UX (référence démo)
+
+*   YamlView.tsx — Copy, Download, buildYamlDownloadFilename
+*   odcsYamlGenerator.ts
+
+Implémentation MVP cible
+
+*   GET preview YAML working copy
+*   Download filename convention {id}\_{version}.yaml
+
+Liens SP4 — Versioning
+
+*   Compare versions — SP4
+
+Liens SP5 — Publish & GitOps
+
+*   Checksum MD5 sur version publiée — SP5 5n, pas dans cette US","a faire","33856614.00000051000000000000000000000000","2026-05-20T12:29:18.590Z","2026-05-20T12:29:18.590Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP1 - Interfaces","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9wmdne","yaml view","","","","[]"
+"86c9wmdnb","","[Alignement] Create contract — parcours two-step et statuts proposed/draft","Description métier
+
+US complémentaire alignant le parcours de création sur le prototype validé (mode choice, non-persistance) et le MVP (transaction create, statuts lifecycle produit). Les US sources 86c9n9a3v et 86c9n9a48 restent en QA inchangées.
+
+Gouvernance — US sources (statuts protégés, non modifiées)
+
+86c9n9a3v (qa) — Créer un nouveau data contract
+86c9n9a48 (qa) — Start from scratch / fallback — couverture explicite dans cette CREATE
+
+Corrigé / aligné par rapport aux US sources
+
+Plus de création Draft immédiate + redirection DDL seule au clic Create Contract
+Statut initial import → proposed (pas draft à la création)
+Statut initial scratch → draft après validation du parcours
+
+Ajouté (delta backlog MVP)
+
+Écran create two-step : cartes Import DDL / Start from scratch avant toute persistance
+Aucun contrat enregistré tant que l’utilisateur n’a pas validé import ou scratch
+Transaction create API avec owner par défaut
+Back to creation options depuis le formulaire DDL
+
+Exclu de cette US (autre liste ou obsolète)
+
+Parser SQL CREATE TABLE, validation types, injection tables/FK
+Publish, readiness panel, Git
+
+Reste porté par l’US source (QA historique)
+
+Intention produit « créer un contrat » et tests QA historiques sur 3v/48
+Fallback manuel toujours secondaire au parcours DDL recommandé
+
+Périmètre
+
+Inclus
+
+Bouton Create Contract → vue mode choice (pas de contrat créé)
+Carte Import DDL → parcours import → contrat proposed + Fundamentals
+Carte Start from scratch → contrat draft + schéma vide + Fundamentals
+Owner par défaut = créateur
+Publish désactivé tant que non publiable
+
+Exclus
+
+Persistance avant choix de mode
+Redirect automatique vers textarea SQL sans mode choice
+Parser DDL (SP3)
+Templates, IA, import Zeenea
+
+Critères d’acceptation
+
+Create Contract ouvre la vue two-step sans persister de contrat
+Import DDL réussi crée un contrat proposed et ouvre Fundamentals
+Start from scratch crée un contrat draft (schéma vide) et ouvre Fundamentals
+Back to creation options ramène au mode choice sans contrat fantôme
+Aucune écriture localStorage/API avant succès du parcours choisi
+Owner visible dans le registry après création
+
+Cas d’erreur / limites
+
+Échec parse DDL → message utilisateur, pas de contrat proposed créé
+Abandon avant validation → aucun contrat persisté
+
+Règles de gestion
+
+Aligné doc produit §7 — séparation mode choice / import
+86c9n9a48 couvert ici — pas de CREATE scratch séparée
+
+Validation fonctionnelle
+
+Proto : CreateContractView, createContract manual/import
+MVP : API POST create avec statut proposed ou draft selon mode
+
+Validé sur prototype UX (référence démo)
+
+CreateContractView — cartes Import DDL / Start from scratch
+createContract.ts — creationSource import/manual, status proposed/draft
+Pas de saveContracts avant onParsed / onStartFromScratch
+
+Implémentation MVP cible
+
+Endpoint transaction create (proposed | draft)
+Owner par défaut côté serveur
+Idempotence abandon parcours (pas de brouillon orphelin)
+
+Liens SP3 — DDL Import (ne pas réimplémenter ici)
+
+86c9n9a44 — Import DDL (parser, schéma initial)
+86c9n9a47 — Conversion DDL → schéma ODCS éditable
+
+Liens SP4 — Versioning
+
+proposed → Start drafting (lifecycle SP4)
+
+Liens SP5 — Publish & GitOps
+
+86c9n9a5u / 86c9n9a5z — Publish (hors create)","Description métier
+
+US complémentaire alignant le parcours de création sur le prototype validé (mode choice, non-persistance) et le MVP (transaction create, statuts lifecycle produit). Les US sources 86c9n9a3v et 86c9n9a48 restent en QA inchangées.
+
+Gouvernance — US sources (statuts protégés, non modifiées)
+
+86c9n9a3v (qa) — Créer un nouveau data contract
+86c9n9a48 (qa) — Start from scratch / fallback — couverture explicite dans cette CREATE
+
+Corrigé / aligné par rapport aux US sources
+
+Plus de création Draft immédiate + redirection DDL seule au clic Create Contract
+Statut initial import → proposed (pas draft à la création)
+Statut initial scratch → draft après validation du parcours
+
+Ajouté (delta backlog MVP)
+
+Écran create two-step : cartes Import DDL / Start from scratch avant toute persistance
+Aucun contrat enregistré tant que l’utilisateur n’a pas validé import ou scratch
+Transaction create API avec owner par défaut
+Back to creation options depuis le formulaire DDL
+
+Exclu de cette US (autre liste ou obsolète)
+
+Parser SQL CREATE TABLE, validation types, injection tables/FK
+Publish, readiness panel, Git
+
+Reste porté par l’US source (QA historique)
+
+Intention produit « créer un contrat » et tests QA historiques sur 3v/48
+Fallback manuel toujours secondaire au parcours DDL recommandé
+
+Périmètre
+
+Inclus
+
+Bouton Create Contract → vue mode choice (pas de contrat créé)
+Carte Import DDL → parcours import → contrat proposed + Fundamentals
+Carte Start from scratch → contrat draft + schéma vide + Fundamentals
+Owner par défaut = créateur
+Publish désactivé tant que non publiable
+
+Exclus
+
+Persistance avant choix de mode
+Redirect automatique vers textarea SQL sans mode choice
+Parser DDL (SP3)
+Templates, IA, import Zeenea
+
+Critères d’acceptation
+
+Create Contract ouvre la vue two-step sans persister de contrat
+Import DDL réussi crée un contrat proposed et ouvre Fundamentals
+Start from scratch crée un contrat draft (schéma vide) et ouvre Fundamentals
+Back to creation options ramène au mode choice sans contrat fantôme
+Aucune écriture localStorage/API avant succès du parcours choisi
+Owner visible dans le registry après création
+
+Cas d’erreur / limites
+
+Échec parse DDL → message utilisateur, pas de contrat proposed créé
+Abandon avant validation → aucun contrat persisté
+
+Règles de gestion
+
+Aligné doc produit §7 — séparation mode choice / import
+86c9n9a48 couvert ici — pas de CREATE scratch séparée
+
+Validation fonctionnelle
+
+Proto : CreateContractView, createContract manual/import
+MVP : API POST create avec statut proposed ou draft selon mode
+
+Validé sur prototype UX (référence démo)
+
+CreateContractView — cartes Import DDL / Start from scratch
+createContract.ts — creationSource import/manual, status proposed/draft
+Pas de saveContracts avant onParsed / onStartFromScratch
+
+Implémentation MVP cible
+
+Endpoint transaction create (proposed | draft)
+Owner par défaut côté serveur
+Idempotence abandon parcours (pas de brouillon orphelin)
+
+Liens SP3 — DDL Import (ne pas réimplémenter ici)
+
+86c9n9a44 — Import DDL (parser, schéma initial)
+86c9n9a47 — Conversion DDL → schéma ODCS éditable
+
+Liens SP4 — Versioning
+
+proposed → Start drafting (lifecycle SP4)
+
+Liens SP5 — Publish & GitOps
+
+86c9n9a5u / 86c9n9a5z — Publish (hors create)","Description métier
+
+US complémentaire alignant le parcours de création sur le prototype validé (mode choice, non-persistance) et le MVP (transaction create, statuts lifecycle produit). Les US sources 86c9n9a3v et 86c9n9a48 restent en QA inchangées.
+
+Gouvernance — US sources (statuts protégés, non modifiées)
+
+*   86c9n9a3v (qa) — Créer un nouveau data contract
+*   86c9n9a48 (qa) — Start from scratch / fallback — couverture explicite dans cette CREATE
+
+Corrigé / aligné par rapport aux US sources
+
+*   Plus de création Draft immédiate + redirection DDL seule au clic Create Contract
+*   Statut initial import → proposed (pas draft à la création)
+*   Statut initial scratch → draft après validation du parcours
+
+Ajouté (delta backlog MVP)
+
+*   Écran create two-step : cartes Import DDL / Start from scratch avant toute persistance
+*   Aucun contrat enregistré tant que l’utilisateur n’a pas validé import ou scratch
+*   Transaction create API avec owner par défaut
+*   Back to creation options depuis le formulaire DDL
+
+Exclu de cette US (autre liste ou obsolète)
+
+*   Parser SQL CREATE TABLE, validation types, injection tables/FK
+*   Publish, readiness panel, Git
+
+Reste porté par l’US source (QA historique)
+
+*   Intention produit « créer un contrat » et tests QA historiques sur 3v/48
+*   Fallback manuel toujours secondaire au parcours DDL recommandé
+
+Périmètre
+
+Inclus
+
+*   Bouton Create Contract → vue mode choice (pas de contrat créé)
+*   Carte Import DDL → parcours import → contrat proposed + Fundamentals
+*   Carte Start from scratch → contrat draft + schéma vide + Fundamentals
+*   Owner par défaut = créateur
+*   Publish désactivé tant que non publiable
+
+Exclus
+
+*   Persistance avant choix de mode
+*   Redirect automatique vers textarea SQL sans mode choice
+*   Parser DDL (SP3)
+*   Templates, IA, import Zeenea
+
+Critères d’acceptation
+
+*   Create Contract ouvre la vue two-step sans persister de contrat
+*   Import DDL réussi crée un contrat proposed et ouvre Fundamentals
+*   Start from scratch crée un contrat draft (schéma vide) et ouvre Fundamentals
+*   Back to creation options ramène au mode choice sans contrat fantôme
+*   Aucune écriture localStorage/API avant succès du parcours choisi
+*   Owner visible dans le registry après création
+
+Cas d’erreur / limites
+
+*   Échec parse DDL → message utilisateur, pas de contrat proposed créé
+*   Abandon avant validation → aucun contrat persisté
+
+Règles de gestion
+
+*   Aligné doc produit §7 — séparation mode choice / import
+*   86c9n9a48 couvert ici — pas de CREATE scratch séparée
+
+Validation fonctionnelle
+
+*   Proto : CreateContractView, createContract manual/import
+*   MVP : API POST create avec statut proposed ou draft selon mode
+
+Validé sur prototype UX (référence démo)
+
+*   CreateContractView — cartes Import DDL / Start from scratch
+*   createContract.ts — creationSource import/manual, status proposed/draft
+*   Pas de saveContracts avant onParsed / onStartFromScratch
+
+Implémentation MVP cible
+
+*   Endpoint transaction create (proposed | draft)
+*   Owner par défaut côté serveur
+*   Idempotence abandon parcours (pas de brouillon orphelin)
+
+Liens SP3 — DDL Import (ne pas réimplémenter ici)
+
+*   86c9n9a44 — Import DDL (parser, schéma initial)
+*   86c9n9a47 — Conversion DDL → schéma ODCS éditable
+
+Liens SP4 — Versioning
+
+*   proposed → Start drafting (lifecycle SP4)
+
+Liens SP5 — Publish & GitOps
+
+*   86c9n9a5u / 86c9n9a5z — Publish (hors create)","a faire","33856614.00000000000000000000000000000000","2026-05-20T12:29:18.521Z","2026-05-20T12:29:18.521Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP1 - Interfaces","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9wmdnb","contract creation","","","","[]"
+"86c9wmdnc","","[Alignement] Registry — recherche nom/ID, filtre lifecycle, pagination/tri","Description métier
+
+US complémentaire : la recherche backlog est confirmée dans le MVP. L’US source 86c9n9a3w (qa) excluait la recherche — cette CREATE porte le delta sans réécrire l’US protégée.
+
+Gouvernance — US sources (statuts protégés, non modifiées)
+
+86c9n9a3w (qa) — Liste des data contracts
+
+Corrigé / aligné par rapport aux US sources
+
+AC « aucune recherche dans le MVP » remplacés par exigences search dans cette US
+Statuts lifecycle produit (5 statuts) vs ancien triptyque Draft/Active/Deprecated seul
+
+Ajouté (delta backlog MVP)
+
+Recherche par nom de contrat
+Recherche par ID contrat
+Filtre par statut lifecycle (proposed, draft, active, deprecated, retired)
+Pagination et tri côté API/query
+
+Exclu de cette US (autre liste ou obsolète)
+
+Réécriture de la description de 86c9n9a3w
+
+Reste porté par l’US source (QA historique)
+
+Page Contracts, colonnes, empty state, ouverture détail, Create Contract
+Exclusion soft-deleted de la liste principale
+
+Périmètre
+
+Inclus
+
+Champ Search (nom + ID)
+Filtre lifecycle
+Pagination UI + tri colonnes
+Compteur / table / navigation latérale
+
+Exclus
+
+Bulk actions, export, colonnes personnalisables, corbeille
+Compare versions (SP4)
+
+Critères d’acceptation
+
+La recherche filtre par titre et par id (insensible à la casse côté produit)
+Le filtre lifecycle restreint la liste aux statuts sélectionnés
+La pagination fonctionne avec la recherche active
+Le tri par colonne fonctionne avec recherche + filtre
+État vide explicite si aucun résultat
+
+Cas d’erreur / limites
+
+Query invalide → liste vide ou message, pas d’erreur silencieuse
+
+Règles de gestion
+
+Recherche MVP confirmée PO — portée par cette CREATE, pas UPDATE 3w
+
+Validation fonctionnelle
+
+Proto : ContractsBacklog search + lifecycleFilter + pagination
+MVP : API liste avec query params search, status, sort, page
+
+Validé sur prototype UX (référence démo)
+
+ContractsBacklog.tsx — Search input, lifecycle filter, sort, PAGE_SIZE
+
+Implémentation MVP cible
+
+GET /contracts?search=&status=&sort=&page=
+Cohérence filtres avec statuts ODCS lifecycle produit
+
+Liens SP4 — Versioning
+
+Colonnes version enrichies si hors registry — SP4
+
+Liens SP6 — Auth (si applicable)
+
+Auth / visibilité liste — SP6 si plateforme","Description métier
+
+US complémentaire : la recherche backlog est confirmée dans le MVP. L’US source 86c9n9a3w (qa) excluait la recherche — cette CREATE porte le delta sans réécrire l’US protégée.
+
+Gouvernance — US sources (statuts protégés, non modifiées)
+
+86c9n9a3w (qa) — Liste des data contracts
+
+Corrigé / aligné par rapport aux US sources
+
+AC « aucune recherche dans le MVP » remplacés par exigences search dans cette US
+Statuts lifecycle produit (5 statuts) vs ancien triptyque Draft/Active/Deprecated seul
+
+Ajouté (delta backlog MVP)
+
+Recherche par nom de contrat
+Recherche par ID contrat
+Filtre par statut lifecycle (proposed, draft, active, deprecated, retired)
+Pagination et tri côté API/query
+
+Exclu de cette US (autre liste ou obsolète)
+
+Réécriture de la description de 86c9n9a3w
+
+Reste porté par l’US source (QA historique)
+
+Page Contracts, colonnes, empty state, ouverture détail, Create Contract
+Exclusion soft-deleted de la liste principale
+
+Périmètre
+
+Inclus
+
+Champ Search (nom + ID)
+Filtre lifecycle
+Pagination UI + tri colonnes
+Compteur / table / navigation latérale
+
+Exclus
+
+Bulk actions, export, colonnes personnalisables, corbeille
+Compare versions (SP4)
+
+Critères d’acceptation
+
+La recherche filtre par titre et par id (insensible à la casse côté produit)
+Le filtre lifecycle restreint la liste aux statuts sélectionnés
+La pagination fonctionne avec la recherche active
+Le tri par colonne fonctionne avec recherche + filtre
+État vide explicite si aucun résultat
+
+Cas d’erreur / limites
+
+Query invalide → liste vide ou message, pas d’erreur silencieuse
+
+Règles de gestion
+
+Recherche MVP confirmée PO — portée par cette CREATE, pas UPDATE 3w
+
+Validation fonctionnelle
+
+Proto : ContractsBacklog search + lifecycleFilter + pagination
+MVP : API liste avec query params search, status, sort, page
+
+Validé sur prototype UX (référence démo)
+
+ContractsBacklog.tsx — Search input, lifecycle filter, sort, PAGE_SIZE
+
+Implémentation MVP cible
+
+GET /contracts?search=&status=&sort=&page=
+Cohérence filtres avec statuts ODCS lifecycle produit
+
+Liens SP4 — Versioning
+
+Colonnes version enrichies si hors registry — SP4
+
+Liens SP6 — Auth (si applicable)
+
+Auth / visibilité liste — SP6 si plateforme","Description métier
+
+US complémentaire : la recherche backlog est confirmée dans le MVP. L’US source 86c9n9a3w (qa) excluait la recherche — cette CREATE porte le delta sans réécrire l’US protégée.
+
+Gouvernance — US sources (statuts protégés, non modifiées)
+
+*   86c9n9a3w (qa) — Liste des data contracts
+
+Corrigé / aligné par rapport aux US sources
+
+*   AC « aucune recherche dans le MVP » remplacés par exigences search dans cette US
+*   Statuts lifecycle produit (5 statuts) vs ancien triptyque Draft/Active/Deprecated seul
+
+Ajouté (delta backlog MVP)
+
+*   Recherche par nom de contrat
+*   Recherche par ID contrat
+*   Filtre par statut lifecycle (proposed, draft, active, deprecated, retired)
+*   Pagination et tri côté API/query
+
+Exclu de cette US (autre liste ou obsolète)
+
+*   Réécriture de la description de 86c9n9a3w
+
+Reste porté par l’US source (QA historique)
+
+*   Page Contracts, colonnes, empty state, ouverture détail, Create Contract
+*   Exclusion soft-deleted de la liste principale
+
+Périmètre
+
+Inclus
+
+*   Champ Search (nom + ID)
+*   Filtre lifecycle
+*   Pagination UI + tri colonnes
+*   Compteur / table / navigation latérale
+
+Exclus
+
+*   Bulk actions, export, colonnes personnalisables, corbeille
+*   Compare versions (SP4)
+
+Critères d’acceptation
+
+*   La recherche filtre par titre et par id (insensible à la casse côté produit)
+*   Le filtre lifecycle restreint la liste aux statuts sélectionnés
+*   La pagination fonctionne avec la recherche active
+*   Le tri par colonne fonctionne avec recherche + filtre
+*   État vide explicite si aucun résultat
+
+Cas d’erreur / limites
+
+*   Query invalide → liste vide ou message, pas d’erreur silencieuse
+
+Règles de gestion
+
+*   Recherche MVP confirmée PO — portée par cette CREATE, pas UPDATE 3w
+
+Validation fonctionnelle
+
+*   Proto : ContractsBacklog search + lifecycleFilter + pagination
+*   MVP : API liste avec query params search, status, sort, page
+
+Validé sur prototype UX (référence démo)
+
+*   ContractsBacklog.tsx — Search input, lifecycle filter, sort, PAGE\_SIZE
+
+Implémentation MVP cible
+
+*   GET /contracts?search=&status=&sort=&page=
+*   Cohérence filtres avec statuts ODCS lifecycle produit
+
+Liens SP4 — Versioning
+
+*   Colonnes version enrichies si hors registry — SP4
+
+Liens SP6 — Auth (si applicable)
+
+*   Auth / visibilité liste — SP6 si plateforme","a faire","33856614.00000781000000000000000000000000","2026-05-20T12:29:18.511Z","2026-05-20T12:29:18.511Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP1 - Interfaces","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9wmdnc","contracts registry","","","","[]"
+"86c9nw8bu","","ETQ utilisateur, je veux éditer les informations fondamentales afin de qualifier mon data contract","Description métier
+
+L’utilisateur doit renseigner les champs fondamentaux nécessaires au contrat ODCS et à l’usage produit. Les champs système comme apiVersion, kind, id, status et version sont générés ou contrôlés par le système.
+
+Périmètre inclus
+
+Nom du contrat
+Domain
+Description purpose/limitations/usage
+Tags
+Owner affiché depuis l’utilisateur connecté
+Version cible affichée
+Status système
+Valeurs système ODCS apiVersion, kind, id
+
+Périmètre exclu
+
+Gestion multi-owner
+Rôles Contributor/Viewer
+Policies Zeenea
+Glossaire Zeenea
+Approval workflow
+Édition manuelle de status/version système
+
+Critères d’acceptation
+
+apiVersion est renseigné par défaut avec v3.1.0
+kind vaut DataContract
+id est généré
+status est Draft avant publication
+version cible est visible mais non publiée
+name est obligatoire côté produit
+Les champs description sont éditables
+Les champs système ne sont pas éditables librement
+Les erreurs de champs obligatoires sont affichées
+
+Règles de gestion
+
+Les champs obligatoires ODCS sont respectés. Le champ name est optionnel dans ODCS mais obligatoire dans le produit pour éviter un contrat inexploitable en UI.
+
+Validation fonctionnelle
+
+Tester création, édition, sauvegarde, champs manquants, champs système non éditables et génération du YAML.","Description métier
+
+L’utilisateur doit renseigner les champs fondamentaux nécessaires au contrat ODCS et à l’usage produit. Les champs système comme apiVersion, kind, id, status et version sont générés ou contrôlés par le système.
+
+Périmètre inclus
+
+Nom du contrat
+Domain
+Description purpose/limitations/usage
+Tags
+Owner affiché depuis l’utilisateur connecté
+Version cible affichée
+Status système
+Valeurs système ODCS apiVersion, kind, id
+
+Périmètre exclu
+
+Gestion multi-owner
+Rôles Contributor/Viewer
+Policies Zeenea
+Glossaire Zeenea
+Approval workflow
+Édition manuelle de status/version système
+
+Critères d’acceptation
+
+apiVersion est renseigné par défaut avec v3.1.0
+kind vaut DataContract
+id est généré
+status est Draft avant publication
+version cible est visible mais non publiée
+name est obligatoire côté produit
+Les champs description sont éditables
+Les champs système ne sont pas éditables librement
+Les erreurs de champs obligatoires sont affichées
+
+Règles de gestion
+
+Les champs obligatoires ODCS sont respectés. Le champ name est optionnel dans ODCS mais obligatoire dans le produit pour éviter un contrat inexploitable en UI.
+
+Validation fonctionnelle
+
+Tester création, édition, sauvegarde, champs manquants, champs système non éditables et génération du YAML.","## Description métier
+
+L’utilisateur doit renseigner les champs fondamentaux nécessaires au contrat ODCS et à l’usage produit. Les champs système comme apiVersion, kind, id, status et version sont générés ou contrôlés par le système.
+* * *
+
+## Périmètre inclus
+
+*   Nom du contrat
+*   Domain
+*   Description purpose/limitations/usage
+*   Tags
+*   Owner affiché depuis l’utilisateur connecté
+*   Version cible affichée
+*   Status système
+*   Valeurs système ODCS apiVersion, kind, id
+* * *
+
+## Périmètre exclu
+
+*   Gestion multi-owner
+*   Rôles Contributor/Viewer
+*   Policies Zeenea
+*   Glossaire Zeenea
+*   Approval workflow
+*   Édition manuelle de status/version système
+* * *
+
+## Critères d’acceptation
+
+1. apiVersion est renseigné par défaut avec v3.1.0
+2. kind vaut DataContract
+3. id est généré
+4. status est Draft avant publication
+5. version cible est visible mais non publiée
+6. name est obligatoire côté produit
+7. Les champs description sont éditables
+8. Les champs système ne sont pas éditables librement
+9. Les erreurs de champs obligatoires sont affichées
+* * *
+
+## Règles de gestion
+
+Les champs obligatoires ODCS sont respectés. Le champ name est optionnel dans ODCS mais obligatoire dans le produit pour éviter un contrat inexploitable en UI.
+* * *
+
+## Validation fonctionnelle
+
+Tester création, édition, sauvegarde, champs manquants, champs système non éditables et génération du YAML.","qa","33856519.00018670000000000000000000000000","2026-05-06T13:23:22.403Z","2026-05-19T07:33:17.113Z","","","Vincent Ghislain","Vincent Ghislain <vincent.ghislain@lonestone.io>","Chloe Noger <chloe@lonestone.studio>, Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP1 - Interfaces","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9nw8bu","contract fundamentals","","","","[]"
+"86c9nw8br","","ETQ utilisateur, je veux visualiser le YAML généré en lecture seule afin de vérifier la représentation technique du contrat","Description métier
+
+L’utilisateur doit pouvoir consulter et copier le YAML généré automatiquement depuis le Draft sauvegardé ou la version publiée, mais aucun rôle ne peut l’éditer directement dans le MVP.
+
+Périmètre inclus
+
+Onglet ou vue YAML
+YAML généré depuis le modèle
+Lecture seule pour tous
+Copie du contenu
+Indication Generated ODCS YAML - Read only
+Synchronisation avec dernier Draft sauvegardé ou version publiée
+
+Périmètre exclu
+
+Édition YAML inline
+Bypass des formulaires
+Merge manuel YAML
+Gestion des droits Owner/Contributor/Viewer
+Validation live avancée dans l’éditeur
+
+Critères d’acceptation
+
+Le YAML est affiché pour un Draft
+Le YAML est affiché pour une version Active
+Aucun champ YAML n’est éditable
+Le YAML reflète les dernières données sauvegardées
+Le YAML publié correspond au payload utilisé pour le checksum
+L’utilisateur peut copier le YAML
+
+Règles de gestion
+
+Le YAML est read-only pour tous les rôles dans le MVP. Les modifications passent uniquement par les formulaires et l’éditeur de schéma.
+
+Validation fonctionnelle
+
+Tester affichage Draft, affichage Active, impossibilité d’édition, copie, synchronisation après sauvegarde et correspondance publication/checksum.","Description métier
+
+L’utilisateur doit pouvoir consulter et copier le YAML généré automatiquement depuis le Draft sauvegardé ou la version publiée, mais aucun rôle ne peut l’éditer directement dans le MVP.
+
+Périmètre inclus
+
+Onglet ou vue YAML
+YAML généré depuis le modèle
+Lecture seule pour tous
+Copie du contenu
+Indication Generated ODCS YAML - Read only
+Synchronisation avec dernier Draft sauvegardé ou version publiée
+
+Périmètre exclu
+
+Édition YAML inline
+Bypass des formulaires
+Merge manuel YAML
+Gestion des droits Owner/Contributor/Viewer
+Validation live avancée dans l’éditeur
+
+Critères d’acceptation
+
+Le YAML est affiché pour un Draft
+Le YAML est affiché pour une version Active
+Aucun champ YAML n’est éditable
+Le YAML reflète les dernières données sauvegardées
+Le YAML publié correspond au payload utilisé pour le checksum
+L’utilisateur peut copier le YAML
+
+Règles de gestion
+
+Le YAML est read-only pour tous les rôles dans le MVP. Les modifications passent uniquement par les formulaires et l’éditeur de schéma.
+
+Validation fonctionnelle
+
+Tester affichage Draft, affichage Active, impossibilité d’édition, copie, synchronisation après sauvegarde et correspondance publication/checksum.","## Description métier
+
+L’utilisateur doit pouvoir consulter et copier le YAML généré automatiquement depuis le Draft sauvegardé ou la version publiée, mais aucun rôle ne peut l’éditer directement dans le MVP.
+* * *
+
+## Périmètre inclus
+
+*   Onglet ou vue YAML
+*   YAML généré depuis le modèle
+*   Lecture seule pour tous
+*   Copie du contenu
+*   Indication Generated ODCS YAML - Read only
+*   Synchronisation avec dernier Draft sauvegardé ou version publiée
+* * *
+
+## Périmètre exclu
+
+*   Édition YAML inline
+*   Bypass des formulaires
+*   Merge manuel YAML
+*   Gestion des droits Owner/Contributor/Viewer
+*   Validation live avancée dans l’éditeur
+* * *
+
+## Critères d’acceptation
+
+1. Le YAML est affiché pour un Draft
+2. Le YAML est affiché pour une version Active
+3. Aucun champ YAML n’est éditable
+4. Le YAML reflète les dernières données sauvegardées
+5. Le YAML publié correspond au payload utilisé pour le checksum
+6. L’utilisateur peut copier le YAML
+* * *
+
+## Règles de gestion
+
+Le YAML est read-only pour tous les rôles dans le MVP. Les modifications passent uniquement par les formulaires et l’éditeur de schéma.
+* * *
+
+## Validation fonctionnelle
+
+Tester affichage Draft, affichage Active, impossibilité d’édition, copie, synchronisation après sauvegarde et correspondance publication/checksum.","qa","33856525.00056280000000000000000000000000","2026-05-06T13:23:22.396Z","2026-05-19T07:46:58.823Z","","","Vincent Ghislain","Vincent Ghislain <vincent.ghislain@lonestone.io>","Chloe Noger <chloe@lonestone.studio>, Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP1 - Interfaces","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9nw8br","yaml view","","","","[]"
+"86c9n9a6f","","ETQ équipe design/tech, je veux aligner l’UI MVP avec les maquettes et le design system Zeenea afin de livrer une expérience cohérente sans pixel-perfect","Description métier
+
+Le MVP doit reprendre les principes des maquettes et du design system Zeenea, tout en privilégiant l’utilisabilité, la lisibilité et la faisabilité technique plutôt qu’une reproduction pixel-perfect.
+
+Périmètre inclus
+
+Structure générale des maquettes
+Composants design system disponibles
+Lisibilité pour profils techniques et non techniques
+Formulaires section par section
+YAML séparé ou accessible sans être constamment imposé
+Schema editor table/liste utilisable
+
+Périmètre exclu
+
+Pixel-perfect obligatoire
+Graphe schema avancé obligatoire
+Collaboration UI
+Copilot
+Refonte complète non alignée Zeenea
+
+Critères d’acceptation
+
+Les écrans principaux respectent les principes de navigation
+Les composants disponibles sont utilisés quand possible
+Les écarts aux maquettes sont documentés
+L’éditeur de schéma est utilisable sans graphe avancé
+Le YAML read-only est accessible clairement
+L’interface reste compréhensible pour un utilisateur non technique
+
+Règles de gestion
+
+Objectif UI validé : alignement fonctionnel et design system, pas pixel-perfect. Les maquettes restent une base indicative.
+
+Validation fonctionnelle
+
+Revue UX des écrans Contracts, DDL Import, Fundamentals, Schema, YAML, Versions et Publish.","Description métier
+
+Le MVP doit reprendre les principes des maquettes et du design system Zeenea, tout en privilégiant l’utilisabilité, la lisibilité et la faisabilité technique plutôt qu’une reproduction pixel-perfect.
+
+Périmètre inclus
+
+Structure générale des maquettes
+Composants design system disponibles
+Lisibilité pour profils techniques et non techniques
+Formulaires section par section
+YAML séparé ou accessible sans être constamment imposé
+Schema editor table/liste utilisable
+
+Périmètre exclu
+
+Pixel-perfect obligatoire
+Graphe schema avancé obligatoire
+Collaboration UI
+Copilot
+Refonte complète non alignée Zeenea
+
+Critères d’acceptation
+
+Les écrans principaux respectent les principes de navigation
+Les composants disponibles sont utilisés quand possible
+Les écarts aux maquettes sont documentés
+L’éditeur de schéma est utilisable sans graphe avancé
+Le YAML read-only est accessible clairement
+L’interface reste compréhensible pour un utilisateur non technique
+
+Règles de gestion
+
+Objectif UI validé : alignement fonctionnel et design system, pas pixel-perfect. Les maquettes restent une base indicative.
+
+Validation fonctionnelle
+
+Revue UX des écrans Contracts, DDL Import, Fundamentals, Schema, YAML, Versions et Publish.","## Description métier
+
+Le MVP doit reprendre les principes des maquettes et du design system Zeenea, tout en privilégiant l’utilisabilité, la lisibilité et la faisabilité technique plutôt qu’une reproduction pixel-perfect.
+* * *
+
+## Périmètre inclus
+
+*   Structure générale des maquettes
+*   Composants design system disponibles
+*   Lisibilité pour profils techniques et non techniques
+*   Formulaires section par section
+*   YAML séparé ou accessible sans être constamment imposé
+*   Schema editor table/liste utilisable
+* * *
+
+## Périmètre exclu
+
+*   Pixel-perfect obligatoire
+*   Graphe schema avancé obligatoire
+*   Collaboration UI
+*   Copilot
+*   Refonte complète non alignée Zeenea
+* * *
+
+## Critères d’acceptation
+
+1. Les écrans principaux respectent les principes de navigation
+2. Les composants disponibles sont utilisés quand possible
+3. Les écarts aux maquettes sont documentés
+4. L’éditeur de schéma est utilisable sans graphe avancé
+5. Le YAML read-only est accessible clairement
+6. L’interface reste compréhensible pour un utilisateur non technique
+* * *
+
+## Règles de gestion
+
+Objectif UI validé : alignement fonctionnel et design system, pas pixel-perfect. Les maquettes restent une base indicative.
+* * *
+
+## Validation fonctionnelle
+
+Revue UX des écrans Contracts, DDL Import, Fundamentals, Schema, YAML, Versions et Publish.","en cours","33856314.00088430000000000000000000000000","2026-05-05T14:50:44.088Z","2026-05-07T09:51:42.737Z","","","Vincent Ghislain","Chloe Noger <chloe@lonestone.studio>","Chloe Noger <chloe@lonestone.studio>, Vincent Ghislain <vincent.ghislain@lonestone.io>","normal","","","","","","SP1 - Interfaces","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a6f","design system","","","","[]"
+"86c9n9a4a","","ETQ utilisateur, je veux naviguer entre les sections du contrat afin de le compléter progressivement","Description métier
+
+L’utilisateur doit pouvoir naviguer simplement entre les sections nécessaires du contrat MVP, avec un état visuel indiquant les sections complètes, incomplètes ou en erreur.
+
+Périmètre inclus
+
+Navigation entre DDL Import, Fundamentals, Schema, YAML, Versions
+Indication de section active
+Statut simple complet/incomplet/erreur
+Accès au Save draft
+Accès au Publish quand valide
+
+Périmètre exclu
+
+Toutes les sections ODCS avancées
+Workflow collaboratif
+Commentaires
+Copilot
+Navigation personnalisable
+
+Critères d’acceptation
+
+La section active est visible
+L’utilisateur peut passer de Fundamentals à Schema
+Une section incomplète est indiquée sans bloquer la navigation
+Les erreurs bloquantes sont visibles
+Le YAML est accessible en lecture seule
+Les Versions sont accessibles quand un contrat existe
+
+Règles de gestion
+
+Le MVP se concentre sur les sections nécessaires au scénario DDL to Active. Les sections ODCS non éditées peuvent être absentes ou gérées avec des valeurs par défaut si nécessaire.
+
+Validation fonctionnelle
+
+Tester navigation entre sections, états incomplets, erreurs de validation et accès YAML/Versions.","Description métier
+
+L’utilisateur doit pouvoir naviguer simplement entre les sections nécessaires du contrat MVP, avec un état visuel indiquant les sections complètes, incomplètes ou en erreur.
+
+Périmètre inclus
+
+Navigation entre DDL Import, Fundamentals, Schema, YAML, Versions
+Indication de section active
+Statut simple complet/incomplet/erreur
+Accès au Save draft
+Accès au Publish quand valide
+
+Périmètre exclu
+
+Toutes les sections ODCS avancées
+Workflow collaboratif
+Commentaires
+Copilot
+Navigation personnalisable
+
+Critères d’acceptation
+
+La section active est visible
+L’utilisateur peut passer de Fundamentals à Schema
+Une section incomplète est indiquée sans bloquer la navigation
+Les erreurs bloquantes sont visibles
+Le YAML est accessible en lecture seule
+Les Versions sont accessibles quand un contrat existe
+
+Règles de gestion
+
+Le MVP se concentre sur les sections nécessaires au scénario DDL to Active. Les sections ODCS non éditées peuvent être absentes ou gérées avec des valeurs par défaut si nécessaire.
+
+Validation fonctionnelle
+
+Tester navigation entre sections, états incomplets, erreurs de validation et accès YAML/Versions.","## Description métier
+
+L’utilisateur doit pouvoir naviguer simplement entre les sections nécessaires du contrat MVP, avec un état visuel indiquant les sections complètes, incomplètes ou en erreur.
+* * *
+
+## Périmètre inclus
+
+*   Navigation entre DDL Import, Fundamentals, Schema, YAML, Versions
+*   Indication de section active
+*   Statut simple complet/incomplet/erreur
+*   Accès au Save draft
+*   Accès au Publish quand valide
+* * *
+
+## Périmètre exclu
+
+*   Toutes les sections ODCS avancées
+*   Workflow collaboratif
+*   Commentaires
+*   Copilot
+*   Navigation personnalisable
+* * *
+
+## Critères d’acceptation
+
+1. La section active est visible
+2. L’utilisateur peut passer de Fundamentals à Schema
+3. Une section incomplète est indiquée sans bloquer la navigation
+4. Les erreurs bloquantes sont visibles
+5. Le YAML est accessible en lecture seule
+6. Les Versions sont accessibles quand un contrat existe
+* * *
+
+## Règles de gestion
+
+Le MVP se concentre sur les sections nécessaires au scénario DDL to Active. Les sections ODCS non éditées peuvent être absentes ou gérées avec des valeurs par défaut si nécessaire.
+* * *
+
+## Validation fonctionnelle
+
+Tester navigation entre sections, états incomplets, erreurs de validation et accès YAML/Versions.","qa","33856521.00028470000000000000000000000000","2026-05-05T14:50:39.621Z","2026-05-19T07:33:17.132Z","","","Vincent Ghislain","Vincent Ghislain <vincent.ghislain@lonestone.io>","Chloe Noger <chloe@lonestone.studio>, Vincent Ghislain <vincent.ghislain@lonestone.io>","normal","","","","","","SP1 - Interfaces","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a4a","contract structure","","","","[]"
+"86c9n9a48","","ETQ utilisateur, je veux ignorer l’import DDL afin de créer mon contrat manuellement si le parsing n’est pas possible","Description métier
+
+Même si le DDL est le seul point d’entrée P0, l’utilisateur doit disposer d’un fallback simple pour continuer en mode manuel lorsqu’il n’a pas de DDL exploitable ou lorsque le parsing échoue.
+
+Périmètre inclus
+
+Bouton Skip DDL
+Création d’un schéma vide
+Accès aux sections Fundamentals et Schema
+Ajout manuel de tables et champs
+Message indiquant que le DDL reste le parcours recommandé
+
+Périmètre exclu
+
+Création manuelle comme parcours principal
+Templates avancés
+Assistant IA
+Import Zeenea
+Import YAML existant
+
+Critères d’acceptation
+
+Le bouton Skip DDL est accessible depuis l’écran DDL
+Le clic ouvre le formulaire de contrat
+Le contrat reste en Draft
+Le schéma est initialement vide
+L’utilisateur peut ajouter des tables manuellement
+Publish reste désactivé tant que les champs obligatoires ne sont pas remplis
+
+Règles de gestion
+
+Le mode manuel est un fallback utile au MVP, mais ne remplace pas le scénario principal DDL to Active.
+
+Validation fonctionnelle
+
+Tester skip depuis écran DDL, ajout manuel d’une table, validation publishable et retour éventuel à l’import.","Description métier
+
+Même si le DDL est le seul point d’entrée P0, l’utilisateur doit disposer d’un fallback simple pour continuer en mode manuel lorsqu’il n’a pas de DDL exploitable ou lorsque le parsing échoue.
+
+Périmètre inclus
+
+Bouton Skip DDL
+Création d’un schéma vide
+Accès aux sections Fundamentals et Schema
+Ajout manuel de tables et champs
+Message indiquant que le DDL reste le parcours recommandé
+
+Périmètre exclu
+
+Création manuelle comme parcours principal
+Templates avancés
+Assistant IA
+Import Zeenea
+Import YAML existant
+
+Critères d’acceptation
+
+Le bouton Skip DDL est accessible depuis l’écran DDL
+Le clic ouvre le formulaire de contrat
+Le contrat reste en Draft
+Le schéma est initialement vide
+L’utilisateur peut ajouter des tables manuellement
+Publish reste désactivé tant que les champs obligatoires ne sont pas remplis
+
+Règles de gestion
+
+Le mode manuel est un fallback utile au MVP, mais ne remplace pas le scénario principal DDL to Active.
+
+Validation fonctionnelle
+
+Tester skip depuis écran DDL, ajout manuel d’une table, validation publishable et retour éventuel à l’import.","## Description métier
+
+Même si le DDL est le seul point d’entrée P0, l’utilisateur doit disposer d’un fallback simple pour continuer en mode manuel lorsqu’il n’a pas de DDL exploitable ou lorsque le parsing échoue.
+* * *
+
+## Périmètre inclus
+
+*   Bouton Skip DDL
+*   Création d’un schéma vide
+*   Accès aux sections Fundamentals et Schema
+*   Ajout manuel de tables et champs
+*   Message indiquant que le DDL reste le parcours recommandé
+* * *
+
+## Périmètre exclu
+
+*   Création manuelle comme parcours principal
+*   Templates avancés
+*   Assistant IA
+*   Import Zeenea
+*   Import YAML existant
+* * *
+
+## Critères d’acceptation
+
+1. Le bouton Skip DDL est accessible depuis l’écran DDL
+2. Le clic ouvre le formulaire de contrat
+3. Le contrat reste en Draft
+4. Le schéma est initialement vide
+5. L’utilisateur peut ajouter des tables manuellement
+6. Publish reste désactivé tant que les champs obligatoires ne sont pas remplis
+* * *
+
+## Règles de gestion
+
+Le mode manuel est un fallback utile au MVP, mais ne remplace pas le scénario principal DDL to Active.
+* * *
+
+## Validation fonctionnelle
+
+Tester skip depuis écran DDL, ajout manuel d’une table, validation publishable et retour éventuel à l’import.","qa","33856520.00019490000000000000000000000000","2026-05-05T14:50:39.509Z","2026-05-19T07:33:17.277Z","","","Vincent Ghislain","Vincent Ghislain <vincent.ghislain@lonestone.io>","Chloe Noger <chloe@lonestone.studio>, Vincent Ghislain <vincent.ghislain@lonestone.io>","normal","","","","","","SP1 - Interfaces","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a48","contract creation","","","","[]"
+"86c9n9a3w","","ETQ utilisateur, je veux consulter la liste des data contracts afin de piloter leur cycle de vie","Description métier
+
+L’utilisateur connecté arrive sur la page Contracts, qui liste les contrats non supprimés avec les informations nécessaires pour identifier leur statut, leur version cible ou publiée, leur owner et leur dernière mise à jour.
+
+Périmètre inclus
+
+Page Contracts
+Navigation latérale avec Contracts sélectionné
+Bouton Create Contract
+Compteur total de contrats
+Colonnes minimales : Name, Status, Version, Owner, Domain, Fields, Tags, Updated
+Pagination simple
+Tri simple par colonne
+Ouverture du détail depuis une ligne
+Exclusion des contrats soft-deleted de la liste principale
+
+Périmètre exclu
+
+Recherche par nom
+Recherche par ID
+Recherche globale
+Recherche avancée
+Filtres avancés
+Bulk actions
+Export
+Colonnes personnalisables
+Corbeille ou restauration
+
+Critères d’acceptation
+
+La page affiche un état vide explicite si aucun contrat n’existe.
+Les contrats non supprimés sont affichés dans une table.
+Les contrats soft-deleted n’apparaissent pas dans la liste principale.
+La pagination permet de naviguer entre les pages.
+Le tri simple fonctionne sur les colonnes prévues.
+Le clic sur une ligne ouvre le contrat.
+Le clic sur Create Contract démarre le flow de création orienté DDL.
+Aucune recherche, même simple par nom ou ID, n’est disponible dans le MVP.
+
+Règles de gestion
+
+Les statuts MVP sont Draft, Active et Deprecated. Le tri par défaut est la date de mise à jour décroissante. Une version Draft non publiée peut afficher une version cible, mais n’est pas une version publiée officielle.
+
+Validation fonctionnelle
+
+Tester liste vide, liste avec plusieurs statuts, soft delete, pagination, tri, absence de recherche et ouverture d’un détail.","Description métier
+
+L’utilisateur connecté arrive sur la page Contracts, qui liste les contrats non supprimés avec les informations nécessaires pour identifier leur statut, leur version cible ou publiée, leur owner et leur dernière mise à jour.
+
+Périmètre inclus
+
+Page Contracts
+Navigation latérale avec Contracts sélectionné
+Bouton Create Contract
+Compteur total de contrats
+Colonnes minimales : Name, Status, Version, Owner, Domain, Fields, Tags, Updated
+Pagination simple
+Tri simple par colonne
+Ouverture du détail depuis une ligne
+Exclusion des contrats soft-deleted de la liste principale
+
+Périmètre exclu
+
+Recherche par nom
+Recherche par ID
+Recherche globale
+Recherche avancée
+Filtres avancés
+Bulk actions
+Export
+Colonnes personnalisables
+Corbeille ou restauration
+
+Critères d’acceptation
+
+La page affiche un état vide explicite si aucun contrat n’existe.
+Les contrats non supprimés sont affichés dans une table.
+Les contrats soft-deleted n’apparaissent pas dans la liste principale.
+La pagination permet de naviguer entre les pages.
+Le tri simple fonctionne sur les colonnes prévues.
+Le clic sur une ligne ouvre le contrat.
+Le clic sur Create Contract démarre le flow de création orienté DDL.
+Aucune recherche, même simple par nom ou ID, n’est disponible dans le MVP.
+
+Règles de gestion
+
+Les statuts MVP sont Draft, Active et Deprecated. Le tri par défaut est la date de mise à jour décroissante. Une version Draft non publiée peut afficher une version cible, mais n’est pas une version publiée officielle.
+
+Validation fonctionnelle
+
+Tester liste vide, liste avec plusieurs statuts, soft delete, pagination, tri, absence de recherche et ouverture d’un détail.","## Description métier
+
+L’utilisateur connecté arrive sur la page **Contracts**, qui liste les contrats non supprimés avec les informations nécessaires pour identifier leur statut, leur version cible ou publiée, leur owner et leur dernière mise à jour.
+* * *
+
+## Périmètre inclus
+
+*   Page **Contracts**
+*   Navigation latérale avec **Contracts** sélectionné
+*   Bouton **Create Contract**
+*   Compteur total de contrats
+*   Colonnes minimales : **Name**, **Status**, **Version**, **Owner**, **Domain**, **Fields**, **Tags**, **Updated**
+*   Pagination simple
+*   Tri simple par colonne
+*   Ouverture du détail depuis une ligne
+*   Exclusion des contrats soft-deleted de la liste principale
+* * *
+
+## Périmètre exclu
+
+*   Recherche par nom
+*   Recherche par ID
+*   Recherche globale
+*   Recherche avancée
+*   Filtres avancés
+*   Bulk actions
+*   Export
+*   Colonnes personnalisables
+*   Corbeille ou restauration
+* * *
+
+## Critères d’acceptation
+
+1. La page affiche un état vide explicite si aucun contrat n’existe.
+2. Les contrats non supprimés sont affichés dans une table.
+3. Les contrats soft-deleted n’apparaissent pas dans la liste principale.
+4. La pagination permet de naviguer entre les pages.
+5. Le tri simple fonctionne sur les colonnes prévues.
+6. Le clic sur une ligne ouvre le contrat.
+7. Le clic sur **Create Contract** démarre le flow de création orienté DDL.
+8. Aucune recherche, même simple par nom ou ID, n’est disponible dans le MVP.
+* * *
+
+## Règles de gestion
+
+Les statuts MVP sont **Draft**, **Active** et **Deprecated**. Le tri par défaut est la date de mise à jour décroissante. Une version Draft non publiée peut afficher une version cible, mais n’est pas une version publiée officielle.
+* * *
+
+## Validation fonctionnelle
+
+Tester liste vide, liste avec plusieurs statuts, soft delete, pagination, tri, absence de recherche et ouverture d’un détail.","qa","33856517.00002500000000000000000000000000","2026-05-05T14:50:38.243Z","2026-05-19T07:33:17.175Z","","","Vincent Ghislain","Vincent Ghislain <vincent.ghislain@lonestone.io>","Chloe Noger <chloe@lonestone.studio>, Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP1 - Interfaces","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a3w","contracts registry","","","","[]"
+"86c9n9a3v","","ETQ utilisateur, je veux créer un nouveau data contract afin de démarrer une définition de contrat depuis un DDL","Description métier
+
+Depuis la liste des contrats, l’utilisateur doit pouvoir créer un nouveau contrat. Le contrat est initialisé en Draft, le créateur devient Owner par défaut, l’utilisateur est redirigé vers l’écran d’import DDL, et la version affichée avant publication est une version cible, pas une version publiée.
+
+Périmètre inclus
+
+Bouton Create Contract
+Création d’un Draft
+Créateur défini comme Owner par défaut
+Nom temporaire Untitled Contract
+Target version v1.0.0
+Redirection vers l’écran DDL Import
+Header avec accès Form et YAML
+Bouton Publish désactivé tant que le contrat n’est pas valide
+
+Périmètre exclu
+
+Création depuis Zeenea
+Création depuis une source connectée
+Import d’un contrat YAML existant
+AI prompt-to-contract
+Choix de template avancé
+Gestion avancée de plusieurs owners
+
+Critères d’acceptation
+
+Le clic sur Create Contract initialise un Draft.
+Le créateur du contrat est défini comme Owner par défaut.
+L’Owner est affichable dans la liste des contrats.
+Le contrat affiche Untitled Contract tant que le nom métier n’est pas renseigné.
+La version est affichée comme version cible et non comme version publiée.
+L’utilisateur arrive directement sur l’écran DDL Import.
+Le bouton Publish est désactivé au départ.
+Le Draft est sauvegardable sans être publié.
+
+Règles de gestion
+
+Le seul point d’entrée P0 est l’import DDL. Le mode manuel est conservé comme fallback mais n’est pas le parcours principal du MVP.
+
+Validation fonctionnelle
+
+Tester création depuis la liste, Owner par défaut, état initial Draft, version cible, redirection DDL et état non publiable.","Description métier
+
+Depuis la liste des contrats, l’utilisateur doit pouvoir créer un nouveau contrat. Le contrat est initialisé en Draft, le créateur devient Owner par défaut, l’utilisateur est redirigé vers l’écran d’import DDL, et la version affichée avant publication est une version cible, pas une version publiée.
+
+Périmètre inclus
+
+Bouton Create Contract
+Création d’un Draft
+Créateur défini comme Owner par défaut
+Nom temporaire Untitled Contract
+Target version v1.0.0
+Redirection vers l’écran DDL Import
+Header avec accès Form et YAML
+Bouton Publish désactivé tant que le contrat n’est pas valide
+
+Périmètre exclu
+
+Création depuis Zeenea
+Création depuis une source connectée
+Import d’un contrat YAML existant
+AI prompt-to-contract
+Choix de template avancé
+Gestion avancée de plusieurs owners
+
+Critères d’acceptation
+
+Le clic sur Create Contract initialise un Draft.
+Le créateur du contrat est défini comme Owner par défaut.
+L’Owner est affichable dans la liste des contrats.
+Le contrat affiche Untitled Contract tant que le nom métier n’est pas renseigné.
+La version est affichée comme version cible et non comme version publiée.
+L’utilisateur arrive directement sur l’écran DDL Import.
+Le bouton Publish est désactivé au départ.
+Le Draft est sauvegardable sans être publié.
+
+Règles de gestion
+
+Le seul point d’entrée P0 est l’import DDL. Le mode manuel est conservé comme fallback mais n’est pas le parcours principal du MVP.
+
+Validation fonctionnelle
+
+Tester création depuis la liste, Owner par défaut, état initial Draft, version cible, redirection DDL et état non publiable.","## Description métier
+
+Depuis la liste des contrats, l’utilisateur doit pouvoir créer un nouveau contrat. Le contrat est initialisé en **Draft**, le créateur devient **Owner** par défaut, l’utilisateur est redirigé vers l’écran d’import DDL, et la version affichée avant publication est une version cible, pas une version publiée.
+* * *
+
+## Périmètre inclus
+
+*   Bouton **Create Contract**
+*   Création d’un Draft
+*   Créateur défini comme **Owner** par défaut
+*   Nom temporaire **Untitled Contract**
+*   Target version **v1.0.0**
+*   Redirection vers l’écran **DDL Import**
+*   Header avec accès **Form** et **YAML**
+*   Bouton **Publish** désactivé tant que le contrat n’est pas valide
+* * *
+
+## Périmètre exclu
+
+*   Création depuis Zeenea
+*   Création depuis une source connectée
+*   Import d’un contrat YAML existant
+*   AI prompt-to-contract
+*   Choix de template avancé
+*   Gestion avancée de plusieurs owners
+* * *
+
+## Critères d’acceptation
+
+1. Le clic sur **Create Contract** initialise un Draft.
+2. Le créateur du contrat est défini comme Owner par défaut.
+3. L’Owner est affichable dans la liste des contrats.
+4. Le contrat affiche **Untitled Contract** tant que le nom métier n’est pas renseigné.
+5. La version est affichée comme version cible et non comme version publiée.
+6. L’utilisateur arrive directement sur l’écran **DDL Import**.
+7. Le bouton **Publish** est désactivé au départ.
+8. Le Draft est sauvegardable sans être publié.
+* * *
+
+## Règles de gestion
+
+Le seul point d’entrée P0 est l’import DDL. Le mode manuel est conservé comme fallback mais n’est pas le parcours principal du MVP.
+* * *
+
+## Validation fonctionnelle
+
+Tester création depuis la liste, Owner par défaut, état initial Draft, version cible, redirection DDL et état non publiable.","qa","33856518.00010630000000000000000000000000","2026-05-05T14:50:38.159Z","2026-05-19T07:33:17.090Z","","","Vincent Ghislain","Vincent Ghislain <vincent.ghislain@lonestone.io>","Chloe Noger <chloe@lonestone.studio>, Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP1 - Interfaces","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a3v","contract creation","","","","[]"

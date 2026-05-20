@@ -117,3 +117,22 @@
 | ID | Action |
 | -- | ------ |
 | `86c9n9a3q`, `86c9n9a41`, `86c9n9a6u` | UPDATE |
+
+
+## Global cross-SP cleanup (post-audit final)
+
+**Contexte :** audit global SP1–SP6 — verdict **READY WITH MINOR GAPS**.  
+**Correctif :** metadata SP4 uniquement (4 US) — pas de CREATE, pas de déplacement automatique.
+
+### Ordre d’import
+
+1. **Metadata** — [output/global-cross-sp-metadata-update.csv](output/global-cross-sp-metadata-update.csv)
+2. **Mapping** — [docs/global-cross-sp-corrections-mapping.md](docs/global-cross-sp-corrections-mapping.md)
+3. **Moves (recommandations seulement)** — [docs/global-cross-sp-move-recommendations.md](docs/global-cross-sp-move-recommendations.md)
+4. **Audit pré-import** — [docs/global-cross-sp-pre-import-audit.md](docs/global-cross-sp-pre-import-audit.md)
+
+| ID | Correction |
+| -- | ---------- |
+| `86c9n9a4t`, `86c9n9a55`, `86c9n9a5e`, `86c9n9a60` | Tags / priorité (SP4) |
+
+**Manuel post-import :** commentaire REPORT `86c9nw8d4` (SP2 → SP4) · QA SP1 sur CREATE `[Alignement]`.
