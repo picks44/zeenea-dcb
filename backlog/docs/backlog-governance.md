@@ -268,9 +268,22 @@ Utiliser **uniquement** les tags existants dans l’espace ClickUp DCB :
 | publication | Publish, readiness, changelog, blocage sans delta |
 | quality rules | Règles qualité données, SLA, validation métier |
 | schema editor | Schéma, tables, propriétés, relations |
-| technical foundation | Modèle backend, APIs persistance, fondations techniques |
+| technical foundation | Modèle backend, APIs persistance, sérialisation ODCS (**SP3** `86c9n9a54`), fondations techniques |
 | versioning & history | Versions, working copy, Compare, timeline |
-| yaml view | Prévisualisation / export YAML |
+| yaml view | Prévisualisation / export YAML (UI **SP1**) ; cohérence YAML post-import (**SP3** `86c9n9a53`) — pas un doublon à annuler systématiquement |
+
+### YAML — tri-domaine (SP1 / SP3 / SP5)
+
+Ne pas confondre trois périmètres distincts :
+
+| Domaine | Liste | Exemple US | Périmètre |
+| ------- | ----- | ---------- | --------- |
+| **UI preview YAML** | **SP1** | `86c9nw8br` (+ CREATE alignement) | Onglet lecture seule, Copy/Download, working copy affichée |
+| **Cohérence YAML après import** | **SP3** | `86c9n9a53` | YAML généré cohérent avec schéma importé / mapping — pas l’UI globale |
+| **Sérialisation backend** | **SP3** | `86c9n9a54` | `odcsYamlGenerator`, export P1 depuis modèle |
+| **Validation publish / Git / MD5** | **SP5** | `86c9n9a5b`, `5n`, `5p`… | YAML publié, checksum, push Git |
+
+**Règle :** une US SP3 sur le YAML **fonctionnel** post-import n’est **pas** un doublon de l’US SP1 « yaml view » UI — **ne pas CANCEL** sans arbitrage PO.
 
 **Règles d’attribution :**
 
@@ -348,7 +361,7 @@ Ordre recommandé pour limiter les dépendances et le rework :
 | 1 | **SP4 — Versioning** | Référence méthodologique — **traité** (voir [§13](#13-référence-sp4)) |
 | 2 | **SP5 — Publish & Gitops** | Conserver Git réel ; aligner workflows sur UX publish/changelog validée |
 | 3 | **SP1 — Interfaces** | Création, backlog, navigation — **US en QA sensibles** : ne pas clôturer sans UPDATE |
-| 4 | **SP3 — DDL Import** | Parcours create two-step, `proposed` — dédupliquer YAML si doublons SP1 |
+| 4 | **SP3 — DDL Import** | Parser, mapping, fixtures ; YAML fonctionnel post-import (`53`) distinct de l’UI YAML **SP1** ; CANCEL doublon exact uniquement (`86c9nw8d1`) |
 | 5 | **SP2 — Editor & Lifecycle** | Schema editor, relations, quality rules, lifecycle actions, lock/delete — distinguer verrouillage UI vs API |
 | 6 | **SP6 — Auth & Devops** | Probable **REPORT/freeze** si hors périmètre MVP court terme — ne pas confondre avec rôles collaborateurs prototype |
 
@@ -641,6 +654,8 @@ Si écart majeur : corriger dans ClickUp ou régénérer CSV + ré-import ciblé
 | **Réécrire une US en cours** | Confusion dev, historique perdu |
 | **Faire disparaître l’historique QA via UPDATE massif** | Clôture sur référentiel invalide |
 | **Corriger un comportement validé en QA sans US de correction** | Tests et dev désalignés |
+| **CANCEL une US SP3 YAML fonctionnelle** en la traitant comme doublon UI SP1 | Trou QA import → YAML ; confusion ownership |
+| **Sur-promettre le coverage parser MVP** | ANSI SQL complet, dialecte vendor exhaustif — tenir dialecte **TBD** + subset documenté |
 
 ---
 
@@ -679,3 +694,4 @@ SP4 — Versioning est le **premier cycle** appliqué avec cette gouvernance.
 | 2026-05 | Doctrine CSV unifié vs metadata-only (§8) ; post-import tags visuels obligatoires |
 | 2026-05 | Protection US avancées (§3bis) — CREATE complémentaires vs UPDATE direct |
 | 2026-05 | Rappel explicite SP2 — Editor & Lifecycle dans l’ordre de traitement et les références cross-listes |
+| 2026-05 | Tri-domaine YAML SP1/SP3/SP5 ; anti-patterns CANCEL YAML SP3 et sur-promesse parser |

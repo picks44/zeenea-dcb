@@ -59,3 +59,25 @@
 | --------- | ------ |
 | `86c9n9a3v`, `86c9n9a48`, `86c9n9a3w`, `86c9n9a4a`, `86c9nw8br`, `86c9nw8bu` | Inchangées — CREATE associée |
 | `86c9n9a6f` | DO NOT TOUCH |
+
+
+## SP3 — DDL Import
+
+**Input :** [input/sp3-ddl-import.csv](input/sp3-ddl-import.csv)  
+**Gouvernance :** 6 UPDATE (US `à faire`) · 1 CANCEL doublon · 0 CREATE · tri-domaine YAML §6bis.
+
+**Regénérer :** `python3 backlog/scripts/generate_sp3_deliverables.py`
+
+### Ordre d’import ClickUp
+
+1. **UPDATE** — [output/sp3-update.csv](output/sp3-update.csv) (`id`, `name`, `description`, `tags`, `priority`)
+2. **CANCEL** — [output/sp3-cancel.csv](output/sp3-cancel.csv) — `86c9nw8d1` **manuel**
+3. **Mapping** — [docs/sp3-actions-mapping.md](docs/sp3-actions-mapping.md)
+4. **Cross-listes** — [docs/sp3-report-sp1-sp2-sp4-sp5.md](docs/sp3-report-sp1-sp2-sp4-sp5.md)
+5. **Audit pré-import** — [docs/sp3-pre-import-audit.md](docs/sp3-pre-import-audit.md)
+6. **Import (manuel)** — [docs/sp3-import-checklist.md](docs/sp3-import-checklist.md)
+
+| ID | Action |
+| -- | ------ |
+| `86c9n9a40`, `86c9n9a42`, `86c9n9a44`, `86c9n9a47`, `86c9n9a53`, `86c9n9a54` | UPDATE |
+| `86c9nw8d1` | CANCEL (doublon `54`) |
