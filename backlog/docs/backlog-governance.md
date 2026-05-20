@@ -171,6 +171,113 @@ Conventions alignées sur le prototype et [product-documentation.md](../../docs/
 
 ---
 
+## 6bis. Tags et epics ClickUp
+
+Les **tags** ClickUp servent d’**epic métier** : regroupement transverse, filtres backlog et lecture roadmap. Ils sont **obligatoires** pour toute User Story importée ou réalignée.
+
+### Règle obligatoire
+
+Chaque US présente dans ClickUp doit avoir :
+
+- **au moins 1** tag epic ;
+- **cohérent** avec son domaine fonctionnel principal ;
+- **validé** avant import (étape 7) et **contrôlé** après import (étape 10).
+
+**Absence de tag = import incomplet** — ne pas passer à la liste suivante tant que les tâches concernées ne sont pas taguées (manuellement ou via CSV tags-only).
+
+Les tags ne remplacent pas la description métier ; ils structurent le backlog pour le PM/PO et la roadmap.
+
+### Taxonomie officielle (tags autorisés)
+
+Utiliser **uniquement** les tags existants dans l’espace ClickUp DCB :
+
+| Tag | Usage typique |
+|-----|----------------|
+| auth | Authentification, SSO, droits plateforme |
+| checksum | MD5, intégrité YAML, audit checksum |
+| contract creation | Parcours création, import DDL, mode choice |
+| contract fundamentals | Fundamentals, métadonnées contrat |
+| contract structure | Structure ODCS, sections éditeur |
+| contracts registry | Liste / registry des contrats |
+| ddl parser | Import SQL, parser DDL |
+| delivery | Livraison, release, hors produit pur |
+| design system | UI Kit, composants, tokens |
+| draft management | Brouillon, autosave, persistance édition non publiée |
+| gitops | Push Git, repository, exécution SP5 |
+| lifecycle & locking | Statuts lifecycle, verrouillage, Discard |
+| publication | Publish, readiness, changelog, blocage sans delta |
+| quality rules | Règles qualité données, SLA, validation métier |
+| schema editor | Schéma, tables, propriétés, relations |
+| technical foundation | Modèle backend, APIs persistance, fondations techniques |
+| versioning & history | Versions, working copy, Compare, timeline |
+| yaml view | Prévisualisation / export YAML |
+
+**Règles d’attribution :**
+
+- **Préférer 1 epic principal** par US.
+- **Second tag** uniquement si le sujet est **transversal fort** (ex. métadonnées publication + `checksum`) — **maximum 2 tags** par US.
+- **Ne pas créer** de nouveaux tags sans validation PO + espace ClickUp.
+- **Éviter** les tags techniques opportunistes ou le fourre-tout.
+
+### Mapping et livrables tags
+
+- Fichier **UPDATE tags-only** : `output/{liste}-tags-update.csv` — colonnes **`id`**, **`tags`** uniquement (ne pas toucher `description`).
+- Tâches **CREATE** sans `id` au moment de la génération : checklist manuelle ou mapping par **titre** — voir `docs/{liste}-tags-mapping.md`.
+- Après import CREATE : compléter le mapping avec les **nouveaux ID** ClickUp pour les imports tags ultérieurs.
+
+Référence appliquée : [sp4-tags-mapping.md](./sp4-tags-mapping.md) · [../output/sp4-metadata-update.csv](../output/sp4-metadata-update.csv).
+
+### Priorités backlog
+
+Les **priorités** ClickUp structurent la roadmap et l’ordonnancement MVP. Elles sont **obligatoires** sur chaque US active, au même titre que les tags.
+
+#### Niveaux autorisés (observés dans l’espace DCB)
+
+| Priorité | Signification (déduite du backlog existant) | Exemples typiques |
+|----------|---------------------------------------------|-------------------|
+| **high** | Fondation MVP, parcours bloquant produit, backend critique, publication cœur | `technical foundation`, `publication` (readiness, publish), `gitops`, `ddl parser`, New version, métadonnées MD5 |
+| **normal** | Feature MVP standard, parcours utilisateur non bloquant global | Compare, historique Versions, Discard, autosave, schema editor |
+| **low** | Polish UX, signal visuel secondaire, dette non bloquante court terme | Badge Revision open, alignement design secondaire |
+
+**Ne pas inventer** d’autres niveaux (pas de `urgent`, `critical`, etc.) tant qu’ils n’existent pas dans ClickUp.
+
+#### Règles d’attribution
+
+- **Une priorité par US** — champ obligatoire avant import.
+- **Cohérence tag ↔ priorité** :
+  - `technical foundation` → **high** (modèle, API, persistance).
+  - `publication` (publish, readiness, blocage sans delta, Option B) → **high** sauf polish documentaire explicite.
+  - `versioning & history` → **high** si cœur du parcours (New version, métadonnées audit) ; **normal** si consultation / Compare.
+  - `lifecycle & locking` → **high** si verrouillage global ; **normal** si action ponctuelle (Discard).
+  - `draft management` → **normal** (autosave — standard MVP).
+  - Polish badge / hint UX → **low**.
+- **Homogénéité inter-listes** : une US du même domaine qu’une autre liste doit partager la même logique de priorité (ex. Compare SP4 = **normal** comme parcours consultation).
+- Les **CREATE** importées doivent recevoir **tag + priorité** dans la même passe metadata que les UPDATE historiques.
+
+#### Contrôle
+
+- Absence de priorité = **import incomplet** (comme absence de tag).
+- **high** sur micro-polish sans impact MVP = anti-pattern.
+- **normal** ou vide sur `technical foundation` / publish cœur = anti-pattern.
+
+### Homogénéité backlog ISO (inter-listes)
+
+Chaque liste réalignée doit être **ISO** avec les listes déjà conformes :
+
+| Critère ISO | Règle |
+|-------------|--------|
+| Tag epic | ≥ 1 tag, ≤ 2, taxonomie §6bis |
+| Priorité | `high` \| `normal` \| `low` renseignée |
+| Statut | Cohérent avec le cycle (pas de tâche active orpheline sans métadonnées) |
+| CREATE vs UPDATE | Mêmes conventions tag/priorité que les US historiques de la liste |
+| Couverture | 100 % des tâches **actives** de la liste (hors CANCEL explicite) |
+
+**Écart observé type SP4 post-import :** descriptions à jour mais CREATE sans tag ni priorité ; UPDATE avec tags hérités pré-recadrage. Corriger via `*-metadata-update.csv` (§8), pas via re-import description.
+
+Référence audit : [sp4-tags-mapping.md](./sp4-tags-mapping.md) (état export + mapping cible).
+
+---
+
 ## 7. Ordre de traitement des listes
 
 Ordre recommandé pour limiter les dépendances et le rework :
@@ -204,6 +311,25 @@ Fichiers sous `backlog/output/` — un type par fichier.
 | Colonnes | **Uniquement** celles modifiées (`name`, `description`, éventuellement `markdown_description`, `tags`, `status`) |
 | ID | **Ne jamais inventer** |
 | Cellule vide | **Efface** le champ dans ClickUp — ne pas inclure de colonnes inutiles |
+
+### UPDATE tags-only (`sp*-tags-update.csv`)
+
+| Règle | Détail |
+|-------|--------|
+| Usage | Correctif **tags** seuls (legacy) — préférer `*-metadata-update.csv` si priorité aussi à corriger |
+| Colonnes | **`id`**, **`tags`** **uniquement** |
+| Risque | Faible sur `description` / custom fields — **ne pas** mélanger avec UPDATE description dans le même fichier |
+| Format `tags` | Un tag, ou deux tags séparés par une **virgule** (ex. `versioning & history, checksum`) |
+
+### UPDATE metadata-only (`sp*-metadata-update.csv`)
+
+| Règle | Détail |
+|-------|--------|
+| Usage | Correctif **après** import description — tags + priorités, sans toucher au métier |
+| Colonnes | **`id`**, **`tags`**, **`priority`** **uniquement** |
+| Risque | Faible — ne pas inclure `description`, `status`, assignees |
+| Priorité | Valeurs exactes : `high`, `normal`, `low` (minuscules, comme l’export ClickUp) |
+| Couverture | **Toutes** les tâches actives de la liste concernée (UPDATE + CREATE déjà créées) |
 
 ### CREATE (`sp*-create.csv`)
 
@@ -320,6 +446,30 @@ Cocher avant l’étape 8 (validation humaine finale) :
 - [ ] Fichiers **séparés** : UPDATE d’un côté, CREATE de l’autre.
 - [ ] Fichier compatible avec l’**import batch** prévu (encodage UTF-8, en-têtes).
 
+**Tags / epics (§6bis)**
+
+- [ ] Chaque US **UPDATE** a un tag epic documenté (fiche ou `*-tags-update.csv`).
+- [ ] Chaque US **CREATE** a un tag epic assigné (CSV tags si `id` connu, sinon checklist manuelle).
+- [ ] Tag epic **cohérent** avec le périmètre métier principal de l’US (pas de tag contradictoire).
+- [ ] **Aucune US sans tag** dans le périmètre importé.
+- [ ] **Maximum 2 tags** par US ; second tag justifié (transversal fort).
+- [ ] Homogénéité des tags sur la **même liste** (US équivalentes → même epic principal).
+- [ ] Aucun tag hors **taxonomie officielle** (§6bis).
+- [ ] `technical foundation` réservé aux US **backend / modèle / API** — pas comme epic UX versioning.
+
+**Priorités (§6bis — priorités)**
+
+- [ ] Chaque US active a une **priorité** (`high` / `normal` / `low`).
+- [ ] Priorité **cohérente** avec l’impact métier et le tag epic (§6bis).
+- [ ] Les **CREATE** ont la même rigueur tag + priorité que les UPDATE historiques.
+- [ ] Pas de **high** sur polish UX isolé ; pas de **normal** vide sur fondation backend / publish cœur.
+
+**Homogénéité ISO (§6bis)**
+
+- [ ] 100 % des tâches actives de la liste : tag + priorité renseignés.
+- [ ] Conventions alignées avec les listes voisines déjà conformes (export multi-listes de référence).
+- [ ] Fichier `*-metadata-update.csv` généré si écart post-import détecté.
+
 **Cohérence inter-listes (si plusieurs listes déjà traitées)**
 
 - [ ] Pas de contradiction avec les conventions déjà importées sur une autre liste (vocabulaire, REPORT SP5, etc.).
@@ -342,7 +492,11 @@ Complète l’audit pré-import : confirme que l’outil d’import a bien appli
 - [ ] Vérifier que les **IDs** des UPDATE correspondent aux tâches attendues (titre / historique cohérents).
 - [ ] Vérifier que les **CREATE** sont dans la **bonne liste** ClickUp.
 - [ ] Vérifier **titres** et **statuts** (pas de régression involontaire sur statut QA/en cours).
-- [ ] Vérifier qu’**aucun champ critique** n’a été vidé (custom fields, assignees, tags — si colonnes non importées, ils doivent rester intacts).
+- [ ] Vérifier qu’**aucun champ critique** n’a été vidé (custom fields, assignees — si colonnes non importées, ils doivent rester intacts).
+- [ ] Vérifier que **chaque tâche** (UPDATE + CREATE) a **au moins 1 tag epic** cohérent (§6bis).
+- [ ] Vérifier que **chaque tâche active** a une **priorité** (`high` / `normal` / `low`).
+- [ ] Vérifier que les **CREATE** ont les mêmes conventions tag/priorité que les UPDATE de la liste.
+- [ ] Appliquer `*-metadata-update.csv` (ou `*-tags-update.csv` si priorité déjà OK) si écart détecté.
 - [ ] Traiter les tâches **CANCEL** manuellement (statut + commentaire renvoyant vers la gouvernance).
 - [ ] **Documenter** tout écart (commentaire tâche, note dans `docs/{liste}-post-import-notes.md` ou ticket) **avant** étape 11.
 
@@ -371,6 +525,17 @@ Si écart majeur : corriger dans ClickUp ou régénérer CSV + ré-import ciblé
 | **Sauter le contrôle post-import** (étape 10) | Corruption ou troncature découverte tardivement |
 | **Corriger ClickUp sans tracer l’écart** | Perte de sync CSV ↔ outil ; dette méthodo |
 | **Liste suivante avant post-import OK** | Propagation d’erreurs et vocabulaire incohérent |
+| **Import sans tag epic** | Filtrage roadmap et regroupement métier impossibles ; dette de tri |
+| **`technical foundation` comme fourre-tout** | Masque le domaine métier (versioning, publication, draft) |
+| **Multiplication de tags** (> 2 ou tags faibles) | Bruit backlog, filtres ClickUp inutilisables |
+| **Tags différents pour US équivalentes** | Incohérence roadmap (ex. deux US Compare avec epics différents) |
+| **CSV UPDATE description pour corriger les tags** | Risque d’écraser des champs — préférer `*-metadata-update.csv` |
+| **Import CREATE sans priorité** | CREATE invisibles dans la roadmap ; hétérogénéité vs UPDATE |
+| **Import CREATE sans tag epic** | Filtres backlog et regroupement métier cassés |
+| **`technical foundation` sans high** | Sous-priorisation du backend MVP |
+| **high sur micro-polish** (badge, hint) | Bruit roadmap ; dette high fausse |
+| **Priorité incohérente avec tag** (ex. publication en normal pour readiness) | Ordonnancement faux entre listes |
+| **Backlog hétérogène intra-liste** | UPDATE conformes, CREATE sans métadonnées |
 
 ---
 
@@ -393,6 +558,7 @@ SP4 — Versioning est le **premier cycle** appliqué avec cette gouvernance.
 - [sp4-split-86c9n9a4t.md](./sp4-split-86c9n9a4t.md) — SPLIT
 - [sp4-report-sp5.md](./sp4-report-sp5.md) — liens SP5
 - [../output/sp4-update.csv](../output/sp4-update.csv) · [../output/sp4-create.csv](../output/sp4-create.csv) — exports générés (ne pas modifier via ce document)
+- [sp4-tags-mapping.md](./sp4-tags-mapping.md) · [../output/sp4-metadata-update.csv](../output/sp4-metadata-update.csv) — epics/tags + priorités post-import SP4
 
 ---
 
@@ -402,3 +568,5 @@ SP4 — Versioning est le **premier cycle** appliqué avec cette gouvernance.
 |------|------------|
 | 2026-05 | Création après recadrage SP4 — Versioning |
 | 2026-05 | Ajout audit final pré-import, contrôle post-import, pipeline 11 étapes |
+| 2026-05 | Tags/epics obligatoires (§6bis), checklist pré-import, livrables `*-tags-update.csv` |
+| 2026-05 | Priorités + homogénéité ISO (§6bis), `*-metadata-update.csv`, audit post-import SP4 |
