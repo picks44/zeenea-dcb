@@ -7,6 +7,10 @@ import { SchemaTable } from '@/types/odcs'
 import { cn } from '@/lib/utils'
 import { stableSchemaId } from '@/lib/idDerivation'
 import { normalizeOdcsName } from '@/lib/schemaOdcsMapping'
+import {
+  syncDatasetAfterTableDelete,
+  syncDatasetAfterTableUpdate,
+} from '@/lib/schemaRelationshipRefs'
 import { TableBlock } from '@/components/schema/TableBlock'
 import { SchemaNavigationProvider } from '@/components/schema/SchemaNavigationContext'
 import {
@@ -75,9 +79,19 @@ export function SchemaSection({ tables, onChange, isLocked, docCompact }: Schema
   const cancelAdd = () => { setAddingTable(false); setNewName('') }
 
   const handleTableChange = (i: number, updated: SchemaTable) => {
-    const next = [...tables]
-    next[i] = updated
-    onChange(next)
+    const prev = tables[i]
+    if (!prev) {
+      onChange([...tables.slice(0, i), updated, ...tables.slice(i + 1)])
+      return
+    }
+    onChange(syncDatasetAfterTableUpdate(tables, i, prev, updated))
+  }
+
+  const handleDeleteTable = (idx: number) => {
+    const deleted = tables[idx]
+    if (!deleted) return
+    const remaining = tables.filter((_, j) => j !== idx)
+    onChange(syncDatasetAfterTableDelete(remaining, deleted.physicalName))
   }
 
   return (
@@ -140,14 +154,14 @@ export function SchemaSection({ tables, onChange, isLocked, docCompact }: Schema
         <div ref={fieldCount === 0 ? schemaAnchorRef : undefined} className="space-y-4">
           {tables.map((table, i) => (
             <TableBlock
-              key={`table-${i}`}
+              key={table.id}
               table={table}
               tableIndex={i}
               allTables={tables}
               isLocked={isLocked}
               docCompact={docCompact}
               onTableChange={handleTableChange}
-              onDeleteTable={idx => onChange(tables.filter((_, j) => j !== idx))}
+              onDeleteTable={handleDeleteTable}
             />
           ))}
 

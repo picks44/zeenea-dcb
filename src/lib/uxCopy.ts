@@ -82,6 +82,16 @@ export const EXPORT_COVERAGE = {
     "Managed in the app only: contract owner, operational governance contacts, collaborators, version history, and revision state.",
 } as const;
 
+/** YAML tab toolbar: copy / download actions (preview content only; generator unchanged). */
+export const YAML_EXPORT = {
+  copyButton: "Copy YAML",
+  copiedButton: "Copied",
+  downloadButton: "Download YAML",
+  copyToast: "YAML copied to clipboard",
+  copyFailed: "Could not copy YAML to clipboard",
+  downloadToast: (filename: string) => `Downloaded ${filename}`,
+} as const;
+
 // ─── Section concept tags (deprecated - not shown in UI; titles + descriptions carry semantics) ─
 
 /** @deprecated Not rendered in section headers */
@@ -112,6 +122,107 @@ export const STAKEHOLDERS_EMPTY_TITLE = "No governance contacts yet";
 export const STAKEHOLDERS_EMPTY_BODY =
   "Add contacts your teams can reach for questions about this contract - distinct from the contract owner and from Collaborators.";
 export const STAKEHOLDERS_EMPTY_CTA = "Add contact";
+
+export const GOVERNANCE_AUTOSAVE_NOTE = "Changes save automatically.";
+
+export const STAKEHOLDERS_AUTOSAVE_NOTE =
+  "Changes save automatically. Governance contacts stay in the app and are not exported to YAML.";
+
+export const DATA_ACCESS_AUTOSAVE_NOTE =
+  "Changes save automatically. Complete roles are included in the YAML export.";
+
+export const SLA_AUTOSAVE_NOTE =
+  "Changes save automatically. Complete service levels are included in the YAML export.";
+
+export const CUSTOM_PROPERTIES_AUTOSAVE_NOTE =
+  "Changes save automatically. Complete properties are included in the YAML export.";
+
+export function formatStakeholdersSummaryLine(
+  saved: number,
+  counted: number,
+): string | null {
+  if (saved === 0) return null;
+  const savedLabel = saved === 1 ? "1 contact saved" : `${saved} contacts saved`;
+  const countedPart =
+    counted > 0
+      ? counted === 1
+        ? "1 counted for readiness"
+        : `${counted} counted for readiness`
+      : null;
+  return countedPart ? `${savedLabel} · ${countedPart} · app-only` : `${savedLabel} · app-only`;
+}
+
+export function formatAccessRolesSummaryLine(
+  includedInYaml: number,
+  incomplete: number,
+): string | null {
+  if (includedInYaml === 0 && incomplete === 0) return null;
+  const parts: string[] = [];
+  if (includedInYaml > 0) {
+    parts.push(
+      includedInYaml === 1
+        ? "1 role included in YAML"
+        : `${includedInYaml} roles included in YAML`,
+    );
+  }
+  if (incomplete > 0) {
+    parts.push(
+      incomplete === 1 ? "1 incomplete row" : `${incomplete} incomplete rows`,
+    );
+  }
+  return parts.join(" · ");
+}
+
+export function formatSlaSummaryLine(
+  includedInYaml: number,
+  incomplete: number,
+): string | null {
+  if (includedInYaml === 0 && incomplete === 0) return null;
+  const parts: string[] = [];
+  if (includedInYaml > 0) {
+    parts.push(
+      includedInYaml === 1
+        ? "1 service level included in YAML"
+        : `${includedInYaml} service levels included in YAML`,
+    );
+  }
+  if (incomplete > 0) {
+    parts.push(
+      incomplete === 1 ? "1 incomplete row" : `${incomplete} incomplete rows`,
+    );
+  }
+  return parts.join(" · ");
+}
+
+export function formatCustomPropertiesSummaryLine(
+  includedInYaml: number,
+  incomplete: number,
+): string | null {
+  if (includedInYaml === 0 && incomplete === 0) return null;
+  const parts: string[] = [];
+  if (includedInYaml > 0) {
+    parts.push(
+      includedInYaml === 1
+        ? "1 property included in YAML"
+        : `${includedInYaml} properties included in YAML`,
+    );
+  }
+  if (incomplete > 0) {
+    parts.push(
+      incomplete === 1 ? "1 incomplete row" : `${incomplete} incomplete rows`,
+    );
+  }
+  return parts.join(" · ");
+}
+
+export const GOVERNANCE_ROW_INCOMPLETE_ACCESS_ROLE =
+  "Add a role name to include this row in the YAML export and publish.";
+
+export const GOVERNANCE_ROW_INCOMPLETE_SLA =
+  "Choose a type and value to include this service level in the YAML export.";
+
+export const GOVERNANCE_ROW_INCOMPLETE_CUSTOM_PROPERTY =
+  "Add a property name and value in camelCase to include this row in the YAML export.";
 
 // ─── Publication readiness ─────────────────────────────────────────────────────
 
@@ -257,6 +368,9 @@ export const VERSIONS_NO_CHANGES_SINCE_LAST = "No changes since last version";
 
 export const VERSIONS_REVISION_OPEN_NO_CHANGES =
   "Revision open - no changes since last version";
+
+export const VERSIONS_EXPORT_COMPARE_HINT =
+  "Use Compare to inspect exported contract differences between versions.";
 
 // ─── Compare versions (exported contract only) ───────────────────────────────
 

@@ -8,8 +8,6 @@ import {
   Users,
   Gauge,
   PenLine,
-  AlertTriangle,
-  ArchiveX,
 } from 'lucide-react'
 import { LifecycleStatusBadge, RevisionOpenBadge } from '@/lib/lifecycleStatusUi'
 import { Button } from '@/components/ui/button'
@@ -17,6 +15,7 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Tooltip } from '@/components/ui/tooltip'
 import { Avatar } from '@/components/ui/avatar'
+import { ContractLifecycleMenu } from '@/components/shared/ContractLifecycleMenu'
 import { DataContract, EditorTab, Collaborator, CollaboratorRole } from '@/types/odcs'
 import {
   COLLABORATOR_ROLE_LABELS,
@@ -50,11 +49,14 @@ interface ContractTopBarProps {
   onReadinessToggle?: () => void
   /** Hide while on initial Import step for new import-sourced contracts. */
   hideStartDrafting?: boolean
+  /** Form / YAML switch — hidden on Versions (app history, not export preview). */
+  showEditorTabs?: boolean
 }
 
 /** Shared height for badges, tabs, and actions in the contract top bar (32px). */
 const TOP_BAR_CONTROL = 'h-8 shrink-0 text-xs'
 const TOP_BAR_BTN = cn(TOP_BAR_CONTROL, 'gap-1.5 px-3')
+const TOP_BAR_DIVIDER = 'h-5 w-px bg-neutral-200 shrink-0'
 
 const TABS: { id: EditorTab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { id: 'form', label: 'Form', icon: FileText },
@@ -70,6 +72,7 @@ export function ContractTopBar({
   readinessPanelOpen,
   onReadinessToggle,
   hideStartDrafting = false,
+  showEditorTabs = true,
 }: ContractTopBarProps) {
   const { info, gitHistory, openPR } = contract
 
@@ -84,6 +87,14 @@ export function ContractTopBar({
   const isContributor = myRole === 'editor'
   const isOwner       = myRole === 'owner'
   const readinessNav = useReadinessNavigation()
+
+  const showDeprecate =
+    isOwner && info.status === 'active' && !contract.inRevision
+  const showRetire = isOwner && info.status === 'deprecated'
+  const showLifecycleMenu = showDeprecate || showRetire
+
+  const showWorkflowZone =
+    info.status !== 'deprecated' && info.status !== 'retired'
 
   const handlePublishClick = () => {
     readinessNav?.markPublishAttempted()
@@ -118,133 +129,128 @@ export function ContractTopBar({
           </Button>
         )}
 
-        <Tabs value={activeTab} onValueChange={v => onTabChange(v as EditorTab)} className="flex-shrink-0">
-          <TabsList className={TOP_BAR_CONTROL}>
-            {TABS.map(({ id, label, icon: Icon }) => (
-              <TabsTrigger key={id} value={id}>
-                <Icon className="h-3.5 w-3.5" />
-                {label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
+        {showEditorTabs && (
+          <Tabs value={activeTab} onValueChange={v => onTabChange(v as EditorTab)} className="flex-shrink-0">
+            <TabsList className={TOP_BAR_CONTROL}>
+              {TABS.map(({ id, label, icon: Icon }) => (
+                <TabsTrigger key={id} value={id}>
+                  <Icon className="h-3.5 w-3.5" />
+                  {label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+        )}
 
         {!isConsumer && (
           <>
             <div className="flex h-8 items-center gap-2 flex-shrink-0">
-            {collaborators.length > 0 && (
-              <div className="flex h-8 items-center -space-x-1">
-                {collaborators.slice(0, 3).map(c => (
-                  <Tooltip
-                    key={c.id}
-                    content={<><div>{c.name}</div><div className="text-[10px] opacity-60 mt-0.5">{COLLABORATOR_ROLE_LABELS[c.role]}</div></>}
-                    side="bottom"
-                    delayDuration={300}
-                  >
-                    <Avatar name={c.name} size="sm" className="cursor-default" />
-                  </Tooltip>
-                ))}
-                {collaborators.length > 3 && (
-                  <Tooltip content={COLLABORATORS_MORE_COUNT(collaborators.length - 3)} side="bottom" delayDuration={300}>
-                    <div className="h-6 w-6 rounded-full bg-neutral-50 text-neutral-400 text-[10px] font-medium flex items-center justify-center ring-1 ring-white flex-shrink-0 cursor-default">
-                      +{collaborators.length - 3}
-                    </div>
-                  </Tooltip>
-                )}
-              </div>
-            )}
-            <Button variant="outline" size="sm" onClick={onShare} className={TOP_BAR_BTN}>
-              <Users className="h-3.5 w-3.5" />
-              <span className="hidden lg:inline">{COLLABORATORS_MODAL_TITLE}</span>
-            </Button>
-          </div>
-
-          {/* Actions area */}
-          {info.status !== 'deprecated' && info.status !== 'retired' && (
-            <div className="flex h-8 items-center gap-2 flex-shrink-0">
-
-              {(isOwner || isContributor) && info.status === 'proposed' && !hideStartDrafting && (
-                <Button variant="secondary" size="sm" onClick={onStartDraft} className={TOP_BAR_BTN}>
-                  <PenLine className="h-3.5 w-3.5" />
-                  Start drafting
-                </Button>
+              {collaborators.length > 0 && (
+                <div className="flex h-8 items-center -space-x-1">
+                  {collaborators.slice(0, 3).map(c => (
+                    <Tooltip
+                      key={c.id}
+                      content={<><div>{c.name}</div><div className="text-[10px] opacity-60 mt-0.5">{COLLABORATOR_ROLE_LABELS[c.role]}</div></>}
+                      side="bottom"
+                      delayDuration={300}
+                    >
+                      <Avatar name={c.name} size="sm" className="cursor-default" />
+                    </Tooltip>
+                  ))}
+                  {collaborators.length > 3 && (
+                    <Tooltip content={COLLABORATORS_MORE_COUNT(collaborators.length - 3)} side="bottom" delayDuration={300}>
+                      <div className="h-6 w-6 rounded-full bg-neutral-50 text-neutral-400 text-[10px] font-medium flex items-center justify-center ring-1 ring-white flex-shrink-0 cursor-default">
+                        +{collaborators.length - 3}
+                      </div>
+                    </Tooltip>
+                  )}
+                </div>
               )}
+              <Button variant="outline" size="sm" onClick={onShare} className={TOP_BAR_BTN}>
+                <Users className="h-3.5 w-3.5" />
+                <span className="hidden lg:inline">{COLLABORATORS_MODAL_TITLE}</span>
+              </Button>
+            </div>
 
-              {/* New version - owner + contributor on active contracts */}
-              {(isOwner || isContributor) && info.status === 'active' && !contract.inRevision && (
-                <>
-                  <Button variant="secondary" size="sm" onClick={onNewVersion} className={TOP_BAR_BTN}>
-                    <GitBranch className="h-3.5 w-3.5" />
-                    New version
-                  </Button>
-                  {isOwner && (
-                    <Button variant="outline" size="sm" onClick={onDeprecate} className={TOP_BAR_BTN}>
-                      <AlertTriangle className="h-3.5 w-3.5" />
-                      Deprecate
+            {showWorkflowZone && (
+              <>
+                <div className={TOP_BAR_DIVIDER} aria-hidden />
+                <div className="flex h-8 items-center gap-2 flex-shrink-0">
+                  {(isOwner || isContributor) && info.status === 'proposed' && !hideStartDrafting && (
+                    <Button variant="secondary" size="sm" onClick={onStartDraft} className={TOP_BAR_BTN}>
+                      <PenLine className="h-3.5 w-3.5" />
+                      Start drafting
                     </Button>
                   )}
-                </>
-              )}
 
-              {/* Publish area - draft / in-revision state */}
-              {(info.status === 'draft' || contract.inRevision) && (gitState === 'never' || gitState === 'unpushed') && (
-                isOwner ? (
-                  <Tooltip
-                    content={!canPublish && publishBlockReason ? publishBlockReason : undefined}
-                    side="bottom"
-                    delayDuration={300}
-                  >
-                    <Button
-                      type="button"
-                      size="sm"
-                      onClick={handlePublishClick}
-                      aria-disabled={!canPublish}
-                      className={cn(
-                        TOP_BAR_BTN,
-                        !canPublish &&
-                          'bg-neutral-50 text-neutral-300 border border-neutral-200 shadow-none cursor-not-allowed hover:bg-neutral-50 hover:text-neutral-300',
-                      )}
-                    >
-                      <Upload className="h-3.5 w-3.5" />
-                      {gitState === 'never' ? 'Publish' : 'Publish update'}
+                  {(isOwner || isContributor) && info.status === 'active' && !contract.inRevision && (
+                    <Button variant="secondary" size="sm" onClick={onNewVersion} className={TOP_BAR_BTN}>
+                      <GitBranch className="h-3.5 w-3.5" />
+                      New version
                     </Button>
-                  </Tooltip>
-                ) : (
-                  <Tooltip content={PUBLISH_REQUIRES_PUBLISHER_CONTRACT} side="bottom" delayDuration={300}>
-                    <span>
-                      <Button size="sm" disabled className={cn(TOP_BAR_BTN, 'pointer-events-none')}>
-                        <Upload className="h-3.5 w-3.5" />
-                        {gitState === 'never' ? 'Publish' : 'Publish update'}
-                      </Button>
-                    </span>
-                  </Tooltip>
-                )
-              )}
+                  )}
 
-              {/* Synced / published state - owner only */}
-              {isOwner && (info.status === 'draft' || contract.inRevision) && gitState === 'synced' && (
-                <Button variant="ghost" size="sm" onClick={onPushToGit} title={topBarPublishedTooltip(lastCommit!.version)} className={cn(TOP_BAR_BTN, 'text-neutral-400')}>
-                  <Check className="h-3.5 w-3.5 text-green-700" />
-                  Published
-                </Button>
-              )}
+                  {(info.status === 'draft' || contract.inRevision) && (gitState === 'never' || gitState === 'unpushed') && (
+                    isOwner ? (
+                      <Tooltip
+                        content={!canPublish && publishBlockReason ? publishBlockReason : undefined}
+                        side="bottom"
+                        delayDuration={300}
+                      >
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={handlePublishClick}
+                          aria-disabled={!canPublish}
+                          className={cn(
+                            TOP_BAR_BTN,
+                            !canPublish &&
+                              'bg-neutral-50 text-neutral-300 border border-neutral-200 shadow-none cursor-not-allowed hover:bg-neutral-50 hover:text-neutral-300',
+                          )}
+                        >
+                          <Upload className="h-3.5 w-3.5" />
+                          {gitState === 'never' ? 'Publish' : 'Publish update'}
+                        </Button>
+                      </Tooltip>
+                    ) : (
+                      <Tooltip content={PUBLISH_REQUIRES_PUBLISHER_CONTRACT} side="bottom" delayDuration={300}>
+                        <span>
+                          <Button size="sm" disabled className={cn(TOP_BAR_BTN, 'pointer-events-none')}>
+                            <Upload className="h-3.5 w-3.5" />
+                            {gitState === 'never' ? 'Publish' : 'Publish update'}
+                          </Button>
+                        </span>
+                      </Tooltip>
+                    )
+                  )}
 
-              {/* Approval request open - owner only (simulated; openPR unused in seed data) */}
-              {isOwner && gitState === 'pr-open' && (
-                <Button variant="warning" size="sm" className={cn(TOP_BAR_BTN, 'pointer-events-none')}>
-                  <AlertCircle className="h-3.5 w-3.5" />
-                  {TOP_BAR_APPROVAL_IN_PROGRESS}
-                </Button>
-              )}
+                  {isOwner && (info.status === 'draft' || contract.inRevision) && gitState === 'synced' && (
+                    <Button variant="ghost" size="sm" onClick={onPushToGit} title={topBarPublishedTooltip(lastCommit!.version)} className={cn(TOP_BAR_BTN, 'text-neutral-400')}>
+                      <Check className="h-3.5 w-3.5 text-green-700" />
+                      Published
+                    </Button>
+                  )}
 
-            </div>
-          )}
+                  {isOwner && gitState === 'pr-open' && (
+                    <Button variant="warning" size="sm" className={cn(TOP_BAR_BTN, 'pointer-events-none')}>
+                      <AlertCircle className="h-3.5 w-3.5" />
+                      {TOP_BAR_APPROVAL_IN_PROGRESS}
+                    </Button>
+                  )}
+                </div>
+              </>
+            )}
 
-            {isOwner && info.status === 'deprecated' && (
-              <Button variant="outline" size="sm" onClick={onRetire} className={TOP_BAR_BTN}>
-                <ArchiveX className="h-3.5 w-3.5" />
-                Retire contract
-              </Button>
+            {showLifecycleMenu && (
+              <>
+                <div className={TOP_BAR_DIVIDER} aria-hidden />
+                <ContractLifecycleMenu
+                  showDeprecate={showDeprecate}
+                  showRetire={showRetire}
+                  onDeprecate={onDeprecate}
+                  onRetire={onRetire}
+                />
+              </>
             )}
           </>
         )}

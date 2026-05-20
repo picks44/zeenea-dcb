@@ -12,7 +12,17 @@ import {
   governanceTableShellClass,
 } from '@/components/shared/GovernanceSectionHeader'
 import { cn } from '@/lib/utils'
+import { GovernanceSectionMeta } from '@/components/shared/GovernanceSectionMeta'
 import {
+  GovernanceIncompleteRowHint,
+  governanceIncompleteRowClass,
+} from '@/components/shared/GovernanceIncompleteRowHint'
+import { isSlaRowIncomplete, summarizeSlaProperties } from '@/lib/governanceSectionSummary'
+import { useReadinessNavigation } from '@/components/readiness/ReadinessNavigationContext'
+import {
+  formatSlaSummaryLine,
+  GOVERNANCE_ROW_INCOMPLETE_SLA,
+  SLA_AUTOSAVE_NOTE,
   SLA_EMPTY_BODY,
   SLA_EMPTY_CTA,
   SLA_EMPTY_TITLE,
@@ -66,6 +76,14 @@ function SlaReadOnlyRow({ row }: { row: SlaProperty }) {
 }
 
 export function SlaSection({ slaProperties, onChange, isLocked, docCompact }: SlaSectionProps) {
+  const readinessNav = useReadinessNavigation()
+  const publishAttempted = readinessNav?.publishAttempted ?? false
+  const slaSummary = summarizeSlaProperties(slaProperties)
+  const summaryLine = formatSlaSummaryLine(
+    slaSummary.includedInYaml,
+    slaSummary.incomplete,
+  )
+
   const update = (id: string, patch: Partial<SlaProperty>) =>
     onChange(slaProperties.map(s => (s.id === id ? { ...s, ...patch } : s)))
 
@@ -86,6 +104,13 @@ export function SlaSection({ slaProperties, onChange, isLocked, docCompact }: Sl
         description={SLA_SECTION_INTRO}
         compact={docCompact && isLocked}
       />
+
+      {!isLocked ? (
+        <GovernanceSectionMeta
+          autosaveNote={SLA_AUTOSAVE_NOTE}
+          summaryLine={summaryLine}
+        />
+      ) : null}
 
       {slaProperties.length === 0 ? (
         <GovernanceEmptyState
@@ -131,14 +156,20 @@ export function SlaSection({ slaProperties, onChange, isLocked, docCompact }: Sl
                   )
                 }
 
+                const rowIncomplete = isSlaRowIncomplete(row)
+                const showRowEmphasis = publishAttempted && rowIncomplete
+
                 return (
-                  <tr key={row.id}>
+                  <tr
+                    key={row.id}
+                    className={showRowEmphasis ? governanceIncompleteRowClass(true) : undefined}
+                  >
                     <td className={SLA_CELL}>
                       <Select
                         value={row.property ?? undefined}
                         onValueChange={v => update(row.id, { property: v as SlaPropertyType })}
                       >
-                        <SelectTrigger className={SLA_INPUT}>
+                        <SelectTrigger className={SLA_INPUT} data-readiness-control="">
                           <SelectValue placeholder="Type" />
                         </SelectTrigger>
                         <SelectContent>
@@ -151,12 +182,19 @@ export function SlaSection({ slaProperties, onChange, isLocked, docCompact }: Sl
                       </Select>
                     </td>
                     <td className={SLA_CELL}>
-                      <Input
-                        value={row.value}
-                        onChange={e => update(row.id, { value: e.target.value })}
-                        className={SLA_INPUT}
-                        placeholder="e.g. 4"
-                      />
+                      <div>
+                        <Input
+                          value={row.value}
+                          onChange={e => update(row.id, { value: e.target.value })}
+                          className={SLA_INPUT}
+                          placeholder="e.g. 4"
+                          data-readiness-control=""
+                        />
+                        <GovernanceIncompleteRowHint
+                          show={showRowEmphasis}
+                          message={GOVERNANCE_ROW_INCOMPLETE_SLA}
+                        />
+                      </div>
                     </td>
                     <td className={SLA_CELL}>
                       <Select

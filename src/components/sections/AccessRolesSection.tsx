@@ -18,12 +18,25 @@ import {
   governanceTableHeadRowClass,
   governanceTableShellClass,
 } from '@/components/shared/GovernanceSectionHeader'
+import { GovernanceSectionMeta } from '@/components/shared/GovernanceSectionMeta'
 import {
+  GovernanceIncompleteRowHint,
+  governanceIncompleteRowClass,
+} from '@/components/shared/GovernanceIncompleteRowHint'
+import {
+  isAccessRoleRowIncomplete,
+  summarizeAccessRoles,
+} from '@/lib/governanceSectionSummary'
+import { useReadinessNavigation } from '@/components/readiness/ReadinessNavigationContext'
+import {
+  DATA_ACCESS_AUTOSAVE_NOTE,
   DATA_ACCESS_EMPTY_BODY,
   DATA_ACCESS_EMPTY_CTA,
   DATA_ACCESS_EMPTY_TITLE,
   DATA_ACCESS_ADD_ROLE_CTA,
   DATA_ACCESS_ROLES_INTRO,
+  formatAccessRolesSummaryLine,
+  GOVERNANCE_ROW_INCOMPLETE_ACCESS_ROLE,
 } from '@/lib/uxCopy'
 import {
   GOVERNANCE_SECTION_WIDTH_FULL_CLASS,
@@ -65,6 +78,14 @@ function AccessRoleReadOnlyCells({ role }: { role: OdcsAccessRole }) {
 }
 
 export function AccessRolesSection({ roles, onChange, isLocked, docCompact }: AccessRolesSectionProps) {
+  const readinessNav = useReadinessNavigation()
+  const publishAttempted = readinessNav?.publishAttempted ?? false
+  const roleSummary = summarizeAccessRoles(roles)
+  const summaryLine = formatAccessRolesSummaryLine(
+    roleSummary.includedInYaml,
+    roleSummary.incomplete,
+  )
+
   const update = (id: string, patch: Partial<OdcsAccessRole>) =>
     onChange(roles.map(r => (r.id === id ? { ...r, ...patch } : r)))
 
@@ -82,6 +103,13 @@ export function AccessRolesSection({ roles, onChange, isLocked, docCompact }: Ac
         description={DATA_ACCESS_ROLES_INTRO}
         compact={docCompact && isLocked}
       />
+
+      {!isLocked ? (
+        <GovernanceSectionMeta
+          autosaveNote={DATA_ACCESS_AUTOSAVE_NOTE}
+          summaryLine={summaryLine}
+        />
+      ) : null}
 
       {roles.length === 0 ? (
         <GovernanceEmptyState
@@ -127,46 +155,63 @@ export function AccessRolesSection({ roles, onChange, isLocked, docCompact }: Ac
           )}
 
           <div className="divide-y divide-neutral-100">
-            {roles.map(r => (
-              <div
-                key={r.id}
-                className={cn(gridClass, isLocked ? docGovernanceRowClass : governanceTableRowClass)}
-              >
-                {isLocked ? (
-                  <AccessRoleReadOnlyCells role={r} />
-                ) : (
-                  <>
-                    <Input
-                      value={r.role}
-                      onChange={e => update(r.id, { role: e.target.value })}
-                      placeholder="e.g. analytics_user"
-                      className="h-8 text-xs"
-                    />
-                    <Select
-                      value={r.access}
-                      onValueChange={v => v && update(r.id, { access: v as 'read' | 'write' })}
-                    >
-                      <SelectTrigger className="h-8 text-xs w-full"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="read" className="text-xs">Read</SelectItem>
-                        <SelectItem value="write" className="text-xs">Write</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Textarea
-                      value={r.description ?? ''}
-                      onChange={e => update(r.id, { description: e.target.value })}
-                      placeholder="Optional note"
-                      rows={1}
-                      className="text-xs min-h-[32px] resize-none py-1.5"
-                    />
-                    <GovernanceDeleteButton
-                      onClick={() => remove(r.id)}
-                      aria-label="Remove role"
-                    />
-                  </>
-                )}
-              </div>
-            ))}
+            {roles.map(r => {
+              const rowIncomplete = isAccessRoleRowIncomplete(r)
+              const showRowEmphasis = publishAttempted && rowIncomplete
+              return (
+                <div
+                  key={r.id}
+                  className={cn(
+                    gridClass,
+                    isLocked ? docGovernanceRowClass : governanceTableRowClass,
+                    !isLocked && showRowEmphasis && governanceIncompleteRowClass(true),
+                  )}
+                >
+                  {isLocked ? (
+                    <AccessRoleReadOnlyCells role={r} />
+                  ) : (
+                    <>
+                      <div className="min-w-0">
+                        <Input
+                          value={r.role}
+                          onChange={e => update(r.id, { role: e.target.value })}
+                          placeholder="e.g. analytics_user"
+                          className="h-8 text-xs"
+                          data-readiness-control=""
+                        />
+                        <GovernanceIncompleteRowHint
+                          show={showRowEmphasis}
+                          message={GOVERNANCE_ROW_INCOMPLETE_ACCESS_ROLE}
+                        />
+                      </div>
+                      <Select
+                        value={r.access}
+                        onValueChange={v => v && update(r.id, { access: v as 'read' | 'write' })}
+                      >
+                        <SelectTrigger className="h-8 text-xs w-full" data-readiness-control="">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="read" className="text-xs">Read</SelectItem>
+                          <SelectItem value="write" className="text-xs">Write</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Textarea
+                        value={r.description ?? ''}
+                        onChange={e => update(r.id, { description: e.target.value })}
+                        placeholder="Optional note"
+                        rows={1}
+                        className="text-xs min-h-[32px] resize-none py-1.5"
+                      />
+                      <GovernanceDeleteButton
+                        onClick={() => remove(r.id)}
+                        aria-label="Remove role"
+                      />
+                    </>
+                  )}
+                </div>
+              )
+            })}
           </div>
 
           {!isLocked && (

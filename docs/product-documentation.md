@@ -203,6 +203,8 @@ Ordre conseillé pour un nouveau contrat :
 
 Le panneau **Publication readiness** est visible sur l’onglet Form (sauf sections Import et Versions).
 
+Les onglets **Form** / **YAML** du bandeau supérieur sont masqués dans la section **Versions** : cette section affiche l’historique applicatif (timeline, working copy, Compare). L’aperçu YAML du livrable courant reste accessible depuis les autres sections ; les différences exportées entre versions passent par **Compare**.
+
 ### 3.3 Ce que l’application gère vs ce qui est exporté
 
 | Dans le fichier YAML exporté                                                                                                                                            | Géré uniquement dans l’application                                                                                                        |

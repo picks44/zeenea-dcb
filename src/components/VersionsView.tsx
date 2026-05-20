@@ -9,6 +9,7 @@ import {
   VERSIONS_CHANGES_NOT_PUBLISHED,
   VERSIONS_NO_CHANGES_SINCE_LAST,
   VERSIONS_REVISION_OPEN_NO_CHANGES,
+  VERSIONS_EXPORT_COMPARE_HINT,
   VERSIONS_WORKING_COPY_LABEL,
   versionHistoryIntroCount,
 } from '@/lib/uxCopy'
@@ -78,6 +79,9 @@ export function VersionsView({
             : versionHistoryIntroCount(gitHistory.length)
         }
       />
+      <p className="text-[10px] text-neutral-400 -mt-2 mb-6 leading-snug">
+        {VERSIONS_EXPORT_COMPARE_HINT}
+      </p>
 
       {/* Empty state */}
       {!showTimeline && (

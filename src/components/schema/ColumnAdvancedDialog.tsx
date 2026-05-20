@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -72,19 +72,33 @@ export function ColumnAdvancedDialog({
   const [fkShowErrors, setFkShowErrors] = useState(false)
   const [foreignKey, setForeignKey] = useState<ColumnForeignKey | undefined>()
   const [items, setItems] = useState<PropertyItems | undefined>()
+  const openedColumnIdRef = useRef<string | null>(null)
+
+  const columnFkKey = column
+    ? `${column.foreignKey?.toTable ?? ''}\0${column.foreignKey?.toColumn ?? ''}`
+    : ''
 
   useEffect(() => {
-    if (!column || !open) return
-    setDescription(column.description ?? '')
-    setExamplesText((column.examples ?? []).join('\n'))
-    setTags(column.tags ?? [])
-    setAuthDefs(filterAuthoritativeDefinitionsForSave(column.authoritativeDefinitions ?? []))
-    setQuality(loadColumnQuality(column))
+    if (!column || !open) {
+      if (!open) openedColumnIdRef.current = null
+      return
+    }
+    const opening = openedColumnIdRef.current !== column.id
+    if (opening) {
+      openedColumnIdRef.current = column.id
+      setDescription(column.description ?? '')
+      setExamplesText((column.examples ?? []).join('\n'))
+      setTags(column.tags ?? [])
+      setAuthDefs(filterAuthoritativeDefinitionsForSave(column.authoritativeDefinitions ?? []))
+      setQuality(loadColumnQuality(column))
+      setForeignKey(column.foreignKey)
+      setItems(column.items)
+      setAuthShowErrors(false)
+      setFkShowErrors(false)
+      return
+    }
     setForeignKey(column.foreignKey)
-    setItems(column.items)
-    setAuthShowErrors(false)
-    setFkShowErrors(false)
-  }, [column, open])
+  }, [column?.id, columnFkKey, open, column])
 
   if (!column) return null
 

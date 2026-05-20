@@ -604,12 +604,18 @@ export function TableBlock({
                       Join columns <span className="text-neutral-300 font-normal">(optional)</span>
                     </p>
                     <div className="flex items-center gap-2">
-                      <Select value={editingRel.fromColumn} onValueChange={v => v && setEditingRel(r => r ? { ...r, fromColumn: v } : r)}>
+                      <Select
+                        value={editingRel.fromColumn || undefined}
+                        onValueChange={v => setEditingRel(r => r ? { ...r, fromColumn: v ?? '' } : r)}
+                      >
                         <SelectTrigger className="h-7 text-xs w-[130px]"><SelectValue placeholder={`${table.physicalName}…`} /></SelectTrigger>
                         <SelectContent>{table.columns.map(c => <SelectItem key={c.id} value={c.physicalName} className="text-xs">{c.physicalName}</SelectItem>)}</SelectContent>
                       </Select>
                       <span className="text-[11px] text-neutral-300">→</span>
-                      <Select value={editingRel.toColumn} onValueChange={v => v && setEditingRel(r => r ? { ...r, toColumn: v } : r)}>
+                      <Select
+                        value={editingRel.toColumn || undefined}
+                        onValueChange={v => setEditingRel(r => r ? { ...r, toColumn: v ?? '' } : r)}
+                      >
                         <SelectTrigger className="h-7 text-xs w-[130px]"><SelectValue placeholder={`${editingRel.toTable}…`} /></SelectTrigger>
                         <SelectContent>
                           {(allTables.find(t => t.physicalName === editingRel.toTable)?.columns ?? []).map(c => (

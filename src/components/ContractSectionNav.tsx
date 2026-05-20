@@ -14,11 +14,14 @@ import {
 } from '@/lib/uxCopy'
 import { useReadinessNavigation } from '@/components/readiness/ReadinessNavigationContext'
 import type { SectionGuidanceStatus } from '@/lib/readinessGuidance'
+import { shouldShowSectionNavProgressCue } from '@/lib/sectionNavCues'
 
 interface ContractSectionNavProps {
   contract: DataContract
   activeSection: SectionId
   onSectionChange: (section: SectionId) => void
+  /** When false (read-only contract), hide all section progress cues. */
+  isContractEditable: boolean
   isNew: boolean
   onDeleteContract?: () => void
   docCompact?: boolean
@@ -80,15 +83,26 @@ function navStatusForSection(
       ? { status: 'complete', missingCount: 0 }
       : { status: 'empty', missingCount: 0 }
   }
-  if (id === 'versions') {
-    return { status: 'empty', missingCount: 0 }
-  }
   return { status: 'empty', missingCount: 0 }
+}
+
+/** Preserves nav label alignment when progress cues are hidden. */
+function NavCueSpacer({ compact }: { compact?: boolean }) {
+  return (
+    <span
+      className={cn(
+        'flex-shrink-0',
+        compact ? 'h-3.5 w-3.5' : 'h-4 w-4',
+      )}
+      aria-hidden
+    />
+  )
 }
 
 export function ContractSectionNav({
   activeSection,
   onSectionChange,
+  isContractEditable,
   isNew,
   onDeleteContract,
   docCompact,
@@ -117,14 +131,15 @@ export function ContractSectionNav({
         {sections.map(({ id, label, icon: Icon }) => {
           const isActive = activeSection === id
           const { status, missingCount } = navStatusForSection(id, guidance, contract)
+          const showProgressCue = shouldShowSectionNavProgressCue(id, isContractEditable)
           const navLabel = id === 'stakeholders' ? SECTION_GOVERNANCE_CONTACTS : label
           const rowLabel =
-            status === 'incomplete' && missingCount > 0
+            showProgressCue && status === 'incomplete' && missingCount > 0
               ? `${navLabel}, ${statusCueTooltip(status, missingCount)}`
               : navLabel
 
           const tooltipContent =
-            status === 'incomplete' && missingCount > 0
+            showProgressCue && status === 'incomplete' && missingCount > 0
               ? `${navLabel} - ${statusCueTooltip(status, missingCount)}`
               : navLabel
 
@@ -145,12 +160,25 @@ export function ContractSectionNav({
               >
                 <Icon className={cn('flex-shrink-0 text-neutral-400', docCompact ? 'h-3.5 w-3.5' : 'h-4 w-4')} />
                 <span className="hidden xl:block flex-1 min-w-0 truncate">{label}</span>
-                <span className="hidden xl:flex">
-                  <StatusCueSlot status={status} />
-                </span>
-                <span className="xl:hidden">
-                  <StatusCueSlot status={status} compact />
-                </span>
+                {showProgressCue ? (
+                  <>
+                    <span className="hidden xl:flex">
+                      <StatusCueSlot status={status} />
+                    </span>
+                    <span className="xl:hidden">
+                      <StatusCueSlot status={status} compact />
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="hidden xl:flex">
+                      <NavCueSpacer />
+                    </span>
+                    <span className="xl:hidden">
+                      <NavCueSpacer compact />
+                    </span>
+                  </>
+                )}
               </button>
             </Tooltip>
           )

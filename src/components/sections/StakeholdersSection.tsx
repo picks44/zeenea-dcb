@@ -16,8 +16,12 @@ import {
   governanceTableRowClass,
   governanceTableShellClass,
 } from '@/components/shared/GovernanceSectionHeader'
+import { GovernanceSectionMeta } from '@/components/shared/GovernanceSectionMeta'
+import { summarizeStakeholders } from '@/lib/governanceSectionSummary'
 import {
+  formatStakeholdersSummaryLine,
   SECTION_GOVERNANCE_CONTACTS,
+  STAKEHOLDERS_AUTOSAVE_NOTE,
   STAKEHOLDERS_EMPTY_BODY,
   STAKEHOLDERS_EMPTY_CTA,
   STAKEHOLDERS_EMPTY_TITLE,
@@ -65,8 +69,10 @@ function makeStakeholder(): Stakeholder {
 }
 
 export function StakeholdersSection({ stakeholders, onChange, isLocked, docCompact }: StakeholdersSectionProps) {
-  const { setRef: sectionRootRef } = useSectionGuidanceRoot('stakeholders')
-  const contactCount = stakeholders.filter(s => Boolean(s.name?.trim())).length
+  const { setRef: sectionRootRef, info: sectionGuidance } = useSectionGuidanceRoot('stakeholders')
+  const summary = summarizeStakeholders(stakeholders)
+  const summaryLine = formatStakeholdersSummaryLine(summary.saved, summary.counted)
+  const contactCount = summary.counted
   const { setRef: contactsAnchorRef } = useReadinessField(
     READINESS_FIELD_STAKEHOLDERS_ROOT,
     contactCount === 0,
@@ -90,6 +96,14 @@ export function StakeholdersSection({ stakeholders, onChange, isLocked, docCompa
           compact={docCompact && isLocked}
           flashTitle
         />
+
+      {!isLocked ? (
+        <GovernanceSectionMeta
+          autosaveNote={STAKEHOLDERS_AUTOSAVE_NOTE}
+          summaryLine={summaryLine}
+          guidanceHint={sectionGuidance?.bannerMessage ?? null}
+        />
+      ) : null}
 
       {stakeholders.length === 0 ? (
         <GovernanceEmptyState

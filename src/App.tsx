@@ -131,6 +131,13 @@ export default function App() {
     )
   }, [])
 
+  const handleSectionChange = useCallback((section: SectionId) => {
+    setActiveSection(section)
+    if (section === 'versions') {
+      setActiveTab('form')
+    }
+  }, [])
+
   const openNewContract = (c: DataContract, section: SectionId) => {
     setContracts(prev => [c, ...prev])
     setSelectedId(c.uid)
@@ -395,7 +402,7 @@ export default function App() {
               contract={contract}
               contracts={contracts}
               enabled={showPublicationGuidance}
-              onSectionChange={setActiveSection}
+              onSectionChange={handleSectionChange}
             >
             <div className="flex flex-1 min-h-0 overflow-hidden">
 
@@ -403,7 +410,8 @@ export default function App() {
                 <ContractSectionNav
                   contract={contract}
                   activeSection={activeSection}
-                  onSectionChange={setActiveSection}
+                  onSectionChange={handleSectionChange}
+                  isContractEditable={!isLocked}
                   isNew={contract.dataset.length === 0 && contract.gitHistory.length === 0}
                   onDeleteContract={handleDeleteContract}
                   docCompact={docCompact}
@@ -434,6 +442,7 @@ export default function App() {
                   readinessPanelOpen={readinessOpen}
                   onReadinessToggle={() => setReadinessOpen(o => !o)}
                   hideStartDrafting={hideStartDrafting}
+                  showEditorTabs={activeSection !== 'versions'}
                 />
 
                 {contract.info.status === 'proposed' && (

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { DataContract } from "@/types/odcs";
 import {
   buildReadinessGuidanceItems,
+  computeSectionGuidance,
   hasExploitableDataAccessRole,
 } from "@/lib/readinessGuidance";
 import {
@@ -81,6 +82,50 @@ describe("buildReadinessGuidanceItems - Suggested improvements", () => {
       "access-roles",
       "ref-links",
     ]);
+  });
+});
+
+describe("computeSectionGuidance - Custom nav", () => {
+  it("marks Custom complete when at least one exportable property exists", () => {
+    const contract: DataContract = {
+      ...buildP1FixtureContract(),
+      customProperties: [
+        { id: "c1", property: "dataSteward", value: "owner@example.com", description: "" },
+      ],
+    };
+    expect(computeSectionGuidance(contract).custom?.status).toBe("complete");
+  });
+
+  it("marks Custom empty when no exportable properties", () => {
+    const contract: DataContract = {
+      ...buildP1FixtureContract(),
+      customProperties: [
+        { id: "c1", property: "solo", value: "", description: "" },
+      ],
+    };
+    expect(computeSectionGuidance(contract).custom?.status).toBe("empty");
+  });
+});
+
+describe("computeSectionGuidance - SLA nav", () => {
+  it("marks SLA empty when only blank shell rows exist", () => {
+    const contract: DataContract = {
+      ...buildP1FixtureContract(),
+      slaProperties: [
+        { id: "s1", value: "", unit: "", element: "", driver: "", description: "" },
+      ],
+    };
+    expect(computeSectionGuidance(contract).sla?.status).toBe("empty");
+  });
+
+  it("marks SLA complete when at least one exportable row exists", () => {
+    const contract: DataContract = {
+      ...buildP1FixtureContract(),
+      slaProperties: [
+        { id: "s1", property: "latency", value: "4", unit: "h" },
+      ],
+    };
+    expect(computeSectionGuidance(contract).sla?.status).toBe("complete");
   });
 });
 

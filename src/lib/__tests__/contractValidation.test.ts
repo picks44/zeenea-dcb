@@ -158,6 +158,14 @@ describe('validateContract P1', () => {
     expect(result.errors.some(e => e.code === 'logical-type-unknown')).toBe(true)
   })
 
+  it('blocks publish when column foreign key is partial', () => {
+    const c = buildP1FixtureContract()
+    c.dataset[0].columns[0].foreignKey = { toTable: 'customers', toColumn: '' }
+    const result = validateContract(c, [c])
+    expect(result.errors.some(e => e.code === 'column-fk-incomplete')).toBe(true)
+    expect(result.canPublish).toBe(false)
+  })
+
   it('rejects quality rule with library type on column', () => {
     const c = buildP1FixtureContract()
     const col = c.dataset[0].columns[0]

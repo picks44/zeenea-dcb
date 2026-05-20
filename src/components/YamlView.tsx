@@ -1,9 +1,11 @@
-import { useState } from 'react'
-import { Copy, Check } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { Copy, Check, Download } from 'lucide-react'
 import { DataContract } from '@/types/odcs'
 import { generateODCSYaml } from '@/lib/odcsYamlGenerator'
+import { buildYamlDownloadFilename, downloadYamlFile } from '@/lib/yamlFileDownload'
 import { Button } from '@/components/ui/button'
-import { EXPORT_COVERAGE } from '@/lib/uxCopy'
+import { Toast, useToast } from '@/components/ui/toast'
+import { EXPORT_COVERAGE, YAML_EXPORT } from '@/lib/uxCopy'
 
 function colorYamlValue(value: string): React.ReactNode {
   if (!value) return null
@@ -60,22 +62,58 @@ interface YamlViewProps {
 
 export function YamlView({ contract }: YamlViewProps) {
   const [copied, setCopied] = useState(false)
-  const yaml = generateODCSYaml(contract)
+  const toast = useToast()
+  const yaml = useMemo(() => generateODCSYaml(contract), [contract])
   const lines = yaml.split('\n')
+  const downloadFilename = buildYamlDownloadFilename(contract.id, contract.info.version)
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(yaml)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(yaml)
+      setCopied(true)
+      toast.show({ message: YAML_EXPORT.copyToast })
+      window.setTimeout(() => setCopied(false), 2000)
+    } catch {
+      toast.show({ message: YAML_EXPORT.copyFailed })
+    }
+  }
+
+  const handleDownload = () => {
+    downloadYamlFile(yaml, downloadFilename)
+    toast.show({ message: YAML_EXPORT.downloadToast(downloadFilename) })
   }
 
   return (
     <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#f8f8f8]">
-      <div className="flex items-center justify-between px-6 py-2.5 bg-white border-b border-[#d3d3e5] flex-shrink-0">
-        <span className="text-xs font-semibold text-[#3f3f4a] uppercase tracking-wide">ODCS v3.1.0 - Generated export (read-only)</span>
-        <Button variant="outline" size="sm" onClick={handleCopy} className="gap-1.5">
-          {copied ? <><Check className="h-3 w-3 text-green-700" /> Copied</> : <><Copy className="h-3 w-3" /> Copy YAML</>}
-        </Button>
+      <div className="flex flex-wrap items-center justify-between gap-2 px-6 py-2.5 bg-white border-b border-[#d3d3e5] flex-shrink-0">
+        <span className="text-xs font-semibold text-[#3f3f4a] uppercase tracking-wide min-w-0">
+          ODCS v3.1.0 - Generated export (read-only)
+        </span>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => void handleCopy()}
+            className="gap-1.5"
+            aria-live="polite"
+          >
+            {copied ? (
+              <>
+                <Check className="h-3 w-3 text-green-700" />
+                {YAML_EXPORT.copiedButton}
+              </>
+            ) : (
+              <>
+                <Copy className="h-3 w-3" />
+                {YAML_EXPORT.copyButton}
+              </>
+            )}
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleDownload} className="gap-1.5">
+            <Download className="h-3 w-3" />
+            {YAML_EXPORT.downloadButton}
+          </Button>
+        </div>
       </div>
       <div className="px-6 py-2 bg-[#fbfbff] border-b border-[#e4e4f0] space-y-1 flex-shrink-0">
         <p className="text-[10px] text-[#656574] leading-snug">{EXPORT_COVERAGE.includedInYaml}</p>
@@ -99,6 +137,7 @@ export function YamlView({ contract }: YamlViewProps) {
           </table>
         </pre>
       </div>
+      <Toast visible={toast.visible} message={toast.message} />
     </div>
   )
 }

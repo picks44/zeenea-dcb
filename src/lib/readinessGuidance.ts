@@ -4,6 +4,10 @@ import {
   type ValidationIssue,
   type ValidationResult,
 } from "@/lib/contractValidation";
+import {
+  countExportableCustomProperties,
+  countExportableSlaProperties,
+} from "@/lib/governanceSectionSummary";
 import { countAssignedStakeholders } from "@/lib/stakeholders";
 import {
   READINESS_FIELD_ACCESS_ROLES_ROOT,
@@ -222,8 +226,29 @@ export function computeSectionGuidance(
         bannerVariant: null,
       };
 
+  const slaExportableCount = countExportableSlaProperties(
+    contract.slaProperties,
+  );
   const sla =
-    (contract.slaProperties?.length ?? 0) > 0
+    slaExportableCount > 0
+      ? {
+          status: "complete" as const,
+          missingCount: 0,
+          bannerMessage: null,
+          bannerVariant: null,
+        }
+      : {
+          status: "empty" as const,
+          missingCount: 0,
+          bannerMessage: null,
+          bannerVariant: null,
+        };
+
+  const customExportableCount = countExportableCustomProperties(
+    contract.customProperties,
+  );
+  const custom =
+    customExportableCount > 0
       ? {
           status: "complete" as const,
           missingCount: 0,
@@ -243,6 +268,7 @@ export function computeSectionGuidance(
     stakeholders,
     accessRoles,
     sla,
+    custom,
   };
 }
 
