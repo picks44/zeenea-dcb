@@ -832,6 +832,129 @@ function changelogLineForRow(sectionId: string, row: FormDiffRow): string {
   }
 }
 
+export function flattenSchemaPropertyKeys(
+  snapshot: DataContractSnapshot,
+): string[] {
+  const doc = exportDocumentFromSnapshot(snapshot);
+  return [...flattenSchemaProperties(doc.schema as unknown[] | undefined).keys()];
+}
+
+interface SchemaTableFieldChanges {
+  table: string;
+  added: string[];
+  removed: string[];
+  updated: string[];
+}
+
+function schemaChangesByTable(
+  left: DataContractSnapshot,
+  right: DataContractSnapshot,
+): SchemaTableFieldChanges[] {
+  const leftDoc = exportDocumentFromSnapshot(left);
+  const rightDoc = exportDocumentFromSnapshot(right);
+  const leftProps = flattenSchemaProperties(leftDoc.schema as unknown[] | undefined);
+  const rightProps = flattenSchemaProperties(rightDoc.schema as unknown[] | undefined);
+  const tableMap = new Map<string, SchemaTableFieldChanges>();
+
+  const ensure = (table: string): SchemaTableFieldChanges => {
+    let entry = tableMap.get(table);
+    if (!entry) {
+      entry = { table, added: [], removed: [], updated: [] };
+      tableMap.set(table, entry);
+    }
+    return entry;
+  };
+
+  for (const [key, prop] of rightProps) {
+    const [table, col] = key.includes(".") ? key.split(".") : ["schema", key];
+    const column = col ?? key;
+    if (!leftProps.has(key)) {
+      ensure(table).added.push(column);
+    } else if (
+      JSON.stringify(leftProps.get(key)) !== JSON.stringify(prop)
+    ) {
+      ensure(table).updated.push(column);
+    }
+  }
+
+  for (const key of leftProps.keys()) {
+    if (!rightProps.has(key)) {
+      const [table, col] = key.includes(".") ? key.split(".") : ["schema", key];
+      ensure(table).removed.push(col ?? key);
+    }
+  }
+
+  return [...tableMap.values()].filter(
+    (g) => g.added.length > 0 || g.removed.length > 0 || g.updated.length > 0,
+  );
+}
+
+function formatFieldList(names: string[], max = 4): string {
+  if (names.length === 0) return "";
+  if (names.length <= max) return names.join(", ");
+  return `${names.slice(0, max).join(", ")} (+${names.length - max} more)`;
+}
+
+const MAX_SCHEMA_TABLE_BULLETS = 5;
+const MAX_FIELDS_INLINE = 4;
+
+/** Grouped schema bullets for publish changelog (table-aware). */
+export function buildGroupedSchemaChangelogBullets(
+  left: DataContractSnapshot,
+  right: DataContractSnapshot,
+): string[] {
+  const groups = schemaChangesByTable(left, right);
+  if (groups.length === 0) return [];
+
+  const totalChanges = groups.reduce(
+    (n, g) => n + g.added.length + g.removed.length + g.updated.length,
+    0,
+  );
+
+  if (totalChanges > 8 && groups.length === 1) {
+    const g = groups[0]!;
+    const parts: string[] = [];
+    if (g.added.length)
+      parts.push(`${g.added.length} field${g.added.length === 1 ? "" : "s"} added`);
+    if (g.removed.length)
+      parts.push(`${g.removed.length} removed`);
+    if (g.updated.length)
+      parts.push(`${g.updated.length} updated`);
+    return [`Updated ${g.table} schema in the export (${parts.join(", ")}).`];
+  }
+
+  const lines: string[] = [];
+  for (const g of groups.slice(0, MAX_SCHEMA_TABLE_BULLETS)) {
+    if (g.added.length && !g.removed.length && !g.updated.length) {
+      lines.push(
+        `Added ${g.table} fields to the export: ${formatFieldList(g.added, MAX_FIELDS_INLINE)}.`,
+      );
+    } else if (g.removed.length && !g.added.length && !g.updated.length) {
+      lines.push(
+        `Removed ${g.table} fields from the export: ${formatFieldList(g.removed, MAX_FIELDS_INLINE)}.`,
+      );
+    } else if (g.updated.length && !g.added.length && !g.removed.length) {
+      lines.push(
+        `Updated ${g.table} schema fields in the export: ${formatFieldList(g.updated, MAX_FIELDS_INLINE)}.`,
+      );
+    } else {
+      const parts: string[] = [];
+      if (g.added.length) parts.push(`${g.added.length} added`);
+      if (g.removed.length) parts.push(`${g.removed.length} removed`);
+      if (g.updated.length) parts.push(`${g.updated.length} updated`);
+      lines.push(`Updated ${g.table} schema in the export (${parts.join(", ")}).`);
+    }
+  }
+
+  if (groups.length > MAX_SCHEMA_TABLE_BULLETS) {
+    lines.push(
+      `… and ${groups.length - MAX_SCHEMA_TABLE_BULLETS} more table${groups.length - MAX_SCHEMA_TABLE_BULLETS === 1 ? "" : "s"} with schema changes.`,
+    );
+  }
+
+  return lines;
+}
+
 /** Detailed export changelog lines (excludes version/status noise). */
 export function buildPublishChangelogFromExportDiff(
   diff: ExportedContractDiff,

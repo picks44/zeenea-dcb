@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { parseDDLMulti, summarizeDDLImport } from '@/lib/ddlParser'
 import { SchemaTable } from '@/types/odcs'
 import { cn } from '@/lib/utils'
-import { IMPORT_SECTION_INTRO, IMPORT_START_FROM_SCRATCH } from '@/lib/uxCopy'
+import { IMPORT_DDL_SUBMIT_CTA, IMPORT_SECTION_INTRO, IMPORT_START_FROM_SCRATCH } from '@/lib/uxCopy'
 import demoExampleDdl from '../../../demo.sql?raw'
 
 type ImportSectionLayout = 'default' | 'creation'
@@ -175,11 +175,16 @@ export function ImportSection({
     <div
       className={cn(
         'rounded-xl overflow-hidden border border-[#e4e4f0] bg-[#f5f5fa]',
-        isCreation ? 'mx-5' : 'mx-4 mb-4',
+        isCreation ? 'mx-5 mb-4' : 'mx-4 mb-4',
         isDragOver && 'border-[#0550dc]',
       )}
     >
-      <div className="flex items-center justify-between px-4 py-2 bg-[#f5f5fa] border-b border-[#e4e4f0]">
+      <div
+        className={cn(
+          'flex items-center justify-between px-4 py-2 bg-[#f5f5fa]',
+          !isCreation && 'border-b border-[#e4e4f0]',
+        )}
+      >
         <span className="text-[10px] font-mono font-medium text-[#9898a7] tracking-wider uppercase select-none">SQL</span>
         <div className="flex items-center gap-3">
           <button
@@ -301,12 +306,12 @@ export function ImportSection({
 
   const importFooter = (
     <div className={cn(
-      'flex items-center justify-center gap-3 border-t border-[#f0f0f7]',
-      isCreation ? 'px-5 py-4 mt-auto' : 'px-6 py-5',
+      'flex items-center justify-center gap-3',
+      isCreation ? 'px-5 py-4 mt-auto' : 'px-6 py-5 border-t border-[#f0f0f7]',
     )}>
       <Button onClick={handleParse} disabled={!ddl.trim() || isLocked} className="gap-2 px-6 w-full sm:w-auto">
         <Sparkles className="h-4 w-4" />
-        Import fields
+        {IMPORT_DDL_SUBMIT_CTA}
       </Button>
       {!isCreation && onStartFromScratch ? (
         <Button

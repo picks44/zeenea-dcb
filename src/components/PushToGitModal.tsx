@@ -8,7 +8,12 @@ import { DataContract, GitCommit } from '@/types/odcs'
 import { validateContract } from '@/lib/contractValidation'
 import { validationUserMessage } from '@/lib/validationUserMessages'
 import {
+  PUBLISH_CHANGELOG_LABEL_FIRST,
+  PUBLISH_CHANGELOG_LABEL_UPDATE,
+  PUBLISH_CHANGELOG_PLACEHOLDER_FIRST,
+  PUBLISH_CHANGELOG_PLACEHOLDER_UPDATE,
   PUBLISH_EXTERNAL_SYNC_NOTE,
+  PUBLISH_GOVERNANCE_ONLY_NOTE,
   PUBLISH_MODAL_SUBTITLE,
   PUBLISH_STEP_CHANGES_PREPARED,
   PUBLISH_STEP_PREPARING,
@@ -16,7 +21,10 @@ import {
   PUBLISH_STEP_VERSION_SAVED,
   publishStepUpdatingVersion,
 } from '@/lib/uxCopy'
-import { buildPublishChangelog, summarizeChangesSince } from '@/lib/contractVersionDiff'
+import {
+  buildDefaultPublishChangelog,
+  summarizeChangesSince,
+} from '@/lib/contractVersionDiff'
 import { publishCommitTitle } from '@/lib/versionHistory'
 import { cn } from '@/lib/utils'
 
@@ -201,23 +209,17 @@ export function PushToGitModal({ contract, allContracts, open, onClose, onPushed
   const validationWarnings = validation.warnings
   const canPublishContract = validation.canPublish
 
+  const publishComparison = !isFirstPublish && contract.gitHistory[contract.gitHistory.length - 1]?.snapshot
+    ? summarizeChangesSince(contract, contract.gitHistory[contract.gitHistory.length - 1]!.snapshot!)
+    : null
+  const publishChangeKind = publishComparison?.publishChangeKind ?? (isFirstPublish ? null : null)
+  const showGovernanceOnlyNote = publishChangeKind === 'governance_only'
+
   useEffect(() => {
     if (!open) return
     setPhase({ kind: 'form' })
     setBumpType('minor')
-
-    const firstPublish = contract.gitHistory.length === 0
-    let initialDescription = ''
-    if (!firstPublish) {
-      const lastCommit = contract.gitHistory[contract.gitHistory.length - 1]
-      if (lastCommit?.snapshot) {
-        initialDescription = buildPublishChangelog(
-          summarizeChangesSince(contract, lastCommit.snapshot),
-        )
-      }
-    }
-    setDescription(initialDescription)
-
+    setDescription(buildDefaultPublishChangelog(contract))
     setTimeout(() => descRef.current?.focus(), 80)
   }, [open, contract.uid])
 
@@ -228,7 +230,8 @@ export function PushToGitModal({ contract, allContracts, open, onClose, onPushed
     const hash = randomHash()
     const now = new Date().toISOString()
     const title = publishCommitTitle(newVersion, contract.info.title, isFirstPublish)
-    const changelog = description.trim()
+    const trimmed = description.trim()
+    const changelog = trimmed || buildDefaultPublishChangelog(contract)
 
     const commit: GitCommit = {
       hash,
@@ -309,20 +312,28 @@ export function PushToGitModal({ contract, allContracts, open, onClose, onPushed
                 </div>
               )}
 
+              {showGovernanceOnlyNote && (
+                <div className="bg-blue-25 border border-blue-100 rounded-lg px-3 py-2.5">
+                  <p className="text-[11px] text-neutral-600 leading-snug">
+                    {PUBLISH_GOVERNANCE_ONLY_NOTE}
+                  </p>
+                </div>
+              )}
+
               {/* Description */}
               <div>
                 <label className="block text-[11px] font-semibold uppercase tracking-wide text-neutral-400 mb-1.5">
-                  What changed?
+                  {isFirstPublish ? PUBLISH_CHANGELOG_LABEL_FIRST : PUBLISH_CHANGELOG_LABEL_UPDATE}
                 </label>
                 <textarea
                   ref={descRef}
                   value={description}
                   onChange={e => setDescription(e.target.value)}
                   placeholder={isFirstPublish
-                    ? 'e.g. Initial version with user and order tables'
-                    : 'e.g. Added billing_date field, updated PII flags'}
-                  rows={3}
-                  className="w-full resize-none rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-300 focus:outline-none focus:border-2 focus:border-blue-700 transition-colors leading-snug"
+                    ? PUBLISH_CHANGELOG_PLACEHOLDER_FIRST
+                    : PUBLISH_CHANGELOG_PLACEHOLDER_UPDATE}
+                  rows={5}
+                  className="w-full resize-none rounded-lg border border-neutral-200 bg-white px-3 py-2 text-[12px] text-neutral-900 placeholder:text-neutral-300 focus:outline-none focus:border-2 focus:border-blue-700 transition-colors leading-snug"
                 />
               </div>
 

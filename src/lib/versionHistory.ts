@@ -29,6 +29,28 @@ export function getCommitChangelog(commit: GitCommit): string {
   return legacy
 }
 
+/** Display-only changelog; does not mutate stored commits. */
+export function getDisplayChangelog(
+  commit: GitCommit,
+  contractTitle?: string,
+): string {
+  const stored = getCommitChangelog(commit).trim()
+  if (stored) return stored
+
+  const title = getCommitTitle(commit)
+  if (/^Initial version of /.test(title)) {
+    const name =
+      contractTitle?.trim() ||
+      title.replace(/^Initial version of /, '').trim() ||
+      'this contract'
+    return `Initial publication of ${name} (v${commit.version}).`
+  }
+  if (/^Update to v[\d.]+$/.test(title)) {
+    return `Published update to v${commit.version}.`
+  }
+  return ''
+}
+
 export function parseChangelogLines(text: string): string[] {
   return text.split(/\r?\n/).map(line => line.trim()).filter(Boolean)
 }

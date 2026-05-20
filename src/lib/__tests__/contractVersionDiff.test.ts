@@ -1,14 +1,19 @@
 import { describe, expect, it } from 'vitest'
-import { createContract } from '@/lib/createContract'
+import { createContract, createContractWithImportedSchema } from '@/lib/createContract'
 import { buildP1FixtureContract } from './p1-fixture'
 import {
+  buildDefaultPublishChangelog,
+  buildFirstPublishChangelog,
   buildPublishChangelog,
+  buildWorkingCopySummaryLines,
   compareContractVersions,
   hasAnyChangeSinceLastPublish,
   summarizeChangesSince,
 } from '@/lib/contractVersionDiff'
 import { contractToComparisonSnapshot as toSnapshot } from '@/lib/exportedContractDiff'
-import type { DataContract, DataContractSnapshot, GitCommit } from '@/types/odcs'
+import { getDisplayChangelog } from '@/lib/versionHistory'
+import type { DataContract, DataContractSnapshot, GitCommit, SchemaTable } from '@/types/odcs'
+import { migrateTableOdcsFields } from '@/lib/schemaOdcsMapping'
 
 function withHistory(contract: DataContract, snapshot: DataContractSnapshot, version = '1.0.0'): DataContract {
   const commit: GitCommit = {
@@ -108,6 +113,85 @@ describe('hasAnyChangeSinceLastPublish', () => {
   })
 })
 
+describe('buildFirstPublishChangelog', () => {
+  it('describes imported schema with tables and field count', () => {
+    const templateTable = JSON.parse(
+      JSON.stringify(buildP1FixtureContract().dataset[0]),
+    ) as SchemaTable
+    const templateCol = templateTable.columns[0]
+    const col = (id: string, name: string) => ({
+      ...templateCol,
+      id,
+      name,
+      physicalName: name,
+      logicalName: name,
+    })
+    const table = migrateTableOdcsFields({
+      ...templateTable,
+      name: 'customers',
+      physicalName: 'customers',
+      quantumName: 'Customers',
+      columns: [col('c1', 'id'), col('c2', 'email')],
+    })
+    const orders = migrateTableOdcsFields({
+      ...templateTable,
+      name: 'orders',
+      physicalName: 'orders',
+      quantumName: 'Orders',
+      columns: [col('o1', 'order_id')],
+    })
+    const contract = createContractWithImportedSchema([table, orders])
+    contract.info.title = 'Customer Analytics'
+    contract.info.owner = 'Data Governance Office'
+
+    const changelog = buildFirstPublishChangelog(contract)
+    expect(changelog).toMatch(/initial publication/i)
+    expect(changelog).toMatch(/Customer Analytics/i)
+    expect(changelog).toMatch(/DDL/i)
+    expect(changelog).toMatch(/customers|orders/i)
+    expect(changelog).toMatch(/3 field/i)
+    expect(changelog).toMatch(/Data Governance Office/i)
+  })
+
+  it('manual contract does not mention DDL import', () => {
+    const contract = createContract('manual')
+    contract.info.title = 'Empty Draft'
+    const changelog = buildFirstPublishChangelog(contract)
+    expect(changelog).toMatch(/initial publication/i)
+    expect(changelog).not.toMatch(/DDL/i)
+    expect(changelog).toMatch(/manual|no schema/i)
+  })
+})
+
+describe('buildDefaultPublishChangelog', () => {
+  it('returns non-empty default for first publish', () => {
+    const contract = createContract('manual')
+    contract.info.title = 'My Contract'
+    expect(buildDefaultPublishChangelog(contract).trim().length).toBeGreaterThan(0)
+  })
+
+  it('uses subsequent changelog when history exists', () => {
+    const base = buildP1FixtureContract()
+    const snap = baseSnapshot(base)
+    const contract = withHistory(
+      { ...base, info: { ...base.info, owner: 'Privacy Office' }, updatedAt: '2024-06-01T00:00:00.000Z' },
+      snap,
+    )
+    const changelog = buildDefaultPublishChangelog(contract)
+    expect(changelog).toMatch(/governance-only/i)
+    expect(changelog).toMatch(/contract owner/i)
+  })
+
+  it('empty user input can fall back to default (publish path)', () => {
+    const contract = createContract('manual')
+    contract.info.title = 'Fallback Test'
+    const userInput = '   '
+    const resolved = userInput.trim() || buildDefaultPublishChangelog(contract)
+    expect(resolved).toMatch(/initial publication/i)
+    expect(resolved.length).toBeGreaterThan(0)
+  })
+})
+
 describe('compareContractVersions / buildPublishChangelog', () => {
   it('detects custom property added', () => {
     const base = buildP1FixtureContract()
@@ -118,6 +202,7 @@ describe('compareContractVersions / buildPublishChangelog', () => {
     expect(comparison.exportDiff.customProperties.added).toBe(1)
     const changelog = buildPublishChangelog(comparison)
     expect(changelog).toMatch(/custom propert/i)
+    expect(changelog.split('\n').length).toBeLessThanOrEqual(12)
   })
 
   it('detects custom property value updated', () => {
@@ -129,7 +214,7 @@ describe('compareContractVersions / buildPublishChangelog', () => {
     })
     const comparison = compareContractVersions(previous, current)
     expect(comparison.hasExportChange).toBe(true)
-    expect(buildPublishChangelog(comparison)).toMatch(/custom propert/i)
+    expect(buildPublishChangelog(comparison)).toMatch(/dataSteward|custom propert/i)
   })
 
   it('detects custom property removed', () => {
@@ -150,7 +235,7 @@ describe('compareContractVersions / buildPublishChangelog', () => {
     })
     const comparison = compareContractVersions(previous, current)
     expect(comparison.hasExportChange).toBe(true)
-    expect(buildPublishChangelog(comparison)).toMatch(/access role/i)
+    expect(buildPublishChangelog(comparison)).toMatch(/data access role/i)
   })
 
   it('detects SLA changes', () => {
@@ -162,7 +247,7 @@ describe('compareContractVersions / buildPublishChangelog', () => {
     expect(buildPublishChangelog(comparison)).toMatch(/service level/i)
   })
 
-  it('detects schema field classification change', () => {
+  it('detects schema field classification change with grouped wording', () => {
     const base = buildP1FixtureContract()
     const previous = baseSnapshot(base)
     const dataset = JSON.parse(JSON.stringify(base.dataset)) as typeof base.dataset
@@ -171,16 +256,9 @@ describe('compareContractVersions / buildPublishChangelog', () => {
     const comparison = compareContractVersions(previous, current)
     expect(comparison.hasExportChange).toBe(true)
     expect(comparison.exportDiff.schema.updated).toBeGreaterThan(0)
-  })
-
-  it('detects schema businessName change', () => {
-    const base = buildP1FixtureContract()
-    const previous = baseSnapshot(base)
-    const dataset = JSON.parse(JSON.stringify(base.dataset)) as typeof base.dataset
-    dataset[0].columns[0].logicalName = 'Renamed Column'
-    const current = toSnapshot({ ...base, dataset })
-    const comparison = compareContractVersions(previous, current)
-    expect(comparison.hasExportChange).toBe(true)
+    const changelog = buildPublishChangelog(comparison)
+    expect(changelog).toMatch(/orders/i)
+    expect(changelog).not.toMatch(/^Updated txn_ref_dt field$/m)
   })
 
   it('detects exported fundamentals change (domain)', () => {
@@ -199,8 +277,11 @@ describe('compareContractVersions / buildPublishChangelog', () => {
     const comparison = compareContractVersions(previous, current)
     expect(comparison.hasExportChange).toBe(false)
     expect(comparison.hasGovernanceChange).toBe(true)
+    expect(comparison.publishChangeKind).toBe('governance_only')
     const changelog = buildPublishChangelog(comparison)
-    expect(changelog).toBe('Updated contract owner')
+    expect(changelog).toMatch(/governance-only/i)
+    expect(changelog).toMatch(/contract owner/i)
+    expect(changelog).not.toMatch(/schema|field|YAML|export.*changes/i)
     expect(changelog).not.toMatch(/No contract changes/i)
   })
 
@@ -213,7 +294,9 @@ describe('compareContractVersions / buildPublishChangelog', () => {
     })
     const comparison = compareContractVersions(previous, current)
     expect(comparison.hasGovernanceChange).toBe(true)
-    expect(buildPublishChangelog(comparison)).toBe('Updated governance contacts')
+    const changelog = buildPublishChangelog(comparison)
+    expect(changelog).toMatch(/governance contacts/i)
+    expect(changelog).not.toMatch(/schema|export.*changes/i)
   })
 
   it('mixed schema and governance changelog', () => {
@@ -229,8 +312,10 @@ describe('compareContractVersions / buildPublishChangelog', () => {
     const comparison = compareContractVersions(previous, current)
     expect(comparison.hasExportChange).toBe(true)
     expect(comparison.hasGovernanceChange).toBe(true)
+    expect(comparison.publishChangeKind).toBe('mixed')
     const changelog = buildPublishChangelog(comparison)
-    expect(changelog).toMatch(/field|schema|Updated/i)
+    expect(changelog).toMatch(/governance/i)
+    expect(changelog).toMatch(/export|schema/i)
     expect(changelog).toMatch(/governance contacts/i)
   })
 
@@ -248,6 +333,30 @@ describe('compareContractVersions / buildPublishChangelog', () => {
     expect(changelog).toMatch(/contract owner/i)
   })
 
+  it('groups large schema diff instead of one line per field', () => {
+    const base = buildP1FixtureContract()
+    const previous = baseSnapshot(base)
+    const dataset = JSON.parse(JSON.stringify(base.dataset)) as typeof base.dataset
+    const table = dataset[0]
+    for (let i = 0; i < 6; i++) {
+      table.columns.push({
+        ...table.columns[0],
+        id: `extra_${i}`,
+        name: `extra_col_${i}`,
+        physicalName: `EXTRA_${i}`,
+        logicalName: `Extra ${i}`,
+        description: `desc ${i}`,
+      })
+    }
+    const current = toSnapshot({ ...base, dataset })
+    const comparison = compareContractVersions(previous, current)
+    const changelog = buildPublishChangelog(comparison)
+    const lines = changelog.split('\n').filter(Boolean)
+    expect(lines.length).toBeLessThanOrEqual(12)
+    expect(changelog).toMatch(/orders/i)
+    expect(changelog).not.toMatch(/Updated extra_col_0 field/)
+  })
+
   it('returns empty changelog when no changes', () => {
     const base = buildP1FixtureContract()
     const snap = baseSnapshot(base)
@@ -257,5 +366,24 @@ describe('compareContractVersions / buildPublishChangelog', () => {
     )
     expect(comparison.hasAnyChange).toBe(false)
     expect(buildPublishChangelog(comparison)).toBe('')
+    expect(buildWorkingCopySummaryLines(comparison)).toEqual([])
+  })
+})
+
+describe('getDisplayChangelog (legacy)', () => {
+  it('shows fallback for initial commit without stored changelog', () => {
+    const commit: GitCommit = {
+      hash: 'legacy1',
+      title: 'Initial version of Seller Payments v1',
+      changelog: '',
+      timestamp: '2024-01-01T00:00:00.000Z',
+      version: '1.0.0',
+      contractStatus: 'active',
+    }
+    const display = getDisplayChangelog(commit, 'Seller Payments v1')
+    expect(display).toMatch(/initial publication/i)
+    expect(display).toMatch(/Seller Payments v1/i)
+    expect(display).toMatch(/v1\.0\.0/)
+    expect(commit.changelog).toBe('')
   })
 })

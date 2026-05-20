@@ -59,8 +59,8 @@ export function compareGovernanceSnapshots(
   const identical = !ownerChanged && !stakeholdersChanged
   const summaryLines: string[] = []
 
-  if (ownerChanged) summaryLines.push('Contract owner updated')
-  if (stakeholdersChanged) summaryLines.push('Governance contacts updated')
+  if (ownerChanged) summaryLines.push('Updated contract owner.')
+  if (stakeholdersChanged) summaryLines.push('Governance contacts updated.')
 
   return {
     identical,

@@ -196,7 +196,7 @@ Référence normative : [odcs-p1-reference.md](./odcs-p1-reference.md).
 | Lifecycle                 | `contractLifecycle.ts`, handlers `App.tsx`                                       |
 | Import DDL                | `ddlParser.ts`                                                                   |
 | Readiness                 | `publicationReadiness.ts`, `readinessGuidance.ts`                                |
-| Diff / versioning publish | `contractVersionDiff.ts`, `exportedContractDiff.ts`, `governanceSnapshotDiff.ts` |
+| Diff / versioning publish | `contractVersionDiff.ts`, `publishChangelog.ts`, `exportedContractDiff.ts`, `governanceSnapshotDiff.ts`, `versionHistory.ts` (`getDisplayChangelog`) |
 | Libellés UI               | `uxCopy.ts`                                                                      |
 | Doc produit               | `docs/product-documentation.md`                                                  |
 
@@ -221,7 +221,9 @@ Après changement métier visible : mettre à jour **d’abord** la [documentati
 - [ ] Golden keys `p1-compliance.test.ts`
 - [ ] Champs exclus YAML : owner, governance contacts (`stakeholders`), collaborateurs, `creationSource`, `inRevision`, `isPII`, `aiVerified`, historique app - owner/contacts via `governanceSnapshotDiff.ts` pour publish/changelog
 - [ ] Champs exportés schema : `businessName`, `classification`, `primaryKey`, `unique`, `criticalDataElement`, `customProperties`, relations exportables - couverts par `exportedContractDiff.ts` / compare
-- [ ] Publish gate : `hasAnyChangeSinceLastPublish` (export + gouvernance), pas le seul flag UI `hasEditedSincePublish` ; changelog jamais vide si `hasAnyChange`
+- [ ] Publish gate : `hasAnyChangeSinceLastPublish` (export + gouvernance), pas le seul flag UI `hasEditedSincePublish` ; changelog jamais vide sur publish réel (`buildDefaultPublishChangelog` + injection modal si textarea vide)
+- [ ] Première publication : `buildFirstPublishChangelog` (pas de diff vs snapshot vide) ; suivantes : `buildSubsequentPublishChangelog` + regroupement schéma `buildGroupedSchemaChangelogBullets`
+- [ ] Legacy : `getDisplayChangelog` enrichit l’affichage Versions sans réécrire `GitCommit`
 - [ ] Modale Compare : `compareExportedSnapshots` uniquement (pas de diff gouvernance)
 - [ ] Data access roles : `roleRowHasContent` (validation) vs `isRoleRowExportable` (YAML/diff) dans `p1Validation.ts`
 - [ ] `npm test`

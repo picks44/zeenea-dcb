@@ -1,6 +1,5 @@
 import type { DataContract, DataContractSnapshot } from "@/types/odcs";
 import {
-  buildPublishChangelogFromExportDiff,
   compareExportedSnapshots,
   contractToComparisonSnapshot,
   exportDocumentsEqualIgnoringPublishFields,
@@ -11,8 +10,17 @@ import {
   compareGovernanceSnapshots,
   type GovernanceSnapshotDiff,
 } from "./governanceSnapshotDiff";
+import {
+  buildFirstPublishChangelog,
+  buildSubsequentPublishChangelog,
+  buildWorkingCopySummaryFromComparison,
+  getPublishChangeKind,
+  type PublishChangeKind,
+} from "./publishChangelog";
 
 export type { ExportedContractDiff, GovernanceSnapshotDiff, FormDiffSection };
+export type { PublishChangeKind };
+export { buildFirstPublishChangelog, getPublishChangeKind } from "./publishChangelog";
 
 export interface ContractVersionComparison {
   exportDiff: ExportedContractDiff;
@@ -20,7 +28,11 @@ export interface ContractVersionComparison {
   hasAnyChange: boolean;
   hasExportChange: boolean;
   hasGovernanceChange: boolean;
+  /** @deprecated Prefer buildWorkingCopySummaryLines for display-aligned copy. */
   summaryLines: string[];
+  previousSnapshot: DataContractSnapshot;
+  currentSnapshot: DataContractSnapshot;
+  publishChangeKind: PublishChangeKind;
 }
 
 export function compareContractVersions(
@@ -36,10 +48,14 @@ export function compareContractVersions(
   const hasGovernanceChange = !governanceDiff.identical;
   const hasAnyChange = hasExportChange || hasGovernanceChange;
 
-  const summaryLines = [
-    ...(hasExportChange ? exportDiff.summaryLines : []),
-    ...(hasGovernanceChange ? governanceDiff.summaryLines : []),
-  ];
+  const summaryLines = buildWorkingCopySummaryFromComparison(
+    exportDiff,
+    governanceDiff,
+    hasExportChange,
+    hasGovernanceChange,
+    left,
+    right,
+  );
 
   return {
     exportDiff,
@@ -48,6 +64,12 @@ export function compareContractVersions(
     hasExportChange,
     hasGovernanceChange,
     summaryLines,
+    previousSnapshot: left,
+    currentSnapshot: right,
+    publishChangeKind: getPublishChangeKind(
+      hasExportChange,
+      hasGovernanceChange,
+    ),
   };
 }
 
@@ -77,92 +99,33 @@ export function buildWorkingCopySummaryLines(
   return comparison.summaryLines;
 }
 
+/** Default changelog for the publish modal (first publish or since last snapshot). */
+export function buildDefaultPublishChangelog(contract: DataContract): string {
+  if (contract.gitHistory.length === 0) {
+    return buildFirstPublishChangelog(contract);
+  }
+  const lastCommit = contract.gitHistory[contract.gitHistory.length - 1];
+  if (!lastCommit?.snapshot) {
+    return buildFirstPublishChangelog(contract);
+  }
+  const comparison = summarizeChangesSince(contract, lastCommit.snapshot);
+  return buildPublishChangelog(comparison);
+}
+
 /** Multiline changelog for publish - never returns empty when hasAnyChange is true. */
 export function buildPublishChangelog(
   comparison: ContractVersionComparison,
 ): string {
   if (!comparison.hasAnyChange) return "";
 
-  const lines: string[] = [];
-
-  if (comparison.hasExportChange) {
-    const exportLines = buildPublishChangelogFromExportDiff(
-      comparison.exportDiff,
-    );
-    if (exportLines.length > 0) {
-      lines.push(...exportLines);
-    } else {
-      lines.push(...syntheticExportChangelogLines(comparison.exportDiff));
-    }
-  }
-
-  if (comparison.hasGovernanceChange) {
-    if (comparison.governanceDiff.ownerChanged) {
-      lines.push("Updated contract owner");
-    }
-    if (
-      comparison.governanceDiff.stakeholders.added ||
-      comparison.governanceDiff.stakeholders.removed ||
-      comparison.governanceDiff.stakeholders.updated
-    ) {
-      lines.push("Updated governance contacts");
-    }
-  }
-
-  return lines.join("\n");
-}
-
-function syntheticExportChangelogLines(diff: ExportedContractDiff): string[] {
-  const lines: string[] = [];
-  const { schema, roles, sla, customProperties } = diff;
-
-  if (
-    schema.added ||
-    schema.removed ||
-    schema.updated ||
-    diff.schemaTables.changed
-  ) {
-    lines.push("Updated schema");
-  }
-  if (
-    customProperties.added ||
-    customProperties.removed ||
-    customProperties.updated
-  ) {
-    lines.push("Updated custom properties");
-  }
-  if (roles.added || roles.removed || roles.updated) {
-    lines.push("Updated data access roles");
-  }
-  if (sla.added || sla.removed || sla.updated) {
-    lines.push("Updated service levels");
-  }
-  if (diff.summaryLines.some((l) => l.includes("quality"))) {
-    lines.push("Updated quality rules");
-  }
-  if (
-    diff.summaryLines.some(
-      (l) => l.includes("reference") || l.includes("Reference"),
-    )
-  ) {
-    lines.push("Updated reference links");
-  }
-  if (diff.summaryLines.some((l) => l.includes("relationship"))) {
-    lines.push("Updated relationships");
-  }
-  if (
-    diff.summaryLines.some(
-      (l) => l.includes("description") || l.includes("metadata"),
-    )
-  ) {
-    lines.push("Updated exported contract metadata");
-  }
-
-  if (lines.length === 0 && !diff.identical) {
-    lines.push("Updated exported contract metadata");
-  }
-
-  return lines;
+  return buildSubsequentPublishChangelog(
+    comparison.previousSnapshot,
+    comparison.currentSnapshot,
+    comparison.exportDiff,
+    comparison.governanceDiff,
+    comparison.hasExportChange,
+    comparison.hasGovernanceChange,
+  );
 }
 
 /**

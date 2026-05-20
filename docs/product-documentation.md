@@ -382,7 +382,7 @@ D’anciens contrats stockés localement peuvent être en **proposed** sans hist
 ### 6.3 Parcours B - Import DDL
 
 1. Sur l’écran Create, cliquer **Continue with DDL import** (carte **Import DDL**).
-2. Affichage du **formulaire d’import DDL** (coller, upload `.sql`, **Load example**, aperçu, **Import fields**). Bouton **Back to creation options** pour revenir au choix sans créer de contrat.
+2. Affichage du **formulaire d’import DDL** (coller, upload `.sql`, **Load example**, aperçu, **Import schema**). Bouton **Back to creation options** pour revenir au choix sans créer de contrat.
 3. Valider l’import : un contrat **proposed** est créé avec le schéma pré-rempli.
 4. Revoir l’import si besoin (section Import encore éditable dans l’éditeur).
 5. Cliquer **Start drafting** → statut **draft** ; toutes les sections se déverrouillent.
@@ -476,7 +476,7 @@ Parcours type :
 | **1 - Choix** | Titre _Create contract_ ; sous-titre rappelant qu’aucun contrat n’est enregistré tant qu’un parcours n’est pas terminé ; section _How would you like to start?_ avec deux cartes équivalentes. |
 | **Carte Import DDL** | Description courte ; CTA **Continue with DDL import** → étape 2 (pas de contrat créé). |
 | **Carte Start from scratch** | Description courte ; CTA **Create empty contract** → contrat **draft** immédiat. |
-| **2 - Import DDL** | Formulaire SQL (`ImportSection`, layout création) : textarea, upload, exemple, aperçu, erreurs, **Import fields** ; **Back to creation options** pour revenir à l’étape 1. |
+| **2 - Import DDL** | Formulaire SQL (`ImportSection`, layout création) : textarea, upload, exemple, aperçu, erreurs, **Import schema** ; **Back to creation options** pour revenir à l’étape 1. |
 
 Libellés centralisés dans `src/lib/uxCopy.ts` ; composant `src/components/CreateContractView.tsx`. L’écran **Import SQL** d’un contrat **proposed** existant (éditeur) reste distinct : formulaire complet avec option **Start from scratch** pour les contrats legacy.
 
@@ -653,7 +653,9 @@ Les **descriptions de champs** comptent uniquement dans **Field quality**, pas d
 
 Affiché lorsque l’application n’a enregistré **aucune modification** depuis la dernière publication (par exemple juste après **New version**, avant toute édition). Incite à modifier le contrat ou à abandonner la révision inutile.
 
-**Publication avec YAML export inchangé :** si l’utilisateur a modifié uniquement des champs **app-only versionnés** (contract owner, governance contacts), la publication reste possible : le snapshot et le numéro de version avancent, le YAML exportable peut être identique au précédent, mais le **changelog** et le résumé **Versions** indiquent explicitement les changements de gouvernance (ex. _Updated contract owner_, _Updated governance contacts_). Les **collaborateurs** ne sont pas versionnés dans le snapshot publish et ne déclenchent pas de nouvelle version. Aucune publication n’est autorisée sans changement réel (export ou gouvernance snapshotée).
+**Publication avec YAML export inchangé :** si l’utilisateur a modifié uniquement des champs **app-only versionnés** (contract owner, governance contacts), la publication reste possible : le snapshot et le numéro de version avancent, le YAML exportable peut être identique au précédent, mais le **changelog** (headline _Governance-only update._, bullets _Updated contract owner._ / _Governance contacts updated._) et le résumé **Working copy** utilisent le même vocabulaire. La modale Publish affiche un rappel : le YAML exporté est inchangé. Les **collaborateurs** ne sont pas versionnés dans le snapshot publish et ne déclenchent pas de nouvelle version. Aucune publication n’est autorisée sans changement réel (export ou gouvernance snapshotée).
+
+**Changelog publish :** première publication — résumé auto-généré à partir du contenu du contrat (titre, version, tables/champs, source import/manuel, domaine, owner, etc.) ; publications suivantes — headline + bullets métier (regroupement schéma par table, plafond ~12 lignes). Le champ est prérempli et éditable ; si l’utilisateur le vide, le texte par défaut est réinjecté à la soumission. Les commits historiques sans changelog affichent un libellé de repli à l’écran uniquement (données stockées inchangées).
 
 ### 9.6 Catalogue des blocages publication (par thème)
 
@@ -945,7 +947,7 @@ Légende : ✓ autorisé, ✗ interdit, (✓) si conditions.
 **S2 - Import → proposed → draft**
 
 - _Given_ l’écran Create, carte **Import DDL**, puis un DDL valide dans le formulaire
-- _When_ l’utilisateur valide **Import fields** puis **Start drafting** dans l’éditeur
+- _When_ l’utilisateur valide **Import schema** puis **Start drafting** dans l’éditeur
 - _Then_ le contrat est d’abord **proposed** après import, puis **draft** après Start drafting ; Fundamentals/Schema sont éditables en draft
 
 **S3 - Publish bloqué en proposed**

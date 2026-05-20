@@ -81,7 +81,7 @@ export function CreateContractView({ onParsed, onStartFromScratch }: CreateContr
         </Button>
 
         <div className="bg-white rounded-2xl border border-[#d3d3e5] shadow-sm overflow-hidden">
-          <div className="px-6 pt-6 pb-4 border-b border-[#f0f0f7]">
+          <div className="px-6 pt-6 pb-2">
             <h2 className="text-base font-semibold text-[#12131f] mb-1">{CREATE_DDL_STEP_TITLE}</h2>
             <p className="text-xs text-[#656574] leading-relaxed">{CREATE_DDL_FORM_INTRO}</p>
           </div>

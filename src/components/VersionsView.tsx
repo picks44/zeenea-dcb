@@ -17,7 +17,7 @@ import {
   hasWorkingCopyDraft,
   summarizeChangesSince,
 } from '@/lib/contractVersionDiff'
-import { getCommitChangelog, getCommitTitle, parseChangelogLines } from '@/lib/versionHistory'
+import { getCommitTitle, getDisplayChangelog, parseChangelogLines } from '@/lib/versionHistory'
 
 interface VersionsViewProps {
   contract: DataContract
@@ -189,7 +189,7 @@ export function VersionsView({
                         )}>
                           {getCommitTitle(commit)}
                         </p>
-                        <VersionChangelog text={getCommitChangelog(commit)} />
+                        <VersionChangelog text={getDisplayChangelog(commit, contract.info.title)} />
                         <div className="flex items-center gap-1.5 mt-1.5">
                           <Badge variant="version">v{commit.version}</Badge>
                           {isLatest

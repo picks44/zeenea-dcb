@@ -225,6 +225,19 @@ export const PUBLISH_STEP_VERSION_SAVED = "Version saved";
 export const PUBLISH_EXTERNAL_SYNC_NOTE =
   "External repository sync is not connected in this prototype.";
 
+export const PUBLISH_CHANGELOG_LABEL_FIRST = "Publication summary";
+
+export const PUBLISH_CHANGELOG_LABEL_UPDATE = "What changed?";
+
+export const PUBLISH_GOVERNANCE_ONLY_NOTE =
+  "The exported ODCS YAML is unchanged; this publication updates app governance metadata.";
+
+export const PUBLISH_CHANGELOG_PLACEHOLDER_FIRST =
+  "Summary is auto-generated; you can edit before publishing.";
+
+export const PUBLISH_CHANGELOG_PLACEHOLDER_UPDATE =
+  "Changes are auto-generated from your edits; you can refine before publishing.";
+
 export const TOP_BAR_APPROVAL_IN_PROGRESS = "Approval in progress";
 
 export function topBarPublishedTooltip(version: string): string {
@@ -356,6 +369,9 @@ export const CREATE_DDL_FORM_INTRO =
 
 export const IMPORT_SECTION_INTRO =
   "Paste one or more CREATE TABLE statements to generate or update the contract schema, or start from scratch to define everything manually.";
+
+/** Primary action on the DDL import form (tables, columns, relationships). */
+export const IMPORT_DDL_SUBMIT_CTA = "Import schema";
 
 export const IMPORT_START_FROM_SCRATCH = "Start from scratch";
 
