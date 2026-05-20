@@ -14,6 +14,16 @@ Prototype = validation UX publish ; MVP = Git réel + MD5 + validation backend.
 
 Dédoublonnage : **5u** (première publish), **5z** (update), **nc596** (contrat étapes UX).
 
+## Matrice ownership QA (publish)
+
+Éviter de dupliquer les tests d’étapes visuelles sur `5u` ou `5z` — les renvoyer à `nc596`.
+
+| US | Responsabilité QA |
+|----|-------------------|
+| `86c9n9a5u` | Première publication : validation, création version initiale, passage published/active |
+| `86c9n9a5z` | Publication d’une mise à jour : changelog, SemVer, version précédente dépréciée |
+| `86c9nc596` | États visuels de progression, erreurs, feedback utilisateur pendant le publish |
+
 ## Ordre d’import ClickUp
 
 1. **UPDATE** — [../output/sp5-update.csv](../output/sp5-update.csv)

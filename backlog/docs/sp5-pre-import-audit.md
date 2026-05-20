@@ -35,6 +35,12 @@ Gate qualité avant import ClickUp (gouvernance §10).
 
 **SAFE TO IMPORT** — enchaîner UPDATE puis metadata ; contrôler tags dans ClickUp post-import (leçon SP4).
 
+## P2 traités (post-audit)
+
+- [x] Renvoi explicite `86c9n9a5z` → `86c9nc596` dans `sp5-update.csv`
+- [x] Matrice ownership QA dans `sp5-fiches-import.md` et `sp5-import-checklist.md`
+- [x] Gouvernance §8 : CSV unifié par défaut ; metadata-only = mesure de sécurité
+
 ## Post-import (§11)
 
 - [ ] Échantillon 3 US : 5p, 5u, 5n

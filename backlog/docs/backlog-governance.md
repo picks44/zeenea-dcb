@@ -221,11 +221,12 @@ Utiliser **uniquement** les tags existants dans l’espace ClickUp DCB :
 
 ### Mapping et livrables tags
 
-- Fichier **UPDATE tags-only** : `output/{liste}-tags-update.csv` — colonnes **`id`**, **`tags`** uniquement (ne pas toucher `description`).
-- Tâches **CREATE** sans `id` au moment de la génération : checklist manuelle ou mapping par **titre** — voir `docs/{liste}-tags-mapping.md`.
-- Après import CREATE : compléter le mapping avec les **nouveaux ID** ClickUp pour les imports tags ultérieurs.
+- **Par défaut** : inclure `tags` et `priority` dans le **CSV UPDATE unifié** (§8) si le mapping ClickUp est fiable.
+- **Correctif metadata-only** : `output/{liste}-metadata-update.csv` — colonnes **`id`**, **`tags`**, **`priority`** uniquement (mesure de sécurité, pas obligation systématique).
+- Fichier **tags-only** legacy : `output/{liste}-tags-update.csv` — si seuls les tags doivent être rejoués.
+- Tâches **CREATE** sans `id` : checklist manuelle ou mapping par **titre** — voir `docs/{liste}-tags-mapping.md`.
 
-Référence appliquée : [sp4-tags-mapping.md](./sp4-tags-mapping.md) · [../output/sp4-metadata-update.csv](../output/sp4-metadata-update.csv).
+Référence appliquée : [sp4-tags-mapping.md](./sp4-tags-mapping.md) · [sp5-tags-mapping.md](./sp5-tags-mapping.md).
 
 ### Priorités backlog
 
@@ -301,22 +302,49 @@ Ordre recommandé pour limiter les dépendances et le rework :
 
 ## 8. Convention CSV ClickUp
 
-Fichiers sous `backlog/output/` — un type par fichier.
+Fichiers sous `backlog/output/` — un type par fichier, sauf **UPDATE unifié** (recommandé par défaut).
+
+### Doctrine : CSV unifié vs metadata-only
+
+**Par défaut**, privilégier un **CSV UPDATE unifié** incluant contenu **et** metadata lorsque l’import est fiable :
+
+| Colonnes typiques | `id`, `name`, `description`, `tags`, `priority` |
+|-------------------|--------------------------------------------------|
+
+Le **split** UPDATE (description) + `*-metadata-update.csv` est une **mesure de sécurité**, pas une obligation systématique.
+
+Utiliser un fichier **metadata-only** séparé **uniquement** si :
+
+- les tags ou priorités n’ont pas été appliqués lors d’un import précédent (ex. colonne `tags` non mappée par l’outil batch) ;
+- une correction metadata **post-import** est nécessaire sans toucher aux descriptions ;
+- le risque d’overwrite des champs métier est jugé élevé ;
+- l’outil d’import ne mappe pas correctement `tags`, `Tag` ou `priority` ;
+- on veut rejouer **uniquement** les métadonnées.
+
+Si **deux fichiers** sont utilisés (`sp*-update.csv` puis `sp*-metadata-update.csv`), l’audit pré-import doit vérifier que leur **combinaison couvre 100 %** des tâches actives de la liste (mêmes `id`, aucune tâche oubliée).
 
 ### UPDATE (`sp*-update.csv`)
 
 | Règle | Détail |
 |-------|--------|
 | Colonne **`id`** | **Obligatoire** — ID ClickUp existant uniquement |
-| Colonnes | **Uniquement** celles modifiées (`name`, `description`, éventuellement `markdown_description`, `tags`, `status`) |
+| Colonnes | **Uniquement** celles modifiées ; peut inclure `name`, `description`, `tags`, `priority` (CSV unifié) ou `name`, `description` seuls (split sécurisé) |
 | ID | **Ne jamais inventer** |
 | Cellule vide | **Efface** le champ dans ClickUp — ne pas inclure de colonnes inutiles |
+
+### UPDATE unifié (`sp*-update.csv` avec metadata)
+
+| Règle | Détail |
+|-------|--------|
+| Usage | **Recommandé** quand le batch mappe `tags` / `priority` / `Tag` correctement |
+| Colonnes | `id`, `name`, `description`, `tags`, `priority` (minimum métier + metadata) |
+| Risque | Modéré — tester sur 1 tâche avant import massif ; contrôle post-import tags **obligatoire** |
 
 ### UPDATE tags-only (`sp*-tags-update.csv`)
 
 | Règle | Détail |
 |-------|--------|
-| Usage | Correctif **tags** seuls (legacy) — préférer `*-metadata-update.csv` si priorité aussi à corriger |
+| Usage | Correctif **tags** seuls (legacy) — ou `*-metadata-update.csv` si priorité aussi à corriger |
 | Colonnes | **`id`**, **`tags`** **uniquement** |
 | Risque | Faible sur `description` / custom fields — **ne pas** mélanger avec UPDATE description dans le même fichier |
 | Format `tags` | Un tag, ou deux tags séparés par une **virgule** (ex. `versioning & history, checksum`) |
@@ -325,7 +353,7 @@ Fichiers sous `backlog/output/` — un type par fichier.
 
 | Règle | Détail |
 |-------|--------|
-| Usage | Correctif **après** import description — tags + priorités, sans toucher au métier |
+| Usage | Correctif **après** import (split ou échec metadata) — tags + priorités, sans toucher au métier |
 | Colonnes | **`id`**, **`tags`**, **`priority`** **uniquement** |
 | Risque | Faible — ne pas inclure `description`, `status`, assignees |
 | Priorité | Valeurs exactes : `high`, `normal`, `low` (minuscules, comme l’export ClickUp) |
@@ -439,16 +467,19 @@ Cocher avant l’étape 8 (validation humaine finale) :
 
 - [ ] Tous les **UPDATE** ont un `id` ClickUp valide (présent dans l’export input).
 - [ ] Aucun **CREATE** ne contient de colonne `id`.
-- [ ] Colonnes CSV **minimales** (pas de colonnes inutiles qui risquent d’écraser des champs).
+- [ ] **Stratégie CSV documentée** : unifié (contenu + metadata) **ou** split (UPDATE + metadata-only) — choix justifié.
+- [ ] Si **unifié** : `tags` et `priority` présents dans le fichier réellement importé.
+- [ ] Si **split** : combinaison `*-update.csv` + `*-metadata-update.csv` couvre **100 %** des tâches actives (mêmes IDs).
+- [ ] Colonnes CSV **minimales** pour le périmètre choisi (pas de colonnes inutiles qui risquent d’écraser des champs).
 - [ ] Aucune **cellule vide** sur une colonne incluse → ne vide pas un champ ClickUp par erreur.
 - [ ] Descriptions **non tronquées** (longueur cohérente avec la fiche / le générateur).
 - [ ] Contenus **multilignes** correctement quotés (CSV valide).
-- [ ] Fichiers **séparés** : UPDATE d’un côté, CREATE de l’autre.
-- [ ] Fichier compatible avec l’**import batch** prévu (encodage UTF-8, en-têtes).
+- [ ] Fichiers **séparés** : UPDATE et CREATE dans des CSV distincts (ne pas mélanger CREATE avec UPDATE).
+- [ ] Fichier compatible avec l’**import batch** prévu (encodage UTF-8, en-têtes ; mapper `tags` → **Tag** si requis par l’outil).
 
 **Tags / epics (§6bis)**
 
-- [ ] Chaque US **UPDATE** a un tag epic documenté (fiche ou `*-tags-update.csv`).
+- [ ] Chaque US **UPDATE** a un tag epic documenté (fiche, CSV unifié ou `*-metadata-update.csv`).
 - [ ] Chaque US **CREATE** a un tag epic assigné (CSV tags si `id` connu, sinon checklist manuelle).
 - [ ] Tag epic **cohérent** avec le périmètre métier principal de l’US (pas de tag contradictoire).
 - [ ] **Aucune US sans tag** dans le périmètre importé.
@@ -493,10 +524,10 @@ Complète l’audit pré-import : confirme que l’outil d’import a bien appli
 - [ ] Vérifier que les **CREATE** sont dans la **bonne liste** ClickUp.
 - [ ] Vérifier **titres** et **statuts** (pas de régression involontaire sur statut QA/en cours).
 - [ ] Vérifier qu’**aucun champ critique** n’a été vidé (custom fields, assignees — si colonnes non importées, ils doivent rester intacts).
-- [ ] Vérifier que **chaque tâche** (UPDATE + CREATE) a **au moins 1 tag epic** cohérent (§6bis).
-- [ ] Vérifier que **chaque tâche active** a une **priorité** (`high` / `normal` / `low`).
+- [ ] Vérifier que **chaque tâche** (UPDATE + CREATE) a **au moins 1 tag epic** cohérent (§6bis) **visible dans l’UI ClickUp** — un succès d’import CSV ne suffit pas.
+- [ ] Vérifier que **chaque tâche active** a une **priorité** (`high` / `normal` / `low`) **visible dans ClickUp**.
 - [ ] Vérifier que les **CREATE** ont les mêmes conventions tag/priorité que les UPDATE de la liste.
-- [ ] Appliquer `*-metadata-update.csv` (ou `*-tags-update.csv` si priorité déjà OK) si écart détecté.
+- [ ] Si tags/priorités absents : appliquer `*-metadata-update.csv`, mapper colonne **Tag**, ou correction manuelle — puis re-contrôler.
 - [ ] Traiter les tâches **CANCEL** manuellement (statut + commentaire renvoyant vers la gouvernance).
 - [ ] **Documenter** tout écart (commentaire tâche, note dans `docs/{liste}-post-import-notes.md` ou ticket) **avant** étape 11.
 
@@ -529,7 +560,9 @@ Si écart majeur : corriger dans ClickUp ou régénérer CSV + ré-import ciblé
 | **`technical foundation` comme fourre-tout** | Masque le domaine métier (versioning, publication, draft) |
 | **Multiplication de tags** (> 2 ou tags faibles) | Bruit backlog, filtres ClickUp inutilisables |
 | **Tags différents pour US équivalentes** | Incohérence roadmap (ex. deux US Compare avec epics différents) |
-| **CSV UPDATE description pour corriger les tags** | Risque d’écraser des champs — préférer `*-metadata-update.csv` |
+| **CSV UPDATE description pour corriger les tags** | Risque d’écraser des champs — préférer metadata-only ou CSV unifié initial |
+| **Imposer systématiquement deux passes UPDATE + metadata** | Coût inutile si l’outil mappe correctement un CSV unifié |
+| **Succès batch import = tags appliqués** | Faux positif fréquent — contrôle visuel ClickUp obligatoire |
 | **Import CREATE sans priorité** | CREATE invisibles dans la roadmap ; hétérogénéité vs UPDATE |
 | **Import CREATE sans tag epic** | Filtres backlog et regroupement métier cassés |
 | **`technical foundation` sans high** | Sous-priorisation du backend MVP |
@@ -570,3 +603,4 @@ SP4 — Versioning est le **premier cycle** appliqué avec cette gouvernance.
 | 2026-05 | Ajout audit final pré-import, contrôle post-import, pipeline 11 étapes |
 | 2026-05 | Tags/epics obligatoires (§6bis), checklist pré-import, livrables `*-tags-update.csv` |
 | 2026-05 | Priorités + homogénéité ISO (§6bis), `*-metadata-update.csv`, audit post-import SP4 |
+| 2026-05 | Doctrine CSV unifié vs metadata-only (§8) ; post-import tags visuels obligatoires |

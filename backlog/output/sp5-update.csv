@@ -384,6 +384,10 @@ Validation fonctionnelle
 - UX : bump cards, PUBLISH_GOVERNANCE_ONLY_NOTE, summarizeChangesSince
 - MVP : API publish-update + deprecated auto
 
+Liens / dépendances SP5
+
+- Le détail des étapes visuelles de progression, des états intermédiaires et des messages d’erreur de la modale de publication est porté par l’US `86c9nc596`.
+
 Hypothèses
 
 - Breaking = major bump uniquement via choix utilisateur
