@@ -1,0 +1,2820 @@
+id,markdown_content
+86c9wmdpm,"## Description métier
+
+US complémentaire pour Fundamentals : alignement lifecycle 5 statuts, owner, champs P1 et cible API. US source 86c9nw8bu (qa) inchangée.
+
+## Gouvernance — US sources (statuts protégés, non modifiées)
+
+*   86c9nw8bu (qa) — Éditer Fundamentals
+
+## Corrigé / aligné par rapport aux US sources
+
+*   Statut système : alignement proposed/draft/active/deprecated/retired (pas Draft seul avant publish)
+*   Name obligatoire produit (déjà dans source — rappel P1)
+
+## Ajouté (delta backlog MVP)
+
+*   Affichage lifecycle cohérent avec modèle produit
+*   Owner / collaborateurs app-only (non exportés YAML sauf règle P1)
+*   Cible PATCH API Fundamentals
+
+## Exclu de cette US (autre liste ou obsolète)
+
+*   Validation publish complète (SP5 5b)
+
+## Reste porté par l’US source (QA historique)
+
+*   Champs domain, descriptions, tags fundamentals
+*   apiVersion/kind/id système non éditables
+*   Erreurs champs obligatoires
+
+## Périmètre
+
+### Inclus
+
+*   Formulaire FundamentalsSection
+*   Champs P1 visibles et éditables si non locked
+*   Génération YAML incluant fundamentals
+
+### Exclus
+
+*   Multi-owner avancé, approval workflow
+*   Édition manuelle status/version système
+
+## Critères d’acceptation
+
+*   Les champs fundamentals sont éditables si contrat non locked
+*   Le statut lifecycle affiché correspond au modèle 5 statuts
+*   name obligatoire côté produit avant publish
+*   Les champs système restent non éditables librement
+*   Les modifications sont reflétées dans le YAML preview
+
+## Cas d’erreur / limites
+
+*   Champ obligatoire manquant → message inline
+
+## Règles de gestion
+
+*   Alignement odcs P1 et contractValidation publish
+
+## Validation fonctionnelle
+
+*   Proto : FundamentalsSection, ContractInfo fields
+*   MVP : PATCH /contracts/{id}/fundamentals
+
+## Validé sur prototype UX
+
+*   FundamentalsSection, types ContractInfo status lifecycle
+
+## Implémentation MVP cible
+
+*   API PATCH fundamentals avec validation P1
+*   Owner depuis session / collaborator stub
+
+## Liens SP2 — Editor & Lifecycle (ne pas réimplémenter ici)
+
+*   Règles structurelles transverses si impact schema — SP2
+
+## Liens SP5 — Publish & GitOps
+
+*   86c9n9a5b — Validation YAML pré-publication
+"
+86c9wmdnh,"## Description métier
+
+US complémentaire pour la navigation entre sections du contrat : cues readiness sidebar, accès Versions sans switch Form/YAML, retrait Save draft. US source 86c9n9a4a (qa) inchangée.
+
+## Gouvernance — US sources (statuts protégés, non modifiées)
+
+*   86c9n9a4a (qa) — Navigation entre sections
+
+## Corrigé / aligné par rapport aux US sources
+
+*   Retrait exigence bouton Save draft (obsolète — autosave SP4)
+*   Distinction cues sidebar vs readiness panel SP4
+
+## Ajouté (delta backlog MVP)
+
+*   Readiness cues sur sections si contrat éditable (sectionNavCues)
+*   Section Versions accessible sans switch global Form/YAML
+*   Sections alignées produit actuel (Fundamentals, Schema, gouvernance, YAML, Versions, etc.)
+
+## Exclu de cette US (autre liste ou obsolète)
+
+*   Édition tables/colonnes/relations (SP2)
+*   Readiness panel complet avec score (SP4 5e)
+*   Publish Git (SP5)
+
+## Reste porté par l’US source (QA historique)
+
+*   Navigation progressive entre sections
+*   Indication section active
+*   Accès YAML lecture seule depuis le shell
+
+## Périmètre
+
+### Inclus
+
+*   Sidebar ContractSectionNav
+*   Cues visuels par section (si règles sectionNavCues)
+*   Versions : pas de toggle Form/YAML dans ContractTopBar
+*   Publish depuis top bar quand éligible (renvoi SP5 pour exécution)
+
+### Exclus
+
+*   Save draft P0
+*   Workflow collaboratif, commentaires
+*   Éditeur schema détaillé
+
+## Critères d’acceptation
+
+*   La section active est visible dans la sidebar
+*   Les cues n’apparaissent pas sur contrat read-only
+*   Versions n’affiche pas le switch Form/YAML
+*   Aucun bouton Save draft dans le shell navigation
+*   L’utilisateur accède à Schema sans AC d’édition schema dans cette US
+
+## Cas d’erreur / limites
+
+*   Contrat locked → pas de cues édition, navigation read-only OK
+
+## Règles de gestion
+
+*   SP1 = shell navigation uniquement
+*   86c9n9a4a dépend des sections SP2 pour le comportement Schema
+
+## Validation fonctionnelle
+
+*   Proto : ContractSectionNav, shouldShowSectionNavProgressCue, Versions sans view toggle
+*   MVP : lock API + mêmes règles cues
+
+## Validé sur prototype UX
+
+*   ContractSectionNav.tsx, sectionNavCues.ts
+*   ContractTopBar hideViewToggle sur section versions
+
+## Implémentation MVP cible
+
+*   API lock status drive cues visibility
+
+## Liens SP2 — Editor & Lifecycle (ne pas réimplémenter ici)
+
+*   86c9n9a4e — Édition schéma (tables/champs)
+*   86c9n9a4r — Relations entre tables
+*   86c9nw8fj — Verrouillage contrat actif
+
+## Liens SP4 — Versioning
+
+*   86c9n9a55 — Autosave (remplace Save draft)
+*   86c9n9a5e — Readiness panel (pas les cues sidebar SP1)
+*   86c9n9a6m — Section Versions (timeline)
+
+## Liens SP5 — Publish & GitOps
+
+*   86c9n9a5u / 86c9n9a5z — Publish (hors create)
+"
+86c9wmdne,"## Description métier
+
+US complémentaire pour l’onglet YAML : copy, download, preview reflétant l’état courant (working copy). US source 86c9nw8br (qa) inchangée.
+
+## Gouvernance — US sources (statuts protégés, non modifiées)
+
+*   86c9nw8br (qa) — YAML généré lecture seule
+
+## Corrigé / aligné par rapport aux US sources
+
+*   Synchronisation explicite = état courant en mémoire (pas seulement dernier save draft)
+*   Actions Copy et Download documentées
+
+## Ajouté (delta backlog MVP)
+
+*   Bouton Copy YAML (clipboard)
+*   Bouton Download YAML (fichier .yaml nommé id\_version)
+*   Indication export coverage / read-only
+
+## Exclu de cette US (autre liste ou obsolète)
+
+*   MD5, push Git, compare versions
+
+## Reste porté par l’US source (QA historique)
+
+*   YAML read-only pour tous les rôles
+*   Génération depuis modèle ODCS P1
+*   Pas d’édition inline YAML
+
+## Périmètre
+
+### Inclus
+
+*   Onglet YAML dans le shell contrat
+*   Preview texte généré par odcsYamlGenerator
+*   Copy + Download sur le même contenu que la preview
+
+### Exclus
+
+*   Save draft
+*   Édition YAML
+*   Validation live avancée dans l’éditeur
+
+## Critères d’acceptation
+
+*   Le YAML affiché reflète le contrat courant (working copy) après modification
+*   Copy copie l’intégralité du YAML visible
+*   Download produit un fichier .yaml cohérent avec la preview
+*   Aucun champ YAML n’est éditable
+*   En révision (inRevision), le YAML reflète la working copy
+
+## Cas d’erreur / limites
+
+*   Clipboard refusé → feedback utilisateur
+
+## Règles de gestion
+
+*   Preview = source de vérité pour copy/download (yamlFileDownload)
+
+## Validation fonctionnelle
+
+*   Proto : YamlView copy/download, generateODCSYaml(contract)
+*   MVP : preview serveur sur état courant brouillon
+
+## Validé sur prototype UX
+
+*   YamlView.tsx — Copy, Download, buildYamlDownloadFilename
+*   odcsYamlGenerator.ts
+
+## Implémentation MVP cible
+
+*   GET preview YAML working copy
+*   Download filename convention {id}\_{version}.yaml
+
+## Liens SP4 — Versioning
+
+*   Compare versions — SP4
+
+## Liens SP5 — Publish & GitOps
+
+*   Checksum MD5 sur version publiée — SP5 5n, pas dans cette US
+"
+86c9wmdnb,"## Description métier
+
+US complémentaire alignant le parcours de création sur le prototype validé (mode choice, non-persistance) et le MVP (transaction create, statuts lifecycle produit). Les US sources 86c9n9a3v et 86c9n9a48 restent en QA inchangées.
+
+## Gouvernance — US sources (statuts protégés, non modifiées)
+
+*   86c9n9a3v (qa) — Créer un nouveau data contract
+*   86c9n9a48 (qa) — Start from scratch / fallback — couverture explicite dans cette CREATE
+
+## Corrigé / aligné par rapport aux US sources
+
+*   Plus de création Draft immédiate + redirection DDL seule au clic Create Contract
+*   Statut initial import → proposed (pas draft à la création)
+*   Statut initial scratch → draft après validation du parcours
+
+## Ajouté (delta backlog MVP)
+
+*   Écran create two-step : cartes Import DDL / Start from scratch avant toute persistance
+*   Aucun contrat enregistré tant que l’utilisateur n’a pas validé import ou scratch
+*   Transaction create API avec owner par défaut
+*   Back to creation options depuis le formulaire DDL
+
+## Exclu de cette US (autre liste ou obsolète)
+
+*   Parser SQL CREATE TABLE, validation types, injection tables/FK
+*   Publish, readiness panel, Git
+
+## Reste porté par l’US source (QA historique)
+
+*   Intention produit « créer un contrat » et tests QA historiques sur 3v/48
+*   Fallback manuel toujours secondaire au parcours DDL recommandé
+
+## Périmètre
+
+### Inclus
+
+*   Bouton Create Contract → vue mode choice (pas de contrat créé)
+*   Carte Import DDL → parcours import → contrat proposed + Fundamentals
+*   Carte Start from scratch → contrat draft + schéma vide + Fundamentals
+*   Owner par défaut = créateur
+*   Publish désactivé tant que non publiable
+
+### Exclus
+
+*   Persistance avant choix de mode
+*   Redirect automatique vers textarea SQL sans mode choice
+*   Parser DDL (SP3)
+*   Templates, IA, import Zeenea
+
+## Critères d’acceptation
+
+*   Create Contract ouvre la vue two-step sans persister de contrat
+*   Import DDL réussi crée un contrat proposed et ouvre Fundamentals
+*   Start from scratch crée un contrat draft (schéma vide) et ouvre Fundamentals
+*   Back to creation options ramène au mode choice sans contrat fantôme
+*   Aucune écriture localStorage/API avant succès du parcours choisi
+*   Owner visible dans le registry après création
+
+## Cas d’erreur / limites
+
+*   Échec parse DDL → message utilisateur, pas de contrat proposed créé
+*   Abandon avant validation → aucun contrat persisté
+
+## Règles de gestion
+
+*   Aligné doc produit §7 — séparation mode choice / import
+*   86c9n9a48 couvert ici — pas de CREATE scratch séparée
+
+## Validation fonctionnelle
+
+*   Proto : CreateContractView, createContract manual/import
+*   MVP : API POST create avec statut proposed ou draft selon mode
+
+## Validé sur prototype UX
+
+*   CreateContractView — cartes Import DDL / Start from scratch
+*   createContract.ts — creationSource import/manual, status proposed/draft
+*   Pas de saveContracts avant onParsed / onStartFromScratch
+
+## Implémentation MVP cible
+
+*   Endpoint transaction create (proposed | draft)
+*   Owner par défaut côté serveur
+*   Idempotence abandon parcours (pas de brouillon orphelin)
+
+## Liens SP3 — DDL Import (ne pas réimplémenter ici)
+
+*   86c9n9a44 — Import DDL (parser, schéma initial)
+*   86c9n9a47 — Conversion DDL → schéma ODCS éditable
+
+## Liens SP4 — Versioning
+
+*   proposed → Start drafting (lifecycle SP4)
+
+## Liens SP5 — Publish & GitOps
+
+*   86c9n9a5u / 86c9n9a5z — Publish (hors create)
+"
+86c9wmdnc,"## Description métier
+
+US complémentaire : la recherche backlog est confirmée dans le MVP. L’US source 86c9n9a3w (qa) excluait la recherche — cette CREATE porte le delta sans réécrire l’US protégée.
+
+## Gouvernance — US sources (statuts protégés, non modifiées)
+
+*   86c9n9a3w (qa) — Liste des data contracts
+
+## Corrigé / aligné par rapport aux US sources
+
+*   AC « aucune recherche dans le MVP » remplacés par exigences search dans cette US
+*   Statuts lifecycle produit (5 statuts) vs ancien triptyque Draft/Active/Deprecated seul
+
+## Ajouté (delta backlog MVP)
+
+*   Recherche par nom de contrat
+*   Recherche par ID contrat
+*   Filtre par statut lifecycle (proposed, draft, active, deprecated, retired)
+*   Pagination et tri côté API/query
+
+## Exclu de cette US (autre liste ou obsolète)
+
+*   Réécriture de la description de 86c9n9a3w
+
+## Reste porté par l’US source (QA historique)
+
+*   Page Contracts, colonnes, empty state, ouverture détail, Create Contract
+*   Exclusion soft-deleted de la liste principale
+
+## Périmètre
+
+### Inclus
+
+*   Champ Search (nom + ID)
+*   Filtre lifecycle
+*   Pagination UI + tri colonnes
+*   Compteur / table / navigation latérale
+
+### Exclus
+
+*   Bulk actions, export, colonnes personnalisables, corbeille
+*   Compare versions (SP4)
+
+## Critères d’acceptation
+
+*   La recherche filtre par titre et par id (insensible à la casse côté produit)
+*   Le filtre lifecycle restreint la liste aux statuts sélectionnés
+*   La pagination fonctionne avec la recherche active
+*   Le tri par colonne fonctionne avec recherche + filtre
+*   État vide explicite si aucun résultat
+
+## Cas d’erreur / limites
+
+*   Query invalide → liste vide ou message, pas d’erreur silencieuse
+
+## Règles de gestion
+
+*   Recherche MVP confirmée PO — portée par cette CREATE, pas UPDATE 3w
+
+## Validation fonctionnelle
+
+*   Proto : ContractsBacklog search + lifecycleFilter + pagination
+*   MVP : API liste avec query params search, status, sort, page
+
+## Validé sur prototype UX
+
+*   ContractsBacklog.tsx — Search input, lifecycle filter, sort, PAGE\_SIZE
+
+## Implémentation MVP cible
+
+*   GET /contracts?search=&status=&sort=&page=
+*   Cohérence filtres avec statuts ODCS lifecycle produit
+
+## Liens SP4 — Versioning
+
+*   Colonnes version enrichies si hors registry — SP4
+
+## Liens SP6 — Auth (si applicable)
+
+*   Auth / visibilité liste — SP6 si plateforme
+"
+86c9wp7a9,"## Description métier
+
+Application UX des règles de verrouillage sur la section Schema — pas les règles lifecycle backend (SP4). US source 86c9nw8fj (prêt à déployer) inchangée.
+
+## Gouvernance — US sources (statuts protégés, non modifiées)
+
+*   86c9nw8fj — prêt à déployer — lifecycle & locking
+
+## Corrigé / aligné par rapport aux US sources
+
+*   Schema read-only en active sans Revision open
+*   Schema éditable en draft ou active+inRevision
+*   Pas Save draft — autosave SP4
+
+## Ajouté (delta backlog MVP)
+
+*   isContractLocked appliqué SchemaSection/TableBlock
+*   Masquage Add/Delete/Rename si verrouillé
+*   denseReadOnly sur vue publiée compacte
+
+## Exclu de cette US (autre liste ou obsolète)
+
+*   Immutabilité API backend (86c9nw8d4 — REPORT SP4)
+*   New version workflow détaillé (SP4 5x)
+*   Publish exécution (SP5)
+
+## Reste porté par l’US source (QA historique)
+
+*   Intention verrouillage Active historique US fj
+
+## Périmètre
+
+### Inclus
+
+*   Guards UI sur toutes actions schema
+*   Feedback visuel lecture seule
+*   New version disponible depuis UI (lien SP4)
+
+### Exclus
+
+*   Override admin déverrouillage
+*   Modification silencieuse version publiée
+
+## Critères d’acceptation
+
+*   En active sans révision : schema non éditable
+*   En inRevision : schema éditable
+*   En proposed : schema locked, import section seule
+*   Viewer toujours read-only
+
+## Cas d’erreur / limites
+
+## Règles de gestion
+
+*   SP2 = UX locks ; SP4 = règles métier lifecycle
+*   Référence US source 86c9nw8fj
+
+## Validation fonctionnelle
+
+*   Proto isContractLocked sur SchemaSection
+*   MVP permissions + lifecycle API
+
+## Validé sur prototype UX
+
+*   contractLifecycle.ts
+*   App.tsx isLocked → SchemaSection
+
+## Implémentation MVP cible
+
+*   Policy engine + UI disable states
+
+## Liens SP1 — Interfaces
+
+*   86c9n9a4a — Navigation sections (CREATE alignement SP1)
+
+## Liens SP4 — Versioning
+
+*   86c9n9a5x — New version / Revision open
+*   86c9n9a4t — proposed, Start drafting, re-import
+*   86c9n9a55 — Autosave (pas Save draft)
+*   Règles métier — pas ici
+
+## Liens SP5 — Publish & GitOps
+
+*   86c9n9a5u / 86c9n9a5z — Publish / Git (SP5)
+*   Publish disabled UI — exécution SP5
+"
+86c9wp7a8,"## Description métier
+
+US complémentaire pour l’édition schéma complète alignée prototype : tables, colonnes, dialogs metadata, FK colonne, propagation rename/delete. US source 86c9n9a4e (en cours) inchangée.
+
+## Gouvernance — US sources (statuts protégés, non modifiées)
+
+*   86c9n9a4e — en cours — schema editor
+
+## Corrigé / aligné par rapport aux US sources
+
+*   Contrat éditable en statut draft OU active avec Revision open (inRevision) — pas « Draft-only » ; proposed = import seulement ; active publié = lecture seule
+*   Renommage table/colonne avec propagation schemaRelationshipRefs
+*   FK colonne via ColumnForeignKeyEditor
+
+## Ajouté (delta backlog MVP)
+
+*   ColumnAdvancedDialog / TableAdvancedDialog (tags, auth defs, array items)
+*   Classification, PK/REQ/UQ/CDE flags inline
+*   Readiness anchors colonnes (descriptions) — score SP4
+
+## Exclu de cette US (autre liste ou obsolète)
+
+*   Import DDL (SP3)
+*   Relations table-level (86c9n9a4r)
+*   Quality rules structurées (86c9nw8cy)
+*   Publish / Git
+
+## Reste porté par l’US source (QA historique)
+
+*   Titre et périmètre historique US 4e en QA en cours
+
+## Périmètre
+
+### Inclus
+
+*   Liste tables, édition nom/description/type table
+*   CRUD colonnes, logical/physical types
+*   Field properties dialog
+*   stablePropertyId / stableSchemaId
+
+### Exclus
+
+*   Édition YAML directe
+*   Graphe relations obligatoire
+*   Glossaire Zeenea automatique
+
+## Critères d’acceptation
+
+*   Modification table/colonne si editable status
+*   FK colonne partielle bloquée à la sauvegarde
+*   Rename propage FK et relationships
+*   Verrouillage si proposed/active sans révision
+
+## Cas d’erreur / limites
+
+*   handleSchemaChange no-op si locked
+
+## Règles de gestion
+
+*   Référence US source 86c9n9a4e
+*   Dual-track obligatoire
+
+## Validation fonctionnelle
+
+*   Proto SchemaSection + TableBlock + dialogs
+*   MVP API dataset CRUD
+
+## Validé sur prototype UX
+
+*   SchemaSection.tsx, TableBlock.tsx
+*   ColumnAdvancedDialog, TableAdvancedDialog
+*   ColumnForeignKeyEditor, schemaRelationshipRefs
+*   contractLifecycle isContractLocked
+
+## Implémentation MVP cible
+
+*   API CRUD schema ODCS
+*   Validation structurelle serveur
+
+## Liens SP1 — Interfaces
+
+*   86c9n9a4a — Navigation sections (CREATE alignement SP1)
+*   Section Schema — pas navigation ici
+
+## Liens SP3 — DDL Import
+
+*   86c9n9a47 — Mapping DDL → schéma (détection relations importées)
+*   Schéma initial import — édition continue SP2
+
+## Liens SP4 — Versioning
+
+*   86c9n9a4t — proposed, Start drafting, re-import
+*   86c9n9a5x — New version / Revision open
+*   86c9n9a55 — Autosave (pas Save draft)
+
+## Liens SP5 — Publish & GitOps
+
+*   86c9n9a5b — Validation YAML pré-publication
+"
+86c9nw8dw,"## Description métier
+
+Parcours UX de suppression logique (soft delete) depuis l’UI — métier audit et conservation versions/Git/checksums portés par SP4. Priorité normal (lifecycle + registry).
+
+## Périmètre
+
+### Inclus
+
+*   Bouton Delete contrat + ConfirmDialog
+*   Soft delete — retrait liste principale
+*   Conservation historique technique (REPORT exécution SP4)
+*   Contrat éditable en statut draft OU active avec Revision open (inRevision) — pas « Draft-only » ; proposed = import seulement ; active publié = lecture seule
+
+### Exclus
+
+*   Hard delete versions publiées / commits Git
+*   Règles immutabilité API (SP4 — 86c9nw8d4 REPORT)
+*   Implémentation backend soft delete complète (SP4 4t)
+
+## Critères d’acceptation
+
+*   Confirmation obligatoire
+*   Après succès, contrat absent de la liste registry (SP1)
+*   Versions publiées et audit conservés (SP4)
+
+## Cas d’erreur / limites
+
+*   Erreur backend → contrat reste visible
+
+## Règles de gestion
+
+*   REPORT métier soft delete → SP4
+*   Priorité normal — impact lifecycle et visibilité registry
+
+## Validation fonctionnelle
+
+*   Proto ConfirmDialog pattern
+*   MVP API soft delete + registry filter
+
+## Hypothèses
+
+## Validé sur prototype UX
+
+*   ConfirmDialog usage pattern dans App
+
+## Implémentation MVP cible
+
+*   API DELETE soft + deletedAt
+*   Registry SP1 filtre entrées supprimées
+
+## Hors périmètre prototype
+
+*   Purge RGPD automatisée
+*   Corbeille restauration UI
+
+## Liens SP1 — Interfaces
+
+*   86c9n9a3w — Registry (liste contrats)
+
+## Liens SP4 — Versioning
+
+*   86c9n9a4t — soft delete contrat (métier audit)
+*   Métier audit — ownership SP4
+
+## Liens SP5 — Publish & GitOps
+
+*   Conservation commits/checksums SP5
+"
+86c9nw8cy,"## Description métier
+
+Édition et saisie des quality rules structurées (table et colonne) via QualityRulesEditor. Distinct de la readiness globale (SP4) et de la validation publish backend (SP5). Interdit : note libre, non bloquante, sans impact publish.
+
+## Périmètre
+
+### Inclus
+
+*   Quality rules colonne (jusqu’à 3) dans ColumnAdvancedDialog
+*   Quality rules table dans TableAdvancedDialog
+*   aiVerified sur rules table (mock Verify with AI prototype)
+*   Dimensions / severity / businessImpact (p1Constants)
+*   Export quality\[\] dans YAML
+
+### Exclus
+
+*   Readiness panel score global (SP4 — 5e)
+*   Validation publish YAML complète (SP5 — 5b)
+*   SEMQL / moteur qualité exécutable
+*   SLA / slaProperties (section gouvernance séparée)
+*   Note libre non structurée sans aiVerified
+
+## Critères d’acceptation
+
+*   Saisie quality rule structurée table et colonne
+*   Table rules : aiVerified requis pour publish (proto contractValidation)
+*   Colonne : descriptions field quality comptent dans readiness SP4 (distinct)
+*   Publish bloqué côté produit si table rules non vérifiées (via readiness/validation SP4/SP5)
+*   Wording UI ne promet pas un moteur exécutable
+
+## Cas d’erreur / limites
+
+*   Publish tenté sans aiVerified table rules → message readiness/validation
+
+## Règles de gestion
+
+*   SP2 = saisie locale ; SP4 = readiness ; SP5 = validation publish
+*   Ne pas documenter « sans impact publish »
+*   Contrat éditable en statut draft OU active avec Revision open (inRevision) — pas « Draft-only » ; proposed = import seulement ; active publié = lecture seule
+
+## Validation fonctionnelle
+
+*   Proto QualityRulesEditor + validateQualityRules requireAiVerified
+*   MVP règles alignées contractValidation serveur
+
+## Hypothèses
+
+## Validé sur prototype UX
+
+*   QualityRulesEditor.tsx
+*   contractValidation.ts validateQualityRules
+*   TableAdvancedDialog showAiVerification
+
+## Implémentation MVP cible
+
+*   Persistance quality\[\] ODCS
+*   Intégration readiness API + pre-publish validation
+
+## Liens SP4 — Versioning
+
+*   86c9n9a5e — Readiness panel (score, publiable)
+*   Field quality descriptions — score SP4
+
+## Liens SP5 — Publish & GitOps
+
+*   86c9n9a5b — Validation YAML pré-publication
+*   86c9n9a5u / 86c9n9a5z — Publish / Git (SP5)
+"
+86c9nc597,"## Description métier
+
+Suppression colonne en contexte éditable ; impact sur FK/relations ; pas de Save draft.
+
+## Périmètre
+
+### Inclus
+
+*   Delete field sur ligne colonne (TableBlock)
+*   syncDatasetAfterTableUpdate / impact relations
+*   Avertissement si colonne référencée par relation
+*   Contrat éditable en statut draft OU active avec Revision open (inRevision) — pas « Draft-only » ; proposed = import seulement ; active publié = lecture seule
+
+### Exclus
+
+*   Suppression sur version publiée immutable
+*   Undo multi-étapes / rollback Git
+*   Résolution automatique relations sans confirmation UX
+
+## Critères d’acceptation
+
+*   Suppression colonne possible si non verrouillé
+*   Impossible si contrat verrouillé
+*   Relations utilisant la colonne nettoyées ou signalées
+*   Readiness recalculée après suppression
+
+## Cas d’erreur / limites
+
+*   Dernière colonne d’une table → table non publiable
+
+## Règles de gestion
+
+*   Contrat éditable en statut draft OU active avec Revision open (inRevision) — pas « Draft-only » ; proposed = import seulement ; active publié = lecture seule
+*   Autosave SP4 — pas Save draft P0
+
+## Validation fonctionnelle
+
+*   Proto TableBlock delete column
+*   schemaRelationshipRefs column delete
+
+## Hypothèses
+
+## Validé sur prototype UX
+
+*   TableBlock trash action
+*   schemaRelationshipRefs
+
+## Implémentation MVP cible
+
+*   API delete property + relation cleanup
+
+## Liens SP4 — Versioning
+
+*   86c9n9a55 — Autosave (pas Save draft)
+*   86c9n9a5e — Readiness panel (score, publiable)
+
+## Liens SP5 — Publish & GitOps
+
+*   86c9n9a5b — Validation YAML pré-publication
+"
+86c9n9a4r,"## Description métier
+
+Édition et manipulation des relations entre tables du contrat — pas la détection initiale depuis DDL (SP3). MVP UI : composite\_foreign\_key et many\_to\_many uniquement.
+
+## Périmètre
+
+### Inclus
+
+*   Section Relationships dans TableBlock
+*   Types MVP : composite\_foreign\_key, many\_to\_many (picker REL\_OPTIONS)
+*   Sélection table cible et colonnes de jointure
+*   Suppression relation si éditable
+*   syncDatasetAfterTableUpdate pour propagation rename colonnes/tables
+*   Export via relationshipExport (lecture SP5 validation)
+*   Contrat éditable en statut draft OU active avec Revision open (inRevision) — pas « Draft-only » ; proposed = import seulement ; active publié = lecture seule
+
+### Exclus
+
+*   Détection/mapping relations depuis DDL import (SP3 — 47)
+*   Graphe relationnel avancé / inférence automatique
+*   Validation référentielle exécutable / impact analysis consommateurs
+*   Mega relation system (anti-pattern gouvernance)
+*   Has many / Belongs to / Has one legacy comme AC principaux UI
+
+## Critères d’acceptation
+
+*   Ajout relation composite FK avec paires colonnes égales
+*   Ajout relation M2M avec colonnes de jointure optionnelles
+*   Relations read-only si contrat verrouillé
+*   Rename table/colonne met à jour les refs (schemaRelationshipRefs)
+*   YAML export contient relationships/FK cohérents
+
+## Cas d’erreur / limites
+
+*   Relation incomplète → avertissement publish (SP5)
+*   Cible FK manquante → stale target UX
+
+## Règles de gestion
+
+*   Anti-pattern : ne pas absorber parser SP3 ni validation publish SP5 dans cette US
+*   Contrat éditable en statut draft OU active avec Revision open (inRevision) — pas « Draft-only » ; proposed = import seulement ; active publié = lecture seule
+
+## Validation fonctionnelle
+
+*   Proto TableBlock REL\_OPTIONS
+*   relationshipExport tests
+
+## Hypothèses
+
+## Validé sur prototype UX
+
+*   TableBlock.tsx — composite\_foreign\_key, many\_to\_many
+*   schemaRelationshipRefs sync rename/delete
+*   TableRelationshipRow navigation
+
+## Implémentation MVP cible
+
+*   API relations CRUD alignée types MVP
+*   Tests propagation rename/delete
+
+## Liens SP3 — DDL Import
+
+*   86c9n9a47 — Mapping DDL → schéma (détection relations importées)
+*   FK inline importées — édition ici post-import
+
+## Liens SP4 — Versioning
+
+*   86c9n9a5e — Readiness panel (score, publiable)
+
+## Liens SP5 — Publish & GitOps
+
+*   86c9n9a5b — Validation YAML pré-publication
+*   Export YAML relationships — pas UI ici
+"
+86c9n9a4p,"## Description métier
+
+Suppression table avec confirmation ; propagation suppression des références FK/relations entrantes (schemaRelationshipRefs).
+
+## Périmètre
+
+### Inclus
+
+*   Delete table + ConfirmDialog
+*   syncDatasetAfterTableDelete — inbound FK/relationships retirés
+*   Blocage si contrat verrouillé (proposed, active sans révision, deprecated, retired)
+*   Contrat éditable en statut draft OU active avec Revision open (inRevision) — pas « Draft-only » ; proposed = import seulement ; active publié = lecture seule
+
+### Exclus
+
+*   Suppression version publiée immutable (SP4)
+*   Restauration table fine / corbeille
+*   Re-import DDL (SP3) — REPORT
+
+## Critères d’acceptation
+
+*   Confirmation avant suppression
+*   Annuler conserve la table
+*   Après suppression, plus de références vers la table supprimée dans le modèle
+*   Impossible si isContractLocked
+*   Readiness recalculée (SP4) après changement
+
+## Cas d’erreur / limites
+
+*   Dernière table → impact publishability (readiness SP4)
+
+## Règles de gestion
+
+*   Contrat éditable en statut draft OU active avec Revision open (inRevision) — pas « Draft-only » ; proposed = import seulement ; active publié = lecture seule
+*   Pas Save draft — autosave SP4
+
+## Validation fonctionnelle
+
+*   Proto syncDatasetAfterTableDelete
+*   MVP même règles ref serveur
+
+## Hypothèses
+
+## Validé sur prototype UX
+
+*   SchemaSection handleDeleteTable
+*   schemaRelationshipRefs.ts
+
+## Implémentation MVP cible
+
+*   API delete table transactionnelle
+*   Cleanup références FK côté serveur
+
+## Liens SP3 — DDL Import
+
+*   86c9n9a44 — Import DDL (SP3)
+*   Re-import proposed remplace schéma — SP3/SP4
+
+## Liens SP4 — Versioning
+
+*   86c9n9a5e — Readiness panel (score, publiable)
+*   86c9n9a5x — New version / Revision open
+
+## Liens SP5 — Publish & GitOps
+
+*   86c9n9a5b — Validation YAML pré-publication
+"
+86c9n9a4h,"## Description métier
+
+Ajout manuel d’une table/schema object pour compléter ou corriger le schéma importé ou créé from scratch.
+
+## Périmètre
+
+### Inclus
+
+*   Bouton Add table (SchemaSection)
+*   Nom table obligatoire, description optionnelle
+*   Ajout colonnes initiales via TableBlock
+*   Validation doublon de nom table
+*   Stable schema ID (stableSchemaId)
+*   Contrat éditable en statut draft OU active avec Revision open (inRevision) — pas « Draft-only » ; proposed = import seulement ; active publié = lecture seule
+
+### Exclus
+
+*   Import DDL (SP3)
+*   Templates table avancés / génération IA
+*   Publish / readiness panel (SP4/SP5)
+
+## Critères d’acceptation
+
+*   Add table crée une table éditable si contrat non verrouillé
+*   Doublon de nom table refusé avec message clair
+*   Au moins une colonne ajoutable immédiatement
+*   Table visible dans YAML preview (SP1) après modification
+
+## Cas d’erreur / limites
+
+*   Nom vide → message validation
+*   Contrat verrouillé → action masquée
+
+## Règles de gestion
+
+*   Contrat éditable en statut draft OU active avec Revision open (inRevision) — pas « Draft-only » ; proposed = import seulement ; active publié = lecture seule
+*   Tag epic schema editor
+
+## Validation fonctionnelle
+
+*   Proto SchemaSection + TableBlock
+*   MVP API dataset create table
+
+## Hypothèses
+
+## Validé sur prototype UX
+
+*   SchemaSection.tsx — makeTable, add flow
+*   idDerivation stableSchemaId
+
+## Implémentation MVP cible
+
+*   POST/PATCH dataset tables
+*   Validation unicité noms serveur
+
+## Liens SP1 — Interfaces
+
+*   86c9n9a4a — Navigation sections (CREATE alignement SP1)
+
+## Liens SP3 — DDL Import
+
+*   86c9n9a47 — Mapping DDL → schéma (détection relations importées)
+*   Import initial — pas re-parser ici
+
+## Liens SP4 — Versioning
+
+*   86c9n9a4t — proposed, Start drafting, re-import
+*   86c9n9a55 — Autosave (pas Save draft)
+"
+86c9n9a54,"## Description métier
+
+Sérialisation backend du modèle applicatif vers YAML ODCS P1 (apiVersion, kind, schema, governance export rules). Distinct de la preview UI SP1.
+
+## Périmètre
+
+### Inclus
+
+*   Sérialisation Fundamentals + schema + governance selon règles P1
+*   apiVersion/kind fixes ; champs app-only exclus de l’export
+*   Stable ordering et format lisible
+*   Alignement odcsYamlGenerator / buildOdcsDocument
+*   Utilisé après import, édition et avant publish
+
+### Exclus
+
+*   UI onglet YAML — SP1
+*   Validation publish complète — SP5 5b
+*   MD5 / Git push — SP5
+*   Doublon 86c9nw8d1 — annulé
+
+## Critères d’acceptation
+
+*   Le YAML généré est valide ODCS P1 pour un contrat importé type
+*   Les champs non exportables (owner app-only, inRevision) sont absents du YAML
+*   La sérialisation est déterministe pour un même modèle
+*   Les relationships/FK exportées passent par relationshipExport
+
+## Cas d’erreur / limites
+
+*   Modèle incohérent → erreur sérialisation remontée à l’UI
+
+## Règles de gestion
+
+*   Tag technical foundation
+*   86c9nw8d1 annulée — doublon exact
+
+## Validation fonctionnelle
+
+*   Proto : odcsYamlGenerator tests
+*   MVP : service serialization API
+
+## Hypothèses
+
+## Validé sur prototype UX
+
+*   odcsYamlGenerator.ts, buildOdcsDocument
+*   relationshipExport.ts
+
+## Implémentation MVP cible
+
+*   Microservice ou module serialization versionné
+*   Contrat OpenAPI export preview
+
+## Hors périmètre prototype
+
+*   Sérialisation incrémentale temps réel multi-utilisateur
+
+## Liens SP1 — Interfaces (shell create / YAML UI)
+
+*   86c9nw8br — YAML preview UI (Copy/Download) — SP1 CREATE alignement
+
+## Liens SP5 — Publish & GitOps
+
+*   86c9n9a5b — Validation YAML pré-publication
+*   86c9n9a5u / 86c9n9a5z — Publish (hors import)
+"
+86c9n9a53,"## Description métier
+
+Cette US couvre la cohérence fonctionnelle du YAML produit après un import DDL réussi — pas l’UI preview/copy/download (SP1) ni la validation publish/Git (SP5). Évite un trou QA sur la chaîne import → serialization.
+
+## Périmètre
+
+### Inclus
+
+*   YAML généré depuis le schéma importé reflète tables/colonnes/FK mappées
+*   Cohérence entre modèle in-memory post-import et export ODCS P1
+*   Vérification après import proposed et après Start drafting
+*   Read-only : pas d’édition YAML directe
+
+### Exclus
+
+*   Onglet YAML UI, boutons Copy/Download — SP1
+*   MD5, push Git, validation publish — SP5
+*   Comparaison versions historiques — SP4
+*   Édition schéma — SP2
+
+## Critères d’acceptation
+
+*   Après import DDL, le YAML preview contient les tables/colonnes importées
+*   Les FK importées apparaissent dans le YAML exporté (relationships)
+*   Aucune régression sur champs P1 fundamentals après import
+*   Le YAML reste non éditable (tous rôles)
+
+## Cas d’erreur / limites
+
+*   Schéma importé vide → YAML schema section vide explicite
+
+## Règles de gestion
+
+*   Ownership SP3 : cohérence serialization post-import
+*   Ne pas dupliquer les AC UI de SP1 nw8br
+*   Tag yaml view conservé avec périmètre fonctionnel réduit
+
+## Validation fonctionnelle
+
+*   Proto : generateODCSYaml après import dans le parcours proposed
+*   MVP : test API export YAML post-import
+
+## Hypothèses
+
+*   La preview UI reste testée via SP1 CREATE alignement
+
+## Validé sur prototype UX
+
+*   odcsYamlGenerator.ts / generateODCSYaml
+*   Parcours import → proposed documenté product-documentation §7
+
+## Implémentation MVP cible
+
+*   Tests intégration import → YAML snapshot
+*   Service serialization aligné odcsYamlGenerator
+
+## Hors périmètre prototype
+
+*   Éditeur YAML WYSIWYG
+
+## Liens SP1 — Interfaces (shell create / YAML UI)
+
+*   86c9nw8br — YAML preview UI (Copy/Download) — SP1 CREATE alignement
+
+## Liens SP5 — Publish & GitOps
+
+*   86c9n9a5b — Validation YAML pré-publication
+*   86c9n9a5n — MD5 sur YAML publié
+"
+86c9n9a47,"## Description métier
+
+Après parsing, transformation des tables/colonnes/contraintes DDL en modèle ODCS (SchemaTable, properties, relationships). L’édition continue du schéma relève de SP2.
+
+## Périmètre
+
+### Inclus
+
+*   Mapping table → schema object (stableSchemaId)
+*   Mapping colonne → property (stablePropertyId)
+*   physicalType conservé, logicalType mappé
+*   required, primaryKey, unique depuis DDL
+*   FOREIGN KEY inline → foreignKey ou composite relationship
+*   Ordre des colonnes conservé
+*   Schéma modifiable après import (via SP2)
+
+### Exclus
+
+*   Édition relation graphique avancée — SP2
+*   Mapping sémantique Zeenea / glossaire
+*   Quality rules exécutables
+*   Édition YAML inline
+
+## Critères d’acceptation
+
+*   Chaque CREATE TABLE supporté produit une table schema
+*   Chaque colonne supportée produit une property
+*   NOT NULL → required ; PK → primaryKey
+*   FK DDL produit foreignKey ou relationship composite
+*   Le YAML généré reflète le schéma importé (cohérence 53/54)
+
+## Cas d’erreur / limites
+
+*   Table sans colonnes valides → rejet ou table vide signalée
+
+## Règles de gestion
+
+*   Champs enrichis non déductibles du DDL restent vides
+*   Tag epic ddl parser
+
+## Validation fonctionnelle
+
+*   Proto : ddlParser + schemaOdcsMapping + relationshipExport
+*   MVP : API map-to-odcs avec mêmes règles IDs
+
+## Hypothèses
+
+*   Self-referencing FK supportées (proto)
+
+## Validé sur prototype UX
+
+*   parseDDLMulti, applyForeignKeys, stablePropertyId/stableSchemaId
+*   schemaOdcsMapping migrate helpers
+
+## Implémentation MVP cible
+
+*   Service mapping documenté + tests snapshot ODCS
+*   Propagation rename/delete via schemaRelationshipRefs (SP2)
+
+## Hors périmètre prototype
+
+*   Inférence automatique descriptions colonnes
+
+## Liens SP2 — Editor & Lifecycle
+
+*   86c9n9a4e — Édition schéma post-import (CRUD tables/colonnes)
+*   86c9n9a4r — Relations — édition manuelle SP2
+
+## Liens SP5 — Publish & GitOps
+
+*   86c9n9a5b — Validation YAML pré-publication
+"
+86c9n9a44,"## Description métier
+
+Parcours d’import DDL : saisie, upload, preview, validation, création contrat proposed. Le shell create two-step et le routing sont portés par SP1 ; cette US couvre le formulaire import et le déclenchement parser côté SP3.
+
+## Périmètre
+
+### Inclus
+
+*   Zone SQL (paste, upload .sql, drag-and-drop)
+*   Load example (fixture)
+*   Preview tables/colonnes/FK avant validation (summarizeDDLImport)
+*   Bouton Import schema (uxCopy)
+*   Messages d’erreur exploitables
+*   Import réussi → contrat proposed + schéma injecté
+*   Re-import DDL tant que contrat proposed (section Import éditable)
+*   Progression UX import (prototype simulée)
+
+### Exclus
+
+*   Mode choice create (cartes Import / Scratch) — SP1
+*   Parser SQL complet multi-dialecte
+*   Publish, readiness panel
+*   Connexion base distante
+
+## Critères d’acceptation
+
+*   Un DDL valide génère un schéma initial affiché en preview
+*   Un DDL invalide affiche une erreur sans persister de contrat corrompu
+*   Load example et upload .sql fonctionnent
+*   Après import, le contrat est en statut proposed et ouvre Fundamentals
+*   Re-import en proposed remplace le schéma importé
+*   Les types non supportés sont signalés (unknown type)
+
+## Cas d’erreur / limites
+
+*   DDL vide → message invitant à coller du SQL
+*   Parse échoué → pas de contrat proposed créé
+*   Abandon parcours create → aucun contrat (SP1)
+
+## Règles de gestion
+
+*   DDL recommandé ; Start from scratch reste secondaire (SP1)
+*   Ne pas référencer « casser le Draft » — flux proposed
+*   Tag epic ddl parser (plus contract creation seul)
+
+## Validation fonctionnelle
+
+*   Proto : ImportSection layout creation + default, parseDDLMulti preview
+*   MVP : API POST import-parse + transaction create proposed
+
+## Hypothèses
+
+*   Le dialecte SQL reste TBD (voir US 40)
+
+## Validé sur prototype UX
+
+*   ImportSection.tsx — preview, phases loading/success, demo.sql
+*   CreateContractView → ImportSection layout creation
+*   docs/product-documentation.md §6.3, §7
+
+## Implémentation MVP cible
+
+*   API import DDL avec validation serveur
+*   Stockage temporaire fichier .sql si requis sécurité
+*   Idempotence abandon parcours
+
+## Hors périmètre prototype
+
+*   Import asynchrone file d’attente
+*   Multi-fichiers batch
+
+## Liens SP1 — Interfaces (shell create / YAML UI)
+
+*   86c9n9a3v — Create flow (mode choice, non-persistance) — CREATE alignement SP1
+
+## Liens SP4 — Versioning
+
+*   86c9n9a4t / lifecycle — proposed, Start drafting, re-import proposed
+"
+86c9n9a42,"## Description métier
+
+Bibliothèque DDL de référence pour tests parser, bouton Load example et CI. Le prototype expose demo.sql ; le MVP exige fixtures versionnées et couverture tests.
+
+## Périmètre
+
+### Inclus
+
+*   Fixtures DDL versionnées dans le repo (simple, multi-table, PK/FK, types courants)
+*   Fixture invalide avec erreur contrôlée attendue
+*   Load example alimenté par une fixture canonique
+*   Tests automatisés Vitest/Jest sur parseDDLMulti
+*   Documentation des résultats attendus par fixture
+
+### Exclus
+
+*   Jeu exhaustif par dialecte vendor
+*   Données client sensibles dans les fixtures
+*   Benchmark performance parser en CI P0
+
+## Critères d’acceptation
+
+*   Au moins cinq fichiers DDL de référence existent (MVP)
+*   Load example injecte un DDL valide issu des fixtures
+*   La fixture invalide produit une erreur contrôlée
+*   Les tests CI utilisent les fixtures sans données sensibles
+*   Chaque fixture a un snapshot ou assertion de tables/colonnes attendues
+
+## Cas d’erreur / limites
+
+*   Fixture modifiée sans mise à jour snapshot → CI en échec explicite
+
+## Règles de gestion
+
+*   Fixtures alignées sur le subset documenté dans 40
+*   demo.sql reste la référence UX Load example au prototype
+
+## Validation fonctionnelle
+
+*   Proto : demo.sql + ddlParser.schemaOdcs.test.ts
+*   MVP : dossier fixtures + pipeline CI
+
+## Hypothèses
+
+*   Les DDL clients remplaceront progressivement les exemples synthétiques
+
+## Validé sur prototype UX
+
+*   demo.sql importé dans ImportSection (Load example)
+*   src/lib/**tests**/ddlParser.schemaOdcs.test.ts
+
+## Implémentation MVP cible
+
+*   Répertoire backlog/fixtures ou tests/fixtures/ddl/
+*   Job CI parse-all-fixtures
+
+## Hors périmètre prototype
+
+*   Import automatique de DDL production client
+"
+86c9n9a40,"## Description métier
+
+Le MVP doit documenter un sous-ensemble SQL pragmatique (CREATE TABLE) sans promettre un support ANSI ou vendor exhaustif. Le dialecte cible reste TBD jusqu’à validation Zeenea.
+
+## Périmètre
+
+### Inclus
+
+*   Dialecte DDL cible marqué TBD tant qu’il n’est pas arbitré
+*   Liste des syntaxes supportées (multi CREATE TABLE, colonnes, types courants)
+*   Liste des syntaxes explicitement non supportées
+*   PRIMARY KEY, NOT NULL, UNIQUE simple
+*   FOREIGN KEY inline simple et composite (aligné prototype)
+*   Types inconnus → logicalType string + flag isUnknownType
+*   Messages d’erreur utilisateur compréhensibles
+
+### Exclus
+
+*   Support multi-dialectes exhaustif
+*   Procédures stockées, index avancés, contraintes complexes vendor-specific
+*   Connexion directe à une base
+*   Promesse « ANSI SQL complet » ou « PostgreSQL exhaustif »
+
+## Critères d’acceptation
+
+*   Le dialecte cible est documenté TBD sans choix arbitraire PostgreSQL/Snowflake/SQL Server
+*   La matrice supporté / non supporté est lisible par dev et QA
+*   Les FK DDL inline sont dans le périmètre documenté
+*   Les erreurs de parsing sont formulées pour l’utilisateur final
+*   Le parser ne promet pas un support SQL universel
+
+## Cas d’erreur / limites
+
+*   Syntaxe hors subset → message explicite, pas de crash
+
+## Règles de gestion
+
+*   Ne pas sur-promettre le coverage parser MVP (anti-pattern gouvernance)
+*   Aucun dialecte prioritaire sans validation PO/Zeenea
+
+## Validation fonctionnelle
+
+*   Revue doc + tests parser sur fixtures 42
+*   MVP : contrat API parser documente le même subset
+
+## Hypothèses
+
+*   Le dialecte cible sera tranché avant industrialisation parser service
+
+## Validé sur prototype UX
+
+*   ddlParser.ts — CREATE TABLE, nettoyage commentaires, mapSqlType, isUnknownType
+*   FK simple et composite parsées
+
+## Implémentation MVP cible
+
+*   Spécification parser service versionnée
+*   Catalogue erreurs API aligné messages UX
+*   Tests de non-régression sur subset documenté
+
+## Hors périmètre prototype
+
+*   Parser distribué multi-tenant haute dispo
+*   Support DDL hors CREATE TABLE
+
+## Liens SP2 — Editor & Lifecycle
+
+*   86c9n9a4r — Relations — édition manuelle SP2
+"
+86c9wjvmn,"## Description métier
+
+Le backend MVP doit persister un modèle clair : contrat logique, brouillon éditable, versions publiées immuables, objets de schéma, métadonnées de publication (checksum, commit Git). Validé en UX sur le prototype ; implémentation cible : API + base + Git connecté.
+
+## Périmètre
+
+### Inclus
+
+*   Entités : Contract, Draft (ou équivalent brouillon), PublishedVersion
+*   SchemaObject, SchemaProperty liés au contrat / brouillon
+*   Statuts Draft / Active / Deprecated sur les versions publiées
+*   Métadonnées publication : version, auteur, changelog, type Update/Breaking
+*   Checksum MD5 sur le YAML effectivement publié
+*   Commit hash Git correspondant à l’écriture repository
+*   Immutabilité des versions publiées (refus update API)
+*   Soft delete contrat avec conservation audit versions
+
+### Exclus
+
+*   Modèle collaboratif temps réel
+*   Policies Zeenea avancées
+*   Data product assembly
+
+## Critères d’acceptation
+
+*   Le modèle distingue brouillon non publié et version publiée append-only
+*   Un brouillon peut être créé depuis une version Active
+*   Une seule version Active par contrat
+*   Chaque publication stocke MD5 du YAML publié et hash commit Git
+*   Les API refusent la modification directe d’une PublishedVersion Active/Deprecated
+*   Le modèle permet la génération YAML ODCS v3.1.0
+
+## Cas d’erreur / limites
+
+*   Tentative de PATCH sur version publiée → 409 ou équivalent
+*   Échec persistance brouillon → erreur explicite (pas de perte silencieuse)
+
+## Règles de gestion
+
+*   La base applicative porte l’édition des brouillons ; Git porte les YAML auditables
+*   Un brouillon non publié n’est pas une version officielle
+
+## Validation fonctionnelle
+
+*   Tests persistance Draft vs PublishedVersion
+*   Tests migration depuis stockage prototype si applicable
+*   Tests immutabilité API
+
+## Hypothèses
+
+*   L’UI peut agréger Contract + Draft en une vue ; le backend reste normalisé
+
+## Validé sur prototype UX
+
+*   Parcours et règles métier validés en démo locale (localStorage, gitHistory simulé)
+
+## Implémentation MVP cible
+
+*   Schéma de données, APIs CRUD brouillon, publish, historique
+*   Intégration Git : voir SP5 — Publish & Gitops pour l’exécution push
+
+## Hors périmètre prototype
+
+*   Détail des écrans React et localStorage
+"
+86c9wjvmj,"## Description métier
+
+Publish update n’est pas proposé (ou est désactivé) lorsque le contenu exportable et la gouvernance versionnée sont identiques au dernier snapshot publié.
+
+## Périmètre
+
+### Inclus
+
+*   Détection changements export + gouvernance versionnée
+*   Message No changes to publish since the last version
+*   Publish update désactivé
+
+### Exclus
+
+*   Publication forcée vide
+
+## Critères d’acceptation
+
+*   Aucun delta → publish indisponible + message
+*   Dès qu’un changement export ou gouvernance → publish possible si readiness OK
+
+## Cas d’erreur / limites
+
+## Règles de gestion
+
+*   Aligné compare export-only : gouvernance seule compte pour publish (Option B)
+
+## Validation fonctionnelle
+
+*   UX : tentative publish sans edit
+
+## Hypothèses
+
+## Validé sur prototype UX
+
+*   hasAnyChangeSinceLastPublish, NO\_CHANGES\_TO\_PUBLISH
+
+## Implémentation MVP cible
+
+*   API publish 400 si pas de delta
+"
+86c9wjvmh,"## Description métier
+
+Option B : publication autorisée si le YAML exportable est inchangé mais owner ou governance contacts ont évolué. La modale publish affiche une note ; le changelog mentionne la gouvernance ; Compare reste sans diff export.
+
+## Périmètre
+
+### Inclus
+
+*   publishChangeKind governance\_only
+*   Note dans modale publish
+*   Changelog mentionnant mise à jour gouvernance
+*   Snapshot incluant gouvernance versionnée
+
+### Exclus
+
+*   Export owner/contacts dans YAML ODCS
+
+## Critères d’acceptation
+
+*   Publish possible avec YAML identique et contacts modifiés
+*   Compare export identique entre avant/après (S11b)
+*   Historique Versions affiche changelog gouvernance
+
+## Cas d’erreur / limites
+
+## Règles de gestion
+
+*   Distinct de publish avec changement schema
+
+## Validation fonctionnelle
+
+*   UX : S11b, publish governance only
+
+## Hypothèses
+
+## Validé sur prototype UX
+
+*   PUBLISH\_GOVERNANCE\_ONLY\_NOTE, getPublishChangeKind
+
+## Implémentation MVP cible
+
+*   Backend accepte publish governance-only avec même MD5 YAML
+"
+86c9wjvmf,"## Description métier
+
+Pendant une révision sur contrat active, un badge Revision open signale une working copy. Le statut lifecycle affiché reste Active ; la version affichée reste celle de la dernière publication.
+
+## Périmètre
+
+### Inclus
+
+*   Badge Revision open dans la barre supérieure
+*   Tooltip explicatif
+*   Masqué hors révision
+
+### Exclus
+
+*   Statut lifecycle « revision »
+*   Changement de numéro de version affiché avant Publish update
+
+## Critères d’acceptation
+
+*   Badge visible si active + révision ouverte
+*   Tooltip : édition basée sur la version active publiée
+*   Statut badge Active inchangé
+
+## Cas d’erreur / limites
+
+## Règles de gestion
+
+*   Revision open n’est pas un statut ODCS exporté
+
+## Validation fonctionnelle
+
+*   UX : S22
+
+## Hypothèses
+
+## Validé sur prototype UX
+
+*   TOP\_BAR\_REVISION\_OPEN\_LABEL, RevisionOpenBadge
+
+## Implémentation MVP cible
+
+*   Même règles d’affichage côté UI connectée API
+"
+86c9nc7t1,"## Description métier
+
+Lorsqu’une révision ou working copy contient des changements non publiés, l’utilisateur peut les abandonner pour restaurer le dernier snapshot publié et fermer la révision.
+
+## Périmètre
+
+### Inclus
+
+*   Action Discard changes depuis Versions (icône / tooltip Revert to vX.Y.Z)
+*   Modale de confirmation destructive
+*   Restauration contenu depuis dernier snapshot publié
+*   Fermeture révision (inRevision false)
+*   Publish update indisponible si plus aucun changement
+
+### Exclus
+
+*   Modification d’une version publiée
+*   Restauration historique d’un brouillon abandonné
+*   Undo granulaire champ par champ
+
+## Critères d’acceptation
+
+*   Action visible uniquement si working copy / révision avec snapshot de référence
+*   Cancel ferme sans changement
+*   Discard restaure fundamentals, schema, gouvernance versionnée du snapshot
+*   Versions publiées inchangées dans l’historique
+
+## Cas d’erreur / limites
+
+*   Aucun snapshot publié → Discard non proposé
+
+## Règles de gestion
+
+*   Discard n’affecte que le brouillon non publié
+
+## Validation fonctionnelle
+
+*   UX : modale Discard, annulation, confirmation
+*   MVP : API reset brouillon depuis PublishedVersion
+
+## Hypothèses
+
+## Validé sur prototype UX
+
+*   handleDiscardDraft dans App.tsx
+
+## Implémentation MVP cible
+
+*   Endpoint abandon brouillon + restauration snapshot
+"
+86c9n9a6m,"## Description métier
+
+La section Versions affiche la timeline des publications et, le cas échéant, une carte Working copy en tête (changements non publiés). L’utilisateur compare, abandonne des changements, et consulte audit (MD5, commit) sur le MVP.
+
+## Périmètre
+
+### Inclus
+
+*   Section Versions dédiée (sans onglets Form/YAML du bandeau)
+*   Timeline versions publiées : version, statut Active/Deprecated, date, changelog
+*   Carte Working copy si révision ou brouillon avec changements
+*   Résumé des changements depuis dernière publication (export + gouvernance résumée)
+*   Compare depuis working copy ; Discard changes avec confirmation
+*   Checksum MD5 et commit hash visibles ou accessibles par version (MVP)
+*   État vide si jamais publié
+
+### Exclus
+
+*   Rollback version publiée
+*   Suppression version publiée depuis l’UI
+*   Restauration d’un brouillon abandonné
+*   Time Machine Git complète
+*   Les mécanismes d'exécution GitOps et de synchronisation repository sont détaillés dans les User Stories SP5.
+
+## Critères d’acceptation
+
+*   Première publication visible ; active et deprecated distinguées
+*   Working copy non comptée comme version publiée
+*   Messages : No changes since last version / Revision open - no changes…
+*   Compare par défaut working copy vs dernière active depuis la carte
+*   Discard ouvre modale ; restaure dernier snapshot publié
+*   MD5 et commit hash affichés pour chaque version (MVP backend)
+
+## Cas d’erreur / limites
+
+*   Snapshot manquant sur ancienne entrée → Compare désactivé pour cette ligne
+
+## Règles de gestion
+
+*   Historique append-only ; abandon working copy n’altère pas versions publiées
+
+## Validation fonctionnelle
+
+*   UX : S11, Discard, timeline multi-versions
+*   MVP : affichage MD5/commit depuis API
+
+## Hypothèses
+
+*   Prototype peut afficher hash simulé en attendant données Git production
+
+## Validé sur prototype UX
+
+*   VersionsView, VERSIONS\_EXPORT\_COMPARE\_HINT, working copy card
+
+## Implémentation MVP cible
+
+*   API liste versions + métadonnées audit
+"
+86c9n9a66,"## Description métier
+
+L’utilisateur compare deux snapshots (working copy vs publié, ou deux versions publiées) sur le **contenu exportable ODCS uniquement**. Les changements gouvernance app-only apparaissent dans le changelog / working copy summary, pas dans Compare.
+
+## Périmètre
+
+### Inclus
+
+*   Modale Compare depuis Versions ; défaut working copy vs dernière active
+*   Sélection deux états : working copy et/ou versions publiées
+*   Modes Form et YAML ; lecture seule
+*   Diff Form : metadata, schema, data access, SLA, custom, quality, ref links, relationships
+*   Bandeau export-only explicite
+*   Diff YAML side-by-side
+
+### Exclus
+
+*   Contract owner, governance contacts, collaborators dans Compare
+*   Résumé IA, merge, rollback, édition depuis Compare
+*   Breaking change auto-blocking
+
+## Critères d’acceptation
+
+*   Deux versions publiées comparables
+*   Working copy sélectionnable dans les listes de versions (Compare)
+*   Form et YAML cohérents avec contenu YAML généré
+*   Ajouts/suppressions/modifications visuellement distincts
+*   Compare identique si seule la gouvernance a changé (S11b)
+*   Aucune modification de contrat depuis Compare
+
+## Cas d’erreur / limites
+
+*   Moins de deux snapshots → message Compare not enough versions
+
+## Règles de gestion
+
+*   Compare simple, non bloquant ; export-only
+
+## Validation fonctionnelle
+
+*   UX : S11, S11b, inversion gauche/droite
+*   MVP : service diff backend sur snapshots persistés
+
+## Hypothèses
+
+## Validé sur prototype UX
+
+*   VersionCompareModal + COMPARE\_EXPORT\_ONLY\_NOTE
+
+## Implémentation MVP cible
+
+*   API compare deux PublishedVersion snapshots (+ brouillon courant)
+"
+86c9n9a60,"## Description métier
+
+Chaque publication (première ou mise à jour) enregistre des métadonnées d’audit : version, auteur, changelog, type de changement, snapshot, checksum MD5 du YAML publié, référence commit Git. Validé en UX sur le prototype (simulation) ; cible MVP : persistance backend + Git réel (SP5).
+
+## Périmètre
+
+### Inclus
+
+*   Version publiée, statut final, date, auteur
+*   Titre stable et changelog multiligne (What changed?)
+*   Type Update ou Breaking (choix utilisateur à la publish)
+*   Snapshot du contenu exportable + gouvernance versionnée
+*   Checksum MD5 calculé sur le YAML effectivement écrit dans Git
+*   Commit hash de l’écriture repository
+*   Chemin ou convention fichier YAML ({contractId}\_{version}.yaml)
+*   Immutabilité des métadonnées une fois publiées
+
+### Exclus
+
+*   Journal collaboration temps réel
+*   Signature électronique
+*   Traçabilité de chaque frappe autosave
+
+## Critères d’acceptation
+
+*   Chaque Publish crée un enregistrement de métadonnées consultable dans Versions
+*   Changelog stocké ; défaut auto-généré si vide (première publish ou delta)
+*   MD5 correspond au YAML publié ; hash commit correspond au commit Git
+*   Métadonnées immutables ; conservées après soft delete contrat (audit)
+*   Publication gouvernance seule (YAML inchangé) : métadonnées + note explicite
+
+## Cas d’erreur / limites
+
+*   Échec écriture Git → publication non finalisée (contrat non promu Active)
+
+## Règles de gestion
+
+*   Versions publiées append-only ; métadonnées non modifiables par édition ultérieure
+*   Exécution push Git : voir SP5 — Publish & Gitops
+
+## Validation fonctionnelle
+
+*   UX : changelog first/update, Option B gouvernance
+*   MVP : tests MD5, commit hash, immutabilité, échec Git
+
+## Hypothèses
+
+*   Prototype : hash local simulé ; MVP : vrais MD5 et SHA commit Git
+
+## Validé sur prototype UX
+
+*   gitHistory avec title, changelog, snapshot ; PushToGitModal steps simulés
+
+## Implémentation MVP cible
+
+*   Table PublishedVersion + colonnes audit ; intégration SP5 pour push
+
+## Hors périmètre prototype
+
+*   Connexion repository réelle (détail dans SP5)
+"
+86c9n9a5x,"## Description métier
+
+Un contrat active publié est immuable. L’utilisateur (Publisher ou Contributor) ouvre une révision via New version : copie de travail (working copy) sur la base de la dernière version publiée, sans modifier la publication courante.
+
+## Périmètre
+
+### Inclus
+
+*   Bouton New version sur contrat active (sans révision déjà ouverte)
+*   Badge Revision open : révision en cours (statut lifecycle reste Active)
+*   Version affichée = dernière version publiée jusqu’à Publish update
+*   Contenu éditable = working copy (fondamentals, schema, gouvernance, etc.)
+*   Publish update proposera minor/major (pas à l’ouverture de la révision)
+*   Création brouillon côté backend à l’ouverture de révision (MVP)
+
+### Exclus
+
+*   Modification directe du contrat active sans révision
+*   Écran ou navigation « Draft » séparé obligatoire
+*   Merge collaboratif, approval workflow, rollback publié
+*   Détection automatique breaking changes
+
+## Critères d’acceptation
+
+*   New version disponible sur active pour Publisher et Contributor
+*   Au clic : révision ouverte (Revision open visible) ; active publiée inchangée
+*   La working copy reprend le contenu de la dernière publication
+*   L’utilisateur peut éditer toutes les sections autorisées par son rôle
+*   Reader ne voit pas New version
+*   Un seul brouillon de travail actif par contrat
+
+## Cas d’erreur / limites
+
+*   Tentative d’édition sur active sans révision → lecture seule avec message explicite
+
+## Règles de gestion
+
+*   Toute modification d’un active publié passe par New version puis Publish update
+*   Le choix minor/major est manuel à la publication (MVP)
+
+## Validation fonctionnelle
+
+*   UX : scénario S22 (Revision open badge)
+*   MVP : test API création brouillon depuis version Active
+
+## Hypothèses
+
+*   Le prototype utilise inRevision sur un contrat unique ; le backend peut matérialiser un Draft
+
+## Validé sur prototype UX
+
+*   handleNewVersion → inRevision ; bannière read-only sur active sans révision
+
+## Implémentation MVP cible
+
+*   API POST brouillon depuis version active ; lien version source
+"
+86c9n9a5e,"## Description métier
+
+Avant publication, le panneau Publication readiness agrège obligations ODCS, règles produit et qualité des champs. Publish est bloqué si erreurs ou si aucun changement depuis la dernière version. Validation serveur répliquée au publish (MVP).
+
+## Périmètre
+
+### Inclus
+
+*   Panneau readiness sur onglet Form (hors Versions, Import)
+*   Score 70 % requis / 25 % qualité champs / 5 % suggestions
+*   Navigation vers champs manquants
+*   Publish / Publish update désactivé si erreurs bloquantes
+*   Message si aucun changement depuis dernière publication
+*   Validation ODCS v3.1.0 + règles produit (name, owner, schema, FK, SLA, etc.)
+*   Contract quality (post-publish) sans blocage
+
+### Exclus
+
+*   Policies Zeenea, SEMQL, approval workflow
+*   Détection breaking change automatique
+
+## Critères d’acceptation
+
+*   Publish grisé + raison si champ obligatoire manquant
+*   Erreurs visibles par section après tentative publish
+*   apiVersion v3.1.0, kind DataContract, id, schema minimal respectés côté validation
+*   No changes to publish si snapshot identique export + gouvernance
+*   Backend rejette publish invalide même si UI contournée
+
+## Cas d’erreur / limites
+
+*   Contrat proposed : publish bloqué jusqu’à Start drafting
+*   Type unknown, FK incomplète : messages utilisateur mappés
+
+## Règles de gestion
+
+*   Quality rules text-only ne bloquent pas ; PII sans contact = avertissement
+
+## Validation fonctionnelle
+
+*   UX : scénarios readiness doc §9 et §15
+*   MVP : tests contractValidation + API publish 422
+
+## Hypothèses
+
+## Validé sur prototype UX
+
+*   computePublicationReadiness, ReadinessPanel, hasAnyChangeSinceLastPublish
+
+## Implémentation MVP cible
+
+*   validateContract côté API ; même règles que prototype
+"
+86c9n9a55,"## Description métier
+
+En édition (draft ou révision), les changements sont persistés automatiquement sans action Save draft et sans publication. Le MVP backend assure la persistance ; le prototype valide le parcours UX (autosave perçu, notes gouvernance).
+
+## Périmètre
+
+### Inclus
+
+*   Persistance automatique des champs éditables (draft / révision)
+*   Notes autosave sur sections gouvernance (contacts, data access, SLA, custom)
+*   Mise à jour updatedAt
+*   Aucune création de version publiée ni écriture Git par autosave
+*   Pas d’autosave sur active publié sans révision ni sur deprecated/retired
+
+### Exclus
+
+*   Bouton Save draft P0 (US annulée 86c9n9a52)
+*   Collaboration temps réel et résolution conflits multi-utilisateurs
+*   Indicateur global saving/saved/error (hors scope MVP initial sauf spec ultérieure)
+*   Commit Git automatique
+
+## Critères d’acceptation
+
+*   Modification en contexte éditable → persistance sans clic Save
+*   Rechargement : données retrouvées
+*   Erreur persistance signalée à l’utilisateur (MVP backend)
+*   Aucune entrée gitHistory créée par autosave
+
+## Cas d’erreur / limites
+
+*   Échec API autosave → message erreur ; données précédentes conservées
+*   Quota / indisponibilité → comportement documenté
+
+## Règles de gestion
+
+*   Autosave ne remplace pas Publish ; Git uniquement à la publication (SP5)
+
+## Validation fonctionnelle
+
+*   UX : édition gouvernance + rechargement prototype
+*   MVP : tests API PATCH brouillon, pas de publish implicite
+
+## Hypothèses
+
+*   Prototype : persistance immédiate localStorage ; MVP : API debounce ou on-blur
+
+## Validé sur prototype UX
+
+*   updateContract + GovernanceSectionMeta autosave notes
+
+## Implémentation MVP cible
+
+*   Endpoints persistance brouillon ; stratégie debounce documentée
+
+## Hors périmètre prototype
+
+*   Conflits multi-utilisateur — backlog ultérieur
+"
+86c9n9a4t,"## Description métier
+
+Le MVP doit formaliser la distinction entre (1) un contrat publié immuable, (2) une copie de travail non publiée (working copy / révision ouverte), et (3) l’historique des publications. Ce modèle logique guide l’UI et les règles métier, indépendamment du détail d’implémentation backend.
+
+## Périmètre
+
+### Inclus
+
+*   Statuts lifecycle : proposed, draft, active, deprecated, retired
+*   Révision ouverte sur contrat active (working copy) sans statut lifecycle « revision »
+*   Une seule version active publiée à la fois ; historique append-only
+*   Snapshot logique du contenu exportable + gouvernance versionnée à chaque publication
+*   Séparation : contenu YAML exportable vs gouvernance app-only (owner, contacts)
+*   Brouillon non publié ≠ version officielle dans l’historique
+
+### Exclus
+
+*   Entité Draft comme écran ou navigation séparée obligatoire
+*   Bouton Save draft comme action P0
+*   Collaboration temps réel
+*   Approval workflow
+
+## Critères d’acceptation
+
+*   Le parcours documente working copy, révision ouverte et versions publiées
+*   Une publication ne crée une version officielle que via Publish (simulé ou réel)
+*   Compare et changelog respectent la séparation export vs gouvernance
+*   Le modèle logique est documenté dans la doc produit MVP
+
+## Cas d’erreur / limites
+
+*   Confusion entre statut lifecycle active et révision ouverte
+*   Afficher la working copy comme version publiée dans la timeline
+
+## Règles de gestion
+
+*   Toute évolution d’un contrat active publié passe par New version puis Publish update
+*   Les versions publiées ne sont jamais modifiées in place
+
+## Validation fonctionnelle
+
+*   Revue produit avec scénarios S11, S11b, S22 (doc QA)
+*   Alignement libellés UI : Working copy, Revision open, Discard changes
+
+## Hypothèses
+
+*   Le backend matérialisera Draft/PublishedVersion ; l’UI peut projeter sur un contrat courant
+
+## Validé sur prototype UX
+
+*   inRevision + badge Revision open ; working copy en tête de Versions
+*   Compare export-only ; changelog publish avec gouvernance
+
+## Implémentation MVP cible
+
+*   Documentation produit et critères d’acceptation transverses SP4
+*   Cohérence avec entités backend (voir US CREATE modèle persistance)
+
+## Hors périmètre prototype
+
+*   Persistance SQL, APIs REST, structure tables — US technique dédiée
+"
+86c9nc596,"## Description métier
+
+L’utilisateur voit un feedback clair pendant Publish et Publish update : étapes, succès, erreur Git. Contrat UX transversal ; les détails fonctionnels des parcours sont dans 5u et 5z.
+
+## Périmètre
+
+### Inclus
+
+*   Modale ou panneau de progression commun Publish / Publish update
+*   Étapes : préparation changements, validation contrat/YAML, écriture repository, MD5, succès
+*   État erreur compréhensible (dont Git)
+*   Conservation du brouillon / révision si échec
+*   Cohérence libellés avec doc produit
+
+### Exclus
+
+*   Workflow d’approbation
+*   Logs techniques bruts pour utilisateur final
+*   Retry automatique avancé
+*   Publication async longue + notifications externes
+*   PR workflow Git
+
+## Critères d’acceptation
+
+*   Ouverture progression au clic Publish / Publish update
+*   Utilisateur voit chaque étape nommée (prep, validation, Git, checksum)
+*   Succès explicite en fin de parcours
+*   Erreur Git : message clair, pas Active
+*   Échec : working copy / brouillon non perdu
+
+## Cas d’erreur / limites
+
+*   Timeout repository → message + pas Active
+
+## Règles de gestion
+
+*   Même composant progression pour première publish et update
+*   Ne pas afficher succès avant fin pipeline backend
+
+## Validation fonctionnelle
+
+*   UX : étapes proto (3) vs cible MVP (5) documentées
+*   MVP : tests E2E affichage états
+
+## Hypothèses
+
+*   Retry manuel acceptable MVP ; retry auto ultérieur
+
+## Validé sur prototype UX
+
+*   PushToGitModal phases loading : Preparing, Updating version, Saving
+*   Pas d’étapes séparées validation/Git/MD5 au prototype
+
+## Implémentation MVP cible
+
+*   States machine publish exposée à l’UI
+*   Brancher sur événements 5b, 5p, 5n
+
+## Hors périmètre prototype
+
+*   Écriture Git réelle et calcul MD5
+
+## Liens SP4 — Versioning (ne pas réimplémenter ici)
+
+*   Parcours publish — 86c9n9a5u (première), 86c9n9a5z (update)
+*   Détail push — 86c9n9a5p
+"
+86c9n9a5z,"## Description métier
+
+Depuis une révision ouverte (working copy), le Publisher documente les changements, choisit Update ou Breaking, confirme la publication. Le système génère le YAML, pousse Git, MD5, active la nouvelle version et déprécie l’ancienne Active.
+
+## Périmètre
+
+### Inclus
+
+*   Bouton Publish update
+*   Modale Publish new version (nom, version cible, champs)
+*   Champ What changed? / changelog
+*   Choix Update (minor) ou Breaking (major)
+*   CTA dynamique Publish vX.Y.Z
+*   Validation publishable + génération YAML
+*   Git + MD5 + métadonnées
+*   Ancienne Active → Deprecated automatiquement
+*   Support publication gouvernance seule (Option B) si produit validé
+
+### Exclus
+
+*   Détection auto bloquante breaking changes
+*   Approval workflow
+*   AI diff summary
+*   Rollback version publiée depuis UI
+*   Publication sans Git
+*   New version / Discard (SP4)
+
+## Critères d’acceptation
+
+*   Publish update ouvre modale avec résumé contrat et version cible
+*   Commentaire éditable ; défaut auto-généré si vide
+*   Bump minor ou major selon choix
+*   Blocage si aucun changement depuis dernière publication (SP4)
+*   Option B : publish autorisé si seule gouvernance a changé (SP4)
+*   Succès → nouvelle Active + deprecated précédente
+
+## Cas d’erreur / limites
+
+*   No changes → publish indisponible (SP4)
+*   Git fail → révision conservée
+
+## Règles de gestion
+
+*   SemVer appliqué à la confirmation publish, pas à New version
+*   Changelog persisté avec la version
+
+## Validation fonctionnelle
+
+*   UX : bump cards, PUBLISH\_GOVERNANCE\_ONLY\_NOTE, summarizeChangesSince
+*   MVP : API publish-update + deprecated auto
+
+## Liens / dépendances SP5
+
+*   Le détail des étapes visuelles de progression, des états intermédiaires et des messages d’erreur de la modale de publication est porté par l’US `86c9nc596`.
+
+## Hypothèses
+
+*   Breaking = major bump uniquement via choix utilisateur
+
+## Validé sur prototype UX
+
+*   PushToGitModal bump minor/major, buildDefaultPublishChangelog
+*   publishChangeKind governance\_only
+
+## Implémentation MVP cible
+
+*   API publish-update avec type bump + changelog
+*   Intégration 5p, 5n, règles deprecated
+
+## Hors périmètre prototype
+
+*   Push Git réel
+
+## Liens SP4 — Versioning (ne pas réimplémenter ici)
+
+*   86c9n9a5e — Publication readiness (panneau, score, navigation champs)
+*   CREATE SP4 — No changes to publish (blocage sans delta)
+*   CREATE SP4 — Publish gouvernance seule (Option B, YAML inchangé)
+*   New version — 86c9n9a5x
+"
+86c9n9a5u,"## Description métier
+
+Depuis un contrat éditable (draft ou proposed après Start drafting), le Publisher publie la première version : validation, YAML, Git, MD5, passage Active v1.0.0, verrouillage. Le prototype valide la modale et le parcours ; le MVP exécute Git et persistance réels.
+
+## Périmètre
+
+### Inclus
+
+*   Bouton Publish (première publication)
+*   Ouverture modale / panneau publish (voir aussi nc596 pour étapes)
+*   Validation publishable (readiness SP4 + 5b)
+*   Génération YAML ODCS
+*   Orchestration : validation → Git (5p) → MD5 (5n) → Active
+*   Version v1.0.0 sans choix minor/major
+*   Verrouillage après succès
+*   Feedback succès / erreur
+
+### Exclus
+
+*   Choix minor/major (réservé publish update — 5z)
+*   Approval workflow
+*   Publication sans Git
+*   Publication si validation échoue
+*   Readiness panel (SP4 5e)
+*   Blocage no-changes (première publish — SP4 CREATE si applicable)
+
+## Critères d’acceptation
+
+*   Publish visible si Publisher + contrat publiable (SP4 readiness)
+*   Première version = v1.0.0 affichée après succès
+*   Étapes visibles : préparation, validation, repository, succès (nc596)
+*   Échec Git ou validation → pas Active, brouillon conservé
+*   Succès → contrat Active verrouillé + entrée historique
+
+## Cas d’erreur / limites
+
+*   Validation bloquante → modale ou message, pas de Git
+*   Git down → message explicite, draft intact
+
+## Règles de gestion
+
+*   Publisher seul (rôle owner prototype)
+*   Pipeline publish atomique
+
+## Validation fonctionnelle
+
+*   UX : PushToGitModal première publication, seedContracts
+*   MVP : E2E publish draft → Git + MD5 + active
+
+## Hypothèses
+
+*   Progression async courte acceptable MVP
+
+## Validé sur prototype UX
+
+*   PushToGitModal isFirstPublish, pas de bump minor/major
+*   validateContract + hasAnyChangeSinceLastPublish (hors 1ère publish)
+*   PUBLISH\_MODAL\_SUBTITLE, étapes simulées 3 phases
+
+## Implémentation MVP cible
+
+*   API POST publish-first-version
+*   Appel enchaîné 5b → 5p → 5n
+
+## Hors périmètre prototype
+
+*   Git réel, MD5 réel, commit SHA production
+
+## Liens SP4 — Versioning (ne pas réimplémenter ici)
+
+*   86c9n9a5e — Publication readiness (panneau, score, navigation champs)
+*   CREATE SP4 — No changes to publish (blocage sans delta)
+*   86c9n9a6m — Section Versions (timeline, affichage audit)
+"
+86c9n9a5n,"## Description métier
+
+À chaque publication réussie, le système calcule un MD5 sur le YAML **effectivement écrit dans Git**, puis stocke ce checksum avec la version publiée. Complète SP4 (affichage / métadonnées) par le calcul sur l’artefact réel.
+
+## Périmètre
+
+### Inclus
+
+*   Calcul MD5 sur le contenu YAML publié dans Git
+*   Stockage immuable lié contrat + version
+*   Nouveau checksum à chaque publication
+*   Échec calcul → publish échoue (pas Active)
+*   Exposition pour historique / audit (consommée par SP4 Versions)
+
+### Exclus
+
+*   Signature électronique
+*   API /verify publique complète
+*   Algorithmes multiples / rotation
+
+## Critères d’acceptation
+
+*   Première publication et update génèrent un checksum distinct
+*   Checksum calculé sur le YAML réellement commité, pas sur un brouillon
+*   Checksum publié non modifiable après coup
+*   Échec MD5 empêche passage Active
+*   Valeur visible dans l’historique (via SP4 6m / 60)
+
+## Cas d’erreur / limites
+
+*   Git OK mais MD5 fail → rollback publish, brouillon conservé
+
+## Règles de gestion
+
+*   MD5 obligatoire dès la première activation
+*   Pas de checksum valide si Git a échoué (5p)
+
+## Validation fonctionnelle
+
+*   Tests publish OK, payload identique, échec calcul
+
+## Hypothèses
+
+*   MD5 suffit pour intégrité MVP ; SHA256 ultérieur si besoin
+
+## Validé sur prototype UX
+
+*   Hash simulé dans gitHistory au prototype — pas de MD5 sur artefact Git réel
+
+## Implémentation MVP cible
+
+*   Service checksum post-commit Git
+*   Persistance liée PublishedVersion / métadonnées 60
+
+## Hors périmètre prototype
+
+*   Affichage UI timeline — SP4 86c9n9a6m
+
+## Liens SP4 — Versioning (ne pas réimplémenter ici)
+
+*   86c9n9a60 — Métadonnées de publication (stockage, affichage MD5/commit)
+*   86c9n9a6m — Section Versions (timeline, affichage audit)
+"
+86c9n9a5p,"## Description métier
+
+Lors d’un Publish réussi côté métier, le système écrit le fichier YAML ODCS dans Git, crée un commit, stocke le hash. Si Git échoue, le contrat ne devient pas Active. Cœur GitOps du MVP.
+
+## Périmètre
+
+### Inclus
+
+*   Écriture fichier YAML selon convention 5h
+*   Création commit avec message explicite (contrat, version)
+*   Stockage commit hash côté application
+*   Gestion erreurs Git (repo down, conflit, permission)
+*   Rollback applicatif : pas Active, brouillon conservé
+*   Première publication et publish update
+
+### Exclus
+
+*   PR review / merge workflow
+*   Tags Git par version
+*   Sync bidirectionnelle / import depuis Git
+*   Écriture Git sur autosave
+
+## Critères d’acceptation
+
+*   Publish valide → fichier présent dans Git + commit
+*   Commit hash persisté et lié à la version
+*   Erreur Git → pas Active, message utilisateur
+*   Aucun checksum finalisé si Git échoue (5n)
+*   Message commit contient identifiant contrat et version
+
+## Cas d’erreur / limites
+
+*   Repo indisponible, conflit, erreur écriture — cas testés
+
+## Règles de gestion
+
+*   Git uniquement à la publication, pas au Save draft / autosave
+*   Orchestration après validation YAML (5b)
+
+## Validation fonctionnelle
+
+*   Intégration repository, échec Git, pas de régression Active
+
+## Hypothèses
+
+*   Credentials Git gérés hors UI (SP6 / infra)
+
+## Validé sur prototype UX
+
+*   randomHash() simulé — PUBLISH\_EXTERNAL\_SYNC\_NOTE
+*   PushToGitModal : étapes Preparing / Saving sans appel Git
+
+## Implémentation MVP cible
+
+*   Client Git / API repository réel
+*   Transaction publish : validate → git push → md5 → active
+
+## Hors périmètre prototype
+
+*   Modale formulaire changelog — SP5 5u / 5z
+*   Détail étapes UX — SP5 nc596
+
+## Liens SP4 — Versioning (ne pas réimplémenter ici)
+
+*   86c9n9a55 — Autosave (pas d’écriture Git hors publish)
+*   86c9n9a6m — Section Versions (timeline, affichage audit)
+*   Commit hash affiché — alimenté par cette US
+"
+86c9n9a5h,"## Description métier
+
+Le MVP définit où et comment chaque YAML publié est stocké dans le dépôt Git : repo cible, chemins, nommage déterministe, stratégie de branche minimale. Prérequis à l’écriture réelle (5p).
+
+## Périmètre
+
+### Inclus
+
+*   Repo cible configurable
+*   Convention de dossiers et nommage fichier déterministe
+*   Plusieurs contrats et plusieurs versions par contrat
+*   Stratégie de branche par défaut documentée
+*   Gestion des conflits de nom / chemin
+*   Documentation technique pour équipes data / platform
+
+### Exclus
+
+*   Multi-repo complexe
+*   Branches par client avancées
+*   Tags Git par fichier
+*   PR workflow complet
+*   CI/CD complet
+
+## Critères d’acceptation
+
+*   Convention de chemin documentée et appliquée par 5p
+*   Deux contrats ne collisionnent pas
+*   Versions successives d’un contrat retrouvables dans Git
+*   Erreurs de conflit prévues et testées
+
+## Cas d’erreur / limites
+
+*   Chemin existant avec contenu incompatible → erreur explicite
+
+## Règles de gestion
+
+*   Git = source d’audit des artefacts YAML publiés
+*   L’app édite le brouillon ; Git ne reçoit que les publish
+
+## Validation fonctionnelle
+
+*   Revue technique convention
+*   Tests multi-contrats / multi-versions / conflit
+
+## Hypothèses
+
+*   Un repo unique MVP suffit pour la vague courante
+
+## Validé sur prototype UX
+
+*   Aucune convention Git réelle au prototype — message PUBLISH\_EXTERNAL\_SYNC\_NOTE
+
+## Implémentation MVP cible
+
+*   Spécification repo + implémentation utilisée par le service push 5p
+*   Configuration environnement (URL, credentials hors scope US si SP6)
+
+## Hors périmètre prototype
+
+*   Push commit — US 86c9n9a5p
+
+## Liens SP4 — Versioning (ne pas réimplémenter ici)
+
+*   86c9n9a60 — Métadonnées de publication (stockage, affichage MD5/commit)
+*   Chemins cohérents avec métadonnées version stockées en base
+"
+86c9n9a5b,"## Description métier
+
+Avant toute publication, le système valide le payload YAML ODCS généré (convention P1, champs requis, schema) et bloque la suite si invalide. La validation UX du prototype existe ; le MVP exige le même contrôle côté API avant écriture Git.
+
+## Périmètre
+
+### Inclus
+
+*   Validation du YAML généré à partir du contrat courant
+*   Contrôle des champs fondamentaux et du schema requis pour publish
+*   Messages d’erreur exploitables pour l’utilisateur
+*   Blocage de publication et d’écriture Git si invalide
+*   Même règles pour première publication et publish update
+*   Tests automatisés API / service de validation
+
+### Exclus
+
+*   Policies Zeenea avancées
+*   Validation de règles qualité exécutables hors P1 publish
+*   Approval workflow
+*   Correction automatique IA
+
+## Critères d’acceptation
+
+*   La validation s’exécute avant Publish / Publish update côté backend
+*   Un YAML invalide empêche l’écriture Git et le passage Active
+*   Les erreurs sont remontées à l’UI (readiness / modale publish)
+*   Un YAML valide autorise la suite du pipeline publish (SP5 5p, 5n)
+*   Tests : YAML valide, champs manquants, schema vide, sérialisation
+
+## Cas d’erreur / limites
+
+*   Échec sérialisation → message utilisateur, pas de commit Git
+*   Contrat publiable côté UI mais rejet API → message cohérent
+
+## Règles de gestion
+
+*   Jamais Active si le YAML ODCS généré est invalide
+*   Alignement avec validateContract / règles publish du prototype
+
+## Validation fonctionnelle
+
+*   UX : validateContract + messages publishBlockUserMessage
+*   MVP : tests API rejet publish + pas d’appel Git
+
+## Hypothèses
+
+*   Les règles P1 publish restent la source de vérité métier
+
+## Validé sur prototype UX
+
+*   validateContract dans contractValidation.ts avant ouverture publish
+*   PushToGitModal bloque si !canPublish
+
+## Implémentation MVP cible
+
+*   Endpoint ou service backend validate-before-publish
+*   Réponse structurée (codes) consommée par readiness SP4 et modale SP5
+
+## Hors périmètre prototype
+
+*   Connexion repository — exécution dans 86c9n9a5p
+
+## Liens SP4 — Versioning (ne pas réimplémenter ici)
+
+*   86c9n9a5e — Publication readiness (panneau, score, navigation champs)
+*   Readiness bloque Publish en UI — complémentaire, pas doublon
+"
+86c9n9a6u,"## Description métier
+
+Livrer l’application DCB en conteneur prêt pour déploiement Kubernetes : build reproductible, configuration runtime externalisée (auth Zeenea, endpoints Git). **DevOps / delivery** — pas RBAC contrat ni logique publish.
+
+## Périmètre
+
+### Inclus
+
+*   Dockerfile ou équivalent build reproductible
+*   Configuration runtime via variables d’environnement
+*   Variables auth Zeenea (issuer, client, redirect URIs) injectées — pas en dur
+*   Variables Git/repo (URL, chemins) injectées — secrets hors image
+*   Healthcheck HTTP simple
+*   Documentation lancement local + cible K8s minimale
+*   Préparation déploiement Kubernetes (manifeste ou notes — Helm complet optionnel)
+
+### Exclus
+
+*   RBAC contrat, collaborateurs, publish — produit SP1–SP5
+*   Helm chart production complet si non demandé PO
+*   Observabilité avancée, autoscaling, multi-tenant
+*   CI/CD pipeline production complet
+*   Secrets Git ou auth embarqués dans l’image
+
+## Critères d’acceptation
+
+*   Build conteneur OK en CI/local
+*   Conteneur démarre avec config env exemple (sans secrets)
+*   Healthcheck répond sur endpoint documenté
+*   Auth et Git configurables par env — pas hardcodés
+*   Documentation : build, run, variables requises
+*   Aucun secret dans l’image ou le repo livré
+
+## Cas d’erreur / limites
+
+*   Config manquante → fail fast au démarrage avec message clair
+*   Healthcheck KO → orchestrateur peut redémarrer
+
+## Règles de gestion
+
+*   Tag delivery — ne pas reclasser en auth
+*   Credentials Git opérationnels → **SP5** ; SP6 = injection config seulement
+
+## Validation fonctionnelle
+
+*   Tests : build image, run avec .env exemple, healthcheck, pas de secret dans layers
+*   Ne pas valider publish/schema dans cette US
+
+## Hypothèses
+
+*   Un environnement K8s cible Zeenea documenté
+
+## Validé sur prototype UX
+
+*   Pas de packaging conteneur au prototype (Vite dev local)
+
+## Implémentation MVP cible
+
+*   Image Docker MVP + doc déploiement
+*   ConfigMap/Secret K8s pour auth + Git (références SP6 login + SP5 push)
+
+## Hors périmètre prototype
+
+*   Cluster K8s production Zeenea
+
+## Liens SP1 — Interfaces (REPORT — ne pas réimplémenter ici)
+
+*   Runtime frontend/backend DCB — pas logique registry
+
+## Liens SP5 — Publish & GitOps (REPORT)
+
+*   SP5 — Publish, Git push, credentials (86c9n9a5p, 5h)
+*   Credentials et push Git — SP5 ; injection URL/credentials via env
+"
+86c9n9a41,"## Description métier
+
+L’utilisateur connecté termine sa session plateforme et revient à l’état non authentifié. Logout = **auth plateforme uniquement** ; aucune modification des contrats, collaborateurs ou lifecycle.
+
+## Périmètre
+
+### Inclus
+
+*   Action Logout visible une fois authentifié
+*   Invalidation session applicative
+*   Délégation logout provider Zeenea (OIDC end\_session si applicable)
+*   Redirection login ou page Zeenea prévue
+*   Routes internes inaccessibles après logout
+
+### Exclus
+
+*   Modification données contrat (localStorage / base)
+*   Révocation droits collaborateurs par contrat
+*   Publish / lifecycle / schema — **SP4** / **SP2**
+*   Multi-session avancée, audit connexions détaillé
+
+## Critères d’acceptation
+
+*   Clic Logout → session terminée côté app + provider si requis
+*   Après logout → redirect écran auth
+*   URL interne protégée → redirect login
+*   Aucune donnée contrat modifiée par logout
+*   Collaborateurs et statuts contrats inchangés en base
+
+## Cas d’erreur / limites
+
+*   Provider logout partiel → session app quand même invalidée
+
+## Règles de gestion
+
+*   Logout ne déclenche pas publish, discard, ni autosave
+*   Distinction session plateforme vs permissions contrat (SP1–SP5)
+
+## Validation fonctionnelle
+
+*   Tests SP6 : logout depuis app, accès route après logout, données contrat intactes
+*   Ne pas tester publish/schema/readiness dans cette US
+
+## Hypothèses
+
+*   Provider Zeenea expose endpoint logout standard
+
+## Validé sur prototype UX
+
+*   Pas de logout UI au prototype
+
+## Implémentation MVP cible
+
+*   Bouton Logout + invalidation cookie/token
+*   Intégration end\_session Zeenea
+
+## Hors périmètre prototype
+
+*   Logout réel provider
+
+## Liens SP1 — Interfaces (REPORT — ne pas réimplémenter ici)
+
+*   SP1 — Collaborateurs / Share / Fundamentals (Publisher, Contributor, Reader)
+*   Share UI inchangée par logout
+
+## Liens SP4 — Versioning (REPORT)
+
+*   SP4 — Lifecycle, Revision open, Discard, immutabilité
+*   Revision open / WC non affectés par logout seul
+"
+86c9n9a3q,"## Description métier
+
+L’utilisateur accède au Data Contract Studio via le framework d’authentification Zeenea. Cette US couvre **uniquement l’auth plateforme** : identité, session, protection des routes. Les permissions **par contrat** (Publisher / Contributor / Reader, publish, lifecycle) sont déjà modélisées dans le produit et portées par **SP1–SP5** — pas par SP6.
+
+## Périmètre
+
+### Inclus
+
+*   Page ou redirection de login Zeenea
+*   Flux SSO / OIDC Zeenea (selon documentation plateforme)
+*   Récupération identité session (id, email, name minimum)
+*   Route guards globaux — routes internes inaccessibles sans session valide
+*   Redirection vers registry / liste contrats après login réussi
+*   Mapping identité session → résolution utilisateur pour collaborateurs (consommation SP1)
+*   Fallback dev/local documenté (prototype uniquement)
+
+### Exclus
+
+*   Création de compte ou mot de passe oublié (Zeenea)
+*   RBAC contrat : Owner / Contributor / Viewer — **SP1** Share + Fundamentals
+*   Publish, New version, Deprecate, Retire — **SP4** + rôle owner **SP5**
+*   Schema editability, locks, quality rules — **SP2** / **SP4**
+*   Readiness panel, validation publish métier — **SP4** / **SP5**
+*   DDL import, parser — **SP3**
+*   Git push, credentials, MD5 — **SP5**
+*   Enterprise admin / tenant provisioning (hors export actuel)
+*   Équivalence « utilisateur authentifié = Owner » ou « login = publish »
+
+## Critères d’acceptation
+
+*   Utilisateur non authentifié → redirect login ; routes internes bloquées
+*   Utilisateur authentifié → accès app ; identité disponible (id + email ou name)
+*   Échec auth → message compréhensible ; pas d’accès routes protégées
+*   Après login → registry accessible (filtrage scope utilisateur = **SP1**/backend si applicable)
+*   Session expiration / refresh gérés par provider Zeenea
+*   Aucun changement aux droits collaborateurs existants sur un contrat
+
+## Cas d’erreur / limites
+
+*   Provider indisponible → message + pas d’accès app
+*   Session expirée → redirect login sans perte données contrat localStorage proto
+
+## Règles de gestion
+
+*   Auth déléguée à Zeenea — SP6 ne redéfinit pas le modèle collaborateurs
+*   canPublish et isViewer restent côté produit (App.tsx) — REPORT SP4/SP5
+*   Registry filtré par utilisateur → REPORT SP1 CREATE-2, pas règle SP6 seule
+
+## Validation fonctionnelle
+
+*   Tests SP6 : non auth, login OK, login KO, route protégée, expiration session
+*   **Ne pas** rejouer publish / lifecycle / schema / Share comme tests SP6
+
+## Hypothèses
+
+*   Documentation Zeenea auth fournie avant implémentation MVP
+*   Un seul tenant MVP suffit pour la vague courante
+
+## Validé sur prototype UX
+
+*   Pas de login UI — accès direct app
+*   CURRENT\_USER stub (src/lib/currentUser.ts) — identité fixe démo uniquement
+*   getMyRole / canPublish / isViewer via collaborators\[\] — modèle complet prototype
+
+## Implémentation MVP cible
+
+*   Intégration IdP Zeenea + session applicative
+*   Middleware ou guards backend + frontend sur routes DCB
+*   Identité exposée aux services SP1 (registry) et mapping collaborateurs
+
+## Hors périmètre prototype
+
+*   SSO Zeenea réel
+*   Invalidation session provider
+*   Filtrage registry backend par utilisateur
+
+## Liens SP1 — Interfaces (REPORT — ne pas réimplémenter ici)
+
+*   SP1 — Collaborateurs / Share / Fundamentals (Publisher, Contributor, Reader)
+*   86c9n9a3w — Registry (filtrage utilisateur — SP1 CREATE alignement)
+*   Contract owner Fundamentals — distinct Publisher collaborateur
+
+## Liens SP2 — Editor & Lifecycle (REPORT)
+
+*   SP2 — Schema editability / locks UX (CREATE fj, lifecycle locks)
+*   isContractLocked + isViewer — pas contrôle SSO
+
+## Liens SP3 — DDL Import (REPORT)
+
+*   86c9n9a44 — Import DDL (SP3)
+*   Import proposed — lifecycle, pas auth upload
+
+## Liens SP4 — Versioning (REPORT)
+
+*   SP4 — Lifecycle, Revision open, Discard, immutabilité
+*   86c9n9a5e — Readiness panel (SP4)
+*   SP4/SP5 — canPublish = validation + myRole === owner
+
+## Liens SP5 — Publish & GitOps (REPORT)
+
+*   SP5 — Publish, Git push, credentials (86c9n9a5p, 5h)
+*   Publish exécution — owner only
+"

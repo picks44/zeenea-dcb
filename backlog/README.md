@@ -136,3 +136,20 @@
 | `86c9n9a4t`, `86c9n9a55`, `86c9n9a5e`, `86c9n9a60` | Tags / priorité (SP4) |
 
 **Manuel post-import :** commentaire REPORT `86c9nw8d4` (SP2 → SP4) · QA SP1 sur CREATE `[Alignement]`.
+
+
+## Global Markdown formatting cleanup
+
+**Objectif :** corriger le rendu ClickUp en important le corps via **`markdown_content`** (pas `description` seul).
+
+**Regénérer :** `python3 backlog/scripts/generate_global_markdown_cleanup.py`
+
+### Import
+
+1. [output/global-cross-sp-markdown-content-update.csv](output/global-cross-sp-markdown-content-update.csv) — colonnes `id`, `markdown_content` uniquement
+2. [docs/global-cross-sp-markdown-formatting-mapping.md](docs/global-cross-sp-markdown-formatting-mapping.md)
+3. [docs/global-cross-sp-markdown-pre-import-audit.md](docs/global-cross-sp-markdown-pre-import-audit.md)
+
+**Mapper :** `id` → tâche · `markdown_content` → Markdown (prioritaire).
+
+**Post-import :** contrôle visuel 5 échantillons (SP1 CREATE, SP2, SP3, SP4, SP6).
