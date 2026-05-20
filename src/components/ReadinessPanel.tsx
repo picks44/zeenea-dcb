@@ -39,6 +39,10 @@ interface ReadinessPanelProps {
   docCompact?: boolean
 }
 
+/** Section titles and secondary notes in the readiness panel. */
+const panelSectionTitleClass = 'text-xs font-medium text-neutral-400'
+const panelNoteClass = 'text-xs text-neutral-400 leading-snug'
+
 function SectionHeaderWithScore({
   title,
   earned,
@@ -57,15 +61,15 @@ function SectionHeaderWithScore({
       <span
         className={cn(
           'text-xs font-semibold uppercase tracking-wide',
-          tone === 'required' && 'text-neutral-500',
-          tone === 'recommended' && 'text-neutral-300 font-medium normal-case tracking-normal',
+          tone === 'required' && 'text-neutral-400 font-medium normal-case tracking-normal',
+          tone === 'recommended' && 'text-neutral-400 font-medium normal-case tracking-normal',
           tone === 'default' && 'text-neutral-400 font-medium normal-case tracking-normal',
         )}
       >
         {title}
       </span>
       {showFraction ? (
-        <span className="text-xs font-medium tabular-nums text-neutral-300 flex-shrink-0 leading-none">
+        <span className="text-xs font-medium tabular-nums text-neutral-400 flex-shrink-0 leading-none">
           {earned} / {max}
         </span>
       ) : null}
@@ -119,7 +123,7 @@ function CheckRow({
         {label}
       </span>
       {badge ? (
-        <span className="text-xs font-medium text-neutral-300 tabular-nums flex-shrink-0 leading-none">
+        <span className="text-xs font-medium text-neutral-400 tabular-nums flex-shrink-0 leading-none">
           {badge}
         </span>
       ) : (
@@ -238,11 +242,11 @@ export function ReadinessPanel({
           <div className="flex items-center gap-1 flex-shrink-0">
             {!isPublishedView ? (
               <span
-                className="text-[11px] font-semibold tabular-nums text-neutral-400 cursor-default"
+                className={cn(panelNoteClass, 'font-semibold tabular-nums cursor-default')}
                 title={READINESS_SCORE_TOOLTIP}
               >
                 {healthScore}
-                <span className="text-neutral-300 font-medium"> / 100</span>
+                <span className="font-medium"> / 100</span>
               </span>
             ) : null}
             {layout === 'overlay' && onClose ? (
@@ -269,12 +273,12 @@ export function ReadinessPanel({
           {isPublishedView ? (
             <>
               <CheckCircle2 className="h-3 w-3 text-neutral-400 flex-shrink-0" />
-              <span className="text-[11px] text-neutral-400 font-medium leading-snug">
+              <span className={cn(panelNoteClass, 'font-medium')}>
                 {PUBLISHED_READ_ONLY_STATUS}
               </span>
             </>
           ) : publishStatus.ready ? (
-            <span className="text-[11px] text-green-700 font-medium leading-snug">
+            <span className={cn(panelNoteClass, 'text-green-700 font-medium')}>
               {publishStatus.message}
             </span>
           ) : (
@@ -287,8 +291,9 @@ export function ReadinessPanel({
               />
               <span
                 className={cn(
-                  'text-[11px] line-clamp-2',
-                  publishAttempted ? 'text-orange-800 font-medium' : 'text-neutral-400',
+                  panelNoteClass,
+                  'line-clamp-2',
+                  publishAttempted && 'text-orange-800 font-medium',
                 )}
                 title={publishStatus.message}
               >
@@ -332,10 +337,11 @@ export function ReadinessPanel({
             <>
               <div>
               <div className="flex items-center justify-between gap-2 mb-1">
-                <span className="text-sm text-neutral-500">Documented fields</span>
+                <span className={panelSectionTitleClass}>Documented fields</span>
                 <span className={cn(
-                  'text-xs font-medium tabular-nums text-right leading-snug',
-                  descCoverage === 1 ? 'text-green-700' : descCoverage >= 0.5 ? 'text-neutral-400' : 'text-neutral-300',
+                  panelSectionTitleClass,
+                  'tabular-nums text-right leading-snug',
+                  descCoverage === 1 && 'text-green-700',
                 )}>
                   {fieldsWithDesc} / {fieldCount} described
                 </span>
@@ -356,19 +362,19 @@ export function ReadinessPanel({
                 <button
                   type="button"
                   onClick={handleDocumentFieldsClick}
-                  className="text-xs text-neutral-400 mt-1 leading-snug hover:text-blue-700 hover:underline text-left"
+                  className={cn(panelNoteClass, 'mt-1 hover:text-blue-700 hover:underline text-left')}
                 >
                   {fieldCount - fieldsWithDesc} without description - open field
                 </button>
               ) : fieldsWithDesc < fieldCount ? (
-                <p className="text-xs text-neutral-300 mt-1 leading-snug">
+                <p className={cn(panelNoteClass, 'mt-1')}>
                   {fieldCount - fieldsWithDesc} undocumented
                 </p>
               ) : null}
             </div>
 
               {piiCount > 0 && (
-                <p className="text-[11px] text-neutral-400 mt-2 leading-snug">
+                <p className={cn(panelNoteClass, 'mt-2')}>
                   <strong>{piiCount}</strong> personal data field{piiCount > 1 ? 's' : ''} flagged
                 </p>
               )}
@@ -378,7 +384,7 @@ export function ReadinessPanel({
 
         {publishAttempted && supplementalValidationErrors.length > 0 && (
           <div className={sectionPad}>
-            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400 mb-2">
+            <p className={cn(panelSectionTitleClass, 'mb-2')}>
               {READINESS_VALIDATION_DETAILS_TITLE}
             </p>
             <ul className="space-y-1">
@@ -388,12 +394,12 @@ export function ReadinessPanel({
                     <button
                       type="button"
                       onClick={() => navigateToValidationIssue(nav.navigateTo, e)}
-                      className="w-full text-left text-[11px] text-orange-800 leading-snug hover:underline cursor-pointer"
+                      className={cn(panelNoteClass, 'w-full text-left text-orange-800 hover:underline cursor-pointer')}
                     >
                       {validationUserMessage(e)}
                     </button>
                   ) : (
-                    <span className="text-[11px] text-orange-800 leading-snug">{validationUserMessage(e)}</span>
+                    <span className={cn(panelNoteClass, 'text-orange-800')}>{validationUserMessage(e)}</span>
                   )}
                 </li>
               ))}
@@ -403,12 +409,12 @@ export function ReadinessPanel({
 
         {validationWarnings.length > 0 && (
           <div className={sectionPad}>
-            <p className="text-xs font-medium text-neutral-300 mb-1.5">
+            <p className={cn(panelSectionTitleClass, 'mb-1.5')}>
               {READINESS_RECOMMENDATIONS_SECTION_TITLE}
             </p>
             <ul className="space-y-1">
               {validationWarnings.slice(0, 6).map((w, i) => (
-                <li key={`${w.code}-${i}`} className="text-[11px] text-neutral-400 leading-snug flex items-start gap-1.5">
+                <li key={`${w.code}-${i}`} className={cn(panelNoteClass, 'flex items-start gap-1.5')}>
                   <AlertTriangle className="h-3 w-3 flex-shrink-0 mt-0.5" />
                   <span>{validationUserMessage(w)}</span>
                 </li>
@@ -437,23 +443,20 @@ export function ReadinessPanel({
 
         {isPublishedView ? (
           <div className={cn(sectionPad, 'border-t', panelBorder)}>
-            <p className={cn(
-              'leading-snug',
-              publishedDense ? 'text-xs text-neutral-300' : 'text-[11px] text-neutral-400',
-            )}>
+            <p className={panelNoteClass}>
               {START_NEW_VERSION_QUALITY_NOTE}
             </p>
           </div>
         ) : nextSteps.length > 0 ? (
           <div className={cn(sectionPad, 'bg-neutral-25/60')}>
-            <p className="text-xs font-medium text-neutral-300 mb-1.5">
+            <p className={cn(panelSectionTitleClass, 'mb-1.5')}>
               {READINESS_NEXT_STEPS_TITLE}
             </p>
             <ul className="space-y-2">
               {nextSteps.map((step, i) => (
                 <li key={i} className="flex items-start gap-1.5">
-                  <ArrowRight className="h-3 w-3 text-neutral-300 flex-shrink-0 mt-0.5" />
-                  <span className="text-[11px] text-neutral-600 leading-snug">{step}</span>
+                  <ArrowRight className="h-3 w-3 text-neutral-400 flex-shrink-0 mt-0.5" />
+                  <span className={panelNoteClass}>{step}</span>
                 </li>
               ))}
             </ul>

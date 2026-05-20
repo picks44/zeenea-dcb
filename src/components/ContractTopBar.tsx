@@ -103,35 +103,35 @@ export function ContractTopBar({
         {contract.inRevision && <RevisionOpenBadge />}
       </div>
 
-      {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={v => onTabChange(v as EditorTab)} className="flex-shrink-0">
-        <TabsList className={TOP_BAR_CONTROL}>
-          {TABS.map(({ id, label, icon: Icon }) => (
-            <TabsTrigger key={id} value={id}>
-              <Icon className="h-3.5 w-3.5" />
-              {label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
-
       <div className="flex-1 min-w-2" />
 
-      {!isConsumer && (
-        <div className="flex h-8 items-center gap-2 xl:gap-3 flex-shrink-0">
-          {showReadinessToggle && onReadinessToggle && (
-            <Button
-              variant={readinessPanelOpen ? 'secondary' : 'outline'}
-              size="sm"
-              onClick={onReadinessToggle}
-              className={cn(TOP_BAR_BTN, 'xl:hidden')}
-            >
-              <Gauge className="h-3.5 w-3.5" />
-              {readinessToggleLabel ?? 'Readiness'}
-            </Button>
-          )}
+      <div className="flex h-8 items-center gap-2 xl:gap-3 flex-shrink-0 min-w-0">
+        {!isConsumer && showReadinessToggle && onReadinessToggle && (
+          <Button
+            variant={readinessPanelOpen ? 'secondary' : 'outline'}
+            size="sm"
+            onClick={onReadinessToggle}
+            className={cn(TOP_BAR_BTN, 'xl:hidden')}
+          >
+            <Gauge className="h-3.5 w-3.5" />
+            {readinessToggleLabel ?? 'Readiness'}
+          </Button>
+        )}
 
-          <div className="flex h-8 items-center gap-2 flex-shrink-0">
+        <Tabs value={activeTab} onValueChange={v => onTabChange(v as EditorTab)} className="flex-shrink-0">
+          <TabsList className={TOP_BAR_CONTROL}>
+            {TABS.map(({ id, label, icon: Icon }) => (
+              <TabsTrigger key={id} value={id}>
+                <Icon className="h-3.5 w-3.5" />
+                {label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+
+        {!isConsumer && (
+          <>
+            <div className="flex h-8 items-center gap-2 flex-shrink-0">
             {collaborators.length > 0 && (
               <div className="flex h-8 items-center -space-x-1">
                 {collaborators.slice(0, 3).map(c => (
@@ -240,14 +240,15 @@ export function ContractTopBar({
             </div>
           )}
 
-          {isOwner && info.status === 'deprecated' && (
-            <Button variant="outline" size="sm" onClick={onRetire} className={TOP_BAR_BTN}>
-              <ArchiveX className="h-3.5 w-3.5" />
-              Retire contract
-            </Button>
-          )}
-        </div>
-      )}
+            {isOwner && info.status === 'deprecated' && (
+              <Button variant="outline" size="sm" onClick={onRetire} className={TOP_BAR_BTN}>
+                <ArchiveX className="h-3.5 w-3.5" />
+                Retire contract
+              </Button>
+            )}
+          </>
+        )}
+      </div>
 
     </div>
   )
