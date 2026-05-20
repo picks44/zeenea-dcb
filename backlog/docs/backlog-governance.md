@@ -80,15 +80,73 @@ Chaque US significative peut distinguer (dans la description ou les hypothèses)
 
 ---
 
+## 3bis. Protection des User Stories avancées
+
+### Principe
+
+Les US déjà engagées dans le workflow ClickUp **ne doivent pas être modifiées directement** comme de simples US « à faire ». Le réalignement backlog après prototype/MVP se fait par **US complémentaires** qui référencent l’US source.
+
+### Statuts protégés (non exhaustif)
+
+- `qa`
+- `en cours`
+- `prêt à déployer` / `ready`
+- `done` / `terminé`
+- Tout statut équivalent indiquant implémentation, revue ou validation **déjà engagée**
+
+### Règles
+
+| Situation | Action |
+|-----------|--------|
+| US en **à faire** (ou équivalent non engagé) | **UPDATE** direct autorisé si le backlog est obsolète |
+| US en statut **protégé** | **Ne pas** réécrire titre, description ni AC par UPDATE massif |
+| AC obsolètes / faux / incomplets sur US protégée | **CREATE** d’une US séparée : `[Alignement]`, `[Complément]`, `[Correctif]`, `[QA Fix]`… |
+| Nouvelle US complémentaire | Doit **référencer explicitement** l’ID de l’US d’origine ; préciser ce qui est corrigé, ajouté, exclu, et ce qui reste porté par l’US source |
+
+### Exceptions (modification directe d’une US protégée)
+
+Uniquement avec **validation PO/PM explicite** :
+
+- correction **typo** mineure ;
+- ajout d’un **lien** documentaire non destructif ;
+- **commentaire** ClickUp (pas réécriture du corps de l’US) ;
+- micro-clarification sans changement de scope testé.
+
+**Par défaut :** créer une US complémentaire.
+
+### Objectif
+
+Éviter :
+
+- perte de traçabilité QA ;
+- modification silencieuse du scope ;
+- confusion dev / QA ;
+- clôture d’une US sur un référentiel mouvant ;
+- réécriture d’une US déjà travaillée ou validée en QA.
+
+---
+
 ## 4. Règles de décision
+
+### Contrôle préalable : statut ClickUp
+
+**Avant** de choisir UPDATE / CREATE / CANCEL / SPLIT, lire le **statut** de l’US dans l’export ClickUp.
+
+| Statut source | Action par défaut |
+|---------------|-------------------|
+| **À faire** (non engagé) | **UPDATE** si réalignement nécessaire |
+| **Protégé** (`qa`, `en cours`, etc.) | **CREATE** complémentaire (référence US source) — **pas** UPDATE du corps de l’US |
+| **Protégé** + décision PO explicite | UPDATE direct exceptionnel (voir §3bis) |
+
+### Matrice des actions
 
 | Statut | Quand l’utiliser |
 |--------|------------------|
-| **UPDATE** | US existante toujours pertinente mais à réaligner : vocabulaire, parcours validés, AC, périmètre, hypothèses, dual-track prototype/MVP. |
-| **CREATE** | Manque une US **atomique** : comportement validé proto absent du CSV ; fix UX ; polish QA ; règle métier ; **branche d’un SPLIT**. |
-| **CANCEL / OBSOLETE** | Logique **métier/UX** abandonnée : flow supprimé, doublon, hypothèse produit rejetée (ex. Save draft P0). *Ne pas* annuler une exigence technique seulement parce qu’elle est simulée au proto. |
-| **REPORT** | Sujet **nécessaire au MVP** mais autre liste/phase : GitOps détaillé → SP5 ; auth → SP6 ; infra ; collaboration temps réel. **REPORT ≠ suppression.** |
-| **SPLIT** | US fourre-tout mélangeant produit + technique + infra/Git. Produire UPDATE (volet produit) + CREATE (volet technique). |
+| **UPDATE** | US en **à faire** (ou non protégée) toujours pertinente mais à réaligner : vocabulaire, parcours validés, AC, périmètre, hypothèses, dual-track prototype/MVP. Modification **non destructive** validée. |
+| **CREATE** | Manque une US **atomique** ; comportement validé proto absent du CSV ; **correctif / alignement** pour une US **protégée** ; fix UX ; branche d’un **SPLIT**. Les CREATE portent `name`, `description`, `tags`, `priority` (CSV unifié recommandé). |
+| **CANCEL / OBSOLETE** | Logique **métier/UX** abandonnée. **À éviter** sur US protégée sauf décision PO explicite. *Ne pas* annuler une exigence technique seulement parce qu’elle est simulée au proto. |
+| **REPORT** | Sujet **nécessaire au MVP** mais autre liste/phase. **REPORT ≠ suppression.** |
+| **SPLIT** | US fourre-tout. Produire UPDATE (volet produit, si US non protégée) + CREATE (volet technique). Sur US protégée : plutôt **CREATE** complémentaires ciblées. |
 
 ### Exemple SPLIT (SP4)
 
@@ -106,6 +164,8 @@ Détail : [sp4-split-86c9n9a4t.md](./sp4-split-86c9n9a4t.md).
 | Pas de bouton Save draft | CANCEL persistance | **CANCEL** Save draft P0 ; **UPDATE** autosave + backend |
 | `inRevision` au lieu d’entité Draft UI | CANCEL modèle backend | **UPDATE** UX + **KEEP** brouillon serveur |
 | Compare sans owner dans l’UI | Ajouter owner au Compare | **UPDATE** export-only ; gouvernance dans changelog |
+| US en **qa** / **en cours** obsolète | UPDATE massif de la description | **CREATE** `[Alignement]` référençant l’US source |
+| Corriger comportement déjà validé en QA | Réécrire l’US en qa | **CREATE** correctif ; commentaire sur US source |
 
 ---
 
@@ -289,7 +349,7 @@ Ordre recommandé pour limiter les dépendances et le rework :
 | 2 | **SP5 — Publish & Gitops** | Conserver Git réel ; aligner workflows sur UX publish/changelog validée |
 | 3 | **SP1 — Interfaces** | Création, backlog, navigation — **US en QA sensibles** : ne pas clôturer sans UPDATE |
 | 4 | **SP3 — DDL Import** | Parcours create two-step, `proposed` — dédupliquer YAML si doublons SP1 |
-| 5 | **SP2 — Editor & Lifecycle** | Schema, lock, delete — distinguer verrouillage UI vs API |
+| 5 | **SP2 — Editor & Lifecycle** | Schema editor, relations, quality rules, lifecycle actions, lock/delete — distinguer verrouillage UI vs API |
 | 6 | **SP6 — Auth & Devops** | Probable **REPORT/freeze** si hors périmètre MVP court terme — ne pas confondre avec rôles collaborateurs prototype |
 
 **Notes :**
@@ -386,6 +446,7 @@ Pipeline standard — **ne pas sauter** les étapes 7 à 10.
 ```text
  1. Export ClickUp de la liste           → backlog/input/{liste}.csv
  2. Audit lecture seule                 → écarts proto / doc / US
+ 2b. Classification statuts             → US protégées vs modifiables (§3bis)
  3. Recadrage stratégique (si besoin)   → matrice UPDATE / CREATE / CANCEL / REPORT / SPLIT
  4. Matrice de décision                 → fiches par ID, actions validées
  5. Review humaine de la stratégie      → valider CANCEL / SPLIT / REPORT (pas les CSV)
@@ -448,6 +509,13 @@ Cocher avant l’étape 8 (validation humaine finale) :
 - [ ] Aucun UPDATE ne réduit le MVP au prototype React/localStorage.
 - [ ] Aucune exigence backend, Git, API, audit ou MD5 supprimée par erreur (sauf CANCEL produit explicite).
 - [ ] Aucun scope collaboration temps réel, approval workflow, auth plateforme ou infra ajouté hors liste concernée.
+
+**Statuts protégés (§3bis)**
+
+- [ ] Chaque US du périmètre est classée : **modifiable** vs **protégée** (`qa`, `en cours`, etc.).
+- [ ] **Aucune US protégée** n’est modifiée directement (titre / description / AC) sans justification PO/PM explicite.
+- [ ] Les écarts sur US protégées sont portés par des **CREATE** complémentaires référençant l’US source.
+- [ ] Chaque US complémentaire précise : corrigé, ajouté, exclu, reste sur US source.
 
 **Décisions et structure**
 
@@ -569,6 +637,10 @@ Si écart majeur : corriger dans ClickUp ou régénérer CSV + ré-import ciblé
 | **high sur micro-polish** (badge, hint) | Bruit roadmap ; dette high fausse |
 | **Priorité incohérente avec tag** (ex. publication en normal pour readiness) | Ordonnancement faux entre listes |
 | **Backlog hétérogène intra-liste** | UPDATE conformes, CREATE sans métadonnées |
+| **UPDATE direct sur US en qa / en cours** | Perte traçabilité QA, scope mouvant |
+| **Réécrire une US en cours** | Confusion dev, historique perdu |
+| **Faire disparaître l’historique QA via UPDATE massif** | Clôture sur référentiel invalide |
+| **Corriger un comportement validé en QA sans US de correction** | Tests et dev désalignés |
 
 ---
 
@@ -590,6 +662,7 @@ SP4 — Versioning est le **premier cycle** appliqué avec cette gouvernance.
 - [sp4-fiches-import.md](./sp4-fiches-import.md) — actions par ID
 - [sp4-split-86c9n9a4t.md](./sp4-split-86c9n9a4t.md) — SPLIT
 - [sp4-report-sp5.md](./sp4-report-sp5.md) — liens SP5
+- SP2 — Editor & Lifecycle : prochaine liste schema/lifecycle après SP1/SP3 ; garder les liens vers schema editor, quality rules, lifecycle & locking et contract structure
 - [../output/sp4-update.csv](../output/sp4-update.csv) · [../output/sp4-create.csv](../output/sp4-create.csv) — exports générés (ne pas modifier via ce document)
 - [sp4-tags-mapping.md](./sp4-tags-mapping.md) · [../output/sp4-metadata-update.csv](../output/sp4-metadata-update.csv) — epics/tags + priorités post-import SP4
 
@@ -604,3 +677,5 @@ SP4 — Versioning est le **premier cycle** appliqué avec cette gouvernance.
 | 2026-05 | Tags/epics obligatoires (§6bis), checklist pré-import, livrables `*-tags-update.csv` |
 | 2026-05 | Priorités + homogénéité ISO (§6bis), `*-metadata-update.csv`, audit post-import SP4 |
 | 2026-05 | Doctrine CSV unifié vs metadata-only (§8) ; post-import tags visuels obligatoires |
+| 2026-05 | Protection US avancées (§3bis) — CREATE complémentaires vs UPDATE direct |
+| 2026-05 | Rappel explicite SP2 — Editor & Lifecycle dans l’ordre de traitement et les références cross-listes |
