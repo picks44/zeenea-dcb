@@ -42,6 +42,9 @@ interface ReadinessPanelProps {
 /** Section titles and secondary notes in the readiness panel. */
 const panelSectionTitleClass = 'text-xs font-medium text-neutral-400'
 const panelNoteClass = 'text-xs text-neutral-400 leading-snug'
+/** Sub-metric row under a scored section (e.g. Documented fields). */
+const panelSubMetricClass = 'text-[11px] font-medium text-neutral-400 leading-snug'
+const panelSubMetricHelperClass = 'text-[11px] font-normal text-neutral-300 leading-snug'
 
 function SectionHeaderWithScore({
   title,
@@ -337,10 +340,10 @@ export function ReadinessPanel({
             <>
               <div>
               <div className="flex items-center justify-between gap-2 mb-1">
-                <span className={panelSectionTitleClass}>Documented fields</span>
+                <span className={panelSubMetricClass}>Documented fields</span>
                 <span className={cn(
-                  panelSectionTitleClass,
-                  'tabular-nums text-right leading-snug',
+                  panelSubMetricClass,
+                  'tabular-nums text-right',
                   descCoverage === 1 && 'text-green-700',
                 )}>
                   {fieldsWithDesc} / {fieldCount} described
@@ -362,12 +365,12 @@ export function ReadinessPanel({
                 <button
                   type="button"
                   onClick={handleDocumentFieldsClick}
-                  className={cn(panelNoteClass, 'mt-1 hover:text-blue-700 hover:underline text-left')}
+                  className={cn(panelSubMetricHelperClass, 'mt-1 hover:text-blue-700 hover:underline text-left')}
                 >
                   {fieldCount - fieldsWithDesc} without description - open field
                 </button>
               ) : fieldsWithDesc < fieldCount ? (
-                <p className={cn(panelNoteClass, 'mt-1')}>
+                <p className={cn(panelSubMetricHelperClass, 'mt-1')}>
                   {fieldCount - fieldsWithDesc} undocumented
                 </p>
               ) : null}
