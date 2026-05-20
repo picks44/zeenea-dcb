@@ -97,3 +97,23 @@
 2. **CREATE** — [output/sp2-create.csv](output/sp2-create.csv)
 3. **REPORT** — [docs/sp2-report-d4-sp4.md](docs/sp2-report-d4-sp4.md)
 4. **Docs** — [docs/sp2-fiches-import.md](docs/sp2-fiches-import.md) · [docs/sp2-pre-import-audit.md](docs/sp2-pre-import-audit.md)
+
+
+## SP6 — Auth & Devops
+
+**Input :** [input/sp6-auth-devops.csv](input/sp6-auth-devops.csv)
+
+**Gouvernance :** 3 UPDATE · 0 CREATE · 0 CANCEL · auth plateforme uniquement (RBAC contrat = SP1–SP5).
+
+**Regénérer :** `python3 backlog/scripts/generate_sp6_deliverables.py`
+
+### Ordre d’import ClickUp
+
+1. **UPDATE** — [output/sp6-update.csv](output/sp6-update.csv)
+2. **Cross-listes** — [docs/sp6-report-sp1-sp3-sp4-sp5.md](docs/sp6-report-sp1-sp3-sp4-sp5.md)
+3. **Docs** — [docs/sp6-fiches-import.md](docs/sp6-fiches-import.md) · [docs/sp6-pre-import-audit.md](docs/sp6-pre-import-audit.md)
+4. **Import (manuel)** — [docs/sp6-import-checklist.md](docs/sp6-import-checklist.md)
+
+| ID | Action |
+| -- | ------ |
+| `86c9n9a3q`, `86c9n9a41`, `86c9n9a6u` | UPDATE |

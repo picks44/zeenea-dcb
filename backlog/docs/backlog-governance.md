@@ -307,6 +307,22 @@ Ne pas fusionner trois périmètres distincts :
 
 **Rappel prototype :** quality rules **table** avec **`aiVerified`** (mock) peuvent **influencer** readiness et validation publish — **interdit** le wording « note libre », « non bloquante », « sans impact publish » sur une US SP2 quality rules.
 
+### Auth plateforme vs permissions métier (SP6 / SP1–SP5)
+
+Ne pas confondre **authentification plateforme** et **permissions sur un contrat** :
+
+| Domaine | Liste | Périmètre |
+| ------- | ----- | --------- |
+| **Auth plateforme / SSO / session** | **SP6** | Login, logout, route guards, identité utilisateur Zeenea, config runtime (`delivery`) |
+| **Collaborators Publisher / Contributor / Reader** | **Produit / SP1** | Rôles par contrat, Share, `getMyRole`, lecture seule viewer — **pas** une US SP6 auth |
+| **Contract owner (métier)** | **SP1** | Champ Fundamentals — distinct Publisher |
+| **Publish authorization** | **SP5 + rôle owner** | `canPublish` = readiness/validation + **`myRole === 'owner'`** — pas « utilisateur authentifié = Owner » |
+| **Schema locks / editability** | **SP2 / SP4** | `isContractLocked`, lifecycle — pas SSO SP6 |
+| **Readiness panel** | **SP4** | Score publiable — pas SP6 |
+| **`CURRENT_USER` (stub)** | **Prototype** | Remplacé par session Zeenea au MVP — ne pas documenter comme cible dans SP6 |
+
+**Règle :** ne pas **CANCEL** les US auth SP6 parce que le proto n’a pas de SSO ; ne pas déplacer les collaborateurs de SP1 vers SP6.
+
 **Règles d’attribution :**
 
 - **Préférer 1 epic principal** par US.
@@ -385,7 +401,7 @@ Ordre recommandé pour limiter les dépendances et le rework :
 | 3 | **SP1 — Interfaces** | Création, backlog, navigation — **US en QA sensibles** : ne pas clôturer sans UPDATE |
 | 4 | **SP3 — DDL Import** | Parser, mapping, fixtures ; YAML fonctionnel post-import (`53`) distinct de l’UI YAML **SP1** ; CANCEL doublon exact uniquement (`86c9nw8d1`) |
 | 5 | **SP2 — Editor & Lifecycle** | Schema editor, relations, quality rules, lifecycle actions, lock/delete — distinguer verrouillage UI vs API |
-| 6 | **SP6 — Auth & Devops** | Probable **REPORT/freeze** si hors périmètre MVP court terme — ne pas confondre avec rôles collaborateurs prototype |
+| 6 | **SP6 — Auth & Devops** | **Auth plateforme + session + packaging** (`86c9n9a3q`, `86c9n9a41`, `86c9n9a6u`) — permissions **contrat** = SP1–SP5 (voir §6bis auth plateforme) |
 
 **Notes :**
 
@@ -680,6 +696,9 @@ Si écart majeur : corriger dans ClickUp ou régénérer CSV + ré-import ciblé
 | **Sur-promettre le coverage parser MVP** | ANSI SQL complet, dialecte vendor exhaustif — tenir dialecte **TBD** + subset documenté |
 | **Quality rules = « note libre non bloquante »** (SP2) | Contredit prototype (`aiVerified` table) et tri-domaine SP2/SP4/SP5 |
 | **`86c9n9a4r` en mega relation system** | Absorbe SP3 parser + SP5 validation ; QA et ownership flous |
+| **SP6 absorbe RBAC contrat / collaborators** | Duplique SP1 Share, SP4 publish eligibility, SP5 publish — QA auth rejoue tout le parcours |
+| **« Utilisateur authentifié = Owner »** (US SP6) | Contredit produit §4 et `canPublish` owner-only |
+| **Tester publish/lifecycle/schema dans QA SP6** | SP6 = login/logout/session/packaging uniquement |
 
 ---
 
@@ -720,3 +739,4 @@ SP4 — Versioning est le **premier cycle** appliqué avec cette gouvernance.
 | 2026-05 | Rappel explicite SP2 — Editor & Lifecycle dans l’ordre de traitement et les références cross-listes |
 | 2026-05 | Tri-domaine YAML SP1/SP3/SP5 ; anti-patterns CANCEL YAML SP3 et sur-promesse parser |
 | 2026-05 | SP2 — tri-domaine relations (SP3/SP2/SP5) et quality rules (SP2/SP4/SP5) ; plan stratégique stabilisé |
+| 2026-05 | SP6 — doctrine auth plateforme vs permissions métier (§6bis) ; anti-patterns SP6/RBAC |
