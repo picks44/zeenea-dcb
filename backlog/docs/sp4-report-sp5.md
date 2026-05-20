@@ -23,3 +23,5 @@ Les exigences **Git réel** restent dans le **MVP global**. SP4 couvre le **vers
 |--------|-------|-------|
 | UX / métier versioning | SP4 | Prototype + scénarios doc S11, S22 |
 | GitOps exécution | SP5 | Intégration repository, échec Git |
+
+Livrables SP5 générés : [sp5-fiches-import.md](./sp5-fiches-import.md) · [sp5-report-sp4.md](./sp5-report-sp4.md) (lien inverse).
