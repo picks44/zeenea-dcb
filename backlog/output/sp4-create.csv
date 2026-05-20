@@ -1,0 +1,195 @@
+name,description
+"ETQ utilisateur en révision, je veux voir le badge Revision open afin de comprendre que j’édite une copie de travail non publiée","Description métier
+
+Pendant une révision sur contrat active, un badge Revision open signale une working copy. Le statut lifecycle affiché reste Active ; la version affichée reste celle de la dernière publication.
+
+Périmètre
+
+Inclus
+
+- Badge Revision open dans la barre supérieure
+- Tooltip explicatif
+- Masqué hors révision
+
+Exclus
+
+- Statut lifecycle « revision »
+- Changement de numéro de version affiché avant Publish update
+
+Critères d’acceptation
+
+- Badge visible si active + révision ouverte
+- Tooltip : édition basée sur la version active publiée
+- Statut badge Active inchangé
+
+Cas d’erreur / limites
+
+
+Règles de gestion
+
+- Revision open n’est pas un statut ODCS exporté
+
+Validation fonctionnelle
+
+- UX : S22
+
+Hypothèses
+
+
+Validé sur prototype UX (référence démo)
+
+- TOP_BAR_REVISION_OPEN_LABEL, RevisionOpenBadge
+
+Implémentation MVP cible
+
+- Même règles d’affichage côté UI connectée API"
+"ETQ publisher, je veux être bloqué si aucun changement depuis la dernière publication afin d’éviter une version vide","Description métier
+
+Publish update n’est pas proposé (ou est désactivé) lorsque le contenu exportable et la gouvernance versionnée sont identiques au dernier snapshot publié.
+
+Périmètre
+
+Inclus
+
+- Détection changements export + gouvernance versionnée
+- Message No changes to publish since the last version
+- Publish update désactivé
+
+Exclus
+
+- Publication forcée vide
+
+Critères d’acceptation
+
+- Aucun delta → publish indisponible + message
+- Dès qu’un changement export ou gouvernance → publish possible si readiness OK
+
+Cas d’erreur / limites
+
+
+Règles de gestion
+
+- Aligné compare export-only : gouvernance seule compte pour publish (Option B)
+
+Validation fonctionnelle
+
+- UX : tentative publish sans edit
+
+Hypothèses
+
+
+Validé sur prototype UX (référence démo)
+
+- hasAnyChangeSinceLastPublish, NO_CHANGES_TO_PUBLISH
+
+Implémentation MVP cible
+
+- API publish 400 si pas de delta"
+"ETQ publisher, je veux publier lorsque seuls owner ou governance contacts changent afin de versionner la responsabilité sans modifier le YAML exporté","Description métier
+
+Option B : publication autorisée si le YAML exportable est inchangé mais owner ou governance contacts ont évolué. La modale publish affiche une note ; le changelog mentionne la gouvernance ; Compare reste sans diff export.
+
+Périmètre
+
+Inclus
+
+- publishChangeKind governance_only
+- Note dans modale publish
+- Changelog mentionnant mise à jour gouvernance
+- Snapshot incluant gouvernance versionnée
+
+Exclus
+
+- Export owner/contacts dans YAML ODCS
+
+Critères d’acceptation
+
+- Publish possible avec YAML identique et contacts modifiés
+- Compare export identique entre avant/après (S11b)
+- Historique Versions affiche changelog gouvernance
+
+Cas d’erreur / limites
+
+
+Règles de gestion
+
+- Distinct de publish avec changement schema
+
+Validation fonctionnelle
+
+- UX : S11b, publish governance only
+
+Hypothèses
+
+
+Validé sur prototype UX (référence démo)
+
+- PUBLISH_GOVERNANCE_ONLY_NOTE, getPublishChangeKind
+
+Implémentation MVP cible
+
+- Backend accepte publish governance-only avec même MD5 YAML"
+"ETQ système, je veux persister le modèle Contract / Draft / PublishedVersion afin de supporter le versioning et l’audit MVP backend","Description métier
+
+Le backend MVP doit persister un modèle clair : contrat logique, brouillon éditable, versions publiées immuables, objets de schéma, métadonnées de publication (checksum, commit Git). Validé en UX sur le prototype ; implémentation cible : API + base + Git connecté.
+
+Périmètre
+
+Inclus
+
+- Entités : Contract, Draft (ou équivalent brouillon), PublishedVersion
+- SchemaObject, SchemaProperty liés au contrat / brouillon
+- Statuts Draft / Active / Deprecated sur les versions publiées
+- Métadonnées publication : version, auteur, changelog, type Update/Breaking
+- Checksum MD5 sur le YAML effectivement publié
+- Commit hash Git correspondant à l’écriture repository
+- Immutabilité des versions publiées (refus update API)
+- Soft delete contrat avec conservation audit versions
+
+Exclus
+
+- Modèle collaboratif temps réel
+- Policies Zeenea avancées
+- Data product assembly
+
+Critères d’acceptation
+
+- Le modèle distingue brouillon non publié et version publiée append-only
+- Un brouillon peut être créé depuis une version Active
+- Une seule version Active par contrat
+- Chaque publication stocke MD5 du YAML publié et hash commit Git
+- Les API refusent la modification directe d’une PublishedVersion Active/Deprecated
+- Le modèle permet la génération YAML ODCS v3.1.0
+
+Cas d’erreur / limites
+
+- Tentative de PATCH sur version publiée → 409 ou équivalent
+- Échec persistance brouillon → erreur explicite (pas de perte silencieuse)
+
+Règles de gestion
+
+- La base applicative porte l’édition des brouillons ; Git porte les YAML auditables
+- Un brouillon non publié n’est pas une version officielle
+
+Validation fonctionnelle
+
+- Tests persistance Draft vs PublishedVersion
+- Tests migration depuis stockage prototype si applicable
+- Tests immutabilité API
+
+Hypothèses
+
+- L’UI peut agréger Contract + Draft en une vue ; le backend reste normalisé
+
+Validé sur prototype UX (référence démo)
+
+- Parcours et règles métier validés en démo locale (localStorage, gitHistory simulé)
+
+Implémentation MVP cible
+
+- Schéma de données, APIs CRUD brouillon, publish, historique
+- Intégration Git : voir SP5 — Publish & Gitops pour l’exécution push
+
+Hors périmètre prototype (exigence MVP conservée)
+
+- Détail des écrans React et localStorage"

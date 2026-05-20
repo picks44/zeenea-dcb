@@ -1,0 +1,1117 @@
+"id","custom_id","name","text_content","description","markdown_description","status","orderindex","date_created","date_updated","date_closed","date_done","creator","assignees","watchers","priority","due_date","start_date","points","time_estimate","time_spent","list","folder","space","url","tags","parent","dependencies","linked_tasks","custom_fields_raw_json"
+"86c9nw8fj","","ETQ utilisateur, je veux qu’un contrat actif soit verrouillé afin de garantir l’intégrité de la version publiée","Description métier
+
+Une version Active est consultable mais ne peut pas être modifiée. Toute évolution doit passer par New version afin de préserver l’intégrité du YAML publié, du commit Git et du checksum.
+
+Périmètre inclus
+
+Read-only Fundamentals en Active
+Read-only Schema en Active
+YAML consultable read-only
+Save draft désactivé
+Publish désactivé
+New version disponible
+Statut Active visible
+
+Périmètre exclu
+
+Déverrouillage manuel
+Override admin
+Édition YAML directe
+Modification silencieuse de version publiée
+Permissions fines
+
+Critères d’acceptation
+
+En Active, les champs Fundamentals sont en lecture seule
+En Active, le Schema est en lecture seule
+Save draft est désactivé
+Publish est désactivé
+YAML reste consultable
+New version est disponible
+Le checksum affiché ne change pas
+
+Règles de gestion
+
+Active et Deprecated sont immutable. Draft est le seul statut éditable.
+
+Validation fonctionnelle
+
+Tester lecture seule Active, consultation YAML, boutons désactivés, checksum stable et création New version.","Description métier
+
+Une version Active est consultable mais ne peut pas être modifiée. Toute évolution doit passer par New version afin de préserver l’intégrité du YAML publié, du commit Git et du checksum.
+
+Périmètre inclus
+
+Read-only Fundamentals en Active
+Read-only Schema en Active
+YAML consultable read-only
+Save draft désactivé
+Publish désactivé
+New version disponible
+Statut Active visible
+
+Périmètre exclu
+
+Déverrouillage manuel
+Override admin
+Édition YAML directe
+Modification silencieuse de version publiée
+Permissions fines
+
+Critères d’acceptation
+
+En Active, les champs Fundamentals sont en lecture seule
+En Active, le Schema est en lecture seule
+Save draft est désactivé
+Publish est désactivé
+YAML reste consultable
+New version est disponible
+Le checksum affiché ne change pas
+
+Règles de gestion
+
+Active et Deprecated sont immutable. Draft est le seul statut éditable.
+
+Validation fonctionnelle
+
+Tester lecture seule Active, consultation YAML, boutons désactivés, checksum stable et création New version.","## Description métier
+
+Une version Active est consultable mais ne peut pas être modifiée. Toute évolution doit passer par New version afin de préserver l’intégrité du YAML publié, du commit Git et du checksum.
+* * *
+
+## Périmètre inclus
+
+*   Read-only Fundamentals en Active
+*   Read-only Schema en Active
+*   YAML consultable read-only
+*   Save draft désactivé
+*   Publish désactivé
+*   New version disponible
+*   Statut Active visible
+* * *
+
+## Périmètre exclu
+
+*   Déverrouillage manuel
+*   Override admin
+*   Édition YAML directe
+*   Modification silencieuse de version publiée
+*   Permissions fines
+* * *
+
+## Critères d’acceptation
+
+1. En Active, les champs Fundamentals sont en lecture seule
+2. En Active, le Schema est en lecture seule
+3. Save draft est désactivé
+4. Publish est désactivé
+5. YAML reste consultable
+6. New version est disponible
+7. Le checksum affiché ne change pas
+* * *
+
+## Règles de gestion
+
+Active et Deprecated sont immutable. Draft est le seul statut éditable.
+* * *
+
+## Validation fonctionnelle
+
+Tester lecture seule Active, consultation YAML, boutons désactivés, checksum stable et création New version.","prêt à déployer","33856555.50065910000000000000000000000000","2026-05-06T13:23:29.656Z","2026-05-19T13:24:17.129Z","","","Vincent Ghislain","","Chloe Noger <chloe@lonestone.studio>, Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP2 - Editor & Lifecycle","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9nw8fj","lifecycle & locking","","","","[]"
+"86c9nw8dw","","ETQ utilisateur, je veux supprimer un contrat afin de le retirer de la liste principale sans perdre l’audit","Description métier
+
+L’utilisateur peut supprimer logiquement un contrat. La suppression retire le contrat de la liste principale, mais conserve les versions publiées, les commits Git, les checksums et les métadonnées pour audit.
+
+Périmètre inclus
+
+Bouton Delete
+Confirmation
+Soft delete
+Retrait de la liste principale
+Conservation des versions
+Conservation des métadonnées
+Conservation des références Git
+Retour à la liste après succès
+
+Périmètre exclu
+
+Hard delete
+Suppression des commits Git
+Suppression des checksums
+Corbeille avancée
+Restauration UI
+Purge RGPD automatisée
+
+Critères d’acceptation
+
+Une confirmation est demandée
+Annuler ne modifie rien
+Confirmer renseigne deletedAt ou un état équivalent
+Le contrat disparaît de la liste principale
+Les versions publiées restent stockées
+Les checksums et commits restent inchangés
+Une erreur laisse le contrat visible
+
+Règles de gestion
+
+La suppression MVP est toujours un soft delete. Aucune version publiée ni fichier Git n’est supprimé physiquement.
+
+Validation fonctionnelle
+
+Tester confirmation, annulation, soft delete, disparition liste, conservation historique technique et erreur backend.","Description métier
+
+L’utilisateur peut supprimer logiquement un contrat. La suppression retire le contrat de la liste principale, mais conserve les versions publiées, les commits Git, les checksums et les métadonnées pour audit.
+
+Périmètre inclus
+
+Bouton Delete
+Confirmation
+Soft delete
+Retrait de la liste principale
+Conservation des versions
+Conservation des métadonnées
+Conservation des références Git
+Retour à la liste après succès
+
+Périmètre exclu
+
+Hard delete
+Suppression des commits Git
+Suppression des checksums
+Corbeille avancée
+Restauration UI
+Purge RGPD automatisée
+
+Critères d’acceptation
+
+Une confirmation est demandée
+Annuler ne modifie rien
+Confirmer renseigne deletedAt ou un état équivalent
+Le contrat disparaît de la liste principale
+Les versions publiées restent stockées
+Les checksums et commits restent inchangés
+Une erreur laisse le contrat visible
+
+Règles de gestion
+
+La suppression MVP est toujours un soft delete. Aucune version publiée ni fichier Git n’est supprimé physiquement.
+
+Validation fonctionnelle
+
+Tester confirmation, annulation, soft delete, disparition liste, conservation historique technique et erreur backend.","## Description métier
+
+L’utilisateur peut supprimer logiquement un contrat. La suppression retire le contrat de la liste principale, mais conserve les versions publiées, les commits Git, les checksums et les métadonnées pour audit.
+* * *
+
+## Périmètre inclus
+
+*   Bouton Delete
+*   Confirmation
+*   Soft delete
+*   Retrait de la liste principale
+*   Conservation des versions
+*   Conservation des métadonnées
+*   Conservation des références Git
+*   Retour à la liste après succès
+* * *
+
+## Périmètre exclu
+
+*   Hard delete
+*   Suppression des commits Git
+*   Suppression des checksums
+*   Corbeille avancée
+*   Restauration UI
+*   Purge RGPD automatisée
+* * *
+
+## Critères d’acceptation
+
+1. Une confirmation est demandée
+2. Annuler ne modifie rien
+3. Confirmer renseigne deletedAt ou un état équivalent
+4. Le contrat disparaît de la liste principale
+5. Les versions publiées restent stockées
+6. Les checksums et commits restent inchangés
+7. Une erreur laisse le contrat visible
+* * *
+
+## Règles de gestion
+
+La suppression MVP est toujours un soft delete. Aucune version publiée ni fichier Git n’est supprimé physiquement.
+* * *
+
+## Validation fonctionnelle
+
+Tester confirmation, annulation, soft delete, disparition liste, conservation historique technique et erreur backend.","a faire","33856268.00000000000000000000000000000000","2026-05-06T13:23:26.734Z","2026-05-06T13:23:26.734Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","low","","","","","","SP2 - Editor & Lifecycle","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9nw8dw","lifecycle & locking","","","","[]"
+"86c9nw8d4","","ETQ système, je veux refuser toute modification backend d’une version publiée afin que l’immutabilité ne dépende pas seulement de l’UI","Description métier
+
+Le backend doit empêcher toute modification directe d’une version Active ou Deprecated, même si une requête API contourne l’interface utilisateur.
+
+Périmètre inclus
+
+Contrôle backend sur status
+Refus update Active
+Refus update Deprecated
+Refus modification YAML publié
+Refus modification checksum
+Message d’erreur clair
+Tests d’API
+
+Périmètre exclu
+
+Override admin
+Workflow de déverrouillage
+Modification historique
+Hotfix direct sur version publiée
+
+Critères d’acceptation
+
+Une requête update sur Active est refusée
+Une requête update sur Deprecated est refusée
+Le YAML publié ne peut pas être remplacé côté application
+Le checksum ne peut pas être modifié
+Le commit hash ne peut pas être modifié
+Un Draft issu de New version reste éditable
+Les tests automatisés couvrent les refus
+
+Règles de gestion
+
+L’immutabilité est une règle métier backend, pas seulement un état visuel. Toute modification passe par un nouveau Draft et une nouvelle publication.
+
+Validation fonctionnelle
+
+Tester appels API directs sur Active, Deprecated et Draft, puis vérifier les codes d’erreur et la non-modification des données.","Description métier
+
+Le backend doit empêcher toute modification directe d’une version Active ou Deprecated, même si une requête API contourne l’interface utilisateur.
+
+Périmètre inclus
+
+Contrôle backend sur status
+Refus update Active
+Refus update Deprecated
+Refus modification YAML publié
+Refus modification checksum
+Message d’erreur clair
+Tests d’API
+
+Périmètre exclu
+
+Override admin
+Workflow de déverrouillage
+Modification historique
+Hotfix direct sur version publiée
+
+Critères d’acceptation
+
+Une requête update sur Active est refusée
+Une requête update sur Deprecated est refusée
+Le YAML publié ne peut pas être remplacé côté application
+Le checksum ne peut pas être modifié
+Le commit hash ne peut pas être modifié
+Un Draft issu de New version reste éditable
+Les tests automatisés couvrent les refus
+
+Règles de gestion
+
+L’immutabilité est une règle métier backend, pas seulement un état visuel. Toute modification passe par un nouveau Draft et une nouvelle publication.
+
+Validation fonctionnelle
+
+Tester appels API directs sur Active, Deprecated et Draft, puis vérifier les codes d’erreur et la non-modification des données.","## Description métier
+
+Le backend doit empêcher toute modification directe d’une version Active ou Deprecated, même si une requête API contourne l’interface utilisateur.
+* * *
+
+## Périmètre inclus
+
+*   Contrôle backend sur status
+*   Refus update Active
+*   Refus update Deprecated
+*   Refus modification YAML publié
+*   Refus modification checksum
+*   Message d’erreur clair
+*   Tests d’API
+* * *
+
+## Périmètre exclu
+
+*   Override admin
+*   Workflow de déverrouillage
+*   Modification historique
+*   Hotfix direct sur version publiée
+* * *
+
+## Critères d’acceptation
+
+1. Une requête update sur Active est refusée
+2. Une requête update sur Deprecated est refusée
+3. Le YAML publié ne peut pas être remplacé côté application
+4. Le checksum ne peut pas être modifié
+5. Le commit hash ne peut pas être modifié
+6. Un Draft issu de New version reste éditable
+7. Les tests automatisés couvrent les refus
+* * *
+
+## Règles de gestion
+
+L’immutabilité est une règle métier backend, pas seulement un état visuel. Toute modification passe par un nouveau Draft et une nouvelle publication.
+* * *
+
+## Validation fonctionnelle
+
+Tester appels API directs sur Active, Deprecated et Draft, puis vérifier les codes d’erreur et la non-modification des données.","prêt à déployer","33856556.50074300000000000000000000000000","2026-05-06T13:23:25.027Z","2026-05-19T13:24:19.858Z","","","Vincent Ghislain","","Chloe Noger <chloe@lonestone.studio>, Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP2 - Editor & Lifecycle","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9nw8d4","lifecycle & locking","","","","[]"
+"86c9nw8cy","","ETQ utilisateur, je veux renseigner une note de règle qualité afin de conserver une intention métier sans traitement automatique","Description métier
+
+L’utilisateur peut saisir une description textuelle de règle qualité associée à une table ou une colonne lorsque cela fait sens, mais le MVP ne convertit, ne valide et n’exécute aucune règle qualité.
+
+Périmètre inclus
+
+Champ texte libre Quality rule note
+Saisie manuelle
+Stockage dans le modèle si compatible
+Affichage dans l’éditeur de schéma
+Présence éventuelle dans YAML comme quality ou custom property selon décision technique
+
+Périmètre exclu
+
+SEMQL
+Transpilation vers moteurs qualité
+Validation automatique
+Exécution de règles
+Suggestion IA
+Blocage de publication sur règle qualité
+
+Critères d’acceptation
+
+L’utilisateur peut saisir une note qualité
+La note est sauvegardée avec le Draft
+La note ne bloque pas Publish
+Aucun traitement automatique n’est déclenché
+Le libellé UI ne laisse pas croire à une règle exécutable
+La note est consultable après publication si stockée
+
+Règles de gestion
+
+Le libellé recommandé est Quality rule note ou Rule description pour éviter de promettre un moteur de règles. Aucun traitement qualité n’est dans le MVP.
+
+Validation fonctionnelle
+
+Tester saisie, sauvegarde, publication avec note, publication sans note et absence de blocage.","Description métier
+
+L’utilisateur peut saisir une description textuelle de règle qualité associée à une table ou une colonne lorsque cela fait sens, mais le MVP ne convertit, ne valide et n’exécute aucune règle qualité.
+
+Périmètre inclus
+
+Champ texte libre Quality rule note
+Saisie manuelle
+Stockage dans le modèle si compatible
+Affichage dans l’éditeur de schéma
+Présence éventuelle dans YAML comme quality ou custom property selon décision technique
+
+Périmètre exclu
+
+SEMQL
+Transpilation vers moteurs qualité
+Validation automatique
+Exécution de règles
+Suggestion IA
+Blocage de publication sur règle qualité
+
+Critères d’acceptation
+
+L’utilisateur peut saisir une note qualité
+La note est sauvegardée avec le Draft
+La note ne bloque pas Publish
+Aucun traitement automatique n’est déclenché
+Le libellé UI ne laisse pas croire à une règle exécutable
+La note est consultable après publication si stockée
+
+Règles de gestion
+
+Le libellé recommandé est Quality rule note ou Rule description pour éviter de promettre un moteur de règles. Aucun traitement qualité n’est dans le MVP.
+
+Validation fonctionnelle
+
+Tester saisie, sauvegarde, publication avec note, publication sans note et absence de blocage.","## Description métier
+
+L’utilisateur peut saisir une description textuelle de règle qualité associée à une table ou une colonne lorsque cela fait sens, mais le MVP ne convertit, ne valide et n’exécute aucune règle qualité.
+* * *
+
+## Périmètre inclus
+
+*   Champ texte libre Quality rule note
+*   Saisie manuelle
+*   Stockage dans le modèle si compatible
+*   Affichage dans l’éditeur de schéma
+*   Présence éventuelle dans YAML comme quality ou custom property selon décision technique
+* * *
+
+## Périmètre exclu
+
+*   SEMQL
+*   Transpilation vers moteurs qualité
+*   Validation automatique
+*   Exécution de règles
+*   Suggestion IA
+*   Blocage de publication sur règle qualité
+* * *
+
+## Critères d’acceptation
+
+1. L’utilisateur peut saisir une note qualité
+2. La note est sauvegardée avec le Draft
+3. La note ne bloque pas Publish
+4. Aucun traitement automatique n’est déclenché
+5. Le libellé UI ne laisse pas croire à une règle exécutable
+6. La note est consultable après publication si stockée
+* * *
+
+## Règles de gestion
+
+Le libellé recommandé est Quality rule note ou Rule description pour éviter de promettre un moteur de règles. Aucun traitement qualité n’est dans le MVP.
+* * *
+
+## Validation fonctionnelle
+
+Tester saisie, sauvegarde, publication avec note, publication sans note et absence de blocage.","a faire","33856270.00000000000000000000000000000000","2026-05-06T13:23:24.285Z","2026-05-06T13:23:24.285Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","normal","","","","","","SP2 - Editor & Lifecycle","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9nw8cy","quality rules","","","","[]"
+"86c9nc597","","ETQ utilisateur, je veux supprimer un champ afin de retirer une colonne du schéma d’un Draft","Description métier
+
+L’utilisateur doit pouvoir supprimer une colonne depuis une table en Draft afin de corriger le schéma avant publication. La suppression doit rester impossible sur les versions Active ou Deprecated.
+
+Périmètre inclus
+
+Action Delete field ou équivalent depuis une table
+Suppression uniquement en Draft
+Confirmation ou suppression réversible simple selon UX retenue
+Recalcul de la validation publishable
+Mise à jour du YAML read-only après sauvegarde
+Gestion de l’impact sur les relations utilisant cette colonne
+
+Périmètre exclu
+
+Suppression sur Active ou Deprecated
+Hard delete d’une version publiée
+Undo avancé multi-étapes
+Rollback Git
+Résolution automatique des relations cassées
+
+Critères d’acceptation
+
+L’utilisateur peut supprimer une colonne depuis une table en Draft.
+La suppression est impossible sur une version Active ou Deprecated.
+Si la colonne est utilisée dans une relation, l’utilisateur est averti ou doit confirmer l’impact.
+Après suppression, le YAML read-only ne contient plus la colonne.
+Après suppression, la validation publishable est recalculée.
+Si la dernière colonne d’une table est supprimée, la table devient invalide pour publication.
+La suppression est persistée au Save draft ou via autosave selon le comportement retenu.
+
+Règles de gestion
+
+La suppression d’un champ est une modification de Draft. Elle ne modifie jamais une version publiée et ne crée aucun commit Git avant publication.
+
+Validation fonctionnelle
+
+Tester suppression d’une colonne simple, suppression d’une colonne utilisée dans une relation, suppression de la dernière colonne d’une table, YAML mis à jour, validation recalculée et blocage sur Active.","Description métier
+
+L’utilisateur doit pouvoir supprimer une colonne depuis une table en Draft afin de corriger le schéma avant publication. La suppression doit rester impossible sur les versions Active ou Deprecated.
+
+Périmètre inclus
+
+Action Delete field ou équivalent depuis une table
+Suppression uniquement en Draft
+Confirmation ou suppression réversible simple selon UX retenue
+Recalcul de la validation publishable
+Mise à jour du YAML read-only après sauvegarde
+Gestion de l’impact sur les relations utilisant cette colonne
+
+Périmètre exclu
+
+Suppression sur Active ou Deprecated
+Hard delete d’une version publiée
+Undo avancé multi-étapes
+Rollback Git
+Résolution automatique des relations cassées
+
+Critères d’acceptation
+
+L’utilisateur peut supprimer une colonne depuis une table en Draft.
+La suppression est impossible sur une version Active ou Deprecated.
+Si la colonne est utilisée dans une relation, l’utilisateur est averti ou doit confirmer l’impact.
+Après suppression, le YAML read-only ne contient plus la colonne.
+Après suppression, la validation publishable est recalculée.
+Si la dernière colonne d’une table est supprimée, la table devient invalide pour publication.
+La suppression est persistée au Save draft ou via autosave selon le comportement retenu.
+
+Règles de gestion
+
+La suppression d’un champ est une modification de Draft. Elle ne modifie jamais une version publiée et ne crée aucun commit Git avant publication.
+
+Validation fonctionnelle
+
+Tester suppression d’une colonne simple, suppression d’une colonne utilisée dans une relation, suppression de la dernière colonne d’une table, YAML mis à jour, validation recalculée et blocage sur Active.","## Description métier
+
+L’utilisateur doit pouvoir supprimer une colonne depuis une table en Draft afin de corriger le schéma avant publication. La suppression doit rester impossible sur les versions Active ou Deprecated.
+* * *
+
+## Périmètre inclus
+
+*   Action **Delete field** ou équivalent depuis une table
+*   Suppression uniquement en Draft
+*   Confirmation ou suppression réversible simple selon UX retenue
+*   Recalcul de la validation publishable
+*   Mise à jour du YAML read-only après sauvegarde
+*   Gestion de l’impact sur les relations utilisant cette colonne
+* * *
+
+## Périmètre exclu
+
+*   Suppression sur Active ou Deprecated
+*   Hard delete d’une version publiée
+*   Undo avancé multi-étapes
+*   Rollback Git
+*   Résolution automatique des relations cassées
+* * *
+
+## Critères d’acceptation
+
+1. L’utilisateur peut supprimer une colonne depuis une table en Draft.
+2. La suppression est impossible sur une version Active ou Deprecated.
+3. Si la colonne est utilisée dans une relation, l’utilisateur est averti ou doit confirmer l’impact.
+4. Après suppression, le YAML read-only ne contient plus la colonne.
+5. Après suppression, la validation publishable est recalculée.
+6. Si la dernière colonne d’une table est supprimée, la table devient invalide pour publication.
+7. La suppression est persistée au Save draft ou via autosave selon le comportement retenu.
+* * *
+
+## Règles de gestion
+
+La suppression d’un champ est une modification de Draft. Elle ne modifie jamais une version publiée et ne crée aucun commit Git avant publication.
+* * *
+
+## Validation fonctionnelle
+
+Tester suppression d’une colonne simple, suppression d’une colonne utilisée dans une relation, suppression de la dernière colonne d’une table, YAML mis à jour, validation recalculée et blocage sur Active.","a faire","33856285.00032590000000000000000000000000","2026-05-05T18:36:21.979Z","2026-05-06T13:25:34.281Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","normal","","","","","","SP2 - Editor & Lifecycle","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9nc597","schema editor","","","","[]"
+"86c9n9a4r","","ETQ utilisateur, je veux définir des relations entre tables afin de représenter les liens du schéma","Description métier
+
+L’utilisateur doit pouvoir représenter des relations simples entre tables depuis la section Relationships d’une table, sans passer par un graphe avancé. Le MVP doit couvrir une UX simple : choix de la table cible, choix du type de relation et colonnes de jointure optionnelles.
+
+Périmètre inclus
+
+Section Relationships dans le détail d’une table
+Bouton Add relationship
+Sélection de la table cible
+Choix d’un type de relation
+Types de relation MVP : Has many, Belongs to one, Has one, Connected to many
+Cardinalités affichées : 1 → N, N → 1, 1 → 1, N ↔ N
+Sélection optionnelle des colonnes de jointure
+Affichage de la relation créée
+Sauvegarde avec le Draft
+Sérialisation ODCS si le mapping est défini
+
+Périmètre exclu
+
+Graphe relationnel avancé
+Inférence automatique exhaustive
+Validation référentielle réelle
+Cardinalités complexes hors options MVP
+Impact analysis consommateurs
+Détection automatique des relations si non présentes dans le DDL
+
+Critères d’acceptation
+
+L’utilisateur peut ajouter une relation depuis la section Relationships d’une table.
+L’utilisateur choisit une table cible parmi les tables du contrat.
+L’utilisateur choisit un type de relation parmi les quatre options MVP.
+Les libellés affichent clairement la cardinalité et l’intention métier.
+Les colonnes de jointure sont optionnelles.
+Les dropdowns de colonnes affichent uniquement les colonnes des tables concernées.
+La relation créée est visible dans la section Relationships.
+La relation est sauvegardée avec le Draft.
+La relation apparaît dans le YAML si le mapping ODCS est défini.
+Si une colonne utilisée dans une relation est supprimée, la relation devient invalide ou l’utilisateur doit confirmer l’impact.
+
+Règles de gestion
+
+Les relations sont MVP uniquement en mode simple. Elles ne doivent pas bloquer la publication si aucune relation n’existe dans le contrat.
+
+Validation fonctionnelle
+
+Tester ajout de relation 1 → N, N → 1, 1 → 1, N ↔ N, jointure avec colonnes, relation sans colonnes, sauvegarde, YAML et suppression d’une colonne référencée.","Description métier
+
+L’utilisateur doit pouvoir représenter des relations simples entre tables depuis la section Relationships d’une table, sans passer par un graphe avancé. Le MVP doit couvrir une UX simple : choix de la table cible, choix du type de relation et colonnes de jointure optionnelles.
+
+Périmètre inclus
+
+Section Relationships dans le détail d’une table
+Bouton Add relationship
+Sélection de la table cible
+Choix d’un type de relation
+Types de relation MVP : Has many, Belongs to one, Has one, Connected to many
+Cardinalités affichées : 1 → N, N → 1, 1 → 1, N ↔ N
+Sélection optionnelle des colonnes de jointure
+Affichage de la relation créée
+Sauvegarde avec le Draft
+Sérialisation ODCS si le mapping est défini
+
+Périmètre exclu
+
+Graphe relationnel avancé
+Inférence automatique exhaustive
+Validation référentielle réelle
+Cardinalités complexes hors options MVP
+Impact analysis consommateurs
+Détection automatique des relations si non présentes dans le DDL
+
+Critères d’acceptation
+
+L’utilisateur peut ajouter une relation depuis la section Relationships d’une table.
+L’utilisateur choisit une table cible parmi les tables du contrat.
+L’utilisateur choisit un type de relation parmi les quatre options MVP.
+Les libellés affichent clairement la cardinalité et l’intention métier.
+Les colonnes de jointure sont optionnelles.
+Les dropdowns de colonnes affichent uniquement les colonnes des tables concernées.
+La relation créée est visible dans la section Relationships.
+La relation est sauvegardée avec le Draft.
+La relation apparaît dans le YAML si le mapping ODCS est défini.
+Si une colonne utilisée dans une relation est supprimée, la relation devient invalide ou l’utilisateur doit confirmer l’impact.
+
+Règles de gestion
+
+Les relations sont MVP uniquement en mode simple. Elles ne doivent pas bloquer la publication si aucune relation n’existe dans le contrat.
+
+Validation fonctionnelle
+
+Tester ajout de relation 1 → N, N → 1, 1 → 1, N ↔ N, jointure avec colonnes, relation sans colonnes, sauvegarde, YAML et suppression d’une colonne référencée.","## Description métier
+
+L’utilisateur doit pouvoir représenter des relations simples entre tables depuis la section **Relationships** d’une table, sans passer par un graphe avancé. Le MVP doit couvrir une UX simple : choix de la table cible, choix du type de relation et colonnes de jointure optionnelles.
+* * *
+
+## Périmètre inclus
+
+*   Section **Relationships** dans le détail d’une table
+*   Bouton **Add relationship**
+*   Sélection de la table cible
+*   Choix d’un type de relation
+*   Types de relation MVP : **Has many**, **Belongs to one**, **Has one**, **Connected to many**
+*   Cardinalités affichées : `1 → N`, `N → 1`, `1 → 1`, `N ↔ N`
+*   Sélection optionnelle des colonnes de jointure
+*   Affichage de la relation créée
+*   Sauvegarde avec le Draft
+*   Sérialisation ODCS si le mapping est défini
+* * *
+
+## Périmètre exclu
+
+*   Graphe relationnel avancé
+*   Inférence automatique exhaustive
+*   Validation référentielle réelle
+*   Cardinalités complexes hors options MVP
+*   Impact analysis consommateurs
+*   Détection automatique des relations si non présentes dans le DDL
+* * *
+
+## Critères d’acceptation
+
+1. L’utilisateur peut ajouter une relation depuis la section **Relationships** d’une table.
+2. L’utilisateur choisit une table cible parmi les tables du contrat.
+3. L’utilisateur choisit un type de relation parmi les quatre options MVP.
+4. Les libellés affichent clairement la cardinalité et l’intention métier.
+5. Les colonnes de jointure sont optionnelles.
+6. Les dropdowns de colonnes affichent uniquement les colonnes des tables concernées.
+7. La relation créée est visible dans la section **Relationships**.
+8. La relation est sauvegardée avec le Draft.
+9. La relation apparaît dans le YAML si le mapping ODCS est défini.
+10. Si une colonne utilisée dans une relation est supprimée, la relation devient invalide ou l’utilisateur doit confirmer l’impact.
+* * *
+
+## Règles de gestion
+
+Les relations sont MVP uniquement en mode simple. Elles ne doivent pas bloquer la publication si aucune relation n’existe dans le contrat.
+* * *
+
+## Validation fonctionnelle
+
+Tester ajout de relation `1 → N`, `N → 1`, `1 → 1`, `N ↔ N`, jointure avec colonnes, relation sans colonnes, sauvegarde, YAML et suppression d’une colonne référencée.","a faire","33856284.00030130000000000000000000000000","2026-05-05T14:50:40.848Z","2026-05-06T13:25:34.281Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","normal","","","","","","SP2 - Editor & Lifecycle","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a4r","schema editor","","","","[]"
+"86c9n9a4p","","ETQ utilisateur, je veux supprimer une table afin de retirer un dataset du contrat","Description métier
+
+L’utilisateur doit pouvoir supprimer une table d’un Draft tant que le contrat n’est pas Active ou Deprecated, avec confirmation pour éviter une suppression accidentelle.
+
+Périmètre inclus
+
+Action Delete table
+Confirmation avant suppression
+Suppression des colonnes associées
+Mise à jour du YAML
+Blocage si la version est Active ou Deprecated
+
+Périmètre exclu
+
+Restauration fine d’une table
+Historique champ par champ
+Suppression sur version publiée
+Détection automatique des impacts consommateurs
+
+Critères d’acceptation
+
+Une confirmation est demandée
+Annuler conserve la table
+Confirmer supprime la table du Draft
+Le YAML read-only est mis à jour
+La suppression est impossible sur Active et Deprecated
+Les erreurs de validation sont recalculées après suppression
+
+Règles de gestion
+
+La suppression de table est autorisée uniquement sur Draft. Une version publiée reste immutable.
+
+Validation fonctionnelle
+
+Tester suppression en Draft, annulation, suppression dernière table, validation publishable et blocage en Active.","Description métier
+
+L’utilisateur doit pouvoir supprimer une table d’un Draft tant que le contrat n’est pas Active ou Deprecated, avec confirmation pour éviter une suppression accidentelle.
+
+Périmètre inclus
+
+Action Delete table
+Confirmation avant suppression
+Suppression des colonnes associées
+Mise à jour du YAML
+Blocage si la version est Active ou Deprecated
+
+Périmètre exclu
+
+Restauration fine d’une table
+Historique champ par champ
+Suppression sur version publiée
+Détection automatique des impacts consommateurs
+
+Critères d’acceptation
+
+Une confirmation est demandée
+Annuler conserve la table
+Confirmer supprime la table du Draft
+Le YAML read-only est mis à jour
+La suppression est impossible sur Active et Deprecated
+Les erreurs de validation sont recalculées après suppression
+
+Règles de gestion
+
+La suppression de table est autorisée uniquement sur Draft. Une version publiée reste immutable.
+
+Validation fonctionnelle
+
+Tester suppression en Draft, annulation, suppression dernière table, validation publishable et blocage en Active.","## Description métier
+
+L’utilisateur doit pouvoir supprimer une table d’un Draft tant que le contrat n’est pas Active ou Deprecated, avec confirmation pour éviter une suppression accidentelle.
+* * *
+
+## Périmètre inclus
+
+*   Action Delete table
+*   Confirmation avant suppression
+*   Suppression des colonnes associées
+*   Mise à jour du YAML
+*   Blocage si la version est Active ou Deprecated
+* * *
+
+## Périmètre exclu
+
+*   Restauration fine d’une table
+*   Historique champ par champ
+*   Suppression sur version publiée
+*   Détection automatique des impacts consommateurs
+* * *
+
+## Critères d’acceptation
+
+1. Une confirmation est demandée
+2. Annuler conserve la table
+3. Confirmer supprime la table du Draft
+4. Le YAML read-only est mis à jour
+5. La suppression est impossible sur Active et Deprecated
+6. Les erreurs de validation sont recalculées après suppression
+* * *
+
+## Règles de gestion
+
+La suppression de table est autorisée uniquement sur Draft. Une version publiée reste immutable.
+* * *
+
+## Validation fonctionnelle
+
+Tester suppression en Draft, annulation, suppression dernière table, validation publishable et blocage en Active.","a faire","33856283.00026510000000000000000000000000","2026-05-05T14:50:40.680Z","2026-05-06T13:25:34.281Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","normal","","","","","","SP2 - Editor & Lifecycle","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a4p","schema editor","","","","[]"
+"86c9n9a4h","","ETQ utilisateur, je veux ajouter une table afin de couvrir plusieurs datasets dans un même contrat","Description métier
+
+L’utilisateur doit pouvoir ajouter manuellement une table/schema object dans un Draft, notamment pour compléter ou corriger le résultat du parsing DDL.
+
+Périmètre inclus
+
+Bouton Add table
+Création d’un schema object
+Nom de table obligatoire
+Description optionnelle
+Ajout de colonnes dans la table
+Validation des doublons simples
+
+Périmètre exclu
+
+Template de table avancé
+Import depuis source
+Graphe relationnel avancé
+Génération IA
+
+Critères d’acceptation
+
+Le clic Add table crée une nouvelle table éditable
+Le nom de table est obligatoire
+Deux tables ne peuvent pas avoir le même nom dans le même contrat sans erreur
+L’utilisateur peut ajouter au moins une colonne
+La table ajoutée apparaît dans le YAML
+La table est sauvegardée avec le Draft
+
+Règles de gestion
+
+Une table correspond à un schema object ODCS. Elle ne rend le contrat publiable que si les règles ODCS et MVP sont respectées.
+
+Validation fonctionnelle
+
+Tester ajout table, nom manquant, doublon, ajout colonne, sauvegarde et génération YAML.","Description métier
+
+L’utilisateur doit pouvoir ajouter manuellement une table/schema object dans un Draft, notamment pour compléter ou corriger le résultat du parsing DDL.
+
+Périmètre inclus
+
+Bouton Add table
+Création d’un schema object
+Nom de table obligatoire
+Description optionnelle
+Ajout de colonnes dans la table
+Validation des doublons simples
+
+Périmètre exclu
+
+Template de table avancé
+Import depuis source
+Graphe relationnel avancé
+Génération IA
+
+Critères d’acceptation
+
+Le clic Add table crée une nouvelle table éditable
+Le nom de table est obligatoire
+Deux tables ne peuvent pas avoir le même nom dans le même contrat sans erreur
+L’utilisateur peut ajouter au moins une colonne
+La table ajoutée apparaît dans le YAML
+La table est sauvegardée avec le Draft
+
+Règles de gestion
+
+Une table correspond à un schema object ODCS. Elle ne rend le contrat publiable que si les règles ODCS et MVP sont respectées.
+
+Validation fonctionnelle
+
+Tester ajout table, nom manquant, doublon, ajout colonne, sauvegarde et génération YAML.","## Description métier
+
+L’utilisateur doit pouvoir ajouter manuellement une table/schema object dans un Draft, notamment pour compléter ou corriger le résultat du parsing DDL.
+* * *
+
+## Périmètre inclus
+
+*   Bouton Add table
+*   Création d’un schema object
+*   Nom de table obligatoire
+*   Description optionnelle
+*   Ajout de colonnes dans la table
+*   Validation des doublons simples
+* * *
+
+## Périmètre exclu
+
+*   Template de table avancé
+*   Import depuis source
+*   Graphe relationnel avancé
+*   Génération IA
+* * *
+
+## Critères d’acceptation
+
+1. Le clic Add table crée une nouvelle table éditable
+2. Le nom de table est obligatoire
+3. Deux tables ne peuvent pas avoir le même nom dans le même contrat sans erreur
+4. L’utilisateur peut ajouter au moins une colonne
+5. La table ajoutée apparaît dans le YAML
+6. La table est sauvegardée avec le Draft
+* * *
+
+## Règles de gestion
+
+Une table correspond à un schema object ODCS. Elle ne rend le contrat publiable que si les règles ODCS et MVP sont respectées.
+* * *
+
+## Validation fonctionnelle
+
+Tester ajout table, nom manquant, doublon, ajout colonne, sauvegarde et génération YAML.","a faire","33856282.00017940000000000000000000000000","2026-05-05T14:50:40.418Z","2026-05-06T13:25:34.281Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP2 - Editor & Lifecycle","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a4h","schema editor","","","","[]"
+"86c9n9a4e","","ETQ utilisateur, je veux éditer le schéma afin de définir les tables et champs du contrat","Description métier
+
+L’utilisateur doit pouvoir modifier le schéma généré depuis le DDL ou créé manuellement, sous une forme lisible pour profils techniques et non techniques, sans avoir à éditer directement le YAML.
+
+Périmètre inclus
+
+Liste ou table de schema objects
+Nom et description de table
+Nom physique de colonne
+Logical name de colonne
+Génération automatique d’un logical name human-readable
+physicalType
+logicalType
+Description de colonne
+Flags simples : required, primaryKey, unique
+Classification simple si utile
+Ordre stable des colonnes
+Ajout et édition de champs
+Mise à jour du YAML read-only après sauvegarde
+
+Périmètre exclu
+
+Graphe avancé obligatoire
+Lookup glossaire Zeenea
+Classification automatique
+Suggestion IA
+Contrôle de qualité exécutable
+Édition YAML directe
+Suppression de champ, couverte par une US dédiée
+
+Critères d’acceptation
+
+L’utilisateur peut modifier le nom d’une table.
+L’utilisateur peut modifier la description d’une table.
+L’utilisateur peut ajouter un champ à une table en Draft.
+L’utilisateur peut modifier le nom physique d’un champ.
+Lorsqu’un champ est créé depuis un nom physique, le logical name est généré automatiquement.
+Exemple : customer_id génère Customer Id.
+Si l’utilisateur modifie le nom physique d’un champ, le logical name est mis à jour tant qu’il n’a pas été personnalisé manuellement.
+Si le logical name a été personnalisé manuellement, le système ne l’écrase pas sans action explicite.
+L’utilisateur peut corriger physicalType et logicalType.
+L’utilisateur peut modifier required, primaryKey et unique.
+L’ordre des colonnes reste stable.
+Les champs obligatoires du schema sont validés.
+Les modifications sauvegardées sont reflétées dans le YAML read-only.
+
+Règles de gestion
+
+Le schéma ODCS est représenté par des objects et properties. L’UI peut être une table ou liste éditable plutôt qu’un graphe avancé, tant que l’usage reste clair.
+
+Validation fonctionnelle
+
+Tester édition issue d’un DDL, édition manuelle, génération du logical name, logical name personnalisé, champs obligatoires, génération YAML et sauvegarde du Draft.","Description métier
+
+L’utilisateur doit pouvoir modifier le schéma généré depuis le DDL ou créé manuellement, sous une forme lisible pour profils techniques et non techniques, sans avoir à éditer directement le YAML.
+
+Périmètre inclus
+
+Liste ou table de schema objects
+Nom et description de table
+Nom physique de colonne
+Logical name de colonne
+Génération automatique d’un logical name human-readable
+physicalType
+logicalType
+Description de colonne
+Flags simples : required, primaryKey, unique
+Classification simple si utile
+Ordre stable des colonnes
+Ajout et édition de champs
+Mise à jour du YAML read-only après sauvegarde
+
+Périmètre exclu
+
+Graphe avancé obligatoire
+Lookup glossaire Zeenea
+Classification automatique
+Suggestion IA
+Contrôle de qualité exécutable
+Édition YAML directe
+Suppression de champ, couverte par une US dédiée
+
+Critères d’acceptation
+
+L’utilisateur peut modifier le nom d’une table.
+L’utilisateur peut modifier la description d’une table.
+L’utilisateur peut ajouter un champ à une table en Draft.
+L’utilisateur peut modifier le nom physique d’un champ.
+Lorsqu’un champ est créé depuis un nom physique, le logical name est généré automatiquement.
+Exemple : customer_id génère Customer Id.
+Si l’utilisateur modifie le nom physique d’un champ, le logical name est mis à jour tant qu’il n’a pas été personnalisé manuellement.
+Si le logical name a été personnalisé manuellement, le système ne l’écrase pas sans action explicite.
+L’utilisateur peut corriger physicalType et logicalType.
+L’utilisateur peut modifier required, primaryKey et unique.
+L’ordre des colonnes reste stable.
+Les champs obligatoires du schema sont validés.
+Les modifications sauvegardées sont reflétées dans le YAML read-only.
+
+Règles de gestion
+
+Le schéma ODCS est représenté par des objects et properties. L’UI peut être une table ou liste éditable plutôt qu’un graphe avancé, tant que l’usage reste clair.
+
+Validation fonctionnelle
+
+Tester édition issue d’un DDL, édition manuelle, génération du logical name, logical name personnalisé, champs obligatoires, génération YAML et sauvegarde du Draft.","## Description métier
+
+L’utilisateur doit pouvoir modifier le schéma généré depuis le DDL ou créé manuellement, sous une forme lisible pour profils techniques et non techniques, sans avoir à éditer directement le YAML.
+* * *
+
+## Périmètre inclus
+
+*   Liste ou table de schema objects
+*   Nom et description de table
+*   Nom physique de colonne
+*   Logical name de colonne
+*   Génération automatique d’un logical name human-readable
+*   `physicalType`
+*   `logicalType`
+*   Description de colonne
+*   Flags simples : `required`, `primaryKey`, `unique`
+*   Classification simple si utile
+*   Ordre stable des colonnes
+*   Ajout et édition de champs
+*   Mise à jour du YAML read-only après sauvegarde
+* * *
+
+## Périmètre exclu
+
+*   Graphe avancé obligatoire
+*   Lookup glossaire Zeenea
+*   Classification automatique
+*   Suggestion IA
+*   Contrôle de qualité exécutable
+*   Édition YAML directe
+*   Suppression de champ, couverte par une US dédiée
+* * *
+
+## Critères d’acceptation
+
+1. L’utilisateur peut modifier le nom d’une table.
+2. L’utilisateur peut modifier la description d’une table.
+3. L’utilisateur peut ajouter un champ à une table en Draft.
+4. L’utilisateur peut modifier le nom physique d’un champ.
+5. Lorsqu’un champ est créé depuis un nom physique, le logical name est généré automatiquement.
+6. Exemple : `customer_id` génère `Customer Id`.
+7. Si l’utilisateur modifie le nom physique d’un champ, le logical name est mis à jour tant qu’il n’a pas été personnalisé manuellement.
+8. Si le logical name a été personnalisé manuellement, le système ne l’écrase pas sans action explicite.
+9. L’utilisateur peut corriger `physicalType` et `logicalType`.
+10. L’utilisateur peut modifier `required`, `primaryKey` et `unique`.
+11. L’ordre des colonnes reste stable.
+12. Les champs obligatoires du schema sont validés.
+13. Les modifications sauvegardées sont reflétées dans le YAML read-only.
+* * *
+
+## Règles de gestion
+
+Le schéma ODCS est représenté par des objects et properties. L’UI peut être une table ou liste éditable plutôt qu’un graphe avancé, tant que l’usage reste clair.
+* * *
+
+## Validation fonctionnelle
+
+Tester édition issue d’un DDL, édition manuelle, génération du logical name, logical name personnalisé, champs obligatoires, génération YAML et sauvegarde du Draft.","en cours","33856557.50075810000000000000000000000000","2026-05-05T14:50:40.087Z","2026-05-19T13:24:29.919Z","","","Vincent Ghislain","","Chloe Noger <chloe@lonestone.studio>, Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP2 - Editor & Lifecycle","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a4e","schema editor","","","","[]"

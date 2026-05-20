@@ -1,0 +1,322 @@
+"id","custom_id","name","text_content","description","markdown_description","status","orderindex","date_created","date_updated","date_closed","date_done","creator","assignees","watchers","priority","due_date","start_date","points","time_estimate","time_spent","list","folder","space","url","tags","parent","dependencies","linked_tasks","custom_fields_raw_json"
+"86c9n9a6u","","ETQ équipe technique, je veux packager l’application pour un déploiement conteneurisé afin de préparer l’exécution Kubernetes cible","Description métier
+
+Le livrable MVP doit pouvoir être construit et lancé sous forme de conteneur, en cohérence avec la cible de déploiement Kubernetes évoquée côté Zeenea.
+
+Périmètre inclus
+
+Dockerfile ou équivalent
+Configuration runtime
+Variables d’environnement
+Healthcheck simple
+Documentation de lancement
+Préparation déploiement Kubernetes
+Compatibilité auth/Git via configuration
+
+Périmètre exclu
+
+Helm chart complet si non demandé
+Observabilité avancée
+Autoscaling
+Multi-tenant complexe
+CI/CD complet de production
+
+Critères d’acceptation
+
+L’application se build en conteneur
+Le conteneur démarre avec une configuration locale
+Les variables Git et auth sont externalisées
+Un healthcheck répond
+La documentation explique comment lancer le MVP
+Le packaging ne contient pas de secrets
+
+Règles de gestion
+
+Le packaging doit rester minimal mais compatible avec la cible Kubernetes. Les secrets et endpoints doivent être injectés par configuration.
+
+Validation fonctionnelle
+
+Tester build conteneur, run local, variables manquantes, healthcheck et connexion aux dépendances configurées.","Description métier
+
+Le livrable MVP doit pouvoir être construit et lancé sous forme de conteneur, en cohérence avec la cible de déploiement Kubernetes évoquée côté Zeenea.
+
+Périmètre inclus
+
+Dockerfile ou équivalent
+Configuration runtime
+Variables d’environnement
+Healthcheck simple
+Documentation de lancement
+Préparation déploiement Kubernetes
+Compatibilité auth/Git via configuration
+
+Périmètre exclu
+
+Helm chart complet si non demandé
+Observabilité avancée
+Autoscaling
+Multi-tenant complexe
+CI/CD complet de production
+
+Critères d’acceptation
+
+L’application se build en conteneur
+Le conteneur démarre avec une configuration locale
+Les variables Git et auth sont externalisées
+Un healthcheck répond
+La documentation explique comment lancer le MVP
+Le packaging ne contient pas de secrets
+
+Règles de gestion
+
+Le packaging doit rester minimal mais compatible avec la cible Kubernetes. Les secrets et endpoints doivent être injectés par configuration.
+
+Validation fonctionnelle
+
+Tester build conteneur, run local, variables manquantes, healthcheck et connexion aux dépendances configurées.","## Description métier
+
+Le livrable MVP doit pouvoir être construit et lancé sous forme de conteneur, en cohérence avec la cible de déploiement Kubernetes évoquée côté Zeenea.
+* * *
+
+## Périmètre inclus
+
+*   Dockerfile ou équivalent
+*   Configuration runtime
+*   Variables d’environnement
+*   Healthcheck simple
+*   Documentation de lancement
+*   Préparation déploiement Kubernetes
+*   Compatibilité auth/Git via configuration
+* * *
+
+## Périmètre exclu
+
+*   Helm chart complet si non demandé
+*   Observabilité avancée
+*   Autoscaling
+*   Multi-tenant complexe
+*   CI/CD complet de production
+* * *
+
+## Critères d’acceptation
+
+1. L’application se build en conteneur
+2. Le conteneur démarre avec une configuration locale
+3. Les variables Git et auth sont externalisées
+4. Un healthcheck répond
+5. La documentation explique comment lancer le MVP
+6. Le packaging ne contient pas de secrets
+* * *
+
+## Règles de gestion
+
+Le packaging doit rester minimal mais compatible avec la cible Kubernetes. Les secrets et endpoints doivent être injectés par configuration.
+* * *
+
+## Validation fonctionnelle
+
+Tester build conteneur, run local, variables manquantes, healthcheck et connexion aux dépendances configurées.","a faire","33856231.00177380000000000000000000000000","2026-05-05T14:50:44.770Z","2026-05-06T13:10:21.074Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","low","","","","","","SP6 - Auth & Devops","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a6u","delivery","","","","[]"
+"86c9n9a41","","ETQ utilisateur, je veux me déconnecter afin de quitter l’application","Description métier
+
+L’utilisateur connecté doit pouvoir terminer sa session depuis l’interface et revenir vers l’état non authentifié attendu par le provider Zeenea.
+
+Périmètre inclus
+
+Action Logout visible une fois connecté
+Invalidation de la session applicative
+Délégation au provider Zeenea si nécessaire
+Redirection vers le login ou la page prévue par Zeenea
+
+Périmètre exclu
+
+Gestion multi-session avancée
+Audit détaillé des connexions
+Révocation de tokens hors intégration standard
+
+Critères d’acceptation
+
+Lorsque l’utilisateur clique sur Logout, sa session est terminée
+Après logout, l’utilisateur est redirigé vers l’écran approprié
+Après logout, une URL interne redirige vers l’authentification
+Aucune donnée de contrat n’est modifiée par le logout
+
+Règles de gestion
+
+Le provider Zeenea reste source de vérité pour l’identité. Le logout ne supprime aucune donnée métier.
+
+Validation fonctionnelle
+
+Tester logout depuis une session valide, accès direct après déconnexion et comportement en cas d’erreur provider.","Description métier
+
+L’utilisateur connecté doit pouvoir terminer sa session depuis l’interface et revenir vers l’état non authentifié attendu par le provider Zeenea.
+
+Périmètre inclus
+
+Action Logout visible une fois connecté
+Invalidation de la session applicative
+Délégation au provider Zeenea si nécessaire
+Redirection vers le login ou la page prévue par Zeenea
+
+Périmètre exclu
+
+Gestion multi-session avancée
+Audit détaillé des connexions
+Révocation de tokens hors intégration standard
+
+Critères d’acceptation
+
+Lorsque l’utilisateur clique sur Logout, sa session est terminée
+Après logout, l’utilisateur est redirigé vers l’écran approprié
+Après logout, une URL interne redirige vers l’authentification
+Aucune donnée de contrat n’est modifiée par le logout
+
+Règles de gestion
+
+Le provider Zeenea reste source de vérité pour l’identité. Le logout ne supprime aucune donnée métier.
+
+Validation fonctionnelle
+
+Tester logout depuis une session valide, accès direct après déconnexion et comportement en cas d’erreur provider.","## Description métier
+
+L’utilisateur connecté doit pouvoir terminer sa session depuis l’interface et revenir vers l’état non authentifié attendu par le provider Zeenea.
+* * *
+
+## Périmètre inclus
+
+*   Action Logout visible une fois connecté
+*   Invalidation de la session applicative
+*   Délégation au provider Zeenea si nécessaire
+*   Redirection vers le login ou la page prévue par Zeenea
+* * *
+
+## Périmètre exclu
+
+*   Gestion multi-session avancée
+*   Audit détaillé des connexions
+*   Révocation de tokens hors intégration standard
+* * *
+
+## Critères d’acceptation
+
+1. Lorsque l’utilisateur clique sur Logout, sa session est terminée
+2. Après logout, l’utilisateur est redirigé vers l’écran approprié
+3. Après logout, une URL interne redirige vers l’authentification
+4. Aucune donnée de contrat n’est modifiée par le logout
+* * *
+
+## Règles de gestion
+
+Le provider Zeenea reste source de vérité pour l’identité. Le logout ne supprime aucune donnée métier.
+* * *
+
+## Validation fonctionnelle
+
+Tester logout depuis une session valide, accès direct après déconnexion et comportement en cas d’erreur provider.","a faire","33856220.00119000000000000000000000000000","2026-05-05T14:50:38.735Z","2026-05-06T13:09:34.568Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP6 - Auth & Devops","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a41","auth","","","","[]"
+"86c9n9a3q","","ETQ utilisateur, je veux me connecter via l’authentification Zeenea afin d’accéder au Data Contract Studio","Description métier
+
+L’utilisateur doit pouvoir accéder au Data Contract Studio via le framework d’authentification Zeenea. L’intégration finale dépend de la documentation Zeenea à recevoir, mais le MVP doit consommer l’identité fournie par la plateforme et protéger les routes internes.
+
+Périmètre inclus
+
+Page ou redirection de login
+Déclenchement du flux d’authentification Zeenea
+Récupération de l’utilisateur connecté
+Protection des routes internes
+Redirection vers la liste des contrats après succès
+Fallback dev/local si nécessaire
+
+Périmètre exclu
+
+Création de compte
+Mot de passe oublié géré par DCS
+Gestion fine Owner/Contributor/Viewer
+Collaboration et permissions avancées
+
+Critères d’acceptation
+
+Un utilisateur non authentifié est redirigé vers le login
+Un utilisateur authentifié accède à la page Contracts
+L’application récupère au minimum l’identifiant et le nom ou email de l’utilisateur
+En cas d’échec d’authentification, un message compréhensible est affiché
+Les routes internes restent inaccessibles sans session valide
+
+Règles de gestion
+
+L’authentification est déléguée à Zeenea. Dans le MVP, tous les utilisateurs authentifiés sont considérés comme ayant les droits nécessaires au parcours Owner, les rôles collaboratifs étant hors MVP.
+
+Validation fonctionnelle
+
+Tester accès non authentifié, login réussi, login échoué, expiration de session et accès direct à une route protégée.","Description métier
+
+L’utilisateur doit pouvoir accéder au Data Contract Studio via le framework d’authentification Zeenea. L’intégration finale dépend de la documentation Zeenea à recevoir, mais le MVP doit consommer l’identité fournie par la plateforme et protéger les routes internes.
+
+Périmètre inclus
+
+Page ou redirection de login
+Déclenchement du flux d’authentification Zeenea
+Récupération de l’utilisateur connecté
+Protection des routes internes
+Redirection vers la liste des contrats après succès
+Fallback dev/local si nécessaire
+
+Périmètre exclu
+
+Création de compte
+Mot de passe oublié géré par DCS
+Gestion fine Owner/Contributor/Viewer
+Collaboration et permissions avancées
+
+Critères d’acceptation
+
+Un utilisateur non authentifié est redirigé vers le login
+Un utilisateur authentifié accède à la page Contracts
+L’application récupère au minimum l’identifiant et le nom ou email de l’utilisateur
+En cas d’échec d’authentification, un message compréhensible est affiché
+Les routes internes restent inaccessibles sans session valide
+
+Règles de gestion
+
+L’authentification est déléguée à Zeenea. Dans le MVP, tous les utilisateurs authentifiés sont considérés comme ayant les droits nécessaires au parcours Owner, les rôles collaboratifs étant hors MVP.
+
+Validation fonctionnelle
+
+Tester accès non authentifié, login réussi, login échoué, expiration de session et accès direct à une route protégée.","## Description métier
+
+L’utilisateur doit pouvoir accéder au Data Contract Studio via le framework d’authentification Zeenea. L’intégration finale dépend de la documentation Zeenea à recevoir, mais le MVP doit consommer l’identité fournie par la plateforme et protéger les routes internes.
+* * *
+
+## Périmètre inclus
+
+*   Page ou redirection de login
+*   Déclenchement du flux d’authentification Zeenea
+*   Récupération de l’utilisateur connecté
+*   Protection des routes internes
+*   Redirection vers la liste des contrats après succès
+*   Fallback dev/local si nécessaire
+* * *
+
+## Périmètre exclu
+
+*   Création de compte
+*   Mot de passe oublié géré par DCS
+*   Gestion fine Owner/Contributor/Viewer
+*   Collaboration et permissions avancées
+* * *
+
+## Critères d’acceptation
+
+1. Un utilisateur non authentifié est redirigé vers le login
+2. Un utilisateur authentifié accède à la page Contracts
+3. L’application récupère au minimum l’identifiant et le nom ou email de l’utilisateur
+4. En cas d’échec d’authentification, un message compréhensible est affiché
+5. Les routes internes restent inaccessibles sans session valide
+* * *
+
+## Règles de gestion
+
+L’authentification est déléguée à Zeenea. Dans le MVP, tous les utilisateurs authentifiés sont considérés comme ayant les droits nécessaires au parcours Owner, les rôles collaboratifs étant hors MVP.
+* * *
+
+## Validation fonctionnelle
+
+Tester accès non authentifié, login réussi, login échoué, expiration de session et accès direct à une route protégée.","a faire","33856219.00114840000000000000000000000000","2026-05-05T14:50:37.935Z","2026-05-06T13:09:34.568Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP6 - Auth & Devops","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a3q","auth","","","","[]"

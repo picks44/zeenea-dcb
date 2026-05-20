@@ -1,0 +1,49 @@
+NAME: ETQ système, je veux stocker les métadonnées de publication afin de tracer chaque version activée
+
+Description métier
+
+Chaque version publiée doit conserver les informations nécessaires à l’audit, à l’historique, à la comparaison et à la vérification d’intégrité : version, statut, auteur, commentaire de publication, type de changement, checksum et commit Git.
+
+Périmètre inclus
+
+Version publiée
+Version source utilisée pour créer le Draft
+Version cible publiée
+Statut final
+Date de publication
+Auteur de publication
+Commentaire What changed?
+Type de changement : Update ou Breaking
+Checksum MD5
+Commit hash
+Chemin Git du YAML
+Lien logique vers le contrat
+
+Périmètre exclu
+
+Audit complet champ par champ
+Journal de collaboration
+Signature électronique
+Traçabilité détaillée des autosaves
+Historique Git complet exposé en UI
+
+Critères d’acceptation
+
+Une publication crée un enregistrement de métadonnées.
+Les métadonnées sont consultables ou exploitables depuis l’historique des versions.
+Le commentaire de publication est stocké avec la version publiée.
+Si aucun commentaire utilisateur n’est fourni, un commentaire par défaut est stocké.
+Le type de changement Update ou Breaking est stocké avec la version publiée.
+La version source et la version cible sont stockées.
+Le commit hash correspond au commit Git ayant écrit le YAML publié.
+Le checksum MD5 correspond au YAML effectivement publié.
+Les métadonnées d’une version publiée sont immutables.
+Les métadonnées restent disponibles après soft delete du contrat.
+
+Règles de gestion
+
+Les versions publiées sont append-only. Les métadonnées de publication ne doivent jamais être modifiées par l’édition d’un Draft ultérieur. Le commentaire de publication sert à alimenter l’historique et le message de version visible dans l’interface.
+
+Validation fonctionnelle
+
+Tester première publication, publication Update, publication Breaking, commentaire renseigné, commentaire vide, historique, soft delete et cohérence commit/checksum.

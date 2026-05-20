@@ -1,0 +1,51 @@
+NAME: ETQ utilisateur, je veux abandonner un Draft de nouvelle version afin de revenir à la dernière version publiée
+
+Description métier
+
+Lorsqu’un Draft contient des changements non publiés, l’utilisateur peut choisir de les abandonner pour revenir à la dernière version publiée du contrat. Cette action permet d’annuler un travail en cours sans modifier l’historique des versions publiées.
+
+Périmètre inclus
+
+Action de retour depuis la carte Draft dans l’historique des versions
+Tooltip Revert to vX.Y.Z
+Modale de confirmation Discard changes
+Message indiquant que l’action est irréversible
+Annulation via Cancel
+Confirmation via Discard
+Suppression des changements non publiés du Draft
+Retour à la dernière version publiée
+Recalcul de l’état de publication
+
+Périmètre exclu
+
+Rollback d’une version publiée
+Restauration d’un Draft abandonné
+Annulation partielle champ par champ
+Historique des autosaves supprimées
+Modification Git
+Suppression des versions Active ou Deprecated
+
+Critères d’acceptation
+
+L’action Revert est disponible uniquement lorsqu’un Draft non publié existe.
+Au survol, un tooltip indique la version cible, par exemple Revert to v1.1.0.
+Le clic ouvre une modale Discard changes.
+La modale affiche un message du type : Revert all unpublished changes and return to vX.Y.Z? This cannot be undone.
+Le bouton Cancel ferme la modale sans modifier le Draft.
+Le bouton Discard supprime les changements non publiés.
+Après confirmation, le contrat revient à la dernière version publiée.
+La version Active reste inchangée.
+Les versions Deprecated restent inchangées.
+Aucun commit Git n’est créé par cette action.
+Aucun checksum MD5 publié n’est modifié.
+Le Draft disparaît de l’historique ou repasse dans un état vide selon la règle UI retenue.
+Le bouton Publish update n’est plus disponible si aucun Draft publiable n’existe.
+Les données d’autosave associées au Draft abandonné sont nettoyées ou ignorées.
+
+Règles de gestion
+
+L’abandon d’un Draft agit uniquement sur les changements non publiés. Une version publiée est immutable et ne peut jamais être modifiée ou supprimée par cette action.
+
+Validation fonctionnelle
+
+Tester l’ouverture de la modale, l’annulation, la confirmation, un Draft avec changements, un Draft sans changement, la persistance des versions publiées, l’absence de nouveau commit Git et l’état final de l’historique.

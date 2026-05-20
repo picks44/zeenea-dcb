@@ -1,0 +1,50 @@
+NAME: ETQ utilisateur, je veux savoir si mon contrat est publiable afin de publier uniquement un contrat complet
+
+Description métier
+
+Le système doit indiquer clairement si le Draft respecte les champs obligatoires ODCS v3.1.0 et les règles minimales produit nécessaires à une publication Git fiable.
+
+Périmètre inclus
+
+Validation apiVersion
+Validation kind
+Validation id
+Validation version cible
+Validation status système
+Validation name produit
+Validation schema présent
+Validation name sur chaque schema object
+Au moins une table
+Au moins une colonne par table
+YAML générable
+Messages d’erreur par section
+
+Périmètre exclu
+
+Policies Zeenea
+Règles gouvernance client
+Validation SEMQL
+Détection automatique breaking changes
+Approval workflow
+
+Critères d’acceptation
+
+Publish est désactivé si un champ obligatoire manque
+Les erreurs sont visibles dans la section concernée
+apiVersion vaut v3.1.0
+kind vaut DataContract
+id existe
+status est contrôlé par le système
+name est obligatoire côté produit
+schema contient au moins un objet
+Chaque objet a un name
+Chaque table a au moins une propriété
+Le YAML est générable sans erreur
+
+Règles de gestion
+
+La validation MVP combine les obligations ODCS et des règles produit minimales. Les quality rule notes ne bloquent pas la publication.
+
+Validation fonctionnelle
+
+Tester contrat incomplet, fundamentals incomplets, schema vide, colonne sans nom, YAML non générable et contrat publiable.

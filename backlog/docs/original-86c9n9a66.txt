@@ -1,0 +1,50 @@
+NAME: ETQ utilisateur, je veux comparer deux états d’un contrat afin de comprendre les différences en Form ou YAML
+
+Description métier
+
+L’utilisateur doit pouvoir comparer deux états d’un contrat pour comprendre les différences avant ou après publication. Le MVP couvre la comparaison entre deux versions publiées et la comparaison entre le Draft en cours et une version publiée.
+
+Périmètre inclus
+
+Accès depuis la section Versions
+Accès depuis la carte Draft
+Sélection d’un état à gauche
+Sélection d’un état à droite
+Sélection possible du Draft si un Draft existe
+Sélection des versions publiées disponibles
+Mode Form
+Mode YAML
+Diff simple sur Contract info / Fundamentals
+Diff simple sur Schema
+Ajouts, suppressions et modifications
+Affichage YAML side-by-side read-only
+
+Périmètre exclu
+
+Résumé IA
+Diff sémantique avancé
+Impact analysis consommateurs
+Rollback
+Merge de versions
+Édition depuis l’écran de comparaison
+Blocage automatique des breaking changes
+
+Critères d’acceptation
+
+L’utilisateur peut choisir deux versions publiées à comparer.
+L’utilisateur peut choisir Draft comme source ou cible si un Draft existe.
+Le bouton Compare depuis la carte Draft ouvre par défaut la comparaison Draft vs dernière version Active.
+Les dropdowns affichent le Draft et les versions publiées avec leur numéro, commentaire et date si disponibles.
+Le mode Form affiche les changements par section, notamment Contract info et Schema.
+Le mode YAML affiche un diff side-by-side en lecture seule.
+Les ajouts, suppressions et modifications sont visuellement différenciés.
+Le diff indique clairement quel état est affiché à gauche et quel état est affiché à droite.
+La comparaison reste consultative et ne modifie aucun contrat.
+
+Règles de gestion
+
+La comparaison est simple et non bloquante dans le MVP. La détection automatique de breaking changes, le rollback, le merge et le résumé IA sont hors MVP.
+
+Validation fonctionnelle
+
+Tester version publiée vs version publiée, Draft vs Active, inversion gauche/droite, mode Form, mode YAML, ajout table, suppression colonne, changement type, changement description et aucun changement.

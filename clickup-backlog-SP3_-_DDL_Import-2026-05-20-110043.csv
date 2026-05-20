@@ -1,0 +1,841 @@
+"id","custom_id","name","text_content","description","markdown_description","status","orderindex","date_created","date_updated","date_closed","date_done","creator","assignees","watchers","priority","due_date","start_date","points","time_estimate","time_spent","list","folder","space","url","tags","parent","dependencies","linked_tasks","custom_fields_raw_json"
+"86c9nw8d1","","ETQ système, je veux sérialiser le modèle interne en YAML ODCS v3.1.0 afin de produire le contrat technique","Description métier
+
+Le système doit générer un YAML ODCS stable et lisible à partir du modèle applicatif, sans que l’utilisateur ait à éditer le YAML directement.
+
+Périmètre inclus
+
+Sérialisation Fundamentals
+Sérialisation Schema
+Sérialisation notes qualité si compatible
+Ordre stable des sections
+Valeurs système apiVersion, kind, id, version, status
+Tests unitaires
+YAML stable pour checksum
+
+Périmètre exclu
+
+Édition YAML directe
+Round-trip YAML complet
+Import YAML existant
+Sérialisation des sections ODCS hors MVP non renseignées
+
+Critères d’acceptation
+
+Un Draft valide produit un YAML ODCS
+L’ordre des clés reste stable entre deux générations identiques
+Les champs système sont générés par le système
+Le schema est généré depuis les objects/properties
+Le YAML généré peut être affiché en read-only
+Le même payload sert à la publication et au checksum
+
+Règles de gestion
+
+Le YAML généré est la représentation technique publiée dans Git. Sa stabilité est nécessaire pour que le MD5 soit fiable.
+
+Validation fonctionnelle
+
+Tester génération depuis DDL, génération depuis création manuelle, stabilité du YAML, caractères spéciaux et champs vides.","Description métier
+
+Le système doit générer un YAML ODCS stable et lisible à partir du modèle applicatif, sans que l’utilisateur ait à éditer le YAML directement.
+
+Périmètre inclus
+
+Sérialisation Fundamentals
+Sérialisation Schema
+Sérialisation notes qualité si compatible
+Ordre stable des sections
+Valeurs système apiVersion, kind, id, version, status
+Tests unitaires
+YAML stable pour checksum
+
+Périmètre exclu
+
+Édition YAML directe
+Round-trip YAML complet
+Import YAML existant
+Sérialisation des sections ODCS hors MVP non renseignées
+
+Critères d’acceptation
+
+Un Draft valide produit un YAML ODCS
+L’ordre des clés reste stable entre deux générations identiques
+Les champs système sont générés par le système
+Le schema est généré depuis les objects/properties
+Le YAML généré peut être affiché en read-only
+Le même payload sert à la publication et au checksum
+
+Règles de gestion
+
+Le YAML généré est la représentation technique publiée dans Git. Sa stabilité est nécessaire pour que le MD5 soit fiable.
+
+Validation fonctionnelle
+
+Tester génération depuis DDL, génération depuis création manuelle, stabilité du YAML, caractères spéciaux et champs vides.","## Description métier
+
+Le système doit générer un YAML ODCS stable et lisible à partir du modèle applicatif, sans que l’utilisateur ait à éditer le YAML directement.
+* * *
+
+## Périmètre inclus
+
+*   Sérialisation Fundamentals
+*   Sérialisation Schema
+*   Sérialisation notes qualité si compatible
+*   Ordre stable des sections
+*   Valeurs système apiVersion, kind, id, version, status
+*   Tests unitaires
+*   YAML stable pour checksum
+* * *
+
+## Périmètre exclu
+
+*   Édition YAML directe
+*   Round-trip YAML complet
+*   Import YAML existant
+*   Sérialisation des sections ODCS hors MVP non renseignées
+* * *
+
+## Critères d’acceptation
+
+1. Un Draft valide produit un YAML ODCS
+2. L’ordre des clés reste stable entre deux générations identiques
+3. Les champs système sont générés par le système
+4. Le schema est généré depuis les objects/properties
+5. Le YAML généré peut être affiché en read-only
+6. Le même payload sert à la publication et au checksum
+* * *
+
+## Règles de gestion
+
+Le YAML généré est la représentation technique publiée dans Git. Sa stabilité est nécessaire pour que le MD5 soit fiable.
+* * *
+
+## Validation fonctionnelle
+
+Tester génération depuis DDL, génération depuis création manuelle, stabilité du YAML, caractères spéciaux et champs vides.","a faire","33856287.00050280000000000000000000000000","2026-05-06T13:23:24.609Z","2026-05-06T13:26:15.265Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP3 - DDL Import","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9nw8d1","yaml view","","","","[]"
+"86c9n9a54","","ETQ système, je veux sérialiser le modèle interne en YAML ODCS v3.1.0 afin de produire le contrat technique","Description métier
+
+Le système doit générer un YAML ODCS stable et lisible à partir du modèle applicatif, sans que l’utilisateur ait à éditer le YAML directement.
+
+Périmètre inclus
+
+Sérialisation Fundamentals
+Sérialisation Schema
+Sérialisation notes qualité si compatible
+Ordre stable des sections
+Valeurs système apiVersion, kind, id, version, status
+Tests unitaires
+YAML stable pour checksum
+
+Périmètre exclu
+
+Édition YAML directe
+Round-trip YAML complet
+Import YAML existant
+Sérialisation des sections ODCS hors MVP non renseignées
+
+Critères d’acceptation
+
+Un Draft valide produit un YAML ODCS
+L’ordre des clés reste stable entre deux générations identiques
+Les champs système sont générés par le système
+Le schema est généré depuis les objects/properties
+Le YAML généré peut être affiché en read-only
+Le même payload sert à la publication et au checksum
+
+Règles de gestion
+
+Le YAML généré est la représentation technique publiée dans Git. Sa stabilité est nécessaire pour que le MD5 soit fiable.
+
+Validation fonctionnelle
+
+Tester génération depuis DDL, génération depuis création manuelle, stabilité du YAML, caractères spéciaux et champs vides.","Description métier
+
+Le système doit générer un YAML ODCS stable et lisible à partir du modèle applicatif, sans que l’utilisateur ait à éditer le YAML directement.
+
+Périmètre inclus
+
+Sérialisation Fundamentals
+Sérialisation Schema
+Sérialisation notes qualité si compatible
+Ordre stable des sections
+Valeurs système apiVersion, kind, id, version, status
+Tests unitaires
+YAML stable pour checksum
+
+Périmètre exclu
+
+Édition YAML directe
+Round-trip YAML complet
+Import YAML existant
+Sérialisation des sections ODCS hors MVP non renseignées
+
+Critères d’acceptation
+
+Un Draft valide produit un YAML ODCS
+L’ordre des clés reste stable entre deux générations identiques
+Les champs système sont générés par le système
+Le schema est généré depuis les objects/properties
+Le YAML généré peut être affiché en read-only
+Le même payload sert à la publication et au checksum
+
+Règles de gestion
+
+Le YAML généré est la représentation technique publiée dans Git. Sa stabilité est nécessaire pour que le MD5 soit fiable.
+
+Validation fonctionnelle
+
+Tester génération depuis DDL, génération depuis création manuelle, stabilité du YAML, caractères spéciaux et champs vides.","## Description métier
+
+Le système doit générer un YAML ODCS stable et lisible à partir du modèle applicatif, sans que l’utilisateur ait à éditer le YAML directement.
+* * *
+
+## Périmètre inclus
+
+*   Sérialisation Fundamentals
+*   Sérialisation Schema
+*   Sérialisation notes qualité si compatible
+*   Ordre stable des sections
+*   Valeurs système apiVersion, kind, id, version, status
+*   Tests unitaires
+*   YAML stable pour checksum
+* * *
+
+## Périmètre exclu
+
+*   Édition YAML directe
+*   Round-trip YAML complet
+*   Import YAML existant
+*   Sérialisation des sections ODCS hors MVP non renseignées
+* * *
+
+## Critères d’acceptation
+
+1. Un Draft valide produit un YAML ODCS
+2. L’ordre des clés reste stable entre deux générations identiques
+3. Les champs système sont générés par le système
+4. Le schema est généré depuis les objects/properties
+5. Le YAML généré peut être affiché en read-only
+6. Le même payload sert à la publication et au checksum
+* * *
+
+## Règles de gestion
+
+Le YAML généré est la représentation technique publiée dans Git. Sa stabilité est nécessaire pour que le MD5 soit fiable.
+* * *
+
+## Validation fonctionnelle
+
+Tester génération depuis DDL, génération depuis création manuelle, stabilité du YAML, caractères spéciaux et champs vides.","a faire","33856278.00003740000000000000000000000000","2026-05-05T14:50:41.506Z","2026-05-06T13:24:26.152Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP3 - DDL Import","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a54","yaml view","","","","[]"
+"86c9n9a53","","ETQ utilisateur, je veux visualiser le YAML généré en lecture seule afin de vérifier la représentation technique du contrat","Description métier
+
+L’utilisateur doit pouvoir consulter et copier le YAML généré automatiquement depuis le Draft sauvegardé ou la version publiée, mais aucun rôle ne peut l’éditer directement dans le MVP.
+
+Périmètre inclus
+
+Onglet ou vue YAML
+YAML généré depuis le modèle
+Lecture seule pour tous
+Copie du contenu
+Indication Generated ODCS YAML - Read only
+Synchronisation avec dernier Draft sauvegardé ou version publiée
+
+Périmètre exclu
+
+Édition YAML inline
+Bypass des formulaires
+Merge manuel YAML
+Gestion des droits Owner/Contributor/Viewer
+Validation live avancée dans l’éditeur
+
+Critères d’acceptation
+
+Le YAML est affiché pour un Draft
+Le YAML est affiché pour une version Active
+Aucun champ YAML n’est éditable
+Le YAML reflète les dernières données sauvegardées
+Le YAML publié correspond au payload utilisé pour le checksum
+L’utilisateur peut copier le YAML
+
+Règles de gestion
+
+Le YAML est read-only pour tous les rôles dans le MVP. Les modifications passent uniquement par les formulaires et l’éditeur de schéma.
+
+Validation fonctionnelle
+
+Tester affichage Draft, affichage Active, impossibilité d’édition, copie, synchronisation après sauvegarde et correspondance publication/checksum.","Description métier
+
+L’utilisateur doit pouvoir consulter et copier le YAML généré automatiquement depuis le Draft sauvegardé ou la version publiée, mais aucun rôle ne peut l’éditer directement dans le MVP.
+
+Périmètre inclus
+
+Onglet ou vue YAML
+YAML généré depuis le modèle
+Lecture seule pour tous
+Copie du contenu
+Indication Generated ODCS YAML - Read only
+Synchronisation avec dernier Draft sauvegardé ou version publiée
+
+Périmètre exclu
+
+Édition YAML inline
+Bypass des formulaires
+Merge manuel YAML
+Gestion des droits Owner/Contributor/Viewer
+Validation live avancée dans l’éditeur
+
+Critères d’acceptation
+
+Le YAML est affiché pour un Draft
+Le YAML est affiché pour une version Active
+Aucun champ YAML n’est éditable
+Le YAML reflète les dernières données sauvegardées
+Le YAML publié correspond au payload utilisé pour le checksum
+L’utilisateur peut copier le YAML
+
+Règles de gestion
+
+Le YAML est read-only pour tous les rôles dans le MVP. Les modifications passent uniquement par les formulaires et l’éditeur de schéma.
+
+Validation fonctionnelle
+
+Tester affichage Draft, affichage Active, impossibilité d’édition, copie, synchronisation après sauvegarde et correspondance publication/checksum.","## Description métier
+
+L’utilisateur doit pouvoir consulter et copier le YAML généré automatiquement depuis le Draft sauvegardé ou la version publiée, mais aucun rôle ne peut l’éditer directement dans le MVP.
+* * *
+
+## Périmètre inclus
+
+*   Onglet ou vue YAML
+*   YAML généré depuis le modèle
+*   Lecture seule pour tous
+*   Copie du contenu
+*   Indication Generated ODCS YAML - Read only
+*   Synchronisation avec dernier Draft sauvegardé ou version publiée
+* * *
+
+## Périmètre exclu
+
+*   Édition YAML inline
+*   Bypass des formulaires
+*   Merge manuel YAML
+*   Gestion des droits Owner/Contributor/Viewer
+*   Validation live avancée dans l’éditeur
+* * *
+
+## Critères d’acceptation
+
+1. Le YAML est affiché pour un Draft
+2. Le YAML est affiché pour une version Active
+3. Aucun champ YAML n’est éditable
+4. Le YAML reflète les dernières données sauvegardées
+5. Le YAML publié correspond au payload utilisé pour le checksum
+6. L’utilisateur peut copier le YAML
+* * *
+
+## Règles de gestion
+
+Le YAML est read-only pour tous les rôles dans le MVP. Les modifications passent uniquement par les formulaires et l’éditeur de schéma.
+* * *
+
+## Validation fonctionnelle
+
+Tester affichage Draft, affichage Active, impossibilité d’édition, copie, synchronisation après sauvegarde et correspondance publication/checksum.","a faire","33856279.00007900000000000000000000000000","2026-05-05T14:50:41.506Z","2026-05-06T13:24:26.152Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP3 - DDL Import","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a53","yaml view","","","","[]"
+"86c9n9a47","","ETQ utilisateur, je veux que le DDL soit converti en schéma ODCS éditable afin de compléter le contrat sans ressaisie","Description métier
+
+Après parsing, le système transforme les tables et colonnes détectées en modèle de schéma ODCS éditable. Une table DDL devient un objet de schema et une colonne devient une propriété éditable.
+
+Périmètre inclus
+
+Mapping table vers schema object
+Mapping colonne vers property
+Conservation du physicalType
+Mapping simple vers logicalType
+required depuis NOT NULL
+primaryKey depuis PRIMARY KEY
+unique depuis UNIQUE si présent
+Ordre des colonnes conservé
+Schéma modifiable dans l’éditeur
+
+Périmètre exclu
+
+Mapping sémantique avancé
+Lookup glossaire Zeenea
+Classification automatique
+Détection de relations complexes
+Règles qualité exécutables
+IA de description
+
+Critères d’acceptation
+
+Chaque CREATE TABLE supporté crée un objet de schema
+Chaque colonne supportée crée une propriété
+Le type SQL original est conservé dans physicalType
+Un logicalType simple est proposé quand le mapping est évident
+NOT NULL alimente required
+PRIMARY KEY alimente primaryKey
+Le schéma généré reste éditable
+Le YAML généré reste valide selon les règles MVP
+
+Règles de gestion
+
+Le schema ODCS v3 utilise les notions d’objects et properties. Les champs enrichis non déductibles du DDL peuvent rester vides et être complétés manuellement.
+
+Validation fonctionnelle
+
+Tester conversion simple, multi-table, types courants, contraintes simples, ordre des colonnes et édition post-conversion.","Description métier
+
+Après parsing, le système transforme les tables et colonnes détectées en modèle de schéma ODCS éditable. Une table DDL devient un objet de schema et une colonne devient une propriété éditable.
+
+Périmètre inclus
+
+Mapping table vers schema object
+Mapping colonne vers property
+Conservation du physicalType
+Mapping simple vers logicalType
+required depuis NOT NULL
+primaryKey depuis PRIMARY KEY
+unique depuis UNIQUE si présent
+Ordre des colonnes conservé
+Schéma modifiable dans l’éditeur
+
+Périmètre exclu
+
+Mapping sémantique avancé
+Lookup glossaire Zeenea
+Classification automatique
+Détection de relations complexes
+Règles qualité exécutables
+IA de description
+
+Critères d’acceptation
+
+Chaque CREATE TABLE supporté crée un objet de schema
+Chaque colonne supportée crée une propriété
+Le type SQL original est conservé dans physicalType
+Un logicalType simple est proposé quand le mapping est évident
+NOT NULL alimente required
+PRIMARY KEY alimente primaryKey
+Le schéma généré reste éditable
+Le YAML généré reste valide selon les règles MVP
+
+Règles de gestion
+
+Le schema ODCS v3 utilise les notions d’objects et properties. Les champs enrichis non déductibles du DDL peuvent rester vides et être complétés manuellement.
+
+Validation fonctionnelle
+
+Tester conversion simple, multi-table, types courants, contraintes simples, ordre des colonnes et édition post-conversion.","## Description métier
+
+Après parsing, le système transforme les tables et colonnes détectées en modèle de schéma ODCS éditable. Une table DDL devient un objet de schema et une colonne devient une propriété éditable.
+* * *
+
+## Périmètre inclus
+
+*   Mapping table vers schema object
+*   Mapping colonne vers property
+*   Conservation du physicalType
+*   Mapping simple vers logicalType
+*   required depuis NOT NULL
+*   primaryKey depuis PRIMARY KEY
+*   unique depuis UNIQUE si présent
+*   Ordre des colonnes conservé
+*   Schéma modifiable dans l’éditeur
+* * *
+
+## Périmètre exclu
+
+*   Mapping sémantique avancé
+*   Lookup glossaire Zeenea
+*   Classification automatique
+*   Détection de relations complexes
+*   Règles qualité exécutables
+*   IA de description
+* * *
+
+## Critères d’acceptation
+
+1. Chaque CREATE TABLE supporté crée un objet de schema
+2. Chaque colonne supportée crée une propriété
+3. Le type SQL original est conservé dans physicalType
+4. Un logicalType simple est proposé quand le mapping est évident
+5. NOT NULL alimente required
+6. PRIMARY KEY alimente primaryKey
+7. Le schéma généré reste éditable
+8. Le YAML généré reste valide selon les règles MVP
+* * *
+
+## Règles de gestion
+
+Le schema ODCS v3 utilise les notions d’objects et properties. Les champs enrichis non déductibles du DDL peuvent rester vides et être complétés manuellement.
+* * *
+
+## Validation fonctionnelle
+
+Tester conversion simple, multi-table, types courants, contraintes simples, ordre des colonnes et édition post-conversion.","a faire","33856230.00168570000000000000000000000000","2026-05-05T14:50:39.554Z","2026-05-06T13:10:05.868Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP3 - DDL Import","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a47","contract creation","","","","[]"
+"86c9n9a44","","ETQ utilisateur, je veux importer un DDL afin de générer automatiquement un schéma initial","Description métier
+
+L’utilisateur doit pouvoir fournir un SQL de type CREATE TABLE via saisie, copier-coller, upload, drag and drop ou exemple chargé, puis déclencher un parsing simple pour générer un schéma éditable.
+
+Périmètre inclus
+
+Zone de saisie SQL
+Load example
+Upload .sql
+Drag and drop .sql
+Copy-paste ou saisie manuelle
+Bouton Parse DDL
+Support du sous-ensemble DDL MVP
+Messages d’erreur exploitables
+
+Périmètre exclu
+
+Parsing multi-dialectes avancé
+Connexion directe à une base
+Import Zeenea
+Import YAML existant
+Inférence IA
+Correction automatique du SQL
+
+Critères d’acceptation
+
+Load example injecte un DDL valide
+Un fichier .sql valide est affiché dans la zone de saisie
+Un DDL valide génère un schéma initial
+Un DDL invalide affiche une erreur compréhensible sans casser le Draft
+Les DDL non supportés sont signalés proprement
+L’utilisateur peut modifier ensuite les données générées
+
+Règles de gestion
+
+L’import DDL est le seul point d’entrée P0. Le parser reste volontairement limité au sous-ensemble MVP tant que le dialecte cible n’est pas confirmé.
+
+Validation fonctionnelle
+
+Tester load example, upload, drag and drop, copier-coller, parsing réussi, parsing échoué et syntaxe non supportée.","Description métier
+
+L’utilisateur doit pouvoir fournir un SQL de type CREATE TABLE via saisie, copier-coller, upload, drag and drop ou exemple chargé, puis déclencher un parsing simple pour générer un schéma éditable.
+
+Périmètre inclus
+
+Zone de saisie SQL
+Load example
+Upload .sql
+Drag and drop .sql
+Copy-paste ou saisie manuelle
+Bouton Parse DDL
+Support du sous-ensemble DDL MVP
+Messages d’erreur exploitables
+
+Périmètre exclu
+
+Parsing multi-dialectes avancé
+Connexion directe à une base
+Import Zeenea
+Import YAML existant
+Inférence IA
+Correction automatique du SQL
+
+Critères d’acceptation
+
+Load example injecte un DDL valide
+Un fichier .sql valide est affiché dans la zone de saisie
+Un DDL valide génère un schéma initial
+Un DDL invalide affiche une erreur compréhensible sans casser le Draft
+Les DDL non supportés sont signalés proprement
+L’utilisateur peut modifier ensuite les données générées
+
+Règles de gestion
+
+L’import DDL est le seul point d’entrée P0. Le parser reste volontairement limité au sous-ensemble MVP tant que le dialecte cible n’est pas confirmé.
+
+Validation fonctionnelle
+
+Tester load example, upload, drag and drop, copier-coller, parsing réussi, parsing échoué et syntaxe non supportée.","## Description métier
+
+L’utilisateur doit pouvoir fournir un SQL de type CREATE TABLE via saisie, copier-coller, upload, drag and drop ou exemple chargé, puis déclencher un parsing simple pour générer un schéma éditable.
+* * *
+
+## Périmètre inclus
+
+*   Zone de saisie SQL
+*   Load example
+*   Upload .sql
+*   Drag and drop .sql
+*   Copy-paste ou saisie manuelle
+*   Bouton Parse DDL
+*   Support du sous-ensemble DDL MVP
+*   Messages d’erreur exploitables
+* * *
+
+## Périmètre exclu
+
+*   Parsing multi-dialectes avancé
+*   Connexion directe à une base
+*   Import Zeenea
+*   Import YAML existant
+*   Inférence IA
+*   Correction automatique du SQL
+* * *
+
+## Critères d’acceptation
+
+1. Load example injecte un DDL valide
+2. Un fichier .sql valide est affiché dans la zone de saisie
+3. Un DDL valide génère un schéma initial
+4. Un DDL invalide affiche une erreur compréhensible sans casser le Draft
+5. Les DDL non supportés sont signalés proprement
+6. L’utilisateur peut modifier ensuite les données générées
+* * *
+
+## Règles de gestion
+
+L’import DDL est le seul point d’entrée P0. Le parser reste volontairement limité au sous-ensemble MVP tant que le dialecte cible n’est pas confirmé.
+* * *
+
+## Validation fonctionnelle
+
+Tester load example, upload, drag and drop, copier-coller, parsing réussi, parsing échoué et syntaxe non supportée.","a faire","33856229.00162280000000000000000000000000","2026-05-05T14:50:39.084Z","2026-05-06T13:10:05.868Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP3 - DDL Import","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a44","contract creation","","","","[]"
+"86c9n9a42","","ETQ équipe produit/tech, je veux disposer de fixtures DDL afin de tester le parser MVP de manière reproductible","Description métier
+
+Comme aucun exemple client représentatif n’est disponible à date, l’équipe doit créer une petite bibliothèque de DDL de référence pour tester le parsing, alimenter le bouton Load example et sécuriser la non-régression.
+
+Périmètre inclus
+
+DDL simple une table
+DDL multi-table
+DDL avec PRIMARY KEY, NOT NULL et UNIQUE
+DDL avec types VARCHAR, INT, DECIMAL, DATE, TIMESTAMP, BOOLEAN
+DDL invalide attendu en erreur
+Fixtures versionnées dans le repo
+Utilisation dans tests automatisés
+
+Périmètre exclu
+
+Jeu exhaustif par dialecte
+Fixtures issues de données client sensibles
+Inférence automatique depuis source réelle
+Benchmark de performance parser
+
+Critères d’acceptation
+
+Au moins cinq fichiers DDL de référence existent
+Un exemple valide est disponible depuis Load example
+Chaque fixture a un résultat de parsing attendu
+La fixture invalide produit une erreur contrôlée
+Les tests automatisés utilisent ces fixtures
+Les fixtures ne contiennent aucune donnée sensible
+
+Règles de gestion
+
+Les fixtures doivent rester simples et alignées avec le sous-ensemble DDL MVP. Elles pourront être remplacées ou enrichies avec des DDL clients lorsque disponibles.
+
+Validation fonctionnelle
+
+Tester chaque fixture en local et dans la CI, vérifier la stabilité du schéma généré et documenter les limitations observées.","Description métier
+
+Comme aucun exemple client représentatif n’est disponible à date, l’équipe doit créer une petite bibliothèque de DDL de référence pour tester le parsing, alimenter le bouton Load example et sécuriser la non-régression.
+
+Périmètre inclus
+
+DDL simple une table
+DDL multi-table
+DDL avec PRIMARY KEY, NOT NULL et UNIQUE
+DDL avec types VARCHAR, INT, DECIMAL, DATE, TIMESTAMP, BOOLEAN
+DDL invalide attendu en erreur
+Fixtures versionnées dans le repo
+Utilisation dans tests automatisés
+
+Périmètre exclu
+
+Jeu exhaustif par dialecte
+Fixtures issues de données client sensibles
+Inférence automatique depuis source réelle
+Benchmark de performance parser
+
+Critères d’acceptation
+
+Au moins cinq fichiers DDL de référence existent
+Un exemple valide est disponible depuis Load example
+Chaque fixture a un résultat de parsing attendu
+La fixture invalide produit une erreur contrôlée
+Les tests automatisés utilisent ces fixtures
+Les fixtures ne contiennent aucune donnée sensible
+
+Règles de gestion
+
+Les fixtures doivent rester simples et alignées avec le sous-ensemble DDL MVP. Elles pourront être remplacées ou enrichies avec des DDL clients lorsque disponibles.
+
+Validation fonctionnelle
+
+Tester chaque fixture en local et dans la CI, vérifier la stabilité du schéma généré et documenter les limitations observées.","## Description métier
+
+Comme aucun exemple client représentatif n’est disponible à date, l’équipe doit créer une petite bibliothèque de DDL de référence pour tester le parsing, alimenter le bouton Load example et sécuriser la non-régression.
+* * *
+
+## Périmètre inclus
+
+*   DDL simple une table
+*   DDL multi-table
+*   DDL avec PRIMARY KEY, NOT NULL et UNIQUE
+*   DDL avec types VARCHAR, INT, DECIMAL, DATE, TIMESTAMP, BOOLEAN
+*   DDL invalide attendu en erreur
+*   Fixtures versionnées dans le repo
+*   Utilisation dans tests automatisés
+* * *
+
+## Périmètre exclu
+
+*   Jeu exhaustif par dialecte
+*   Fixtures issues de données client sensibles
+*   Inférence automatique depuis source réelle
+*   Benchmark de performance parser
+* * *
+
+## Critères d’acceptation
+
+1. Au moins cinq fichiers DDL de référence existent
+2. Un exemple valide est disponible depuis Load example
+3. Chaque fixture a un résultat de parsing attendu
+4. La fixture invalide produit une erreur contrôlée
+5. Les tests automatisés utilisent ces fixtures
+6. Les fixtures ne contiennent aucune donnée sensible
+* * *
+
+## Règles de gestion
+
+Les fixtures doivent rester simples et alignées avec le sous-ensemble DDL MVP. Elles pourront être remplacées ou enrichies avec des DDL clients lorsque disponibles.
+* * *
+
+## Validation fonctionnelle
+
+Tester chaque fixture en local et dans la CI, vérifier la stabilité du schéma généré et documenter les limitations observées.","a faire","33856228.00156090000000000000000000000000","2026-05-05T14:50:38.870Z","2026-05-06T13:10:05.868Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP3 - DDL Import","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a42","ddl parser","","","","[]"
+"86c9n9a40","","ETQ équipe produit/tech, je veux définir le sous-ensemble DDL supporté afin de cadrer précisément le parser MVP","Description métier
+
+Le backlog doit expliciter que le dialecte DDL prioritaire n’est pas encore confirmé dans les sources projet. En attendant l’arbitrage, le MVP supporte un sous-ensemble SQL simple basé sur CREATE TABLE, avec erreurs compréhensibles pour les syntaxes non supportées.
+
+Périmètre inclus
+
+Décision ouverte dialecte DDL cible
+Support d’un sous-ensemble CREATE TABLE
+Support d’un ou plusieurs CREATE TABLE
+Noms de tables
+Noms de colonnes
+Types physiques conservés
+NOT NULL
+PRIMARY KEY simple
+UNIQUE simple si présent
+Documentation des limitations
+
+Périmètre exclu
+
+Support multi-dialectes exhaustif
+Procédures stockées
+Index avancés
+Contraintes complexes
+DDL complet vendor-specific
+Connexion directe à une base
+
+Critères d’acceptation
+
+Le dialecte cible est marqué TBD tant qu’il n’est pas arbitré
+La liste des syntaxes supportées est documentée
+La liste des syntaxes explicitement non supportées est documentée
+Les erreurs de parsing sont formulées pour l’utilisateur
+Le parser ne promet pas un support SQL exhaustif
+Les US DDL s’appuient sur cette définition
+
+Règles de gestion
+
+Aucun dialecte prioritaire n’a été retrouvé dans les sources à date. Ne pas choisir arbitrairement PostgreSQL, Snowflake, Databricks ou SQL Server sans validation Zeenea/Fenil/Guillaume.
+
+Validation fonctionnelle
+
+Relire les US DDL avec cette définition, puis valider le dialecte cible dès qu’une décision produit est disponible.","Description métier
+
+Le backlog doit expliciter que le dialecte DDL prioritaire n’est pas encore confirmé dans les sources projet. En attendant l’arbitrage, le MVP supporte un sous-ensemble SQL simple basé sur CREATE TABLE, avec erreurs compréhensibles pour les syntaxes non supportées.
+
+Périmètre inclus
+
+Décision ouverte dialecte DDL cible
+Support d’un sous-ensemble CREATE TABLE
+Support d’un ou plusieurs CREATE TABLE
+Noms de tables
+Noms de colonnes
+Types physiques conservés
+NOT NULL
+PRIMARY KEY simple
+UNIQUE simple si présent
+Documentation des limitations
+
+Périmètre exclu
+
+Support multi-dialectes exhaustif
+Procédures stockées
+Index avancés
+Contraintes complexes
+DDL complet vendor-specific
+Connexion directe à une base
+
+Critères d’acceptation
+
+Le dialecte cible est marqué TBD tant qu’il n’est pas arbitré
+La liste des syntaxes supportées est documentée
+La liste des syntaxes explicitement non supportées est documentée
+Les erreurs de parsing sont formulées pour l’utilisateur
+Le parser ne promet pas un support SQL exhaustif
+Les US DDL s’appuient sur cette définition
+
+Règles de gestion
+
+Aucun dialecte prioritaire n’a été retrouvé dans les sources à date. Ne pas choisir arbitrairement PostgreSQL, Snowflake, Databricks ou SQL Server sans validation Zeenea/Fenil/Guillaume.
+
+Validation fonctionnelle
+
+Relire les US DDL avec cette définition, puis valider le dialecte cible dès qu’une décision produit est disponible.","## Description métier
+
+Le backlog doit expliciter que le dialecte DDL prioritaire n’est pas encore confirmé dans les sources projet. En attendant l’arbitrage, le MVP supporte un sous-ensemble SQL simple basé sur CREATE TABLE, avec erreurs compréhensibles pour les syntaxes non supportées.
+* * *
+
+## Périmètre inclus
+
+*   Décision ouverte dialecte DDL cible
+*   Support d’un sous-ensemble CREATE TABLE
+*   Support d’un ou plusieurs CREATE TABLE
+*   Noms de tables
+*   Noms de colonnes
+*   Types physiques conservés
+*   NOT NULL
+*   PRIMARY KEY simple
+*   UNIQUE simple si présent
+*   Documentation des limitations
+* * *
+
+## Périmètre exclu
+
+*   Support multi-dialectes exhaustif
+*   Procédures stockées
+*   Index avancés
+*   Contraintes complexes
+*   DDL complet vendor-specific
+*   Connexion directe à une base
+* * *
+
+## Critères d’acceptation
+
+1. Le dialecte cible est marqué TBD tant qu’il n’est pas arbitré
+2. La liste des syntaxes supportées est documentée
+3. La liste des syntaxes explicitement non supportées est documentée
+4. Les erreurs de parsing sont formulées pour l’utilisateur
+5. Le parser ne promet pas un support SQL exhaustif
+6. Les US DDL s’appuient sur cette définition
+* * *
+
+## Règles de gestion
+
+Aucun dialecte prioritaire n’a été retrouvé dans les sources à date. Ne pas choisir arbitrairement PostgreSQL, Snowflake, Databricks ou SQL Server sans validation Zeenea/Fenil/Guillaume.
+* * *
+
+## Validation fonctionnelle
+
+Relire les US DDL avec cette définition, puis valider le dialecte cible dès qu’une décision produit est disponible.","a faire","33856227.00154680000000000000000000000000","2026-05-05T14:50:38.673Z","2026-05-06T13:10:05.868Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP3 - DDL Import","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a40","ddl parser","","","","[]"

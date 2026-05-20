@@ -1,0 +1,44 @@
+NAME: ETQ système, je veux définir le modèle interne Contract/Draft/Version/Schema afin de stabiliser l’édition et la publication
+
+Description métier
+
+Le système doit s’appuyer sur un modèle interne clair pour distinguer contrat logique, Draft éditable, versions publiées, objets de schéma, propriétés et métadonnées de publication.
+
+Périmètre inclus
+
+Entité Contract
+Entité Draft
+Entité PublishedVersion
+SchemaObject
+SchemaProperty
+Status Draft/Active/Deprecated
+Target version
+Published version
+Publication metadata
+Soft delete metadata
+
+Périmètre exclu
+
+Modèle collaboratif Contributor/Viewer
+Suggestions
+Commentaires
+Policies Zeenea
+Data product assembly
+
+Critères d’acceptation
+
+Le modèle distingue un Draft d’une version publiée
+Une version publiée est append-only
+Une seule version Active existe par contrat
+Un Draft peut être créé depuis une version Active
+Le modèle permet de générer un YAML ODCS
+Le modèle stocke checksum et commit hash
+Le modèle supporte le soft delete
+
+Règles de gestion
+
+La base applicative porte l’édition des Drafts. Git porte les versions publiées auditables. Une version Draft non publiée n’est pas une version officielle.
+
+Validation fonctionnelle
+
+Revue technique du modèle, tests de persistance, tests Draft versus PublishedVersion et tests de migration minimale si nécessaire.

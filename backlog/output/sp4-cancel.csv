@@ -1,0 +1,2 @@
+id,name,action,reason
+86c9n9a52,"ETQ utilisateur, je veux sauvegarder mon draft afin de conserver mes modifications avant publication",CANCEL,Parcours Save draft P0 invalidé par prototype UX (autosave implicite). Persistance brouillon couverte par 86c9n9a55 UPDATE + US backend 4t-B. Ne pas réintroduire bouton Save draft.

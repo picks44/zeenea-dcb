@@ -1,0 +1,40 @@
+NAME: ETQ utilisateur, je veux sauvegarder mon draft afin de conserver mes modifications avant publication
+
+Description métier
+
+L’utilisateur doit pouvoir sauvegarder explicitement les modifications de son Draft avant publication, sans écrire dans Git ni créer de version publiée.
+
+Périmètre inclus
+
+Bouton Save draft
+Sauvegarde Fundamentals
+Sauvegarde Schema
+Sauvegarde notes qualité
+Feedback succès/erreur
+Mise à jour de updatedAt
+Persistance en base applicative
+
+Périmètre exclu
+
+Publication Git
+Checksum
+Création de version Active
+Autosave comme mécanisme principal
+Collaboration temps réel
+
+Critères d’acceptation
+
+Le bouton Save draft est disponible en Draft
+Le clic sauvegarde les sections éditables
+Un feedback de succès est affiché
+En cas d’erreur, l’utilisateur est informé
+Aucune écriture Git n’est réalisée
+Le Draft est retrouvé après rechargement
+
+Règles de gestion
+
+Save draft est le mécanisme de sauvegarde explicite P0. Git n’est écrit qu’au Publish.
+
+Validation fonctionnelle
+
+Tester sauvegarde Fundamentals, Schema, rechargement page, erreur backend et absence de commit Git.

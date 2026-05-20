@@ -1,0 +1,36 @@
+NAME: ETQ utilisateur, je veux que mes modifications soient sauvegardées automatiquement afin de limiter la perte de données
+
+Description métier
+
+L’application peut sauvegarder automatiquement certaines modifications en Draft pour limiter la perte de données, mais l’autosave ne doit pas remplacer la publication et ne doit jamais écrire dans Git.
+
+Périmètre inclus
+
+Autosave sur blur ou délai simple
+Indicateur saving/saved/error
+Sauvegarde des champs éditables Draft
+Compatibilité avec Save draft explicite
+
+Périmètre exclu
+
+Collaboration temps réel
+Résolution de conflits multi-utilisateurs
+Autosave sur Active/Deprecated
+Commit Git automatique
+
+Critères d’acceptation
+
+Une modification en Draft déclenche une sauvegarde automatique selon la règle choisie
+Un indicateur d’état est visible
+Une erreur d’autosave est signalée
+Save draft reste disponible
+Aucune sauvegarde automatique n’est possible en Active ou Deprecated
+Aucun commit Git n’est créé par autosave
+
+Règles de gestion
+
+Autosave est un confort MVP/P1. Le comportement doit rester simple et prévisible, avec Save draft comme fallback explicite.
+
+Validation fonctionnelle
+
+Tester autosave sur champ texte, erreur réseau, conflit avec Save draft, rechargement et blocage en Active.

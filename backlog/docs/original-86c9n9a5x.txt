@@ -1,0 +1,41 @@
+NAME: ETQ utilisateur, je veux créer une nouvelle version afin de modifier un contrat actif
+
+Description métier
+
+Un contrat Active étant immutable, l’utilisateur doit pouvoir créer un nouveau Draft basé sur la version Active pour préparer une modification sans altérer la version publiée.
+
+Périmètre inclus
+
+Bouton New version sur Active
+Création d’un Draft depuis Active
+Copie des Fundamentals éditables
+Copie du Schema
+Version cible calculée ou préparée
+Ancienne Active conservée immutable
+Navigation vers le Draft
+
+Périmètre exclu
+
+Modification directe Active
+Merge collaboratif
+Approval workflow
+Détection automatique breaking changes
+Rollback
+
+Critères d’acceptation
+
+Le bouton New version est disponible sur Active
+Le clic crée un nouveau Draft
+Le Draft reprend le contenu de la version Active
+La version Active reste inchangée
+Le nouveau Draft est éditable
+Le Publish update demandera le choix major/minor
+Un seul Draft de travail actif par contrat peut être géré selon la règle technique retenue
+
+Règles de gestion
+
+Toute modification d’un contrat Active passe par une nouvelle version. Le choix major/minor est manuel dans le MVP.
+
+Validation fonctionnelle
+
+Tester création depuis Active, contenu copié, Active inchangée, édition du nouveau Draft et accès Publish update.

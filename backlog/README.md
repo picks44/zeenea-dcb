@@ -1,0 +1,23 @@
+# Backlog ClickUp — alignement MVP
+
+## SP4 — Versioning (recadrage stratégique)
+
+**Input :** [input/sp4-versioning.csv](input/sp4-versioning.csv)  
+**Plan de référence :** recadrage prototype = validation UX/métier ; backlog = MVP réel (backend, Git, MD5).
+
+### Ordre d’import ClickUp
+
+1. **UPDATE** — [output/sp4-update.csv](output/sp4-update.csv) (`id` obligatoire)
+2. **CREATE** — [output/sp4-create.csv](output/sp4-create.csv) (`name` obligatoire, pas d’`id`)
+3. **CANCEL** — [output/sp4-cancel.csv](output/sp4-cancel.csv) (`86c9n9a52` manuel)
+4. **SPLIT** — [docs/sp4-split-86c9n9a4t.md](docs/sp4-split-86c9n9a4t.md)
+5. **REPORT SP5** — [docs/sp4-report-sp5.md](docs/sp4-report-sp5.md)
+
+### Fiches
+
+| ID | Action |
+|----|--------|
+| `86c9n9a4t` | UPDATE (modèle logique produit) + CREATE B (backend) |
+| `86c9n9a52` | CANCEL |
+| `86c9n9a5x`, `86c9n9a60`, `86c9n9a6m`, `86c9nc7t1`, `86c9n9a66`, `86c9n9a55`, `86c9n9a5e` | UPDATE |
+| _(nouvelles)_ | CREATE ×4 (Revision open, No changes, Option B, Modèle backend) |

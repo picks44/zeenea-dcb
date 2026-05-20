@@ -1,0 +1,53 @@
+NAME: ETQ utilisateur, je veux consulter l’historique des versions et le Draft en cours afin de suivre l’évolution d’un contrat
+
+Description métier
+
+L’utilisateur peut consulter toutes les versions publiées d’un contrat ainsi que le Draft en cours lorsqu’il existe. L’historique permet de comprendre l’état courant du contrat, de comparer le Draft avec une version publiée, et d’abandonner les changements non publiés si nécessaire.
+
+Périmètre inclus
+
+Section Versions
+Timeline des versions publiées
+Carte Draft affichée en haut si un Draft existe
+Statuts Active et Deprecated
+Numéro de version
+Date relative ou date de publication
+Commentaire de publication
+Checksum MD5
+Commit hash ou référence Git
+Bouton Compare depuis le Draft
+Action Revert to vX.Y.Z / Discard changes depuis le Draft
+
+Périmètre exclu
+
+Rollback d’une version publiée
+Suppression d’une version publiée
+Restauration d’un Draft abandonné
+Audit champ par champ complet
+Time Machine Git complète
+Dépréciation manuelle avancée
+
+Critères d’acceptation
+
+Un contrat jamais publié affiche un état vide ou un message adapté.
+Une première publication apparaît dans l’historique.
+La version Active est clairement identifiée.
+Les anciennes versions Deprecated sont visibles.
+Le checksum MD5 est visible ou accessible pour chaque version publiée.
+Le commit hash est visible ou accessible pour chaque version publiée.
+Si un Draft existe, il est affiché en haut de la timeline et n’est pas compté comme version publiée.
+La carte Draft affiche un résumé simple des changements depuis la dernière version publiée.
+Si aucun changement n’est détecté, le message No field changes since last version est affiché.
+Le bouton Compare de la carte Draft ouvre la comparaison entre le Draft et la dernière version Active par défaut.
+L’action de retour sur la carte Draft affiche un tooltip du type Revert to vX.Y.Z.
+Le clic sur l’action de retour ouvre une modale de confirmation Discard changes.
+Les versions publiées affichent leur numéro, leur statut, leur date et leur commentaire de publication.
+Le bouton Publish update est visible si un Draft publiable existe.
+
+Règles de gestion
+
+L’historique des versions publiées est append-only. Les Drafts non publiés ne sont pas des versions officielles. L’abandon d’un Draft supprime uniquement les changements non publiés et ne modifie jamais les versions Active ou Deprecated.
+
+Validation fonctionnelle
+
+Tester aucun historique, une première version, plusieurs versions, une version Active, une version Deprecated, un Draft sans changement, un Draft avec changement, l’ouverture de la comparaison depuis le Draft et l’ouverture de la modale Discard changes.

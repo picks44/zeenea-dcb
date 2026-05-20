@@ -1,0 +1,1216 @@
+"id","custom_id","name","text_content","description","markdown_description","status","orderindex","date_created","date_updated","date_closed","date_done","creator","assignees","watchers","priority","due_date","start_date","points","time_estimate","time_spent","list","folder","space","url","tags","parent","dependencies","linked_tasks","custom_fields_raw_json"
+"86c9nc7t1","","ETQ utilisateur, je veux abandonner un Draft de nouvelle version afin de revenir à la dernière version publiée","Description métier
+
+Lorsqu’un Draft contient des changements non publiés, l’utilisateur peut choisir de les abandonner pour revenir à la dernière version publiée du contrat. Cette action permet d’annuler un travail en cours sans modifier l’historique des versions publiées.
+
+Périmètre inclus
+
+Action de retour depuis la carte Draft dans l’historique des versions
+Tooltip Revert to vX.Y.Z
+Modale de confirmation Discard changes
+Message indiquant que l’action est irréversible
+Annulation via Cancel
+Confirmation via Discard
+Suppression des changements non publiés du Draft
+Retour à la dernière version publiée
+Recalcul de l’état de publication
+
+Périmètre exclu
+
+Rollback d’une version publiée
+Restauration d’un Draft abandonné
+Annulation partielle champ par champ
+Historique des autosaves supprimées
+Modification Git
+Suppression des versions Active ou Deprecated
+
+Critères d’acceptation
+
+L’action Revert est disponible uniquement lorsqu’un Draft non publié existe.
+Au survol, un tooltip indique la version cible, par exemple Revert to v1.1.0.
+Le clic ouvre une modale Discard changes.
+La modale affiche un message du type : Revert all unpublished changes and return to vX.Y.Z? This cannot be undone.
+Le bouton Cancel ferme la modale sans modifier le Draft.
+Le bouton Discard supprime les changements non publiés.
+Après confirmation, le contrat revient à la dernière version publiée.
+La version Active reste inchangée.
+Les versions Deprecated restent inchangées.
+Aucun commit Git n’est créé par cette action.
+Aucun checksum MD5 publié n’est modifié.
+Le Draft disparaît de l’historique ou repasse dans un état vide selon la règle UI retenue.
+Le bouton Publish update n’est plus disponible si aucun Draft publiable n’existe.
+Les données d’autosave associées au Draft abandonné sont nettoyées ou ignorées.
+
+Règles de gestion
+
+L’abandon d’un Draft agit uniquement sur les changements non publiés. Une version publiée est immutable et ne peut jamais être modifiée ou supprimée par cette action.
+
+Validation fonctionnelle
+
+Tester l’ouverture de la modale, l’annulation, la confirmation, un Draft avec changements, un Draft sans changement, la persistance des versions publiées, l’absence de nouveau commit Git et l’état final de l’historique.","Description métier
+
+Lorsqu’un Draft contient des changements non publiés, l’utilisateur peut choisir de les abandonner pour revenir à la dernière version publiée du contrat. Cette action permet d’annuler un travail en cours sans modifier l’historique des versions publiées.
+
+Périmètre inclus
+
+Action de retour depuis la carte Draft dans l’historique des versions
+Tooltip Revert to vX.Y.Z
+Modale de confirmation Discard changes
+Message indiquant que l’action est irréversible
+Annulation via Cancel
+Confirmation via Discard
+Suppression des changements non publiés du Draft
+Retour à la dernière version publiée
+Recalcul de l’état de publication
+
+Périmètre exclu
+
+Rollback d’une version publiée
+Restauration d’un Draft abandonné
+Annulation partielle champ par champ
+Historique des autosaves supprimées
+Modification Git
+Suppression des versions Active ou Deprecated
+
+Critères d’acceptation
+
+L’action Revert est disponible uniquement lorsqu’un Draft non publié existe.
+Au survol, un tooltip indique la version cible, par exemple Revert to v1.1.0.
+Le clic ouvre une modale Discard changes.
+La modale affiche un message du type : Revert all unpublished changes and return to vX.Y.Z? This cannot be undone.
+Le bouton Cancel ferme la modale sans modifier le Draft.
+Le bouton Discard supprime les changements non publiés.
+Après confirmation, le contrat revient à la dernière version publiée.
+La version Active reste inchangée.
+Les versions Deprecated restent inchangées.
+Aucun commit Git n’est créé par cette action.
+Aucun checksum MD5 publié n’est modifié.
+Le Draft disparaît de l’historique ou repasse dans un état vide selon la règle UI retenue.
+Le bouton Publish update n’est plus disponible si aucun Draft publiable n’existe.
+Les données d’autosave associées au Draft abandonné sont nettoyées ou ignorées.
+
+Règles de gestion
+
+L’abandon d’un Draft agit uniquement sur les changements non publiés. Une version publiée est immutable et ne peut jamais être modifiée ou supprimée par cette action.
+
+Validation fonctionnelle
+
+Tester l’ouverture de la modale, l’annulation, la confirmation, un Draft avec changements, un Draft sans changement, la persistance des versions publiées, l’absence de nouveau commit Git et l’état final de l’historique.","## Description métier
+
+Lorsqu’un Draft contient des changements non publiés, l’utilisateur peut choisir de les abandonner pour revenir à la dernière version publiée du contrat. Cette action permet d’annuler un travail en cours sans modifier l’historique des versions publiées.
+* * *
+
+## Périmètre inclus
+
+*   Action de retour depuis la carte `Draft` dans l’historique des versions
+*   Tooltip `Revert to vX.Y.Z`
+*   Modale de confirmation `Discard changes`
+*   Message indiquant que l’action est irréversible
+*   Annulation via `Cancel`
+*   Confirmation via `Discard`
+*   Suppression des changements non publiés du Draft
+*   Retour à la dernière version publiée
+*   Recalcul de l’état de publication
+* * *
+
+## Périmètre exclu
+
+*   Rollback d’une version publiée
+*   Restauration d’un Draft abandonné
+*   Annulation partielle champ par champ
+*   Historique des autosaves supprimées
+*   Modification Git
+*   Suppression des versions `Active` ou `Deprecated`
+* * *
+
+## Critères d’acceptation
+
+1. L’action `Revert` est disponible uniquement lorsqu’un Draft non publié existe.
+2. Au survol, un tooltip indique la version cible, par exemple `Revert to v1.1.0`.
+3. Le clic ouvre une modale `Discard changes`.
+4. La modale affiche un message du type : `Revert all unpublished changes and return to vX.Y.Z? This cannot be undone.`
+5. Le bouton `Cancel` ferme la modale sans modifier le Draft.
+6. Le bouton `Discard` supprime les changements non publiés.
+7. Après confirmation, le contrat revient à la dernière version publiée.
+8. La version `Active` reste inchangée.
+9. Les versions `Deprecated` restent inchangées.
+10. Aucun commit Git n’est créé par cette action.
+11. Aucun checksum MD5 publié n’est modifié.
+12. Le Draft disparaît de l’historique ou repasse dans un état vide selon la règle UI retenue.
+13. Le bouton `Publish update` n’est plus disponible si aucun Draft publiable n’existe.
+14. Les données d’autosave associées au Draft abandonné sont nettoyées ou ignorées.
+* * *
+
+## Règles de gestion
+
+L’abandon d’un Draft agit uniquement sur les changements non publiés. Une version publiée est immutable et ne peut jamais être modifiée ou supprimée par cette action.
+* * *
+
+## Validation fonctionnelle
+
+Tester l’ouverture de la modale, l’annulation, la confirmation, un Draft avec changements, un Draft sans changement, la persistance des versions publiées, l’absence de nouveau commit Git et l’état final de l’historique.","a faire","33856236.00202670000000000000000000000000","2026-05-05T18:46:09.859Z","2026-05-06T13:10:31.416Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","normal","","","","","","SP4 - Versioning","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9nc7t1","lifecycle & locking","","","","[]"
+"86c9n9a6m","","ETQ utilisateur, je veux consulter l’historique des versions et le Draft en cours afin de suivre l’évolution d’un contrat","Description métier
+
+L’utilisateur peut consulter toutes les versions publiées d’un contrat ainsi que le Draft en cours lorsqu’il existe. L’historique permet de comprendre l’état courant du contrat, de comparer le Draft avec une version publiée, et d’abandonner les changements non publiés si nécessaire.
+
+Périmètre inclus
+
+Section Versions
+Timeline des versions publiées
+Carte Draft affichée en haut si un Draft existe
+Statuts Active et Deprecated
+Numéro de version
+Date relative ou date de publication
+Commentaire de publication
+Checksum MD5
+Commit hash ou référence Git
+Bouton Compare depuis le Draft
+Action Revert to vX.Y.Z / Discard changes depuis le Draft
+
+Périmètre exclu
+
+Rollback d’une version publiée
+Suppression d’une version publiée
+Restauration d’un Draft abandonné
+Audit champ par champ complet
+Time Machine Git complète
+Dépréciation manuelle avancée
+
+Critères d’acceptation
+
+Un contrat jamais publié affiche un état vide ou un message adapté.
+Une première publication apparaît dans l’historique.
+La version Active est clairement identifiée.
+Les anciennes versions Deprecated sont visibles.
+Le checksum MD5 est visible ou accessible pour chaque version publiée.
+Le commit hash est visible ou accessible pour chaque version publiée.
+Si un Draft existe, il est affiché en haut de la timeline et n’est pas compté comme version publiée.
+La carte Draft affiche un résumé simple des changements depuis la dernière version publiée.
+Si aucun changement n’est détecté, le message No field changes since last version est affiché.
+Le bouton Compare de la carte Draft ouvre la comparaison entre le Draft et la dernière version Active par défaut.
+L’action de retour sur la carte Draft affiche un tooltip du type Revert to vX.Y.Z.
+Le clic sur l’action de retour ouvre une modale de confirmation Discard changes.
+Les versions publiées affichent leur numéro, leur statut, leur date et leur commentaire de publication.
+Le bouton Publish update est visible si un Draft publiable existe.
+
+Règles de gestion
+
+L’historique des versions publiées est append-only. Les Drafts non publiés ne sont pas des versions officielles. L’abandon d’un Draft supprime uniquement les changements non publiés et ne modifie jamais les versions Active ou Deprecated.
+
+Validation fonctionnelle
+
+Tester aucun historique, une première version, plusieurs versions, une version Active, une version Deprecated, un Draft sans changement, un Draft avec changement, l’ouverture de la comparaison depuis le Draft et l’ouverture de la modale Discard changes.","Description métier
+
+L’utilisateur peut consulter toutes les versions publiées d’un contrat ainsi que le Draft en cours lorsqu’il existe. L’historique permet de comprendre l’état courant du contrat, de comparer le Draft avec une version publiée, et d’abandonner les changements non publiés si nécessaire.
+
+Périmètre inclus
+
+Section Versions
+Timeline des versions publiées
+Carte Draft affichée en haut si un Draft existe
+Statuts Active et Deprecated
+Numéro de version
+Date relative ou date de publication
+Commentaire de publication
+Checksum MD5
+Commit hash ou référence Git
+Bouton Compare depuis le Draft
+Action Revert to vX.Y.Z / Discard changes depuis le Draft
+
+Périmètre exclu
+
+Rollback d’une version publiée
+Suppression d’une version publiée
+Restauration d’un Draft abandonné
+Audit champ par champ complet
+Time Machine Git complète
+Dépréciation manuelle avancée
+
+Critères d’acceptation
+
+Un contrat jamais publié affiche un état vide ou un message adapté.
+Une première publication apparaît dans l’historique.
+La version Active est clairement identifiée.
+Les anciennes versions Deprecated sont visibles.
+Le checksum MD5 est visible ou accessible pour chaque version publiée.
+Le commit hash est visible ou accessible pour chaque version publiée.
+Si un Draft existe, il est affiché en haut de la timeline et n’est pas compté comme version publiée.
+La carte Draft affiche un résumé simple des changements depuis la dernière version publiée.
+Si aucun changement n’est détecté, le message No field changes since last version est affiché.
+Le bouton Compare de la carte Draft ouvre la comparaison entre le Draft et la dernière version Active par défaut.
+L’action de retour sur la carte Draft affiche un tooltip du type Revert to vX.Y.Z.
+Le clic sur l’action de retour ouvre une modale de confirmation Discard changes.
+Les versions publiées affichent leur numéro, leur statut, leur date et leur commentaire de publication.
+Le bouton Publish update est visible si un Draft publiable existe.
+
+Règles de gestion
+
+L’historique des versions publiées est append-only. Les Drafts non publiés ne sont pas des versions officielles. L’abandon d’un Draft supprime uniquement les changements non publiés et ne modifie jamais les versions Active ou Deprecated.
+
+Validation fonctionnelle
+
+Tester aucun historique, une première version, plusieurs versions, une version Active, une version Deprecated, un Draft sans changement, un Draft avec changement, l’ouverture de la comparaison depuis le Draft et l’ouverture de la modale Discard changes.","## Description métier
+
+L’utilisateur peut consulter toutes les versions publiées d’un contrat ainsi que le Draft en cours lorsqu’il existe. L’historique permet de comprendre l’état courant du contrat, de comparer le Draft avec une version publiée, et d’abandonner les changements non publiés si nécessaire.
+* * *
+
+## Périmètre inclus
+
+*   Section `Versions`
+*   Timeline des versions publiées
+*   Carte `Draft` affichée en haut si un Draft existe
+*   Statuts `Active` et `Deprecated`
+*   Numéro de version
+*   Date relative ou date de publication
+*   Commentaire de publication
+*   Checksum MD5
+*   Commit hash ou référence Git
+*   Bouton `Compare` depuis le Draft
+*   Action `Revert to vX.Y.Z` / `Discard changes` depuis le Draft
+* * *
+
+## Périmètre exclu
+
+*   Rollback d’une version publiée
+*   Suppression d’une version publiée
+*   Restauration d’un Draft abandonné
+*   Audit champ par champ complet
+*   Time Machine Git complète
+*   Dépréciation manuelle avancée
+* * *
+
+## Critères d’acceptation
+
+1. Un contrat jamais publié affiche un état vide ou un message adapté.
+2. Une première publication apparaît dans l’historique.
+3. La version `Active` est clairement identifiée.
+4. Les anciennes versions `Deprecated` sont visibles.
+5. Le checksum MD5 est visible ou accessible pour chaque version publiée.
+6. Le commit hash est visible ou accessible pour chaque version publiée.
+7. Si un Draft existe, il est affiché en haut de la timeline et n’est pas compté comme version publiée.
+8. La carte Draft affiche un résumé simple des changements depuis la dernière version publiée.
+9. Si aucun changement n’est détecté, le message `No field changes since last version` est affiché.
+10. Le bouton `Compare` de la carte Draft ouvre la comparaison entre le Draft et la dernière version `Active` par défaut.
+11. L’action de retour sur la carte Draft affiche un tooltip du type `Revert to vX.Y.Z`.
+12. Le clic sur l’action de retour ouvre une modale de confirmation `Discard changes`.
+13. Les versions publiées affichent leur numéro, leur statut, leur date et leur commentaire de publication.
+14. Le bouton `Publish update` est visible si un Draft publiable existe.
+* * *
+
+## Règles de gestion
+
+L’historique des versions publiées est append-only. Les Drafts non publiés ne sont pas des versions officielles. L’abandon d’un Draft supprime uniquement les changements non publiés et ne modifie jamais les versions `Active` ou `Deprecated`.
+* * *
+
+## Validation fonctionnelle
+
+Tester aucun historique, une première version, plusieurs versions, une version `Active`, une version `Deprecated`, un Draft sans changement, un Draft avec changement, l’ouverture de la comparaison depuis le Draft et l’ouverture de la modale `Discard changes`.","a faire","33856257.00308160000000000000000000000000","2026-05-05T14:50:44.514Z","2026-05-06T13:11:42.317Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","normal","","","","","","SP4 - Versioning","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a6m","versioning & history","","","","[]"
+"86c9n9a66","","ETQ utilisateur, je veux comparer deux états d’un contrat afin de comprendre les différences en Form ou YAML","Description métier
+
+L’utilisateur doit pouvoir comparer deux états d’un contrat pour comprendre les différences avant ou après publication. Le MVP couvre la comparaison entre deux versions publiées et la comparaison entre le Draft en cours et une version publiée.
+
+Périmètre inclus
+
+Accès depuis la section Versions
+Accès depuis la carte Draft
+Sélection d’un état à gauche
+Sélection d’un état à droite
+Sélection possible du Draft si un Draft existe
+Sélection des versions publiées disponibles
+Mode Form
+Mode YAML
+Diff simple sur Contract info / Fundamentals
+Diff simple sur Schema
+Ajouts, suppressions et modifications
+Affichage YAML side-by-side read-only
+
+Périmètre exclu
+
+Résumé IA
+Diff sémantique avancé
+Impact analysis consommateurs
+Rollback
+Merge de versions
+Édition depuis l’écran de comparaison
+Blocage automatique des breaking changes
+
+Critères d’acceptation
+
+L’utilisateur peut choisir deux versions publiées à comparer.
+L’utilisateur peut choisir Draft comme source ou cible si un Draft existe.
+Le bouton Compare depuis la carte Draft ouvre par défaut la comparaison Draft vs dernière version Active.
+Les dropdowns affichent le Draft et les versions publiées avec leur numéro, commentaire et date si disponibles.
+Le mode Form affiche les changements par section, notamment Contract info et Schema.
+Le mode YAML affiche un diff side-by-side en lecture seule.
+Les ajouts, suppressions et modifications sont visuellement différenciés.
+Le diff indique clairement quel état est affiché à gauche et quel état est affiché à droite.
+La comparaison reste consultative et ne modifie aucun contrat.
+
+Règles de gestion
+
+La comparaison est simple et non bloquante dans le MVP. La détection automatique de breaking changes, le rollback, le merge et le résumé IA sont hors MVP.
+
+Validation fonctionnelle
+
+Tester version publiée vs version publiée, Draft vs Active, inversion gauche/droite, mode Form, mode YAML, ajout table, suppression colonne, changement type, changement description et aucun changement.","Description métier
+
+L’utilisateur doit pouvoir comparer deux états d’un contrat pour comprendre les différences avant ou après publication. Le MVP couvre la comparaison entre deux versions publiées et la comparaison entre le Draft en cours et une version publiée.
+
+Périmètre inclus
+
+Accès depuis la section Versions
+Accès depuis la carte Draft
+Sélection d’un état à gauche
+Sélection d’un état à droite
+Sélection possible du Draft si un Draft existe
+Sélection des versions publiées disponibles
+Mode Form
+Mode YAML
+Diff simple sur Contract info / Fundamentals
+Diff simple sur Schema
+Ajouts, suppressions et modifications
+Affichage YAML side-by-side read-only
+
+Périmètre exclu
+
+Résumé IA
+Diff sémantique avancé
+Impact analysis consommateurs
+Rollback
+Merge de versions
+Édition depuis l’écran de comparaison
+Blocage automatique des breaking changes
+
+Critères d’acceptation
+
+L’utilisateur peut choisir deux versions publiées à comparer.
+L’utilisateur peut choisir Draft comme source ou cible si un Draft existe.
+Le bouton Compare depuis la carte Draft ouvre par défaut la comparaison Draft vs dernière version Active.
+Les dropdowns affichent le Draft et les versions publiées avec leur numéro, commentaire et date si disponibles.
+Le mode Form affiche les changements par section, notamment Contract info et Schema.
+Le mode YAML affiche un diff side-by-side en lecture seule.
+Les ajouts, suppressions et modifications sont visuellement différenciés.
+Le diff indique clairement quel état est affiché à gauche et quel état est affiché à droite.
+La comparaison reste consultative et ne modifie aucun contrat.
+
+Règles de gestion
+
+La comparaison est simple et non bloquante dans le MVP. La détection automatique de breaking changes, le rollback, le merge et le résumé IA sont hors MVP.
+
+Validation fonctionnelle
+
+Tester version publiée vs version publiée, Draft vs Active, inversion gauche/droite, mode Form, mode YAML, ajout table, suppression colonne, changement type, changement description et aucun changement.","## Description métier
+
+L’utilisateur doit pouvoir comparer deux états d’un contrat pour comprendre les différences avant ou après publication. Le MVP couvre la comparaison entre deux versions publiées et la comparaison entre le Draft en cours et une version publiée.
+* * *
+
+## Périmètre inclus
+
+*   Accès depuis la section **Versions**
+*   Accès depuis la carte **Draft**
+*   Sélection d’un état à gauche
+*   Sélection d’un état à droite
+*   Sélection possible du **Draft** si un Draft existe
+*   Sélection des versions publiées disponibles
+*   Mode **Form**
+*   Mode **YAML**
+*   Diff simple sur Contract info / Fundamentals
+*   Diff simple sur Schema
+*   Ajouts, suppressions et modifications
+*   Affichage YAML side-by-side read-only
+* * *
+
+## Périmètre exclu
+
+*   Résumé IA
+*   Diff sémantique avancé
+*   Impact analysis consommateurs
+*   Rollback
+*   Merge de versions
+*   Édition depuis l’écran de comparaison
+*   Blocage automatique des breaking changes
+* * *
+
+## Critères d’acceptation
+
+1. L’utilisateur peut choisir deux versions publiées à comparer.
+2. L’utilisateur peut choisir **Draft** comme source ou cible si un Draft existe.
+3. Le bouton **Compare** depuis la carte Draft ouvre par défaut la comparaison **Draft vs dernière version Active**.
+4. Les dropdowns affichent le Draft et les versions publiées avec leur numéro, commentaire et date si disponibles.
+5. Le mode **Form** affiche les changements par section, notamment **Contract info** et **Schema**.
+6. Le mode **YAML** affiche un diff side-by-side en lecture seule.
+7. Les ajouts, suppressions et modifications sont visuellement différenciés.
+8. Le diff indique clairement quel état est affiché à gauche et quel état est affiché à droite.
+9. La comparaison reste consultative et ne modifie aucun contrat.
+* * *
+
+## Règles de gestion
+
+La comparaison est simple et non bloquante dans le MVP. La détection automatique de breaking changes, le rollback, le merge et le résumé IA sont hors MVP.
+* * *
+
+## Validation fonctionnelle
+
+Tester version publiée vs version publiée, Draft vs Active, inversion gauche/droite, mode Form, mode YAML, ajout table, suppression colonne, changement type, changement description et aucun changement.","a faire","33856256.00307010000000000000000000000000","2026-05-05T14:50:43.471Z","2026-05-06T13:11:42.317Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","normal","","","","","","SP4 - Versioning","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a66","versioning & history","","","","[]"
+"86c9n9a60","","ETQ système, je veux stocker les métadonnées de publication afin de tracer chaque version activée","Description métier
+
+Chaque version publiée doit conserver les informations nécessaires à l’audit, à l’historique, à la comparaison et à la vérification d’intégrité : version, statut, auteur, commentaire de publication, type de changement, checksum et commit Git.
+
+Périmètre inclus
+
+Version publiée
+Version source utilisée pour créer le Draft
+Version cible publiée
+Statut final
+Date de publication
+Auteur de publication
+Commentaire What changed?
+Type de changement : Update ou Breaking
+Checksum MD5
+Commit hash
+Chemin Git du YAML
+Lien logique vers le contrat
+
+Périmètre exclu
+
+Audit complet champ par champ
+Journal de collaboration
+Signature électronique
+Traçabilité détaillée des autosaves
+Historique Git complet exposé en UI
+
+Critères d’acceptation
+
+Une publication crée un enregistrement de métadonnées.
+Les métadonnées sont consultables ou exploitables depuis l’historique des versions.
+Le commentaire de publication est stocké avec la version publiée.
+Si aucun commentaire utilisateur n’est fourni, un commentaire par défaut est stocké.
+Le type de changement Update ou Breaking est stocké avec la version publiée.
+La version source et la version cible sont stockées.
+Le commit hash correspond au commit Git ayant écrit le YAML publié.
+Le checksum MD5 correspond au YAML effectivement publié.
+Les métadonnées d’une version publiée sont immutables.
+Les métadonnées restent disponibles après soft delete du contrat.
+
+Règles de gestion
+
+Les versions publiées sont append-only. Les métadonnées de publication ne doivent jamais être modifiées par l’édition d’un Draft ultérieur. Le commentaire de publication sert à alimenter l’historique et le message de version visible dans l’interface.
+
+Validation fonctionnelle
+
+Tester première publication, publication Update, publication Breaking, commentaire renseigné, commentaire vide, historique, soft delete et cohérence commit/checksum.","Description métier
+
+Chaque version publiée doit conserver les informations nécessaires à l’audit, à l’historique, à la comparaison et à la vérification d’intégrité : version, statut, auteur, commentaire de publication, type de changement, checksum et commit Git.
+
+Périmètre inclus
+
+Version publiée
+Version source utilisée pour créer le Draft
+Version cible publiée
+Statut final
+Date de publication
+Auteur de publication
+Commentaire What changed?
+Type de changement : Update ou Breaking
+Checksum MD5
+Commit hash
+Chemin Git du YAML
+Lien logique vers le contrat
+
+Périmètre exclu
+
+Audit complet champ par champ
+Journal de collaboration
+Signature électronique
+Traçabilité détaillée des autosaves
+Historique Git complet exposé en UI
+
+Critères d’acceptation
+
+Une publication crée un enregistrement de métadonnées.
+Les métadonnées sont consultables ou exploitables depuis l’historique des versions.
+Le commentaire de publication est stocké avec la version publiée.
+Si aucun commentaire utilisateur n’est fourni, un commentaire par défaut est stocké.
+Le type de changement Update ou Breaking est stocké avec la version publiée.
+La version source et la version cible sont stockées.
+Le commit hash correspond au commit Git ayant écrit le YAML publié.
+Le checksum MD5 correspond au YAML effectivement publié.
+Les métadonnées d’une version publiée sont immutables.
+Les métadonnées restent disponibles après soft delete du contrat.
+
+Règles de gestion
+
+Les versions publiées sont append-only. Les métadonnées de publication ne doivent jamais être modifiées par l’édition d’un Draft ultérieur. Le commentaire de publication sert à alimenter l’historique et le message de version visible dans l’interface.
+
+Validation fonctionnelle
+
+Tester première publication, publication Update, publication Breaking, commentaire renseigné, commentaire vide, historique, soft delete et cohérence commit/checksum.","## Description métier
+
+Chaque version publiée doit conserver les informations nécessaires à l’audit, à l’historique, à la comparaison et à la vérification d’intégrité : version, statut, auteur, commentaire de publication, type de changement, checksum et commit Git.
+* * *
+
+## Périmètre inclus
+
+*   Version publiée
+*   Version source utilisée pour créer le Draft
+*   Version cible publiée
+*   Statut final
+*   Date de publication
+*   Auteur de publication
+*   Commentaire `What changed?`
+*   Type de changement : `Update` ou `Breaking`
+*   Checksum MD5
+*   Commit hash
+*   Chemin Git du YAML
+*   Lien logique vers le contrat
+* * *
+
+## Périmètre exclu
+
+*   Audit complet champ par champ
+*   Journal de collaboration
+*   Signature électronique
+*   Traçabilité détaillée des autosaves
+*   Historique Git complet exposé en UI
+* * *
+
+## Critères d’acceptation
+
+1. Une publication crée un enregistrement de métadonnées.
+2. Les métadonnées sont consultables ou exploitables depuis l’historique des versions.
+3. Le commentaire de publication est stocké avec la version publiée.
+4. Si aucun commentaire utilisateur n’est fourni, un commentaire par défaut est stocké.
+5. Le type de changement `Update` ou `Breaking` est stocké avec la version publiée.
+6. La version source et la version cible sont stockées.
+7. Le commit hash correspond au commit Git ayant écrit le YAML publié.
+8. Le checksum MD5 correspond au YAML effectivement publié.
+9. Les métadonnées d’une version publiée sont immutables.
+10. Les métadonnées restent disponibles après soft delete du contrat.
+* * *
+
+## Règles de gestion
+
+Les versions publiées sont append-only. Les métadonnées de publication ne doivent jamais être modifiées par l’édition d’un Draft ultérieur. Le commentaire de publication sert à alimenter l’historique et le message de version visible dans l’interface.
+* * *
+
+## Validation fonctionnelle
+
+Tester première publication, publication `Update`, publication `Breaking`, commentaire renseigné, commentaire vide, historique, soft delete et cohérence commit/checksum.","a faire","33856255.00306890000000000000000000000000","2026-05-05T14:50:43.136Z","2026-05-06T13:11:42.317Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP4 - Versioning","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a60","versioning & history","","","","[]"
+"86c9n9a5x","","ETQ utilisateur, je veux créer une nouvelle version afin de modifier un contrat actif","Description métier
+
+Un contrat Active étant immutable, l’utilisateur doit pouvoir créer un nouveau Draft basé sur la version Active pour préparer une modification sans altérer la version publiée.
+
+Périmètre inclus
+
+Bouton New version sur Active
+Création d’un Draft depuis Active
+Copie des Fundamentals éditables
+Copie du Schema
+Version cible calculée ou préparée
+Ancienne Active conservée immutable
+Navigation vers le Draft
+
+Périmètre exclu
+
+Modification directe Active
+Merge collaboratif
+Approval workflow
+Détection automatique breaking changes
+Rollback
+
+Critères d’acceptation
+
+Le bouton New version est disponible sur Active
+Le clic crée un nouveau Draft
+Le Draft reprend le contenu de la version Active
+La version Active reste inchangée
+Le nouveau Draft est éditable
+Le Publish update demandera le choix major/minor
+Un seul Draft de travail actif par contrat peut être géré selon la règle technique retenue
+
+Règles de gestion
+
+Toute modification d’un contrat Active passe par une nouvelle version. Le choix major/minor est manuel dans le MVP.
+
+Validation fonctionnelle
+
+Tester création depuis Active, contenu copié, Active inchangée, édition du nouveau Draft et accès Publish update.","Description métier
+
+Un contrat Active étant immutable, l’utilisateur doit pouvoir créer un nouveau Draft basé sur la version Active pour préparer une modification sans altérer la version publiée.
+
+Périmètre inclus
+
+Bouton New version sur Active
+Création d’un Draft depuis Active
+Copie des Fundamentals éditables
+Copie du Schema
+Version cible calculée ou préparée
+Ancienne Active conservée immutable
+Navigation vers le Draft
+
+Périmètre exclu
+
+Modification directe Active
+Merge collaboratif
+Approval workflow
+Détection automatique breaking changes
+Rollback
+
+Critères d’acceptation
+
+Le bouton New version est disponible sur Active
+Le clic crée un nouveau Draft
+Le Draft reprend le contenu de la version Active
+La version Active reste inchangée
+Le nouveau Draft est éditable
+Le Publish update demandera le choix major/minor
+Un seul Draft de travail actif par contrat peut être géré selon la règle technique retenue
+
+Règles de gestion
+
+Toute modification d’un contrat Active passe par une nouvelle version. Le choix major/minor est manuel dans le MVP.
+
+Validation fonctionnelle
+
+Tester création depuis Active, contenu copié, Active inchangée, édition du nouveau Draft et accès Publish update.","## Description métier
+
+Un contrat Active étant immutable, l’utilisateur doit pouvoir créer un nouveau Draft basé sur la version Active pour préparer une modification sans altérer la version publiée.
+* * *
+
+## Périmètre inclus
+
+*   Bouton New version sur Active
+*   Création d’un Draft depuis Active
+*   Copie des Fundamentals éditables
+*   Copie du Schema
+*   Version cible calculée ou préparée
+*   Ancienne Active conservée immutable
+*   Navigation vers le Draft
+* * *
+
+## Périmètre exclu
+
+*   Modification directe Active
+*   Merge collaboratif
+*   Approval workflow
+*   Détection automatique breaking changes
+*   Rollback
+* * *
+
+## Critères d’acceptation
+
+1. Le bouton New version est disponible sur Active
+2. Le clic crée un nouveau Draft
+3. Le Draft reprend le contenu de la version Active
+4. La version Active reste inchangée
+5. Le nouveau Draft est éditable
+6. Le Publish update demandera le choix major/minor
+7. Un seul Draft de travail actif par contrat peut être géré selon la règle technique retenue
+* * *
+
+## Règles de gestion
+
+Toute modification d’un contrat Active passe par une nouvelle version. Le choix major/minor est manuel dans le MVP.
+* * *
+
+## Validation fonctionnelle
+
+Tester création depuis Active, contenu copié, Active inchangée, édition du nouveau Draft et accès Publish update.","a faire","33856254.00298510000000000000000000000000","2026-05-05T14:50:42.792Z","2026-05-06T13:11:42.317Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP4 - Versioning","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a5x","versioning & history","","","","[]"
+"86c9n9a5e","","ETQ utilisateur, je veux savoir si mon contrat est publiable afin de publier uniquement un contrat complet","Description métier
+
+Le système doit indiquer clairement si le Draft respecte les champs obligatoires ODCS v3.1.0 et les règles minimales produit nécessaires à une publication Git fiable.
+
+Périmètre inclus
+
+Validation apiVersion
+Validation kind
+Validation id
+Validation version cible
+Validation status système
+Validation name produit
+Validation schema présent
+Validation name sur chaque schema object
+Au moins une table
+Au moins une colonne par table
+YAML générable
+Messages d’erreur par section
+
+Périmètre exclu
+
+Policies Zeenea
+Règles gouvernance client
+Validation SEMQL
+Détection automatique breaking changes
+Approval workflow
+
+Critères d’acceptation
+
+Publish est désactivé si un champ obligatoire manque
+Les erreurs sont visibles dans la section concernée
+apiVersion vaut v3.1.0
+kind vaut DataContract
+id existe
+status est contrôlé par le système
+name est obligatoire côté produit
+schema contient au moins un objet
+Chaque objet a un name
+Chaque table a au moins une propriété
+Le YAML est générable sans erreur
+
+Règles de gestion
+
+La validation MVP combine les obligations ODCS et des règles produit minimales. Les quality rule notes ne bloquent pas la publication.
+
+Validation fonctionnelle
+
+Tester contrat incomplet, fundamentals incomplets, schema vide, colonne sans nom, YAML non générable et contrat publiable.","Description métier
+
+Le système doit indiquer clairement si le Draft respecte les champs obligatoires ODCS v3.1.0 et les règles minimales produit nécessaires à une publication Git fiable.
+
+Périmètre inclus
+
+Validation apiVersion
+Validation kind
+Validation id
+Validation version cible
+Validation status système
+Validation name produit
+Validation schema présent
+Validation name sur chaque schema object
+Au moins une table
+Au moins une colonne par table
+YAML générable
+Messages d’erreur par section
+
+Périmètre exclu
+
+Policies Zeenea
+Règles gouvernance client
+Validation SEMQL
+Détection automatique breaking changes
+Approval workflow
+
+Critères d’acceptation
+
+Publish est désactivé si un champ obligatoire manque
+Les erreurs sont visibles dans la section concernée
+apiVersion vaut v3.1.0
+kind vaut DataContract
+id existe
+status est contrôlé par le système
+name est obligatoire côté produit
+schema contient au moins un objet
+Chaque objet a un name
+Chaque table a au moins une propriété
+Le YAML est générable sans erreur
+
+Règles de gestion
+
+La validation MVP combine les obligations ODCS et des règles produit minimales. Les quality rule notes ne bloquent pas la publication.
+
+Validation fonctionnelle
+
+Tester contrat incomplet, fundamentals incomplets, schema vide, colonne sans nom, YAML non générable et contrat publiable.","## Description métier
+
+Le système doit indiquer clairement si le Draft respecte les champs obligatoires ODCS v3.1.0 et les règles minimales produit nécessaires à une publication Git fiable.
+* * *
+
+## Périmètre inclus
+
+*   Validation apiVersion
+*   Validation kind
+*   Validation id
+*   Validation version cible
+*   Validation status système
+*   Validation name produit
+*   Validation schema présent
+*   Validation name sur chaque schema object
+*   Au moins une table
+*   Au moins une colonne par table
+*   YAML générable
+*   Messages d’erreur par section
+* * *
+
+## Périmètre exclu
+
+*   Policies Zeenea
+*   Règles gouvernance client
+*   Validation SEMQL
+*   Détection automatique breaking changes
+*   Approval workflow
+* * *
+
+## Critères d’acceptation
+
+1. Publish est désactivé si un champ obligatoire manque
+2. Les erreurs sont visibles dans la section concernée
+3. apiVersion vaut v3.1.0
+4. kind vaut DataContract
+5. id existe
+6. status est contrôlé par le système
+7. name est obligatoire côté produit
+8. schema contient au moins un objet
+9. Chaque objet a un name
+10. Chaque table a au moins une propriété
+11. Le YAML est générable sans erreur
+* * *
+
+## Règles de gestion
+
+La validation MVP combine les obligations ODCS et des règles produit minimales. Les quality rule notes ne bloquent pas la publication.
+* * *
+
+## Validation fonctionnelle
+
+Tester contrat incomplet, fundamentals incomplets, schema vide, colonne sans nom, YAML non générable et contrat publiable.","a faire","33856235.00195620000000000000000000000000","2026-05-05T14:50:42.048Z","2026-05-06T13:10:31.416Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP4 - Versioning","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a5e","lifecycle & locking","","","","[]"
+"86c9n9a55","","ETQ utilisateur, je veux que mes modifications soient sauvegardées automatiquement afin de limiter la perte de données","Description métier
+
+L’application peut sauvegarder automatiquement certaines modifications en Draft pour limiter la perte de données, mais l’autosave ne doit pas remplacer la publication et ne doit jamais écrire dans Git.
+
+Périmètre inclus
+
+Autosave sur blur ou délai simple
+Indicateur saving/saved/error
+Sauvegarde des champs éditables Draft
+Compatibilité avec Save draft explicite
+
+Périmètre exclu
+
+Collaboration temps réel
+Résolution de conflits multi-utilisateurs
+Autosave sur Active/Deprecated
+Commit Git automatique
+
+Critères d’acceptation
+
+Une modification en Draft déclenche une sauvegarde automatique selon la règle choisie
+Un indicateur d’état est visible
+Une erreur d’autosave est signalée
+Save draft reste disponible
+Aucune sauvegarde automatique n’est possible en Active ou Deprecated
+Aucun commit Git n’est créé par autosave
+
+Règles de gestion
+
+Autosave est un confort MVP/P1. Le comportement doit rester simple et prévisible, avec Save draft comme fallback explicite.
+
+Validation fonctionnelle
+
+Tester autosave sur champ texte, erreur réseau, conflit avec Save draft, rechargement et blocage en Active.","Description métier
+
+L’application peut sauvegarder automatiquement certaines modifications en Draft pour limiter la perte de données, mais l’autosave ne doit pas remplacer la publication et ne doit jamais écrire dans Git.
+
+Périmètre inclus
+
+Autosave sur blur ou délai simple
+Indicateur saving/saved/error
+Sauvegarde des champs éditables Draft
+Compatibilité avec Save draft explicite
+
+Périmètre exclu
+
+Collaboration temps réel
+Résolution de conflits multi-utilisateurs
+Autosave sur Active/Deprecated
+Commit Git automatique
+
+Critères d’acceptation
+
+Une modification en Draft déclenche une sauvegarde automatique selon la règle choisie
+Un indicateur d’état est visible
+Une erreur d’autosave est signalée
+Save draft reste disponible
+Aucune sauvegarde automatique n’est possible en Active ou Deprecated
+Aucun commit Git n’est créé par autosave
+
+Règles de gestion
+
+Autosave est un confort MVP/P1. Le comportement doit rester simple et prévisible, avec Save draft comme fallback explicite.
+
+Validation fonctionnelle
+
+Tester autosave sur champ texte, erreur réseau, conflit avec Save draft, rechargement et blocage en Active.","## Description métier
+
+L’application peut sauvegarder automatiquement certaines modifications en Draft pour limiter la perte de données, mais l’autosave ne doit pas remplacer la publication et ne doit jamais écrire dans Git.
+* * *
+
+## Périmètre inclus
+
+*   Autosave sur blur ou délai simple
+*   Indicateur saving/saved/error
+*   Sauvegarde des champs éditables Draft
+*   Compatibilité avec Save draft explicite
+* * *
+
+## Périmètre exclu
+
+*   Collaboration temps réel
+*   Résolution de conflits multi-utilisateurs
+*   Autosave sur Active/Deprecated
+*   Commit Git automatique
+* * *
+
+## Critères d’acceptation
+
+1. Une modification en Draft déclenche une sauvegarde automatique selon la règle choisie
+2. Un indicateur d’état est visible
+3. Une erreur d’autosave est signalée
+4. Save draft reste disponible
+5. Aucune sauvegarde automatique n’est possible en Active ou Deprecated
+6. Aucun commit Git n’est créé par autosave
+* * *
+
+## Règles de gestion
+
+Autosave est un confort MVP/P1. Le comportement doit rester simple et prévisible, avec Save draft comme fallback explicite.
+* * *
+
+## Validation fonctionnelle
+
+Tester autosave sur champ texte, erreur réseau, conflit avec Save draft, rechargement et blocage en Active.","a faire","33856234.00189540000000000000000000000000","2026-05-05T14:50:41.669Z","2026-05-06T13:10:31.416Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","normal","","","","","","SP4 - Versioning","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a55","lifecycle & locking","","","","[]"
+"86c9n9a52","","ETQ utilisateur, je veux sauvegarder mon draft afin de conserver mes modifications avant publication","Description métier
+
+L’utilisateur doit pouvoir sauvegarder explicitement les modifications de son Draft avant publication, sans écrire dans Git ni créer de version publiée.
+
+Périmètre inclus
+
+Bouton Save draft
+Sauvegarde Fundamentals
+Sauvegarde Schema
+Sauvegarde notes qualité
+Feedback succès/erreur
+Mise à jour de updatedAt
+Persistance en base applicative
+
+Périmètre exclu
+
+Publication Git
+Checksum
+Création de version Active
+Autosave comme mécanisme principal
+Collaboration temps réel
+
+Critères d’acceptation
+
+Le bouton Save draft est disponible en Draft
+Le clic sauvegarde les sections éditables
+Un feedback de succès est affiché
+En cas d’erreur, l’utilisateur est informé
+Aucune écriture Git n’est réalisée
+Le Draft est retrouvé après rechargement
+
+Règles de gestion
+
+Save draft est le mécanisme de sauvegarde explicite P0. Git n’est écrit qu’au Publish.
+
+Validation fonctionnelle
+
+Tester sauvegarde Fundamentals, Schema, rechargement page, erreur backend et absence de commit Git.","Description métier
+
+L’utilisateur doit pouvoir sauvegarder explicitement les modifications de son Draft avant publication, sans écrire dans Git ni créer de version publiée.
+
+Périmètre inclus
+
+Bouton Save draft
+Sauvegarde Fundamentals
+Sauvegarde Schema
+Sauvegarde notes qualité
+Feedback succès/erreur
+Mise à jour de updatedAt
+Persistance en base applicative
+
+Périmètre exclu
+
+Publication Git
+Checksum
+Création de version Active
+Autosave comme mécanisme principal
+Collaboration temps réel
+
+Critères d’acceptation
+
+Le bouton Save draft est disponible en Draft
+Le clic sauvegarde les sections éditables
+Un feedback de succès est affiché
+En cas d’erreur, l’utilisateur est informé
+Aucune écriture Git n’est réalisée
+Le Draft est retrouvé après rechargement
+
+Règles de gestion
+
+Save draft est le mécanisme de sauvegarde explicite P0. Git n’est écrit qu’au Publish.
+
+Validation fonctionnelle
+
+Tester sauvegarde Fundamentals, Schema, rechargement page, erreur backend et absence de commit Git.","## Description métier
+
+L’utilisateur doit pouvoir sauvegarder explicitement les modifications de son Draft avant publication, sans écrire dans Git ni créer de version publiée.
+* * *
+
+## Périmètre inclus
+
+*   Bouton Save draft
+*   Sauvegarde Fundamentals
+*   Sauvegarde Schema
+*   Sauvegarde notes qualité
+*   Feedback succès/erreur
+*   Mise à jour de updatedAt
+*   Persistance en base applicative
+* * *
+
+## Périmètre exclu
+
+*   Publication Git
+*   Checksum
+*   Création de version Active
+*   Autosave comme mécanisme principal
+*   Collaboration temps réel
+* * *
+
+## Critères d’acceptation
+
+1. Le bouton Save draft est disponible en Draft
+2. Le clic sauvegarde les sections éditables
+3. Un feedback de succès est affiché
+4. En cas d’erreur, l’utilisateur est informé
+5. Aucune écriture Git n’est réalisée
+6. Le Draft est retrouvé après rechargement
+* * *
+
+## Règles de gestion
+
+Save draft est le mécanisme de sauvegarde explicite P0. Git n’est écrit qu’au Publish.
+* * *
+
+## Validation fonctionnelle
+
+Tester sauvegarde Fundamentals, Schema, rechargement page, erreur backend et absence de commit Git.","a faire","33856233.00186220000000000000000000000000","2026-05-05T14:50:41.530Z","2026-05-06T13:10:31.416Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP4 - Versioning","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a52","lifecycle & locking","","","","[]"
+"86c9n9a4t","","ETQ système, je veux définir le modèle interne Contract/Draft/Version/Schema afin de stabiliser l’édition et la publication","Description métier
+
+Le système doit s’appuyer sur un modèle interne clair pour distinguer contrat logique, Draft éditable, versions publiées, objets de schéma, propriétés et métadonnées de publication.
+
+Périmètre inclus
+
+Entité Contract
+Entité Draft
+Entité PublishedVersion
+SchemaObject
+SchemaProperty
+Status Draft/Active/Deprecated
+Target version
+Published version
+Publication metadata
+Soft delete metadata
+
+Périmètre exclu
+
+Modèle collaboratif Contributor/Viewer
+Suggestions
+Commentaires
+Policies Zeenea
+Data product assembly
+
+Critères d’acceptation
+
+Le modèle distingue un Draft d’une version publiée
+Une version publiée est append-only
+Une seule version Active existe par contrat
+Un Draft peut être créé depuis une version Active
+Le modèle permet de générer un YAML ODCS
+Le modèle stocke checksum et commit hash
+Le modèle supporte le soft delete
+
+Règles de gestion
+
+La base applicative porte l’édition des Drafts. Git porte les versions publiées auditables. Une version Draft non publiée n’est pas une version officielle.
+
+Validation fonctionnelle
+
+Revue technique du modèle, tests de persistance, tests Draft versus PublishedVersion et tests de migration minimale si nécessaire.","Description métier
+
+Le système doit s’appuyer sur un modèle interne clair pour distinguer contrat logique, Draft éditable, versions publiées, objets de schéma, propriétés et métadonnées de publication.
+
+Périmètre inclus
+
+Entité Contract
+Entité Draft
+Entité PublishedVersion
+SchemaObject
+SchemaProperty
+Status Draft/Active/Deprecated
+Target version
+Published version
+Publication metadata
+Soft delete metadata
+
+Périmètre exclu
+
+Modèle collaboratif Contributor/Viewer
+Suggestions
+Commentaires
+Policies Zeenea
+Data product assembly
+
+Critères d’acceptation
+
+Le modèle distingue un Draft d’une version publiée
+Une version publiée est append-only
+Une seule version Active existe par contrat
+Un Draft peut être créé depuis une version Active
+Le modèle permet de générer un YAML ODCS
+Le modèle stocke checksum et commit hash
+Le modèle supporte le soft delete
+
+Règles de gestion
+
+La base applicative porte l’édition des Drafts. Git porte les versions publiées auditables. Une version Draft non publiée n’est pas une version officielle.
+
+Validation fonctionnelle
+
+Revue technique du modèle, tests de persistance, tests Draft versus PublishedVersion et tests de migration minimale si nécessaire.","## Description métier
+
+Le système doit s’appuyer sur un modèle interne clair pour distinguer contrat logique, Draft éditable, versions publiées, objets de schéma, propriétés et métadonnées de publication.
+* * *
+
+## Périmètre inclus
+
+*   Entité Contract
+*   Entité Draft
+*   Entité PublishedVersion
+*   SchemaObject
+*   SchemaProperty
+*   Status Draft/Active/Deprecated
+*   Target version
+*   Published version
+*   Publication metadata
+*   Soft delete metadata
+* * *
+
+## Périmètre exclu
+
+*   Modèle collaboratif Contributor/Viewer
+*   Suggestions
+*   Commentaires
+*   Policies Zeenea
+*   Data product assembly
+* * *
+
+## Critères d’acceptation
+
+1. Le modèle distingue un Draft d’une version publiée
+2. Une version publiée est append-only
+3. Une seule version Active existe par contrat
+4. Un Draft peut être créé depuis une version Active
+5. Le modèle permet de générer un YAML ODCS
+6. Le modèle stocke checksum et commit hash
+7. Le modèle supporte le soft delete
+* * *
+
+## Règles de gestion
+
+La base applicative porte l’édition des Drafts. Git porte les versions publiées auditables. Une version Draft non publiée n’est pas une version officielle.
+* * *
+
+## Validation fonctionnelle
+
+Revue technique du modèle, tests de persistance, tests Draft versus PublishedVersion et tests de migration minimale si nécessaire.","a faire","33856253.00293920000000000000000000000000","2026-05-05T14:50:40.887Z","2026-05-06T13:11:37.465Z","","","Vincent Ghislain","","Vincent Ghislain <vincent.ghislain@lonestone.io>","high","","","","","","SP4 - Versioning","Data Contract Studio","901510922066","https://app.clickup.com/t/86c9n9a4t","technical foundation","","","","[]"
