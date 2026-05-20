@@ -11,7 +11,7 @@ import {
   AlertTriangle,
   ArchiveX,
 } from 'lucide-react'
-import { LifecycleStatusBadge } from '@/lib/lifecycleStatusUi'
+import { LifecycleStatusBadge, RevisionOpenBadge } from '@/lib/lifecycleStatusUi'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -100,6 +100,7 @@ export function ContractTopBar({
         </span>
         <LifecycleStatusBadge status={info.status} />
         <Badge variant="version">v{info.version}</Badge>
+        {contract.inRevision && <RevisionOpenBadge />}
       </div>
 
       {/* Tabs */}

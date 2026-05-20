@@ -244,6 +244,11 @@ export function topBarPublishedTooltip(version: string): string {
   return `Published · v${version}`;
 }
 
+export const TOP_BAR_REVISION_OPEN_LABEL = "Revision open";
+
+export const TOP_BAR_REVISION_OPEN_TOOLTIP =
+  "You are editing unpublished changes based on the active version.";
+
 export const VERSIONS_WORKING_COPY_LABEL = "Working copy";
 
 export const VERSIONS_CHANGES_NOT_PUBLISHED = "Changes not yet published";
