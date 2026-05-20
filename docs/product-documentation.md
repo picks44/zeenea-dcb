@@ -169,6 +169,7 @@ Les colonnes peuvent être marquées **personal data**. Si des champs sensibles 
 | **Start drafting**                   | Passage de `proposed` à `draft` après import                                     |
 | **New version**                      | Ouverture d’une révision sur un contrat `active`                                 |
 | **Working copy**                     | Modifications non encore republiées                                              |
+| **Revision open**                    | Badge : révision en cours sur un contrat **active** (pas un statut draft)       |
 
 _Note : l’ancien libellé documentaire « Data Contract Studio » n’est plus utilisé ; le nom produit officiel est **Data Contract Builder**._
 
@@ -182,9 +183,10 @@ _Note : l’ancien libellé documentaire « Data Contract Studio » n’est plus
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | **Backlog**         | Liste des contrats ; filtres par statut lifecycle ; **Create contract**                                                |
 | **Create contract** | Écran en **deux étapes** : choix du mode (**Import DDL** ou **Start from scratch**), puis formulaire DDL si import. **Aucun contrat enregistré** tant qu’un parcours n’est pas mené à terme (import validé ou création draft) |
-| **Éditeur**         | Barre supérieure (nom, statut, version, actions) ; navigation latérale ; contenu ; panneau readiness (onglet Form)     |
-| **Onglet Form**     | Sections d’édition                                                                                                     |
-| **Onglet YAML**     | Aperçu du fichier ODCS généré + rappel export / app-only                                                               |
+| **Éditeur**         | Barre supérieure (nom, statut, version, actions) ; navigation latérale par **sections** ; contenu ; panneau readiness (onglet Form) |
+| **Section Versions** | Historique applicatif (timeline, working copy, Compare) — **pas** une section ODCS à compléter ; pas d’aperçu YAML par version ici |
+| **Onglet Form**     | Sections d’édition (Fundamentals, Schema, gouvernance, etc.)                                                           |
+| **Onglet YAML**     | Aperçu read-only du fichier ODCS généré (état **courant** du contrat) ; Copy / Download ; rappel export / app-only      |
 
 Une page **Components** existe pour la bibliothèque UI interne (hors parcours métier standard).
 
@@ -203,7 +205,37 @@ Ordre conseillé pour un nouveau contrat :
 
 Le panneau **Publication readiness** est visible sur l’onglet Form (sauf sections Import et Versions).
 
-Les onglets **Form** / **YAML** du bandeau supérieur sont masqués dans la section **Versions** : cette section affiche l’historique applicatif (timeline, working copy, Compare). L’aperçu YAML du livrable courant reste accessible depuis les autres sections ; les différences exportées entre versions passent par **Compare**.
+Les onglets **Form** / **YAML** du bandeau supérieur sont masqués dans la section **Versions** : cette section affiche l’historique applicatif (timeline, working copy, Compare). L’aperçu YAML du livrable courant reste accessible depuis les autres sections ; les différences exportées entre versions passent par **Compare** (export-only, pas le YAML d’une ligne d’historique isolée).
+
+**Versions** n’est pas une étape de maturité ODCS : pas de cue de progression latéral, pas de score readiness dédié. **Compare** compare des snapshots **exportables** (comme dans le YAML), pas la gouvernance app-only.
+
+### 3.2.1 Navigation latérale — cues de progression
+
+Les sections éditables peuvent afficher un indicateur à gauche du libellé (point neutre, coche verte, alerte orange) :
+
+| Statut cue      | Signification (aide de progression)                                      |
+| --------------- | ------------------------------------------------------------------------ |
+| **empty**       | Peu ou pas de contenu saisi dans la section                              |
+| **complete**    | Section considérée suffisante pour la progression (voir règles ci-dessous) |
+| **incomplete**  | Contenu présent mais éléments requis manquants (tooltip : _N required items missing_) |
+
+**Règles d’affichage :**
+
+| Contexte | Cues |
+| -------- | ---- |
+| Contrat **éditable** (`draft`, ou `active` + révision, ou `proposed` sur Import seul) | Visibles sur les sections concernées |
+| Contrat **lecture seule** (Reader, `active` sans révision, `deprecated`, `retired`, `proposed` hors Import) | **Aucun** cue — libellés seuls, espacement préservé |
+| Section **Versions** | **Jamais** de cue, même si le contrat est éditable |
+
+**Règles de statut (non exhaustif) :**
+
+- **Fundamentals** / **Schema** : alignés sur la validation publication (champs requis, schéma minimal).
+- **Governance contacts** : **complete** si au moins un contact compté pour la readiness.
+- **Data access** : **complete** si au moins un rôle exportable (`role` renseigné).
+- **Service levels** : **complete** si au moins une ligne SLA exportable (`property` + `value`).
+- **Custom** : **complete** si au moins une custom property **exportable** (nom camelCase valide + valeur renseignée) — une ligne partiellement remplie ne suffit pas.
+
+Les cues **ne remplacent pas** la validation publish : ils orientent la progression ; les blocages restent dans le panneau readiness et les messages de validation.
 
 ### 3.3 Ce que l’application gère vs ce qui est exporté
 
@@ -359,6 +391,8 @@ En **proposed**, seule la section **Import SQL** reste modifiable (coller ou rec
 | **Retire contract**              | `deprecated`                    | Passe à `retired`                                |
 
 **Start drafting** est proposé aux Publisher et Contributor ; il est masqué sur l’écran Import initial du parcours import jusqu’à navigation vers une autre section.
+
+**Deprecate** et **Retire contract** sont regroupés dans le menu overflow **⋯** (Contract actions) de la barre supérieure, réservé au **Publisher** — séparés des actions **Publish** / **New version** pour limiter les clics accidentels. Les confirmations modales restent obligatoires.
 
 ### 5.7 Contrats legacy
 
@@ -568,12 +602,28 @@ Tant que le contrat est **proposed**, l’utilisateur peut coller un nouveau scr
 | Type de relation                       | Export YAML                                |
 | -------------------------------------- | ------------------------------------------ |
 | Clé étrangère simple complète          | Oui (`foreignKey` sur la propriété)        |
+| **Self-FK** (même table source/cible)  | Oui si table et colonne cibles valides     |
 | `belongs_to` complet (legacy)          | Oui                                        |
 | Clé étrangère composite (≥ 2 colonnes) | Oui (niveau table)                         |
 | `many_to_many`                         | Oui (niveau table)                         |
 | `has_one`, `has_many`                  | **Non** - badge _Not in exported contract_ |
 
-Les tables référencées doivent exister dans le même contrat pour un export cohérent.
+**Périmètre :**
+
+- Tables référencées = tables du **même contrat** uniquement (pas de table externe, pas de cross-contract).
+- Pointers YAML stables : `/schema/{tableId}/properties/{propertyId}` (indépendants des renommages `name` / `physicalName` affichés).
+
+**Édition UI :**
+
+- FK colonne : sélecteur table/colonne, aperçu, **Clear foreign key** ; message si cible **manquante** (table ou colonne supprimée/renommée) avec action **Clear**.
+- Relations table-level : **ajout** et **suppression** dans Schema ; l’édition complète d’une relation existante (modifier paires composite, etc.) reste **hors scope** MVP — supprimer et recréer si besoin.
+
+**Synchronisation après changements schéma :**
+
+- Renommage **table** ou **colonne** : les FK et relations du contrat sont mises à jour pour suivre les nouveaux noms physiques.
+- Suppression table/colonne cible : FK ou relation **retirée** ou invalidée (référence obsolète) ; l’export n’émet que les liens complets et valides.
+
+**Publication :** FK partielle, composite incomplet ou `belongs_to` legacy incomplet bloquent la publication ; `has_one` / `has_many` n’empêchent pas la publication mais n’apparaissent pas dans le YAML.
 
 ### 8.4 Quality rules
 
@@ -611,11 +661,36 @@ Format **element** : `Table.field`, plusieurs champs séparés par des virgules.
 
 Champs P2 hors MVP : `id` (interne app), `valueExt`, `scheduler`, `schedule`.
 
-### 8.8 Version history
+### 8.8 Gouvernance — autosave, compteurs et lignes exportables
+
+Sections **Governance contacts**, **Data access**, **Service levels** et **Custom** partagent le même modèle UX :
+
+| Notion | Description |
+| ------ | ----------- |
+| **Autosave** | _Changes save automatically._ — pas de bouton Save ; persistance navigateur à chaque modification |
+| **Ligne vide** | Ignorée à l’export et à la validation (sauf si l’utilisateur a commencé à saisir → ligne **partielle**) |
+| **Ligne exportable** | Critères ODCS remplis (ex. SLA : `property` + `value` ; custom : camelCase + valeur ; rôle : `role` + `access`) |
+| **Ligne publishable** | Ligne exportable **et** conforme aux validateurs publish (nom custom valide, types SLA supportés, etc.) |
+
+**Compteurs sous l’en-tête de section (exemples) :**
+
+| Section | Ligne de synthèse typique |
+| ------- | ------------------------- |
+| Governance contacts | _N contacts saved · M counted for readiness · app-only_ |
+| Data access | _N roles included in YAML · M incomplete rows_ |
+| Service levels | _N service levels included in YAML · M incomplete rows_ |
+| Custom | _N properties included in YAML · M incomplete rows_ |
+
+Les contacts de gouvernance restent **app-only** (jamais dans le YAML) mais peuvent être **versionnés** à la publication (Option B — voir [9.5](#95-message-no-changes-to-publish-since-the-last-version)).
+
+**Emphase après tentative de publication :** si le Publisher clique **Publish** / **Publish update** alors que des lignes partielles subsistent dans Data access, SLA ou Custom, ces lignes peuvent être **soulignées** localement avec un message d’aide (ex. _Choose a type and value to include this service level in the YAML export._). Cette emphase **n’apparaît pas en permanence** et **ne modifie pas** les règles de validation métier — elle complète le panneau readiness (**Details to fix**).
+
+### 8.9 Version history
 
 - Liste des publications avec version, date, changelog.
-- **Working copy** en tête si modifications non publiées.
-- Actions : comparer, abandonner les changements (en révision).
+- **Working copy** en tête si modifications non publiées ; libellés _Changes not yet published_, _Revision open - no changes since last version_, etc.
+- Actions : **Compare** (export-only), **Discard changes** (en révision).
+- Rappel : _Use Compare to inspect exported contract differences between versions._
 
 ---
 
@@ -714,7 +789,8 @@ Affiché lorsque l’application n’a enregistré **aucune modification** depui
 | Brouillon, onglet Form    | Panneau **Publication readiness** avec score /100                                |
 | Contrat publié            | Titre **Contract quality** ; pas de /100 ; invite **New version** pour améliorer |
 | Sections Import, Versions | Panneau masqué                                                                   |
-| Après tentative Publish   | **Details to fix** mis en avant                                                  |
+| Après tentative Publish   | **Details to fix** mis en avant ; lignes **incomplètes** soulignées dans Data access / SLA / Custom (voir [8.8](#88-gouvernance--autosave-compteurs-et-lignes-exportables)) |
+| Viewport &lt; xl          | Panneau readiness en overlay ; bouton **Readiness** / **Contract quality** dans la barre supérieure |
 
 ---
 
@@ -747,9 +823,15 @@ Le choix est proposé à chaque **publication après la première** (pas à l’
 
 Les publications déclenchées après des changements **app-only versionnés** (owner, governance contacts) suivent les mêmes règles de version et d’historique. Le diff de comparaison **Form/YAML** reste centré sur le contenu exportable ; le changelog publish et le résumé working copy combinent **changements exportés** et **changements de gouvernance**. Les champs `version` / `status` du YAML ne génèrent pas de bruit dans le changelog métier (effets système de publication).
 
-### 10.4 Working copy et discard changes
+### 10.4 Working copy, révision ouverte et discard changes
 
-Pendant une révision, les modifications forment une **working copy**. **Discard changes** restaure le dernier snapshot publié et annule la révision.
+Pendant une révision (`active` + `inRevision`), les modifications forment une **working copy**. **Discard changes** restaure le dernier snapshot publié et annule la révision.
+
+**Badge Revision open** (barre supérieure) :
+
+- Le statut lifecycle affiché reste **Active** ; la version affichée reste celle de la **dernière publication** tant que **Publish update** n’a pas abouti.
+- Le badge signale une **copie de travail non publiée** — à ne pas confondre avec un retour au statut **draft**.
+- Tooltip : _You are editing unpublished changes based on the active version._
 
 ### 10.5 Comparaison entre versions
 
@@ -770,6 +852,22 @@ Contrat machine-lisible pour :
 - documentation des datasets ;
 - intégration CI/CD ou catalogues ;
 - alignement équipes consommatrices sur schéma, qualité et SLA.
+
+### 11.1.1 Onglet YAML — aperçu et actions
+
+| Aspect | Comportement |
+| ------ | ------------ |
+| **Contenu** | Généré en temps réel par `generateODCSYaml` à partir du contrat **courant** (brouillon, révision ou snapshot logique en mémoire) — **pas** le YAML figé d’une ligne d’historique Versions |
+| **Édition** | **Read-only** — titre _ODCS v3.1.0 - Generated export (read-only)_ |
+| **Copy YAML** | Copie le texte affiché dans le presse-papiers ; toast _YAML copied to clipboard_ |
+| **Download YAML** | Télécharge le **même texte** que l’aperçu ; nom `{contractId}_{version}.yaml` (segments sanitisés pour le système de fichiers) ; toast _Downloaded {filename}_ |
+| **Rappels** | Bandeau _Exported contract file: …_ / _Managed in the app only: …_ (voir aussi [3.3](#33-ce-que-lapplication-gère-vs-ce-qui-est-exporté)) |
+
+**À distinguer :**
+
+- **Onglet YAML** = livrable **actuel** tel qu’il serait exporté maintenant.
+- **Compare** (depuis Versions) = diff **export-only** entre deux snapshots publiés ou working copy vs publié.
+- **Section Versions** = pas d’onglet YAML ni de téléchargement par version historique isolée.
 
 ### 11.2 Champs racine typiques
 
@@ -894,12 +992,13 @@ L’interface privilégie des libellés compréhensibles :
 | `physicalType`              | Technical format               | Oui (schéma)               |
 | `authoritativeDefinitions`  | Reference links                | Oui                        |
 
-### 14.2 Densité et structure
+### 14.2 Barre supérieure et structure
 
-- Navigation latérale par étapes du parcours contrat.
-- Barre supérieure : statut lifecycle, version, actions globales.
-- Zone de contenu centrée, formulaires denses pour le schéma.
-- Onglets **Form** et **YAML** pour alterner édition et livrable.
+- **Gauche :** titre contrat, badge statut lifecycle, badge version (`v{x.y.z}`), badge **Revision open** si révision en cours.
+- **Centre / droite :** onglets **Form** / **YAML** (masqués sur la section **Versions**) ; zone collaborateurs (avatars + **Collaborators**) ; actions workflow (**Start drafting**, **New version**, **Publish** / **Publish update**, état **Published** si aucun changement depuis la dernière publication) ; menu **⋯** (**Deprecate**, **Retire contract**).
+- **Readiness** : panneau latéral sur grand écran ; bouton toggle sur viewport réduit.
+- Navigation latérale : sections du parcours + cues de progression ([3.2.1](#321-navigation-latérale--cues-de-progression)).
+- Zone de contenu centrée ; formulaires denses pour le schéma.
 
 ### 14.3 États vides et feedback (catalogue synthétique)
 
@@ -1030,6 +1129,66 @@ Légende : ✓ autorisé, ✗ interdit, (✓) si conditions.
 - _When_ le Publisher ajoute ou modifie une custom property puis publie
 - _Then_ publication autorisée ; `customProperties` présent dans le YAML ; changelog mentionne la mise à jour ; Compare reflète la différence
 
+**S14 - Sidebar cues masqués en lecture seule**
+
+- _Given_ un contrat **active** verrouillé (sans révision) ou un utilisateur **Reader** sur un draft
+- _When_ l’utilisateur parcourt la navigation latérale
+- _Then_ aucun indicateur complete/incomplete/empty à côté des libellés de section
+
+**S15 - Versions sans cue**
+
+- _Given_ un contrat **draft** éditable
+- _When_ l’utilisateur ouvre la section **Versions**
+- _Then_ pas de cue de progression sur cette ligne ; onglets Form/YAML absents de la barre supérieure
+
+**S16 - Custom complete si property exportable**
+
+- _Given_ un contrat draft avec une ligne Custom valide (camelCase + valeur)
+- _When_ l’utilisateur consulte la navigation latérale
+- _Then_ la section **Custom** affiche un cue **complete** (même si d’autres lignes partielles existent)
+
+**S17 - SLA incomplete + publish attempt**
+
+- _Given_ un contrat draft avec une ligne SLA partielle (type sans valeur)
+- _When_ le Publisher clique **Publish** (même si bloqué)
+- _Then_ la ligne est soulignée avec le message d’inclusion YAML ; compteur _1 incomplete row_ sous l’en-tête de section
+
+**S18 - YAML download filename**
+
+- _Given_ un contrat `id = my-contract-abc12345`, `version = 1.2.0`
+- _When_ l’utilisateur ouvre l’onglet YAML et clique **Download YAML**
+- _Then_ le fichier téléchargé est nommé `my-contract-abc12345_1.2.0.yaml` et son contenu correspond à l’aperçu
+
+**S19 - FK rename propagation**
+
+- _Given_ une FK de `orders.customer_id` vers `customers.id`
+- _When_ la table `customers` est renommée en `clients` dans Schema
+- _Then_ la FK pointe vers `clients.id` (même contrat)
+
+**S20 - FK stale target clear**
+
+- _Given_ une FK vers une colonne supprimée
+- _When_ l’utilisateur ouvre l’éditeur FK de la colonne
+- _Then_ message cible manquante et action **Clear** / **Clear foreign key** disponible
+
+**S21 - Form/YAML absent sur Versions**
+
+- _Given_ un contrat draft
+- _When_ l’utilisateur sélectionne **Versions** puis revient sur **Fundamentals**
+- _Then_ onglets Form/YAML réapparaissent ; pendant Versions, seul l’historique est affiché
+
+**S22 - Revision open badge**
+
+- _Given_ un contrat **active** publié
+- _When_ **New version** puis modification d’un champ sans publish
+- _Then_ badge **Revision open** visible ; statut reste **Active** ; version affichée inchangée
+
+**S23 - Lifecycle menu overflow**
+
+- _Given_ un contrat **active** (Publisher, hors révision)
+- _When_ l’utilisateur ouvre le menu **⋯** et choisit **Deprecate**
+- _Then_ confirmation puis statut **deprecated** ; **Retire** accessible depuis le même menu en **deprecated**
+
 ### 15.3 Jeu de données de test
 
 Utiliser les contrats seed (**Customer Orders**, **Product Catalog**, **User Analytics Events**) ou réinitialiser le stockage local (voir [notes techniques](./technical-notes.md)) pour repartir d’un environnement vide.
@@ -1057,11 +1216,6 @@ Utiliser les contrats seed (**Customer Orders**, **Product Catalog**, **User Ana
 - _Required before publishing_ / _Field quality_ / _Suggested improvements_
 - _Ready to publish_ (lorsque le bloc requis est complet)
 
-### Compare
-
-- _Shows exported contract content only. Contract owner and governance contact changes appear in Versions and the publish changelog._
-- _These exported versions are identical_ / _No differences in the exported contract between the selected versions. Governance-only changes are not shown here._
-
 ### Accès
 
 - _You have read-only access in the app. Ask a Publisher or Contributor to change your collaborator role._
@@ -1070,6 +1224,42 @@ Utiliser les contrats seed (**Customer Orders**, **Product Catalog**, **User Ana
 
 - _People who can view or edit this contract in Data Contract Builder. Stored in the app only - not included in the exported contract file._
 
+### Gouvernance (autosave et lignes incomplètes)
+
+- _Changes save automatically._
+- _Changes save automatically. Governance contacts stay in the app and are not exported to YAML._
+- _Changes save automatically. Complete roles are included in the YAML export._ (idem SLA / Custom)
+- _1 contact saved · N counted for readiness · app-only_
+- _N roles included in YAML · M incomplete rows_
+- _Add a role name to include this row in the YAML export and publish._
+- _Choose a type and value to include this service level in the YAML export._
+- _Add a property name and value in camelCase to include this row in the YAML export._
+
+### YAML export
+
+- _Copy YAML_ / _Copied_ / _Download YAML_
+- _YAML copied to clipboard_ / _Downloaded {filename}_
+- _Exported contract file: identity, description, schema (including business names, classification, keys, relationships), tags, quality rules, reference links, data access roles, service levels, and custom properties._
+- _Managed in the app only: contract owner, operational governance contacts, collaborators, version history, and revision state._
+
+### Versions et révision
+
+- _Working copy_ / _Changes not yet published_ / _No changes since last version_
+- _Revision open_ — _You are editing unpublished changes based on the active version._
+- _Revision open - no changes since last version_
+- _Use Compare to inspect exported contract differences between versions._
+
+### Compare
+
+- _Shows exported contract content only. Contract owner and governance contact changes appear in Versions and the publish changelog._
+- _These exported versions are identical_ / _No differences in the exported contract between the selected versions. Governance-only changes are not shown here._
+- _Select two different versions to compare_ / _Not enough versions to compare yet._
+
+### Barre supérieure
+
+- _Published · v{version}_ (tooltip état synchronisé sans changement à publier)
+- _Approval in progress_ (UI seulement si PR mock ouverte — flux non actif, voir [12.6](#126-approval-in-progress-non-activé))
+
 ---
 
-_Dernière mise à jour : rationalisation documentaire - source comportementale du prototype Data Contract Builder (MVP). Pour les détails d’implémentation, tests et persistance : [notes techniques](./technical-notes.md)._
+_Dernière mise à jour : alignement documentation sur le prototype Data Contract Builder (MVP) — cues navigation, gouvernance autosave, YAML copy/download, révision ouverte, menu lifecycle, FK. Détails d’implémentation : [notes techniques](./technical-notes.md)._

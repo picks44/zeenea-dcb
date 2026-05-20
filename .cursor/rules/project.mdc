@@ -37,6 +37,11 @@ Current prototype characteristics:
 | `src/lib/contractValidation.ts`     | Publish validation rules                                  |
 | `src/lib/publicationReadiness.ts`   | Readiness score and publish status aggregation            |
 | `src/lib/readinessGuidance.ts`      | Readiness checklist items and navigation metadata         |
+| `src/lib/sectionNavCues.ts`      | Sidebar progress cue visibility and rules                |
+| `src/lib/governanceSectionSummary.ts` | Governance autosave/export counters and summaries |
+| `src/lib/publishChangelog.ts`   | Publish changelog generation and working copy summaries  |
+| `src/lib/schemaRelationshipRefs.ts` | Relationship/FK rename-delete synchronization       |
+| `src/lib/yamlFileDownload.ts`   | YAML export filename generation                          |
 | `src/lib/validationUserMessages.ts` | User-facing validation message mapper                     |
 | `src/lib/ddlParser.ts`              | SQL `CREATE TABLE` → `SchemaTable[]`                      |
 | `src/lib/odcsYamlGenerator.ts`      | `DataContract` → ODCS YAML document                       |
@@ -51,6 +56,9 @@ Current prototype characteristics:
 | `docs/technical-notes.md`           | Developer technical notes                                 |
 | `docs/odcs-p1-reference.md`         | ODCS P1 field reference (55 lines)                        |
 | `README.md`                         | Project portal and quick start                            |
+| `src/components/shared/ContractLifecycleMenu.tsx` | Overflow lifecycle destructive actions menu |
+| `src/components/shared/GovernanceSectionMeta.tsx` | Autosave/export/readiness section summaries |
+| `src/components/shared/GovernanceIncompleteRowHint.tsx` | Publish-time incomplete row emphasis |
 
 ## Contract creation flow
 
@@ -61,6 +69,14 @@ Backlog has a single **Create contract** entry point.
 - No contract is persisted to `localStorage` until the user chooses a path.
 - The create view (`CreateContractView`) shows a **mode choice** first (two cards: Import DDL / Start from scratch); no SQL textarea until Import DDL is chosen.
 - Choosing Import DDL shows `ImportSection` (`layout: 'creation'`) with **Back to creation options**; still no contract until import validates.
+
+Additional UX rules:
+
+- The create flow intentionally separates the mode choice step from the actual DDL form.
+- The SQL textarea must not appear before the user explicitly chooses the Import DDL path.
+- Creation is intentionally non-persistent until the final creation action succeeds.
+- `proposed` contracts are created only after a successful DDL import.
+- `draft` contracts are created only after the user explicitly starts from scratch.
 
 Creation paths:
 
@@ -82,6 +98,8 @@ Rules:
 - `proposed` is read-only except for the import step when import is still applicable.
 - `draft` is editable.
 - `active` is read-only unless `inRevision` is true.
+- `Revision open` is a UI state layered on top of `active`; it is not a lifecycle status.
+- An `active` contract with `inRevision === true` keeps the published version visible while exposing a working copy draft.
 - `deprecated` is read-only.
 - `retired` is read-only.
 - Viewer role is always read-only.
@@ -112,6 +130,18 @@ Current readiness model:
 | Required before publishing | 70     |
 | Field quality              | 25     |
 | Suggested improvements     | 5      |
+
+Additional UX/readiness rules:
+
+- Readiness cues are visible only when the contract is editable.
+- The `Versions` section never displays progress cues.
+- Governance sections use autosave semantics; there is no explicit Save action.
+- Governance rows can exist in three conceptual states:
+  - saved locally,
+  - included in YAML export,
+  - publish-valid.
+- YAML preview always reflects the current in-memory working copy state, not a historical snapshot.
+- `VersionCompareModal` remains the only export diff surface between published snapshots.
 
 Suggested improvements should remain distinct from Field quality. Field descriptions belong to Field quality, not Suggested improvements.
 
@@ -145,13 +175,10 @@ Table and property IDs must remain stable and should use the existing ID helpers
 - `slaProperties[].property` is required when an SLA row has any content; must be one of the 13 ODCS Data QoS types and exported in YAML.
 - `dataProduct` must not be reintroduced to the current export.
 - Relationships and foreign keys must go through `relationshipExport.ts`.
-- Any model change must update:
-  - types,
-  - validation,
-  - YAML generator,
-  - storage migration when needed,
-  - tests,
-  - documentation.
+- Relationship rename/delete propagation must go through `schemaRelationshipRefs.ts`.
+- Self-referencing foreign keys are supported.
+- Cross-contract relationships are not supported in the MVP.
+- YAML export actions (Copy / Download) must always reflect the exact generated preview content.
 
 ## DDL import rules
 
@@ -170,6 +197,8 @@ Important:
 - Do not change `src/components/ui/*` or theme tokens unless explicitly approved.
 - App screens should converge back to the UI Kit source of truth.
 - Prefer UI primitives and shared patterns before creating local UI.
+- Prefer shared product-level components (`shared/`) before introducing section-specific UX patterns.
+- Sidebar cues, governance autosave summaries, publish emphasis and lifecycle menus must remain visually consistent across sections.
 - Do not use arbitrary hex colors in product UI without explicit approval.
 
 ## Code conventions
@@ -181,6 +210,9 @@ Important:
 - Use aliases: `@/components/...`, `@/lib/...`, `@/types/...`.
 - Use `lucide-react` for icons.
 - Respect `isLocked` on every editable field.
+- Read-only contracts must not display editing progress cues or autosave-oriented helper states.
+- `Versions` is considered an application/history surface, not a contract editing surface.
+- The global Form/YAML switch must not appear on `Versions`.
 - Destructive flows must use `ConfirmDialog`.
 - User feedback should go through `useToast`.
 
@@ -192,6 +224,17 @@ Keep these files aligned with product/runtime changes:
 - `docs/technical-notes.md` (developer implementation notes)
 - `docs/odcs-p1-reference.md` (P1 field reference)
 - `README.md`
+
+Recent UX/documentation-sensitive areas that must remain synchronized:
+
+- publish changelog wording,
+- Revision open behavior,
+- sidebar readiness cues,
+- governance autosave summaries,
+- YAML copy/download behavior,
+- lifecycle overflow menu behavior,
+- relationship/FK synchronization rules,
+- Versions vs YAML navigation behavior.
 
 Do not document assumptions as facts. If behavior is mock/simulated, state it explicitly.
 

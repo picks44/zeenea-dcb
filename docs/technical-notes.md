@@ -77,25 +77,58 @@ Stub dans `src/lib/currentUser.ts` - modifier pour tester rôles et partage.
 | `src/lib/ddlParser.ts`              | Import SQL                      |
 | `src/lib/storage.ts`                | Persistance + migrations        |
 | `src/lib/publicationReadiness.ts`   | Score readiness                 |
-| `src/lib/readinessGuidance.ts`      | Guidance par section            |
-| `src/lib/uxCopy.ts`                 | Libellés UI                     |
+| `src/lib/readinessGuidance.ts`      | Guidance par section + statuts cues sidebar |
+| `src/lib/sectionNavCues.ts`         | Affichage cues navigation (éditable vs read-only, exclusion Versions) |
+| `src/lib/governanceSectionSummary.ts` | Compteurs saved / includedInYaml / incomplete (gouvernance) |
+| `src/lib/yamlFileDownload.ts`       | Nom fichier + déclenchement téléchargement YAML |
+| `src/lib/schemaRelationshipRefs.ts` | Propagation rename/suppression FK et relations |
+| `src/lib/publishChangelog.ts`       | Changelog auto première publication et suivantes |
+| `src/lib/contractVersionDiff.ts`    | `hasAnyChangeSinceLastPublish`, résumé working copy |
+| `src/lib/versionHistory.ts`         | `getDisplayChangelog`, migration messages legacy |
+| `src/lib/exportedContractDiff.ts`   | Compare modale (snapshots exportables uniquement) |
+| `src/lib/governanceSnapshotDiff.ts` | Diff gouvernance snapshotée (publish / changelog) |
+| `src/lib/uxCopy.ts`                 | Libellés UI (source wording produit) |
 | `src/lib/validationUserMessages.ts` | Messages utilisateur validation |
+| `src/components/ContractSectionNav.tsx` | Navigation sections + cues |
+| `src/components/ContractTopBar.tsx` | Barre supérieure, onglets Form/YAML, publish, menu lifecycle |
+| `src/components/shared/ContractLifecycleMenu.tsx` | Menu ⋯ Deprecate / Retire |
+| `src/components/shared/GovernanceSectionMeta.tsx` | Autosave note + ligne compteurs |
+| `src/components/shared/GovernanceIncompleteRowHint.tsx` | Emphase ligne après publish attempt |
+| `src/components/YamlView.tsx`       | Aperçu YAML read-only, copy/download |
+| `src/components/VersionsView.tsx`   | Timeline, working copy, Compare entry |
 | `src/components/CreateContractView.tsx` | Écran Create : `mode` `null` \| `'ddl'`, cartes de choix, branche import |
 | `src/components/sections/ImportSection.tsx` | Import SQL — éditeur `proposed` (`default`) et étape Create (`creation`) |
 | `src/components/sections/`          | Autres sections éditeur         |
-| `src/lib/__tests__/`                | Tests unitaires                 |
+| `src/lib/__tests__/`                | Tests unitaires (`src/lib` + `src/components/shared/__tests__`) |
 
 ### Séparation des responsabilités
 
 ```text
 types (odcs.ts)       →  état contrat
 p1Constants           →  enums / regex P1
-p1Validation          →  règles atomiques
+p1Validation          →  règles atomiques (roleRowHasContent vs isRoleRowExportable, SLA, custom)
 contractValidation    →  orchestration erreurs publish
-odcsYamlGenerator     →  sortie ODCS
+odcsYamlGenerator     →  sortie ODCS (état contrat courant)
+relationshipExport    →  FK / relations exportables
+schemaRelationshipRefs→  sync références après rename/delete schéma
+readinessGuidance     →  statuts sidebar + items readiness
+governanceSectionSummary → compteurs sections gouvernance
+publishChangelog + contractVersionDiff → publish gate + changelog
+exportedContractDiff  →  Compare (YAML export only)
 components/*          →  UI
-App.tsx               →  orchestration + persistance
+App.tsx               →  orchestration + persistance (activeTab reset sur Versions)
 ```
+
+### Patterns transverses
+
+| Pattern | Fichiers | Règle |
+| ------- | -------- | ----- |
+| Export vs app-only | `odcsYamlGenerator`, `governanceSnapshotDiff`, `uxCopy` `EXPORT_COVERAGE` | Owner, contacts, collaborateurs, historique hors YAML ; owner/contacts versionnés pour publish Option B |
+| Sidebar cues | `readinessGuidance.computeSectionGuidance`, `sectionNavCues`, `ContractSectionNav` | Pas de cues en read-only ; pas sur `versions` ; Custom complete si ≥1 ligne exportable |
+| Gouvernance autosave | `GovernanceSectionMeta`, sections `*Section.tsx`, `governanceSectionSummary` | Pas de Save ; compteurs includedInYaml / incomplete |
+| Publish emphasis | `ReadinessNavigationContext.markPublishAttempted`, `GovernanceIncompleteRowHint` | Emphase lignes gouvernance exportables incomplètes après clic Publish |
+| YAML preview | `YamlView`, `yamlFileDownload` | Même texte pour preview, copy et download ; filename `{id}_{version}.yaml` |
+| FK integrity | `schemaRelationshipRefs`, `ColumnForeignKeyEditor`, `relationshipExport` | Rename propagation ; stale target + Clear ; self-FK autorisée |
 
 ---
 
@@ -162,24 +195,35 @@ IDs stables (`id` table/colonne) et pointers FK `/schema/{id}/properties/{proper
 
 **Framework :** Vitest - `npm test`, `npm run test:watch`.
 
-| Fichier                             | Rôle                                    |
-| ----------------------------------- | --------------------------------------- |
-| `p1-compliance.test.ts`             | 55 lignes P1 + golden YAML              |
-| `createContract.test.ts`            | Création, bannières proposed            |
-| `contractLifecycle.test.ts`         | Transitions, lock, import               |
-| `contractValidation.test.ts`        | Validation publish                      |
-| `validationUserMessages.test.ts`    | Messages UI                             |
-| `odcsYamlGenerator.test.ts`         | Structure export                        |
-| `p1Validation.test.ts`              | Helpers P1                              |
-| `idDerivation.test.ts`              | IDs hybrides                            |
-| `schemaOdcsMapping.test.ts`         | Normalisation `name`, résolution export |
-| `storageSchemaMigration.test.ts`    | Migration legacy schema                 |
-| `ddlParser.schemaOdcs.test.ts`      | Import DDL → champs ODCS                |
-| `relationshipExport.rename.test.ts` | FK stable après rename                  |
+| Fichier | Rôle |
+| ------- | ---- |
+| `p1-compliance.test.ts` | 55 lignes P1 + golden YAML |
+| `createContract.test.ts` | Création, bannières proposed |
+| `contractLifecycle.test.ts` | Transitions, lock, import |
+| `contractValidation.test.ts` | Validation publish |
+| `contractVersionDiff.test.ts` | `hasAnyChangeSinceLastPublish`, changelog publish |
+| `validationUserMessages.test.ts` | Messages UI |
+| `odcsYamlGenerator.test.ts` | Structure export |
+| `p1Validation.test.ts` | Helpers P1 (exportable vs row content) |
+| `idDerivation.test.ts` | IDs hybrides |
+| `schemaOdcsMapping.test.ts` | Normalisation `name`, résolution export |
+| `storageSchemaMigration.test.ts` | Migration legacy schema |
+| `ddlParser.schemaOdcs.test.ts` | Import DDL → champs ODCS |
+| `relationshipExport.rename.test.ts` | FK stable après rename |
+| `relationshipExport.schema.test.ts` | Export composite / M2M |
+| `schemaRelationshipRefs.test.ts` | Propagation rename, cible manquante |
+| `readinessGuidance.test.ts` | Statuts sections (dont Custom exportable) |
+| `sectionNavCues.test.ts` | Cues masqués read-only / Versions |
+| `governanceSectionSummary.test.ts` | Compteurs incomplete / exportable |
+| `governanceLayout.test.ts` / `governanceReadOnlyLayout.test.ts` | Layout gouvernance |
+| `yamlFileDownload.test.ts` | Nom fichier download |
+| `publicationReadiness.test.ts` | Score readiness |
+| `classificationCycle.test.ts` | Cycle classification / PII |
+| `src/components/shared/__tests__/createEmptyAuthoritativeDefinition.test.ts` | Helper reference links |
 
-**Total observé :** ~242 tests (19 fichiers).
+**Total (dernier `npm test` vert) :** 24 fichiers, **277** tests.
 
-**Limites :** pas de tests composants React ni e2e navigateur dans `__tests__/`.
+**Limites :** pas de suite e2e navigateur ; couverture React limitée au test shared ci-dessus.
 
 Référence normative : [odcs-p1-reference.md](./odcs-p1-reference.md).
 
@@ -195,9 +239,13 @@ Référence normative : [odcs-p1-reference.md](./odcs-p1-reference.md).
 | Export YAML               | `odcsYamlGenerator.ts`, `odcsSharedMappers.ts`, `relationshipExport.ts`          |
 | Lifecycle                 | `contractLifecycle.ts`, handlers `App.tsx`                                       |
 | Import DDL                | `ddlParser.ts`                                                                   |
-| Readiness                 | `publicationReadiness.ts`, `readinessGuidance.ts`                                |
-| Diff / versioning publish | `contractVersionDiff.ts`, `publishChangelog.ts`, `exportedContractDiff.ts`, `governanceSnapshotDiff.ts`, `versionHistory.ts` (`getDisplayChangelog`) |
-| Libellés UI               | `uxCopy.ts`                                                                      |
+| Readiness / nav cues        | `publicationReadiness.ts`, `readinessGuidance.ts`, `sectionNavCues.ts`, `ContractSectionNav.tsx` |
+| Gouvernance UX              | `governanceSectionSummary.ts`, `GovernanceSectionMeta.tsx`, sections gouvernance |
+| YAML copy/download          | `YamlView.tsx`, `yamlFileDownload.ts`                                            |
+| FK sync                     | `schemaRelationshipRefs.ts`, `relationshipExport.ts`                             |
+| Diff / versioning publish   | `contractVersionDiff.ts`, `publishChangelog.ts`, `exportedContractDiff.ts`, `governanceSnapshotDiff.ts`, `versionHistory.ts` |
+| Top bar / lifecycle menu    | `ContractTopBar.tsx`, `ContractLifecycleMenu.tsx`, `lifecycleStatusUi.tsx`       |
+| Libellés UI                 | `uxCopy.ts`                                                                      |
 | Doc produit               | `docs/product-documentation.md`                                                  |
 
 Après changement métier visible : mettre à jour **d’abord** la [documentation produit](./product-documentation.md), puis cette annexe si besoin.

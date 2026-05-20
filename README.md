@@ -15,10 +15,13 @@ Application web pour **créer, éditer et publier des contrats de données** con
 | Lifecycle `proposed` → `draft` → `active` → `deprecated` → `retired` | Collaboration temps réel                 |
 | Readiness, validation publish, historique de versions **dans l’app** | Vérification AI qualité (mock local)     |
 | Import SQL `CREATE TABLE`, relations, diff/changelog unifiés         | Sections ODCS hors P1 UI                 |
+| Navigation latérale (cues de progression) ; YAML **Copy** / **Download** | Collaboration temps réel (hors scope)   |
 
 **Publication :** une nouvelle version est enregistrée lorsqu’il existe un **changement réel** sur le contenu exportable **ou** sur la gouvernance versionnée dans l’app (contract owner, governance contacts). Aucune publication « vide » ; le changelog n’est jamais silencieux.
 
-**Export YAML** (extrait) : identité, schéma (`businessName`, `classification`, clés, relations, qualité, reference links), `roles`, `slaProperties`, `customProperties`, tags.
+**Export YAML** (extrait) : identité, schéma (`businessName`, `classification`, clés, relations, qualité, reference links), `roles`, `slaProperties`, `customProperties`, tags. Aperçu read-only en onglet **YAML** (état courant du contrat) ; téléchargement `{contractId}_{version}.yaml`.
+
+**UX récente :** cues sidebar (masqués en lecture seule ; pas sur **Versions**) ; sections gouvernance en autosave avec compteurs export/incomplete ; badge **Revision open** en révision ; menu **⋯** pour Deprecate / Retire.
 
 **App-only** (non exporté, mais versionné pour publish/changelog si applicable) : contract owner, governance contacts, collaborateurs, `creationSource`, `inRevision`, historique des versions, flag personal data brut (`isPII`), état AI mock sur règles qualité table.
 
@@ -37,6 +40,7 @@ React 19 · TypeScript · Vite 8 · Tailwind CSS 4 · Vitest · `localStorage` -
 | **[Documentation produit](./docs/product-documentation.md)** | PM, QA, designer, client, dev | Vision, workflows, lifecycle, rôles, readiness, YAML, limitations - **source de vérité fonctionnelle** |
 | [Référence ODCS P1](./docs/odcs-p1-reference.md)             | Data / conformité             | 55 champs prioritaires ODCS v3.1.0                                                                     |
 | [Notes techniques](./docs/technical-notes.md)                | Développeurs                  | Stack, persistance, tests, checklist maintien                                                          |
+| [Changelog fonctionnel MVP](./docs/changelog-fonctionnel-mvp.md) | PM / handoff              | Historique jusqu’à `262c3bc` + évolutions récentes                                                     |
 
 ---
 

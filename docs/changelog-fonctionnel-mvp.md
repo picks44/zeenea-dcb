@@ -1,6 +1,8 @@
 # Changelog fonctionnel - Data Contract Builder MVP
 
-**Périmètre :** évolution du dépôt entre le commit initial `9bf13d8` (_Initial commit_) et `262c3bc` (_Update documentation and logic for ODCS P1 reference and governance changes_) - 87 commits, sans détail commit-par-commit.
+**Périmètre historique :** évolution du dépôt entre le commit initial `9bf13d8` (_Initial commit_) et `262c3bc` (_Update documentation and logic for ODCS P1 reference and governance changes_) - 87 commits, sans détail commit-par-commit.
+
+**État courant :** comportement détaillé et à jour dans [Documentation produit](./product-documentation.md) ; section [9. Évolutions depuis 262c3bc](#9-évolutions-depuis-262c3bc) ci-dessous pour le handoff rapide.
 
 **Produit :** prototype **Data Contract Builder** (anciennement « Data Contract Studio » dans les premières itérations) - application web de création et maintenance de contrats de données alignés sur **ODCS v3.1.0**.
 
@@ -163,7 +165,7 @@ En quelques semaines d’itération, le projet est passé d’un **prototype Rea
 
 |                   |                                                                                                                                                                                                                            |
 | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Ajouté**        | Documentation produit (~1000 lignes), référence P1, notes techniques, scénarios QA ; **19 fichiers de tests**, **242 tests** Vitest (conformité P1, lifecycle, YAML, DDL, migrations, readiness, IDs, gouvernance layout). |
+| **Ajouté**        | Documentation produit (~1000 lignes), référence P1, notes techniques, scénarios QA ; suite Vitest (conformité P1, lifecycle, YAML, DDL, migrations, readiness, IDs, gouvernance layout). |
 | **Évolué**        | `design.md` allégé au profit de `docs/` ; README orienté MVP ; migrations `localStorage` (lifecycle, IDs, SLA, quality[], schema IDs).                                                                                     |
 | **Valeur métier** | Onboarding PM/QA/client sans lire le code ; filet de non-régression sur règles métier critiques.                                                                                                                           |
 | **Statut actuel** | Pas de tests composants React ni e2e navigateur.                                                                                                                                                                           |
@@ -266,7 +268,7 @@ flowchart TD
 
 | Domaine                     | Détail                                                                                                                                                                                                        |
 | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Tests unitaires**         | 19 fichiers, **242 tests** passants (`npm test`) - conformité P1 golden YAML, lifecycle, validation publish, export YAML, DDL→ODCS, migrations storage, readiness, IDs hybrides, diff relations, messages UI. |
+| **Tests unitaires**         | Voir [notes techniques §4](./technical-notes.md#4-tests-et-conformité-p1) pour l’inventaire à jour (dernier run : **24 fichiers, 277 tests**). |
 | **Build**                   | `npm run build` (TypeScript strict + Vite production).                                                                                                                                                        |
 | **Validations**             | Couches `p1Validation` → `contractValidation` → readiness ; messages utilisateur mappés.                                                                                                                      |
 | **Migrations localStorage** | Statuts lifecycle ; ID hybride ; `slaProperties[].property` ; `quality[]` ; IDs stables schema ; commits Git history.                                                                                         |
@@ -308,6 +310,23 @@ Les **87 commits** ont surtout renforcé la **conformité**, la **gouvernance hy
 
 ---
 
+## 9. Évolutions depuis 262c3bc
+
+Complément au périmètre historique ci-dessus — aligné sur le code et [product-documentation.md](./product-documentation.md).
+
+| Domaine | Évolution |
+| ------- | --------- |
+| **YAML** | Onglet read-only ; **Copy YAML** / **Download YAML** ; fichier `{contractId}_{version}.yaml` identique à la preview |
+| **Versions / navigation** | Section **Versions** sans onglets Form/YAML ; reset onglet à Form ; Compare export-only inchangé |
+| **Sidebar cues** | Indicateurs complete/incomplete/empty ; masqués en read-only ; **Versions** exclu ; **Custom** complete si ≥1 property exportable |
+| **Gouvernance UX** | Autosave ; compteurs saved / included in YAML / incomplete rows ; emphase lignes après tentative Publish |
+| **Révision** | Badge **Revision open** (statut Active conservé, version affichée = dernière publiée) |
+| **Top bar** | Menu **⋯** pour **Deprecate** / **Retire** (Publisher) |
+| **Relations / FK** | Self-FK ; propagation rename ; cible stale + Clear ; tests `schemaRelationshipRefs`, `relationshipExport.schema` |
+| **Tests / doc** | Suite portée à **277** tests ; doc produit enrichie (§3.2.1, §8.8–8.9, §11.1.1, scénarios QA S14–S23) |
+
+---
+
 ## Annexe - Synthèse par domaine
 
 | Domaine             | Fonctionnalités livrées                                    | Impact métier                         |
@@ -327,8 +346,8 @@ Les **87 commits** ont surtout renforcé la **conformité**, la **gouvernance hy
 | Governance contacts | App-only versionnés                                        | Privacy / stewardship interne         |
 | Collaborators       | Publisher / Contributor / Reader                           | Travail d’équipe dans l’outil         |
 | UX / UI             | Readiness responsive, read-only, UI Kit                    | Adoption et démos client              |
-| Qualité             | 242 tests, doc produit                                     | Confiance et onboarding               |
+| Qualité             | 277 tests (voir notes techniques), doc produit à jour      | Confiance et onboarding               |
 
 ---
 
-_Document généré à partir de l’historique Git (`9bf13d8`…`262c3bc`), de la documentation produit et des tests du dépôt - mai 2026._
+_Document : historique Git `9bf13d8`…`262c3bc` + section 9 (post-262c3bc). Comportement de référence : [product-documentation.md](./product-documentation.md) — mai 2026._
