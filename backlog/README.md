@@ -39,3 +39,23 @@
 | ID | Action |
 |----|--------|
 | `86c9n9a5b`, `86c9n9a5h`, `86c9n9a5n`, `86c9n9a5p`, `86c9n9a5u`, `86c9n9a5z`, `86c9nc596` | UPDATE |
+
+
+## SP1 — Interfaces (CREATE alignement)
+
+**Input :** [input/sp1-interfaces.csv](input/sp1-interfaces.csv)
+
+**Gouvernance :** 0 UPDATE sur US protégées (qa/en cours) — 5 CREATE complémentaires.
+
+### Ordre d’import ClickUp
+
+1. **CREATE** — [output/sp1-create.csv](output/sp1-create.csv) (`name`, `description`, `tags`, `priority`)
+2. **Mapping** — [docs/sp1-corrections-mapping.md](docs/sp1-corrections-mapping.md)
+3. **Cross-listes** — [docs/sp1-report-sp3-sp4-sp5.md](docs/sp1-report-sp3-sp4-sp5.md)
+4. **Audit pré-import** — [docs/sp1-pre-import-audit.md](docs/sp1-pre-import-audit.md)
+5. **Import (manuel)** — [docs/sp1-import-checklist.md](docs/sp1-import-checklist.md)
+
+| US source | Action |
+| --------- | ------ |
+| `86c9n9a3v`, `86c9n9a48`, `86c9n9a3w`, `86c9n9a4a`, `86c9nw8br`, `86c9nw8bu` | Inchangées — CREATE associée |
+| `86c9n9a6f` | DO NOT TOUCH |
