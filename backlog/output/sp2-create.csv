@@ -1,0 +1,186 @@
+name,description,tags,priority
+"[Alignement] Schema editor — CRUD tables, colonnes, FK et metadata","Description métier
+
+US complémentaire pour l’édition schéma complète alignée prototype : tables, colonnes, dialogs metadata, FK colonne, propagation rename/delete. US source 86c9n9a4e (en cours) inchangée.
+
+Gouvernance — US sources (statuts protégés, non modifiées)
+
+- 86c9n9a4e — en cours — schema editor
+
+Corrigé / aligné par rapport aux US sources
+
+- Contrat éditable en statut draft OU active avec Revision open (inRevision) — pas « Draft-only » ; proposed = import seulement ; active publié = lecture seule
+- Renommage table/colonne avec propagation schemaRelationshipRefs
+- FK colonne via ColumnForeignKeyEditor
+
+Ajouté (delta backlog MVP)
+
+- ColumnAdvancedDialog / TableAdvancedDialog (tags, auth defs, array items)
+- Classification, PK/REQ/UQ/CDE flags inline
+- Readiness anchors colonnes (descriptions) — score SP4
+
+Exclu de cette US (autre liste ou obsolète)
+
+- Import DDL (SP3)
+- Relations table-level (86c9n9a4r)
+- Quality rules structurées (86c9nw8cy)
+- Publish / Git
+
+Reste porté par l’US source (QA historique)
+
+- Titre et périmètre historique US 4e en QA en cours
+
+Périmètre
+
+Inclus
+
+- Liste tables, édition nom/description/type table
+- CRUD colonnes, logical/physical types
+- Field properties dialog
+- stablePropertyId / stableSchemaId
+
+Exclus
+
+- Édition YAML directe
+- Graphe relations obligatoire
+- Glossaire Zeenea automatique
+
+Critères d’acceptation
+
+- Modification table/colonne si editable status
+- FK colonne partielle bloquée à la sauvegarde
+- Rename propage FK et relationships
+- Verrouillage si proposed/active sans révision
+
+Cas d’erreur / limites
+
+- handleSchemaChange no-op si locked
+
+Règles de gestion
+
+- Référence US source 86c9n9a4e
+- Dual-track obligatoire
+
+Validation fonctionnelle
+
+- Proto SchemaSection + TableBlock + dialogs
+- MVP API dataset CRUD
+
+Validé sur prototype UX (référence démo)
+
+- SchemaSection.tsx, TableBlock.tsx
+- ColumnAdvancedDialog, TableAdvancedDialog
+- ColumnForeignKeyEditor, schemaRelationshipRefs
+- contractLifecycle isContractLocked
+
+Implémentation MVP cible
+
+- API CRUD schema ODCS
+- Validation structurelle serveur
+
+Liens SP1 — Interfaces
+
+- 86c9n9a4a — Navigation sections (CREATE alignement SP1)
+- Section Schema — pas navigation ici
+
+Liens SP3 — DDL Import
+
+- 86c9n9a47 — Mapping DDL → schéma (détection relations importées)
+- Schéma initial import — édition continue SP2
+
+Liens SP4 — Versioning
+
+- 86c9n9a4t — proposed, Start drafting, re-import
+- 86c9n9a5x — New version / Revision open
+- 86c9n9a55 — Autosave (pas Save draft)
+
+Liens SP5 — Publish & GitOps
+
+- 86c9n9a5b — Validation YAML pré-publication",schema editor,high
+[Alignement] Schema editability — lock UX et guards,"Description métier
+
+Application UX des règles de verrouillage sur la section Schema — pas les règles lifecycle backend (SP4). US source 86c9nw8fj (prêt à déployer) inchangée.
+
+Gouvernance — US sources (statuts protégés, non modifiées)
+
+- 86c9nw8fj — prêt à déployer — lifecycle & locking
+
+Corrigé / aligné par rapport aux US sources
+
+- Schema read-only en active sans Revision open
+- Schema éditable en draft ou active+inRevision
+- Pas Save draft — autosave SP4
+
+Ajouté (delta backlog MVP)
+
+- isContractLocked appliqué SchemaSection/TableBlock
+- Masquage Add/Delete/Rename si verrouillé
+- denseReadOnly sur vue publiée compacte
+
+Exclu de cette US (autre liste ou obsolète)
+
+- Immutabilité API backend (86c9nw8d4 — REPORT SP4)
+- New version workflow détaillé (SP4 5x)
+- Publish exécution (SP5)
+
+Reste porté par l’US source (QA historique)
+
+- Intention verrouillage Active historique US fj
+
+Périmètre
+
+Inclus
+
+- Guards UI sur toutes actions schema
+- Feedback visuel lecture seule
+- New version disponible depuis UI (lien SP4)
+
+Exclus
+
+- Override admin déverrouillage
+- Modification silencieuse version publiée
+
+Critères d’acceptation
+
+- En active sans révision : schema non éditable
+- En inRevision : schema éditable
+- En proposed : schema locked, import section seule
+- Viewer toujours read-only
+
+Cas d’erreur / limites
+
+
+Règles de gestion
+
+- SP2 = UX locks ; SP4 = règles métier lifecycle
+- Référence US source 86c9nw8fj
+
+Validation fonctionnelle
+
+- Proto isContractLocked sur SchemaSection
+- MVP permissions + lifecycle API
+
+Validé sur prototype UX (référence démo)
+
+- contractLifecycle.ts
+- App.tsx isLocked → SchemaSection
+
+Implémentation MVP cible
+
+- Policy engine + UI disable states
+
+Liens SP1 — Interfaces
+
+- 86c9n9a4a — Navigation sections (CREATE alignement SP1)
+
+Liens SP4 — Versioning
+
+- 86c9n9a5x — New version / Revision open
+- 86c9n9a4t — proposed, Start drafting, re-import
+- 86c9n9a55 — Autosave (pas Save draft)
+- Règles métier — pas ici
+
+Liens SP5 — Publish & GitOps
+
+- 86c9n9a5u / 86c9n9a5z — Publish / Git (SP5)
+- Publish disabled UI — exécution SP5",lifecycle & locking,high

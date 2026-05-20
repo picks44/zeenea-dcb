@@ -81,3 +81,19 @@
 | -- | ------ |
 | `86c9n9a40`, `86c9n9a42`, `86c9n9a44`, `86c9n9a47`, `86c9n9a53`, `86c9n9a54` | UPDATE |
 | `86c9nw8d1` | CANCEL (doublon `54`) |
+
+
+## SP2 — Editor & Lifecycle
+
+**Input :** [input/sp2-editor-lifecycle.csv](input/sp2-editor-lifecycle.csv)
+
+**Gouvernance :** 6 UPDATE · 2 CREATE [Alignement] · 0 CANCEL · REPORT `86c9nw8d4` manuel.
+
+**Regénérer :** `python3 backlog/scripts/generate_sp2_deliverables.py`
+
+### Ordre d’import ClickUp
+
+1. **UPDATE** — [output/sp2-update.csv](output/sp2-update.csv)
+2. **CREATE** — [output/sp2-create.csv](output/sp2-create.csv)
+3. **REPORT** — [docs/sp2-report-d4-sp4.md](docs/sp2-report-d4-sp4.md)
+4. **Docs** — [docs/sp2-fiches-import.md](docs/sp2-fiches-import.md) · [docs/sp2-pre-import-audit.md](docs/sp2-pre-import-audit.md)

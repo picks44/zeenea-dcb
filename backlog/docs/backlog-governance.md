@@ -285,6 +285,28 @@ Ne pas confondre trois périmètres distincts :
 
 **Règle :** une US SP3 sur le YAML **fonctionnel** post-import n’est **pas** un doublon de l’US SP1 « yaml view » UI — **ne pas CANCEL** sans arbitrage PO.
 
+### Relations — tri-domaine import / édition / export (SP2 / SP3 / SP5)
+
+Ne pas fusionner trois périmètres distincts :
+
+| Domaine | Liste | Exemple US | Périmètre |
+| ------- | ----- | ---------- | --------- |
+| **Détection / mapping relations importées** | **SP3** | `86c9n9a47`, FK inline DDL | Parse → modèle initial ; pas d’édition graphique post-import |
+| **Édition / manipulation relations** | **SP2** | `86c9n9a4r` (+ sync `schemaRelationshipRefs`) | composite FK, M2M, rename/delete propagation — **pas** parser ni graphe avancé |
+| **Validation publish / export YAML** | **SP5** | `86c9n9a5b`, export relationships | Cohérence ODCS publiée — pas d’UI relation |
+
+**Règle :** `86c9n9a4r` ne doit **pas** devenir un « mega relation system » (inférence auto, graphe obligatoire, validation référentielle exécutable, impact analysis consommateurs).
+
+### Quality rules — édition vs readiness vs publish (SP2 / SP4 / SP5)
+
+| Domaine | Liste | Exemple US | Périmètre |
+| ------- | ----- | ---------- | --------- |
+| **Saisie quality rules (table / colonne)** | **SP2** | `86c9nw8cy` | `QualityRulesEditor` ; stockage modèle ; **pas** une simple annotation UX |
+| **Readiness / publiable / score** | **SP4** | `86c9n9a5e` | Panel, navigation champs, score global |
+| **Validation publish backend** | **SP5** | `86c9n9a5b` | YAML invalide → blocage Git/publish |
+
+**Rappel prototype :** quality rules **table** avec **`aiVerified`** (mock) peuvent **influencer** readiness et validation publish — **interdit** le wording « note libre », « non bloquante », « sans impact publish » sur une US SP2 quality rules.
+
 **Règles d’attribution :**
 
 - **Préférer 1 epic principal** par US.
@@ -656,6 +678,8 @@ Si écart majeur : corriger dans ClickUp ou régénérer CSV + ré-import ciblé
 | **Corriger un comportement validé en QA sans US de correction** | Tests et dev désalignés |
 | **CANCEL une US SP3 YAML fonctionnelle** en la traitant comme doublon UI SP1 | Trou QA import → YAML ; confusion ownership |
 | **Sur-promettre le coverage parser MVP** | ANSI SQL complet, dialecte vendor exhaustif — tenir dialecte **TBD** + subset documenté |
+| **Quality rules = « note libre non bloquante »** (SP2) | Contredit prototype (`aiVerified` table) et tri-domaine SP2/SP4/SP5 |
+| **`86c9n9a4r` en mega relation system** | Absorbe SP3 parser + SP5 validation ; QA et ownership flous |
 
 ---
 
@@ -695,3 +719,4 @@ SP4 — Versioning est le **premier cycle** appliqué avec cette gouvernance.
 | 2026-05 | Protection US avancées (§3bis) — CREATE complémentaires vs UPDATE direct |
 | 2026-05 | Rappel explicite SP2 — Editor & Lifecycle dans l’ordre de traitement et les références cross-listes |
 | 2026-05 | Tri-domaine YAML SP1/SP3/SP5 ; anti-patterns CANCEL YAML SP3 et sur-promesse parser |
+| 2026-05 | SP2 — tri-domaine relations (SP3/SP2/SP5) et quality rules (SP2/SP4/SP5) ; plan stratégique stabilisé |

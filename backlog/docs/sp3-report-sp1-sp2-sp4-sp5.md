@@ -22,7 +22,7 @@ Gouvernance : [backlog-governance.md](./backlog-governance.md) · tri-domaine YA
 
 | US SP3 | Lien SP2 |
 | ------ | -------- |
-| `86c9n9a47` | Mapping import uniquement — édition schema **SP2** (`4e`, `4r`, …) |
+| `86c9n9a47` | **Détection/mapping** relations/FK importées uniquement — **édition** relations **SP2** (`86c9n9a4r`) ; validation/export **SP5** |
 
 ## SP4 — Versioning
 

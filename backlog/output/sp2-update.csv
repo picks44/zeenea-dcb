@@ -1,0 +1,407 @@
+id,name,description,tags,priority
+86c9n9a4h,"ETQ utilisateur, je veux ajouter une table afin de couvrir plusieurs datasets dans un même contrat","Description métier
+
+Ajout manuel d’une table/schema object pour compléter ou corriger le schéma importé ou créé from scratch.
+
+Périmètre
+
+Inclus
+
+- Bouton Add table (SchemaSection)
+- Nom table obligatoire, description optionnelle
+- Ajout colonnes initiales via TableBlock
+- Validation doublon de nom table
+- Stable schema ID (stableSchemaId)
+- Contrat éditable en statut draft OU active avec Revision open (inRevision) — pas « Draft-only » ; proposed = import seulement ; active publié = lecture seule
+
+Exclus
+
+- Import DDL (SP3)
+- Templates table avancés / génération IA
+- Publish / readiness panel (SP4/SP5)
+
+Critères d’acceptation
+
+- Add table crée une table éditable si contrat non verrouillé
+- Doublon de nom table refusé avec message clair
+- Au moins une colonne ajoutable immédiatement
+- Table visible dans YAML preview (SP1) après modification
+
+Cas d’erreur / limites
+
+- Nom vide → message validation
+- Contrat verrouillé → action masquée
+
+Règles de gestion
+
+- Contrat éditable en statut draft OU active avec Revision open (inRevision) — pas « Draft-only » ; proposed = import seulement ; active publié = lecture seule
+- Tag epic schema editor
+
+Validation fonctionnelle
+
+- Proto SchemaSection + TableBlock
+- MVP API dataset create table
+
+Hypothèses
+
+
+Validé sur prototype UX (référence démo)
+
+- SchemaSection.tsx — makeTable, add flow
+- idDerivation stableSchemaId
+
+Implémentation MVP cible
+
+- POST/PATCH dataset tables
+- Validation unicité noms serveur
+
+Liens SP1 — Interfaces
+
+- 86c9n9a4a — Navigation sections (CREATE alignement SP1)
+
+Liens SP3 — DDL Import
+
+- 86c9n9a47 — Mapping DDL → schéma (détection relations importées)
+- Import initial — pas re-parser ici
+
+Liens SP4 — Versioning
+
+- 86c9n9a4t — proposed, Start drafting, re-import
+- 86c9n9a55 — Autosave (pas Save draft)",schema editor,high
+86c9n9a4p,"ETQ utilisateur, je veux supprimer une table afin de retirer un dataset du contrat","Description métier
+
+Suppression table avec confirmation ; propagation suppression des références FK/relations entrantes (schemaRelationshipRefs).
+
+Périmètre
+
+Inclus
+
+- Delete table + ConfirmDialog
+- syncDatasetAfterTableDelete — inbound FK/relationships retirés
+- Blocage si contrat verrouillé (proposed, active sans révision, deprecated, retired)
+- Contrat éditable en statut draft OU active avec Revision open (inRevision) — pas « Draft-only » ; proposed = import seulement ; active publié = lecture seule
+
+Exclus
+
+- Suppression version publiée immutable (SP4)
+- Restauration table fine / corbeille
+- Re-import DDL (SP3) — REPORT
+
+Critères d’acceptation
+
+- Confirmation avant suppression
+- Annuler conserve la table
+- Après suppression, plus de références vers la table supprimée dans le modèle
+- Impossible si isContractLocked
+- Readiness recalculée (SP4) après changement
+
+Cas d’erreur / limites
+
+- Dernière table → impact publishability (readiness SP4)
+
+Règles de gestion
+
+- Contrat éditable en statut draft OU active avec Revision open (inRevision) — pas « Draft-only » ; proposed = import seulement ; active publié = lecture seule
+- Pas Save draft — autosave SP4
+
+Validation fonctionnelle
+
+- Proto syncDatasetAfterTableDelete
+- MVP même règles ref serveur
+
+Hypothèses
+
+
+Validé sur prototype UX (référence démo)
+
+- SchemaSection handleDeleteTable
+- schemaRelationshipRefs.ts
+
+Implémentation MVP cible
+
+- API delete table transactionnelle
+- Cleanup références FK côté serveur
+
+Liens SP3 — DDL Import
+
+- 86c9n9a44 — Import DDL (SP3)
+- Re-import proposed remplace schéma — SP3/SP4
+
+Liens SP4 — Versioning
+
+- 86c9n9a5e — Readiness panel (score, publiable)
+- 86c9n9a5x — New version / Revision open
+
+Liens SP5 — Publish & GitOps
+
+- 86c9n9a5b — Validation YAML pré-publication",schema editor,normal
+86c9n9a4r,"ETQ utilisateur, je veux définir des relations entre tables afin de représenter les liens métier","Description métier
+
+Édition et manipulation des relations entre tables du contrat — pas la détection initiale depuis DDL (SP3). MVP UI : composite_foreign_key et many_to_many uniquement.
+
+Périmètre
+
+Inclus
+
+- Section Relationships dans TableBlock
+- Types MVP : composite_foreign_key, many_to_many (picker REL_OPTIONS)
+- Sélection table cible et colonnes de jointure
+- Suppression relation si éditable
+- syncDatasetAfterTableUpdate pour propagation rename colonnes/tables
+- Export via relationshipExport (lecture SP5 validation)
+- Contrat éditable en statut draft OU active avec Revision open (inRevision) — pas « Draft-only » ; proposed = import seulement ; active publié = lecture seule
+
+Exclus
+
+- Détection/mapping relations depuis DDL import (SP3 — 47)
+- Graphe relationnel avancé / inférence automatique
+- Validation référentielle exécutable / impact analysis consommateurs
+- Mega relation system (anti-pattern gouvernance)
+- Has many / Belongs to / Has one legacy comme AC principaux UI
+
+Critères d’acceptation
+
+- Ajout relation composite FK avec paires colonnes égales
+- Ajout relation M2M avec colonnes de jointure optionnelles
+- Relations read-only si contrat verrouillé
+- Rename table/colonne met à jour les refs (schemaRelationshipRefs)
+- YAML export contient relationships/FK cohérents
+
+Cas d’erreur / limites
+
+- Relation incomplète → avertissement publish (SP5)
+- Cible FK manquante → stale target UX
+
+Règles de gestion
+
+- Anti-pattern : ne pas absorber parser SP3 ni validation publish SP5 dans cette US
+- Contrat éditable en statut draft OU active avec Revision open (inRevision) — pas « Draft-only » ; proposed = import seulement ; active publié = lecture seule
+
+Validation fonctionnelle
+
+- Proto TableBlock REL_OPTIONS
+- relationshipExport tests
+
+Hypothèses
+
+
+Validé sur prototype UX (référence démo)
+
+- TableBlock.tsx — composite_foreign_key, many_to_many
+- schemaRelationshipRefs sync rename/delete
+- TableRelationshipRow navigation
+
+Implémentation MVP cible
+
+- API relations CRUD alignée types MVP
+- Tests propagation rename/delete
+
+Liens SP3 — DDL Import
+
+- 86c9n9a47 — Mapping DDL → schéma (détection relations importées)
+- FK inline importées — édition ici post-import
+
+Liens SP4 — Versioning
+
+- 86c9n9a5e — Readiness panel (score, publiable)
+
+Liens SP5 — Publish & GitOps
+
+- 86c9n9a5b — Validation YAML pré-publication
+- Export YAML relationships — pas UI ici",schema editor,normal
+86c9nc597,"ETQ utilisateur, je veux supprimer un champ afin de retirer une colonne du schéma","Description métier
+
+Suppression colonne en contexte éditable ; impact sur FK/relations ; pas de Save draft.
+
+Périmètre
+
+Inclus
+
+- Delete field sur ligne colonne (TableBlock)
+- syncDatasetAfterTableUpdate / impact relations
+- Avertissement si colonne référencée par relation
+- Contrat éditable en statut draft OU active avec Revision open (inRevision) — pas « Draft-only » ; proposed = import seulement ; active publié = lecture seule
+
+Exclus
+
+- Suppression sur version publiée immutable
+- Undo multi-étapes / rollback Git
+- Résolution automatique relations sans confirmation UX
+
+Critères d’acceptation
+
+- Suppression colonne possible si non verrouillé
+- Impossible si contrat verrouillé
+- Relations utilisant la colonne nettoyées ou signalées
+- Readiness recalculée après suppression
+
+Cas d’erreur / limites
+
+- Dernière colonne d’une table → table non publiable
+
+Règles de gestion
+
+- Contrat éditable en statut draft OU active avec Revision open (inRevision) — pas « Draft-only » ; proposed = import seulement ; active publié = lecture seule
+- Autosave SP4 — pas Save draft P0
+
+Validation fonctionnelle
+
+- Proto TableBlock delete column
+- schemaRelationshipRefs column delete
+
+Hypothèses
+
+
+Validé sur prototype UX (référence démo)
+
+- TableBlock trash action
+- schemaRelationshipRefs
+
+Implémentation MVP cible
+
+- API delete property + relation cleanup
+
+Liens SP4 — Versioning
+
+- 86c9n9a55 — Autosave (pas Save draft)
+- 86c9n9a5e — Readiness panel (score, publiable)
+
+Liens SP5 — Publish & GitOps
+
+- 86c9n9a5b — Validation YAML pré-publication",schema editor,normal
+86c9nw8cy,"ETQ utilisateur, je veux définir des quality rules sur tables et colonnes afin de documenter la qualité des données","Description métier
+
+Édition et saisie des quality rules structurées (table et colonne) via QualityRulesEditor. Distinct de la readiness globale (SP4) et de la validation publish backend (SP5). Interdit : note libre, non bloquante, sans impact publish.
+
+Périmètre
+
+Inclus
+
+- Quality rules colonne (jusqu’à 3) dans ColumnAdvancedDialog
+- Quality rules table dans TableAdvancedDialog
+- aiVerified sur rules table (mock Verify with AI prototype)
+- Dimensions / severity / businessImpact (p1Constants)
+- Export quality[] dans YAML
+
+Exclus
+
+- Readiness panel score global (SP4 — 5e)
+- Validation publish YAML complète (SP5 — 5b)
+- SEMQL / moteur qualité exécutable
+- SLA / slaProperties (section gouvernance séparée)
+- Note libre non structurée sans aiVerified
+
+Critères d’acceptation
+
+- Saisie quality rule structurée table et colonne
+- Table rules : aiVerified requis pour publish (proto contractValidation)
+- Colonne : descriptions field quality comptent dans readiness SP4 (distinct)
+- Publish bloqué côté produit si table rules non vérifiées (via readiness/validation SP4/SP5)
+- Wording UI ne promet pas un moteur exécutable
+
+Cas d’erreur / limites
+
+- Publish tenté sans aiVerified table rules → message readiness/validation
+
+Règles de gestion
+
+- SP2 = saisie locale ; SP4 = readiness ; SP5 = validation publish
+- Ne pas documenter « sans impact publish »
+- Contrat éditable en statut draft OU active avec Revision open (inRevision) — pas « Draft-only » ; proposed = import seulement ; active publié = lecture seule
+
+Validation fonctionnelle
+
+- Proto QualityRulesEditor + validateQualityRules requireAiVerified
+- MVP règles alignées contractValidation serveur
+
+Hypothèses
+
+
+Validé sur prototype UX (référence démo)
+
+- QualityRulesEditor.tsx
+- contractValidation.ts validateQualityRules
+- TableAdvancedDialog showAiVerification
+
+Implémentation MVP cible
+
+- Persistance quality[] ODCS
+- Intégration readiness API + pre-publish validation
+
+Liens SP4 — Versioning
+
+- 86c9n9a5e — Readiness panel (score, publiable)
+- Field quality descriptions — score SP4
+
+Liens SP5 — Publish & GitOps
+
+- 86c9n9a5b — Validation YAML pré-publication
+- 86c9n9a5u / 86c9n9a5z — Publish / Git (SP5)",quality rules,normal
+86c9nw8dw,"ETQ utilisateur, je veux supprimer un contrat afin de le retirer de la liste principale sans perdre l’audit","Description métier
+
+Parcours UX de suppression logique (soft delete) depuis l’UI — métier audit et conservation versions/Git/checksums portés par SP4. Priorité normal (lifecycle + registry).
+
+Périmètre
+
+Inclus
+
+- Bouton Delete contrat + ConfirmDialog
+- Soft delete — retrait liste principale
+- Conservation historique technique (REPORT exécution SP4)
+- Contrat éditable en statut draft OU active avec Revision open (inRevision) — pas « Draft-only » ; proposed = import seulement ; active publié = lecture seule
+
+Exclus
+
+- Hard delete versions publiées / commits Git
+- Règles immutabilité API (SP4 — 86c9nw8d4 REPORT)
+- Implémentation backend soft delete complète (SP4 4t)
+
+Critères d’acceptation
+
+- Confirmation obligatoire
+- Après succès, contrat absent de la liste registry (SP1)
+- Versions publiées et audit conservés (SP4)
+
+Cas d’erreur / limites
+
+- Erreur backend → contrat reste visible
+
+Règles de gestion
+
+- REPORT métier soft delete → SP4
+- Priorité normal — impact lifecycle et visibilité registry
+
+Validation fonctionnelle
+
+- Proto ConfirmDialog pattern
+- MVP API soft delete + registry filter
+
+Hypothèses
+
+
+Validé sur prototype UX (référence démo)
+
+- ConfirmDialog usage pattern dans App
+
+Implémentation MVP cible
+
+- API DELETE soft + deletedAt
+- Registry SP1 filtre entrées supprimées
+
+Hors périmètre prototype (exigence MVP conservée)
+
+- Purge RGPD automatisée
+- Corbeille restauration UI
+
+Liens SP1 — Interfaces
+
+- 86c9n9a3w — Registry (liste contrats)
+
+Liens SP4 — Versioning
+
+- 86c9n9a4t — soft delete contrat (métier audit)
+- Métier audit — ownership SP4
+
+Liens SP5 — Publish & GitOps
+
+- Conservation commits/checksums SP5",lifecycle & locking,normal
